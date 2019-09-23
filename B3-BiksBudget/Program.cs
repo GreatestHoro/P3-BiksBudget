@@ -12,26 +12,24 @@ namespace BiksBudget
 {
     class Program
     {
-
-
         static void Main(string[] args)
         {
-            _ = GetOpskrift(1, 38482);
-            Console.WriteLine("end of yet");
+            _ = GetOpskrift(1, 38482); 
+            Console.WriteLine("Web crawler begins... fear its power");
             Console.ReadLine();
         }
 
         private static async Task GetOpskrift(int start_page, int Last_page)
         {
 
-            List<Opskrift> opskrifter = new List<Opskrift>();
+            List<Opskrift> opskrifter = new List<Opskrift>(); //listen der holder alle opskrift elementerne
 
             for (int i = start_page; i <= Last_page; i++)
             {
-                String url = ("https://www.dk-kogebogen.dk/opskrifter/" + i + "/");
-                HttpClient HttpClient = new HttpClient();
+                var url = ("https://www.dk-kogebogen.dk/opskrifter/" + i + "/");
+                var HttpClient = new HttpClient();
                 string html = await HttpClient.GetStringAsync(url);
-                HtmlDocument htmlDocument = new HtmlDocument();
+                var htmlDocument = new HtmlDocument();
                 htmlDocument.LoadHtml(html);
                 List<string> testIngriedisens = new List<string>();
 
