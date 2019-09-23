@@ -12,22 +12,26 @@ namespace BiksBudget
 {
     class Program
     {
+
+
         static void Main(string[] args)
         {
-            _ = GetOpskrift(1, 38482); 
-            Console.WriteLine("Web crawler begins... fear its power");
+            _ = GetOpskrift();
+            Console.WriteLine("end of yet");
             Console.ReadLine();
         }
 
-        private static async Task GetOpskrift(int start_page, int Last_page)
+        private static async Task GetOpskrift()
         {
 
-            List<Opskrift> opskrifter = new List<Opskrift>(); //listen der holder alle opskrift elementerne
+            List<Opskrift> opskrifter = new List<Opskrift>();
 
-            for (int i = start_page; i <= Last_page; i++)
+            for (int i = 1; i <= 38482; i++)
             {
+            hej:
+                //int i = 456;
                 var url = ("https://www.dk-kogebogen.dk/opskrifter/" + i + "/");
-                var HttpClient = new HttpClient();
+                HttpClient HttpClient = new HttpClient();
                 string html = await HttpClient.GetStringAsync(url);
                 var htmlDocument = new HtmlDocument();
                 htmlDocument.LoadHtml(html);
@@ -36,39 +40,33 @@ namespace BiksBudget
                 var ingredienser = htmlDocument.DocumentNode.SelectNodes("//span[@class][@itemprop]");
                 var Beskrivels = htmlDocument.DocumentNode.SelectNodes("//div[@itemprop]");
                 var name = htmlDocument.DocumentNode.SelectNodes("//center");
-                
                 if (Beskrivels.ElementAt<HtmlNode>(0).InnerText.Length == 0)
                 {
-                    Console.WriteLine("Cannot find recipie continues....");
+                    i++;
+                    goto hej;
+                }
+
+                Console.WriteLine(ingredienser.Count + " " + i + " item");
+                var response = HttpClient.GetAsync(url).Result;
+
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+
+                    int k = 0;
+                    foreach (var ind in ingredienser)
+                    {
+                        testIngriedisens.Add(ind.InnerText);
+                    }
+                    opskrifter.Add(new Opskrift(name.ElementAt<HtmlNode>(0).InnerText, Beskrivels.ElementAt<HtmlNode>(0).InnerText, testIngriedisens));
+
                 }
                 else
                 {
-                    if (i % 100 == 0)
-                    {
-                        Console.WriteLine(i + " elements found");
-                    }
-
-                    var response = HttpClient.GetAsync(url).Result;
-
-                    if (response.StatusCode == System.Net.HttpStatusCode.OK)
-                    {
-
-                        foreach (var ind in ingredienser)
-                        {
-                            testIngriedisens.Add(ind.InnerText);
-                        }
-                        opskrifter.Add(new Opskrift(name.ElementAt<HtmlNode>(0).InnerText, Beskrivels.ElementAt<HtmlNode>(0).InnerText, testIngriedisens));
-
-                    }
-                    else
-                    {
-                        Console.WriteLine("Connection failed");
-                    }
+                    Console.WriteLine("Connection failed");
                 }
             }
             Opskrift.SaveRecipie(opskrifter);
-            Console.WriteLine("Procces finished");
-
+            Console.WriteLine("yeet");
         }
     }
 }

@@ -9,9 +9,9 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using FrontEnd.Data;
+using Front_end.Data;
 
-namespace FrontEnd
+namespace Front_end
 {
     public class Startup
     {
