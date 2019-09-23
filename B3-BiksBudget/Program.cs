@@ -16,22 +16,22 @@ namespace BiksBudget
 
         static void Main(string[] args)
         {
-            _ = GetOpskrift();
+            _ = GetOpskrift(1, 38482);
             Console.WriteLine("end of yet");
             Console.ReadLine();
         }
 
-        private static async Task GetOpskrift()
+        private static async Task GetOpskrift(int start_page, int Last_page)
         {
 
             List<Opskrift> opskrifter = new List<Opskrift>();
 
-            for (int i = 1; i <= 38482; i++)
+            for (int i = start_page; i <= Last_page; i++)
             {
-                var url = ("https://www.dk-kogebogen.dk/opskrifter/" + i + "/");
+                String url = ("https://www.dk-kogebogen.dk/opskrifter/" + i + "/");
                 HttpClient HttpClient = new HttpClient();
                 string html = await HttpClient.GetStringAsync(url);
-                var htmlDocument = new HtmlDocument();
+                HtmlDocument htmlDocument = new HtmlDocument();
                 htmlDocument.LoadHtml(html);
                 List<string> testIngriedisens = new List<string>();
 
