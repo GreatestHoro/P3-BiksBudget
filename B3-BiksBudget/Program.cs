@@ -28,8 +28,6 @@ namespace BiksBudget
 
             for (int i = 1; i <= 38482; i++)
             {
-            hej:
-                //int i = 456;
                 var url = ("https://www.dk-kogebogen.dk/opskrifter/" + i + "/");
                 HttpClient HttpClient = new HttpClient();
                 string html = await HttpClient.GetStringAsync(url);
@@ -40,33 +38,39 @@ namespace BiksBudget
                 var ingredienser = htmlDocument.DocumentNode.SelectNodes("//span[@class][@itemprop]");
                 var Beskrivels = htmlDocument.DocumentNode.SelectNodes("//div[@itemprop]");
                 var name = htmlDocument.DocumentNode.SelectNodes("//center");
+                
                 if (Beskrivels.ElementAt<HtmlNode>(0).InnerText.Length == 0)
                 {
-                    i++;
-                    goto hej;
-                }
-
-                Console.WriteLine(ingredienser.Count + " " + i + " item");
-                var response = HttpClient.GetAsync(url).Result;
-
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
-                {
-
-                    int k = 0;
-                    foreach (var ind in ingredienser)
-                    {
-                        testIngriedisens.Add(ind.InnerText);
-                    }
-                    opskrifter.Add(new Opskrift(name.ElementAt<HtmlNode>(0).InnerText, Beskrivels.ElementAt<HtmlNode>(0).InnerText, testIngriedisens));
-
+                    Console.WriteLine("Cannot find recipie continues....");
                 }
                 else
                 {
-                    Console.WriteLine("Connection failed");
+                    if (i % 100 == 0)
+                    {
+                        Console.WriteLine(i + " elements found");
+                    }
+
+                    var response = HttpClient.GetAsync(url).Result;
+
+                    if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                    {
+
+                        foreach (var ind in ingredienser)
+                        {
+                            testIngriedisens.Add(ind.InnerText);
+                        }
+                        opskrifter.Add(new Opskrift(name.ElementAt<HtmlNode>(0).InnerText, Beskrivels.ElementAt<HtmlNode>(0).InnerText, testIngriedisens));
+
+                    }
+                    else
+                    {
+                        Console.WriteLine("Connection failed");
+                    }
                 }
             }
             Opskrift.SaveRecipie(opskrifter);
-            Console.WriteLine("yeet");
+            Console.WriteLine("Procces finished");
+
         }
     }
 }
