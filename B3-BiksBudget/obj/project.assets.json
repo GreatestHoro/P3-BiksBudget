@@ -3959,24 +3959,27 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\bbalt\\.nuget\\packages\\": {},
+    "C:\\Users\\jeppe\\.nuget\\packages\\": {},
+    "C:\\Microsoft\\Xamarin\\NuGet\\": {},
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\bbalt\\Desktop\\P3\\FIX\\B3-BiksBudget\\B3-BiksBudget\\B3-BiksBudget.csproj",
+      "projectUniqueName": "C:\\Users\\jeppe\\Documents\\GitHub\\P3-BiksBudget\\B3-BiksBudget\\B3-BiksBudget.csproj",
       "projectName": "B3-BiksBudget",
-      "projectPath": "C:\\Users\\bbalt\\Desktop\\P3\\FIX\\B3-BiksBudget\\B3-BiksBudget\\B3-BiksBudget.csproj",
-      "packagesPath": "C:\\Users\\bbalt\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\bbalt\\Desktop\\P3\\FIX\\B3-BiksBudget\\B3-BiksBudget\\obj\\",
+      "projectPath": "C:\\Users\\jeppe\\Documents\\GitHub\\P3-BiksBudget\\B3-BiksBudget\\B3-BiksBudget.csproj",
+      "packagesPath": "C:\\Users\\jeppe\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\jeppe\\Documents\\GitHub\\P3-BiksBudget\\B3-BiksBudget\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
+        "C:\\Microsoft\\Xamarin\\NuGet\\",
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
       ],
       "configFilePaths": [
-        "C:\\Users\\bbalt\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        "C:\\Users\\jeppe\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
       ],
       "originalTargetFrameworks": [
         "netcoreapp2.1"
@@ -4004,23 +4007,16 @@
             "version": "[1.11.12, )"
           },
           "Microsoft.NETCore.App": {
-            "suppressParent": "All",
             "target": "Package",
             "version": "[2.1.0, )",
             "autoReferenced": true
           }
         },
         "imports": [
-          "net461",
-          "net462",
-          "net47",
-          "net471",
-          "net472",
-          "net48"
+          "net461"
         ],
         "assetTargetFallback": true,
-        "warn": true,
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.100-preview9-014004\\RuntimeIdentifierGraph.json"
+        "warn": true
       }
     }
   }
