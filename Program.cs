@@ -12,8 +12,6 @@ namespace BiksBudget
 {
     class Program
     {
-        
-
         static void Main(string[] args)
         {
             _ = GetOpskrift();
