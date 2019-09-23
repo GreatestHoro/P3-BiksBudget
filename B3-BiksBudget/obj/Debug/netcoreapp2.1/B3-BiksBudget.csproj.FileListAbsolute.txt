@@ -1,0 +1,10 @@
+C:\Users\bbalt\Desktop\P3\FIX\B3-BiksBudget\B3-BiksBudget\bin\Debug\netcoreapp2.1\B3-BiksBudget.deps.json
+C:\Users\bbalt\Desktop\P3\FIX\B3-BiksBudget\B3-BiksBudget\bin\Debug\netcoreapp2.1\B3-BiksBudget.runtimeconfig.json
+C:\Users\bbalt\Desktop\P3\FIX\B3-BiksBudget\B3-BiksBudget\bin\Debug\netcoreapp2.1\B3-BiksBudget.runtimeconfig.dev.json
+C:\Users\bbalt\Desktop\P3\FIX\B3-BiksBudget\B3-BiksBudget\bin\Debug\netcoreapp2.1\B3-BiksBudget.dll
+C:\Users\bbalt\Desktop\P3\FIX\B3-BiksBudget\B3-BiksBudget\obj\Debug\netcoreapp2.1\B3-BiksBudget.csprojAssemblyReference.cache
+C:\Users\bbalt\Desktop\P3\FIX\B3-BiksBudget\B3-BiksBudget\obj\Debug\netcoreapp2.1\B3-BiksBudget.AssemblyInfoInputs.cache
+C:\Users\bbalt\Desktop\P3\FIX\B3-BiksBudget\B3-BiksBudget\obj\Debug\netcoreapp2.1\B3-BiksBudget.AssemblyInfo.cs
+C:\Users\bbalt\Desktop\P3\FIX\B3-BiksBudget\B3-BiksBudget\bin\Debug\netcoreapp2.1\B3-BiksBudget.pdb
+C:\Users\bbalt\Desktop\P3\FIX\B3-BiksBudget\B3-BiksBudget\obj\Debug\netcoreapp2.1\B3-BiksBudget.dll
+C:\Users\bbalt\Desktop\P3\FIX\B3-BiksBudget\B3-BiksBudget\obj\Debug\netcoreapp2.1\B3-BiksBudget.pdb
