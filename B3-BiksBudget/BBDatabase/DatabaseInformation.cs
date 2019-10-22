@@ -24,7 +24,7 @@ namespace B3_BiksBudget.BBDatabase
         {
             if (withDB)
             {
-                return @"server=" + serverName + ";database="+ databaseName +"userid=" + databaseUser + ";password=" + databasePassword;
+                return @"server=" + serverName + ";database="+ databaseName +";userid=" + databaseUser + ";password=" + databasePassword;
             }
             else
             {
