@@ -1,36 +1,34 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\jeppe\\Documents\\GitHub\\P3-BiksBudget\\B3-BiksBudget\\B3-BiksBudget.csproj": {}
+    "C:\\Users\\bbalt\\Desktop\\P3\\P3-BiksBudget\\B3-BiksBudget\\B3-BiksBudget.csproj": {}
   },
   "projects": {
-    "C:\\Users\\jeppe\\Documents\\GitHub\\P3-BiksBudget\\B3-BiksBudget\\B3-BiksBudget.csproj": {
+    "C:\\Users\\bbalt\\Desktop\\P3\\P3-BiksBudget\\B3-BiksBudget\\B3-BiksBudget.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\jeppe\\Documents\\GitHub\\P3-BiksBudget\\B3-BiksBudget\\B3-BiksBudget.csproj",
+        "projectUniqueName": "C:\\Users\\bbalt\\Desktop\\P3\\P3-BiksBudget\\B3-BiksBudget\\B3-BiksBudget.csproj",
         "projectName": "B3-BiksBudget",
-        "projectPath": "C:\\Users\\jeppe\\Documents\\GitHub\\P3-BiksBudget\\B3-BiksBudget\\B3-BiksBudget.csproj",
-        "packagesPath": "C:\\Users\\jeppe\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\jeppe\\Documents\\GitHub\\P3-BiksBudget\\B3-BiksBudget\\obj\\",
+        "projectPath": "C:\\Users\\bbalt\\Desktop\\P3\\P3-BiksBudget\\B3-BiksBudget\\B3-BiksBudget.csproj",
+        "packagesPath": "C:\\Users\\bbalt\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\bbalt\\Desktop\\P3\\P3-BiksBudget\\B3-BiksBudget\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Microsoft\\Xamarin\\NuGet\\",
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "C:\\Users\\jeppe\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\Users\\bbalt\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
-          "netcoreapp2.1"
+          "netcoreapp3.0"
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
-          "netcoreapp2.1": {
+          "netcoreapp3.0": {
             "projectReferences": {}
           }
         },
@@ -41,23 +39,33 @@
         }
       },
       "frameworks": {
-        "netcoreapp2.1": {
+        "netcoreapp3.0": {
           "dependencies": {
             "HtmlAgilityPack": {
               "target": "Package",
               "version": "[1.11.12, )"
             },
-            "Microsoft.NETCore.App": {
+            "MySql.Data": {
               "target": "Package",
-              "version": "[2.1.0, )",
-              "autoReferenced": true
+              "version": "[8.0.17, )"
             }
           },
           "imports": [
-            "net461"
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
           ],
           "assetTargetFallback": true,
-          "warn": true
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.100-preview9-014004\\RuntimeIdentifierGraph.json"
         }
       }
     }
