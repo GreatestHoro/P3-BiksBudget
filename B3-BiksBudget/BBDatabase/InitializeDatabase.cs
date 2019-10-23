@@ -56,26 +56,28 @@ namespace B3_BiksBudget.BBDatabase
 
                 string recipeTable = "CREATE TABLE IF NOT EXISTS `Recipe` (" +
                                      "`id` INT," +
-                                     "`name` VARCHAR(255)," +
+                                     "`recipeName` VARCHAR(255)," +
+                                     "`amountPerson` INT," +
+                                     "`description` VARCHAR(8000)," +
                                      "PRIMARY KEY(id));";
 
                 string ingredientTable = "CREATE TABLE IF NOT EXISTS `Ingredient` (" +
-                                     "`id` INT AUTO_INCREMENT," +
-                                     "`name` VARCHAR(255) UNIQUE," +
-                                     "PRIMARY KEY(id));";
+                                     "`ingredientName` VARCHAR(255) UNIQUE," +
+                                     "PRIMARY KEY(ingredientName));";
 
-                string ingredientInRecipeTable = "CREATE TABLE IF NOT EXISTS `IngridientsInRecipes` (" +
-                                                 "`id` INT auto_increment," +
-                                                 "`recipe` varchar(255)," +
-                                                 "`ingridient` varchar(255)," +
-                                                 "primary key(id), " +
-                                                 "FOREIGN KEY (recipe) REFERENCES Recipes(recipe), " +
-                                                 "foreign key (ingridient) REFERENCES Ingredients(ingridient));";
+                string ingredientsInRecipe = "CREATE TABLE IF NOT EXISTS `IngredientsInRecipe` (`id` INT AUTO_INCREMENT," +
+                                                 "`recipeID` INT," +
+                                                 "`ingredientName` varchar(255)," +
+                                                 "`amount` INT," +
+                                                 "`unit` varchar(255)," +
+                                                 "PRIMARY KEY(ID)," +
+                                                 "FOREIGN KEY(recipeID) REFERENCES RECIPES(id)," +
+                                                 "FOREIGN KEY(ingredientName) REFERENCES INGREDIENTS(ingredientName));";
 
 
                 new MySqlCommand(recipeTable, connection).ExecuteNonQuery();
                 new MySqlCommand(ingredientTable, connection).ExecuteNonQuery();
-                new MySqlCommand(ingredientInRecipeTable, connection).ExecuteNonQuery();
+                new MySqlCommand(ingredientsInRecipe, connection).ExecuteNonQuery();
             }
             catch (MySqlException)
             {
