@@ -4,13 +4,13 @@ using System.Text;
 
 namespace B3_BiksBudget.BBObjects
 {
-    class Ingriedient
+    class Ingredient
     {
         public int _Amount;
         public string _unit;
         public string _IngredientName;
 
-        public Ingriedient(String IngredientName,string unit, int Amount) 
+        public Ingredient(String IngredientName,string unit, int Amount) 
         {
             _IngredientName = IngredientName;
             _unit = unit;
