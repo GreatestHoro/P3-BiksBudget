@@ -29,8 +29,11 @@ namespace B3_BiksBudget.Webcrawler
                 List<string> testIngriedisens = new List<string>();
 
                 var ingredienser = htmlDocument.DocumentNode.SelectNodes("//span[@class][@itemprop]");
+                var PerPerson = htmlDocument.DocumentNode.SelectNodes("//span[@itemprop='recipeYield']");
                 var Beskrivels = htmlDocument.DocumentNode.SelectNodes("//div[@itemprop]");
                 var name = htmlDocument.DocumentNode.SelectNodes("//center");
+                
+                //parser til ingredienser =name,amount,unit
 
                 if (Beskrivels.ElementAt<HtmlNode>(0).InnerText.Length == 0)
                 {
@@ -41,6 +44,7 @@ namespace B3_BiksBudget.Webcrawler
                     if (i % 100 == 0)
                     {
                         Console.WriteLine(i + " elements found");
+
                     }
 
                     var response = HttpClient.GetAsync(url).Result;
@@ -54,14 +58,18 @@ namespace B3_BiksBudget.Webcrawler
                             string[] words = ind.InnerText.Split(' ');
                             if (int.TryParse(words[0], out int value))
                             {
-                                Console.WriteLine("Amount: " + words[0] + " " + words[1] + " and Type: " + words[2]); 
+                                //Console.WriteLine("Amount: " + words[0] + " " + words[1] + " and Type: " + words[2]); 
 
                             } else
                             {
-                                Console.WriteLine("This is the end");
+                                //Console.WriteLine("This is the end");
                             }
                         }
-                        opskrifter.Add(new Recipe(name.ElementAt<HtmlNode>(0).InnerText, Beskrivels.ElementAt<HtmlNode>(0).InnerText, testIngriedisens));
+                        opskrifter.Add(new Recipe
+                            (name.ElementAt<HtmlNode>(0).InnerText,
+                            Beskrivels.ElementAt<HtmlNode>(0).InnerText, 
+                            testIngriedisens, 
+                            CleanUpPerPerson(PerPerson.ElementAt<HtmlNode>(0).InnerText)));
 
                     }
                     else
@@ -72,6 +80,25 @@ namespace B3_BiksBudget.Webcrawler
             }
             Console.WriteLine("Procces finished");
 
+        }
+
+        public static int CleanUpPerPerson(string PerPerson) 
+        {
+            String cleanUp = "";
+            int numb;
+            String[] characters = PerPerson.Split(' ','&');
+            foreach (String c in characters) 
+            {
+                if (int.TryParse(c, out numb)) 
+                {
+                    if(numb<10 && numb >= 0)
+                    {
+                        
+                        cleanUp = cleanUp + numb;
+                    }
+                }
+            }
+            return int.Parse(cleanUp);
         }
     }
 }
