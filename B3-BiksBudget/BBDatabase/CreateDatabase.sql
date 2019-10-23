@@ -18,5 +18,3 @@ CREATE TABLE IF NOT EXISTS `IngridientsInRecipes` (
                                      primary key(id), 
                                      FOREIGN KEY (recipe) REFERENCES Recipes(recipe), 
                                      foreign key (ingridient) REFERENCES Ingredients(ingridient));
-
-
