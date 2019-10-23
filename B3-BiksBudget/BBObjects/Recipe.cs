@@ -9,10 +9,10 @@ namespace B3_BiksBudget.BBObjects
         public string _Name;
         public string _description;
         public List<string> _ingrediensList;
-        public int _PerPerson;
+        public float _PerPerson;
 
 
-        public Recipe(string name, string description, List<string> ingrediensList, int PerPerson)
+        public Recipe(string name, string description, List<string> ingrediensList, float PerPerson)
         {
             _Name = name;
             _description = description;
