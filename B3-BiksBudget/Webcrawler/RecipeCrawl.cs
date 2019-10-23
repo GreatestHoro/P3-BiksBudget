@@ -27,7 +27,7 @@ namespace B3_BiksBudget.Webcrawler
                 htmlDocument.LoadHtml(html);
 
                 //List<string> testIngriedisens = new List<string>();
-                List<Ingriedient> IngriedisensList = new List<Ingriedient>();
+                List<Ingredient> IngriedisensList = new List<Ingredient>();
 
                 var ingredienser = htmlDocument.DocumentNode.SelectNodes("//span[@class][@itemprop]");
                 var PerPerson = htmlDocument.DocumentNode.SelectNodes("//span[@itemprop='recipeYield']");
@@ -70,7 +70,7 @@ namespace B3_BiksBudget.Webcrawler
                             }*/
                         }
                         opskrifter.Add(new Recipe
-                            (name.ElementAt<HtmlNode>(0).InnerText,
+                            (12345,name.ElementAt<HtmlNode>(0).InnerText,
                             Beskrivels.ElementAt<HtmlNode>(0).InnerText,
                             IngriedisensList,
                             CleanUpPerPerson(PerPerson.ElementAt<HtmlNode>(0).InnerText)));
@@ -101,7 +101,7 @@ namespace B3_BiksBudget.Webcrawler
             return float.Parse(cleanUp);
         }
 
-        public static Ingriedient CreateIngriedient(String ind)
+        public static Ingredient CreateIngriedient(String ind)
         {
             float amount;
             String unit;
@@ -112,7 +112,7 @@ namespace B3_BiksBudget.Webcrawler
             name = DeterminName(ind);
 
 
-            return new Ingriedient(name,unit,amount);
+            return new Ingredient(name,unit,amount);
         }
 
         public static float DeterminAmount(String ingrediens)
