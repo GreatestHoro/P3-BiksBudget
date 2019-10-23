@@ -4,7 +4,6 @@ using System.Text;
 
 namespace B3_BiksBudget.BBObjects
 {
-
     class Ingriedient
     {
         public int _Amount;

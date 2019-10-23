@@ -5585,19 +5585,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\jeppe\\.nuget\\packages\\": {}
+    "C:\\Users\\bbalt\\.nuget\\packages\\": {},
+    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\jeppe\\Documents\\GitHub\\P3-BiksBudget\\B3-BiksBudget\\B3-BiksBudget.csproj",
+      "projectUniqueName": "C:\\Users\\bbalt\\Desktop\\P3\\P3-BiksBudget\\B3-BiksBudget\\B3-BiksBudget.csproj",
       "projectName": "B3-BiksBudget",
-      "projectPath": "C:\\Users\\jeppe\\Documents\\GitHub\\P3-BiksBudget\\B3-BiksBudget\\B3-BiksBudget.csproj",
-      "packagesPath": "C:\\Users\\jeppe\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\jeppe\\Documents\\GitHub\\P3-BiksBudget\\B3-BiksBudget\\obj\\",
+      "projectPath": "C:\\Users\\bbalt\\Desktop\\P3\\P3-BiksBudget\\B3-BiksBudget\\B3-BiksBudget.csproj",
+      "packagesPath": "C:\\Users\\bbalt\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\bbalt\\Desktop\\P3\\P3-BiksBudget\\B3-BiksBudget\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+      ],
       "configFilePaths": [
-        "C:\\Users\\jeppe\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\bbalt\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -5645,7 +5649,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "D:\\Program Files\\dotnet\\sdk\\3.0.100\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.0.100-preview9-014004\\RuntimeIdentifierGraph.json"
       }
     }
   }
