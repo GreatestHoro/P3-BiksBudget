@@ -43,11 +43,11 @@
           "dependencies": {
             "HtmlAgilityPack": {
               "target": "Package",
-              "version": "[1.11.12, )"
+              "version": "[1.11.16, )"
             },
             "MySql.Data": {
               "target": "Package",
-              "version": "[8.0.17, )"
+              "version": "[8.0.18, )"
             }
           },
           "imports": [

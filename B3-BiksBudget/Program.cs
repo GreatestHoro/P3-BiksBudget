@@ -16,7 +16,7 @@ namespace BiksBudget
     {
         static void Main(string[] args)
         {
-            DatabaseInformation dbInfo = new DatabaseInformation("localhost", "TestNewTable", "root", "Bjarke05!");
+            DatabaseInformation dbInfo = new DatabaseInformation("localhost", "Test_BiksBudget", "root", "Bjarke05!");
             new InitializeDatabase().start(dbInfo);
 
 
