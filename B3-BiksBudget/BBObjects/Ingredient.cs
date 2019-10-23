@@ -6,11 +6,11 @@ namespace B3_BiksBudget.BBObjects
 {
     class Ingriedient
     {
-        public int _Amount;
+        public float _Amount;
         public string _unit;
         public string _IngredientName;
 
-        public Ingriedient(String IngredientName,string unit, int Amount) 
+        public Ingriedient(String IngredientName,string unit, float Amount) 
         {
             _IngredientName = IngredientName;
             _unit = unit;

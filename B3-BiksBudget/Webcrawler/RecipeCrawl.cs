@@ -26,13 +26,14 @@ namespace B3_BiksBudget.Webcrawler
                 var htmlDocument = new HtmlDocument();
                 htmlDocument.LoadHtml(html);
 
-                List<string> testIngriedisens = new List<string>();
+                //List<string> testIngriedisens = new List<string>();
                 List<Ingriedient> IngriedisensList = new List<Ingriedient>();
 
                 var ingredienser = htmlDocument.DocumentNode.SelectNodes("//span[@class][@itemprop]");
+                var PerPerson = htmlDocument.DocumentNode.SelectNodes("//span[@itemprop='recipeYield']");
                 var Beskrivels = htmlDocument.DocumentNode.SelectNodes("//div[@itemprop]");
                 var name = htmlDocument.DocumentNode.SelectNodes("//center");
-
+                
                 //parser til ingredienser =name,amount,unit
 
                 if (Beskrivels.ElementAt<HtmlNode>(0).InnerText.Length == 0)
@@ -54,9 +55,9 @@ namespace B3_BiksBudget.Webcrawler
 
                         foreach (var ind in ingredienser)
                         {
-                            //CreateIngriedient(ind.InnerText);
+                            IngriedisensList.Add(CreateIngriedient(ind.InnerText));
 
-                            testIngriedisens.Add(ind.InnerText);
+                            /*testIngriedisens.Add(ind.InnerText);
                             string[] words = ind.InnerText.Split(' ');
                             if (int.TryParse(words[0], out int value))
                             {
@@ -65,13 +66,13 @@ namespace B3_BiksBudget.Webcrawler
                             }
                             else
                             {
-                                Console.WriteLine("This is the end");
-                            }
+                                //Console.WriteLine("This is the end");
+                            }*/
                         }
                         opskrifter.Add(new Recipe
                             (name.ElementAt<HtmlNode>(0).InnerText,
                             Beskrivels.ElementAt<HtmlNode>(0).InnerText,
-                            testIngriedisens,
+                            IngriedisensList,
                             CleanUpPerPerson(PerPerson.ElementAt<HtmlNode>(0).InnerText)));
 
                     }
@@ -107,10 +108,11 @@ namespace B3_BiksBudget.Webcrawler
             String name;
 
             amount = DeterminAmount(ind);
-            Console.WriteLine();
+            unit = DeterminUnit(ind);
+            name = DeterminName(ind);
 
 
-            return null;
+            return new Ingriedient(name,unit,amount);
         }
 
         public static float DeterminAmount(String ingrediens)
@@ -125,6 +127,19 @@ namespace B3_BiksBudget.Webcrawler
                 };
             }
             return 0;
+        }
+
+        public static String DeterminUnit(String ingrediens)
+        {
+            String[] SplitString = ingrediens.Split(' ');
+            
+            return SplitString[1];
+        }
+
+        public static String DeterminName(String ingrediens) 
+        {
+            String[] SplitString = ingrediens.Split(' ');
+            return SplitString[2];
         }
     }
 }

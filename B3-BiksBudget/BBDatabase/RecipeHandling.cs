@@ -17,12 +17,12 @@ namespace B3_BiksBudget.BBDatabase
             return false;
         }
 
-        private bool addIngredient(Ingredient ingriedient, DatabaseInformation dbInfo)
+        private bool addIngredient(Ingriedient ingriedient, DatabaseInformation dbInfo)
         {
             return false;
         }
 
-        private bool combineRecipeAndIngredient(Recipe recipe, Ingredient ingredient)
+        private bool combineRecipeAndIngredient(Recipe recipe, Ingriedient ingredient)
         {
             return false;
         }
