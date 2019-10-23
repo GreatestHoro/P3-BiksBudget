@@ -16,14 +16,14 @@ namespace BiksBudget
     {
         static void Main(string[] args)
         {
-            //DatabaseInformation dbInfo = new DatabaseInformation("localhost", "YEETYOOT", "root", "JeppeJonHoltYeetYeet1999Peterbandsholm?");
-            //new InitializeDatabase().start(dbInfo);
+            DatabaseInformation dbInfo = new DatabaseInformation("localhost", "TestNewTable", "root", "Bjarke05!");
+            new InitializeDatabase().start(dbInfo);
 
 
-            _ = RecipeCrawl.GetRecipes(1, 38482);
+            //_ = recipecrawl.getrecipes(1, 38482);
 
-            Console.WriteLine("web crawler begins... fear its power");
-            Console.ReadLine();
+            //console.writeline("web crawler begins... fear its power");
+            //console.readline();
         }
     }
 }
