@@ -6,29 +6,29 @@ namespace B3_BiksBudget.BBDatabase
 {
     class DatabaseInformation
     {
-        public string ServerName { get; }
-        public string DatabaseName { get; }
-        public string DatabaseUser { get; }
-        public string DatabasePassword { get; }
+        public string serverName { get; }
+        public string databaseName { get; }
+        public string databaseUser { get; }
+        public string databasePassword { get; }
 
 
-        public DatabaseInformation(string sName, string dBName, string dBUser, string dBPw)
+        public DatabaseInformation(string SName, string DBName, string DBUser, string DBPw)
         {
-            ServerName = sName;
-            DatabaseName = dBName;
-            DatabaseUser = dBUser;
-            DatabasePassword = dBPw;
+            serverName = SName;
+            databaseName = DBName;
+            databaseUser = DBUser;
+            databasePassword = DBPw;
         }
 
         public string connectionString(bool withDB)
         {
             if (withDB)
             {
-                return @"server=" + ServerName + ";database="+ DatabaseName +";userid=" + DatabaseUser + ";password=" + DatabasePassword;
+                return @"server=" + serverName + ";database="+ databaseName +";userid=" + databaseUser + ";password=" + databasePassword;
             }
             else
             {
-                return @"server=" + ServerName + ";userid=" + DatabaseUser + ";password=" + DatabasePassword;
+                return @"server=" + serverName + ";userid=" + databaseUser + ";password=" + databasePassword;
             }
         }
     }

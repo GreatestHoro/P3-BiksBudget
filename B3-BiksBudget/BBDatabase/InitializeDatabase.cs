@@ -29,7 +29,7 @@ namespace B3_BiksBudget.BBDatabase
             {
                 connection = new MySqlConnection(dbInfo.connectionString(false));
                 connection.Open();
-                string databaseExist = "CREATE DATABASE IF NOT EXISTS `"+dbInfo.DatabaseName+"`;";
+                string databaseExist = "CREATE DATABASE IF NOT EXISTS `"+dbInfo.databaseName+"`;";
                 new MySqlCommand(databaseExist, connection).ExecuteNonQuery();
             }
             catch (MySqlException)
@@ -54,10 +54,8 @@ namespace B3_BiksBudget.BBDatabase
                 connection.Open();
 
                 string recipeTable = "CREATE TABLE IF NOT EXISTS `Recipes` (" +
-                                     "`id` INT UNIQUE," +
-                                     "`recipeName` VARCHAR(255)," +
-                                     "`amountPerson` INT," +
-                                     "`recipeDesc` VARCHAR(8000)," +
+                                     "`id` INT AUTO_INCREMENT UNIQUE," +
+                                     "`recipe` VARCHAR(255)," +
                                      "PRIMARY KEY(id));";
 
                 string ingredientTable = "CREATE TABLE IF NOT EXISTS `Ingredients` (" +
