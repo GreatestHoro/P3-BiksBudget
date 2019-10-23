@@ -27,7 +27,6 @@ namespace B3_BiksBudget.BBDatabase
             MySqlConnection connection = null;
             try
             {
-
                 connection = new MySqlConnection(dbInfo.connectionString(false));
                 connection.Open();
                 string databaseExist = "CREATE DATABASE IF NOT EXISTS `"+dbInfo.databaseName+"`;";

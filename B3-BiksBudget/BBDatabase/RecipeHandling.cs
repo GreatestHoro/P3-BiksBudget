@@ -7,14 +7,24 @@ namespace B3_BiksBudget.BBDatabase
 {
     class RecipeHandling
     {
-        public void addRecipe(Recipe recipe, DatabaseInformation dbInfo)
+        public bool addRecipeToDatabase(Recipe recipe, DatabaseInformation dbInfo)
         {
-            
+            return false;
+        }
+        
+        private bool addRecipe(Recipe recipe, DatabaseInformation dbInfo)
+        {
+            return false;
         }
 
-        public void addIngriedient(Ingriedient ingriedient, DatabaseInformation dbInfo)
+        private bool addIngredient(Ingredient ingriedient, DatabaseInformation dbInfo)
         {
+            return false;
+        }
 
+        private bool combineRecipeAndIngredient(Recipe recipe, Ingredient ingredient)
+        {
+            return false;
         }
 
 
