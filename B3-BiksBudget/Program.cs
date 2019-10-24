@@ -20,7 +20,7 @@ namespace BiksBudget
             //new InitializeDatabase().start(dbInfo);
             
 
-            _ = RecipeCrawl.GetRecipes(1, 38482);
+            _ = RecipeCrawl.GetRecipes(1, 1027/*38482*/);
 
             Console.WriteLine("web crawler begins... fear its power");
             Console.ReadLine();

@@ -74,6 +74,14 @@ namespace B3_BiksBudget.Webcrawler
                             Beskrivels.ElementAt<HtmlNode>(0).InnerText,
                             IngriedisensList,
                             CleanUpPerPerson(PerPerson.ElementAt<HtmlNode>(0).InnerText)));
+                        /*Console.WriteLine(name.ElementAt<HtmlNode>(0).InnerText);
+                        Console.WriteLine(CleanUpPerPerson(PerPerson.ElementAt<HtmlNode>(0).InnerText));
+                        foreach (Ingredient ind in IngriedisensList) 
+                        {
+                            Console.WriteLine(ind._IngredientName);
+                            Console.WriteLine(ind._Amount);
+                            Console.WriteLine(ind._unit);
+                        }*/
 
                     }
                     else
@@ -124,7 +132,7 @@ namespace B3_BiksBudget.Webcrawler
                 if (float.TryParse(part, out Amount))
                 {
                     return Amount;
-                };
+                }
             }
             return 0;
         }
