@@ -8,7 +8,7 @@ namespace B3_BiksBudget.BBObjects
     {
         public string _Name;
         public string _description;
-        public List<Ingredient> _ingrediensList;
+        public List<Ingredient> _ingredientList;
         public float _PerPerson;
         public int _recipeID;
 
@@ -18,7 +18,7 @@ namespace B3_BiksBudget.BBObjects
             _recipeID = recipeID;
             _Name = name;
             _description = description;
-            _ingrediensList = ingredientList;
+            _ingredientList = ingredientList;
         }
     }
 }
