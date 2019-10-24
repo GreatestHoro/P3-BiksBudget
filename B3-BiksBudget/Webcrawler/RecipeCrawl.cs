@@ -70,7 +70,7 @@ namespace B3_BiksBudget.Webcrawler
                             }*/
                         }
                         opskrifter.Add(new Recipe
-                            (12345,name.ElementAt<HtmlNode>(0).InnerText,
+                            (i,name.ElementAt<HtmlNode>(0).InnerText,
                             Beskrivels.ElementAt<HtmlNode>(0).InnerText,
                             IngriedisensList,
                             CleanUpPerPerson(PerPerson.ElementAt<HtmlNode>(0).InnerText)));
@@ -132,7 +132,6 @@ namespace B3_BiksBudget.Webcrawler
         public static String DeterminUnit(String ingrediens)
         {
             String[] SplitString = ingrediens.Split(' ');
-            
             return SplitString[1];
         }
 
