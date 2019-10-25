@@ -16,24 +16,13 @@ namespace BiksBudget
     {
         static void Main(string[] args)
         {
-            DatabaseInformation dbInfo = new DatabaseInformation("localhost", "Test_BB", "root", "Bjarke05!");
-            //new InitializeDatabase().start(dbInfo);
+            DatabaseInformation dbInfo = new DatabaseInformation("localhost", "DoubleFixYeet", "root", "JeppeJonHoltYeetYeet1999Peterbandsholm?");
+            new InitializeDatabase().start(dbInfo);
 
-            Ingredient in1 = new Ingredient("In_Test1", "Kg", 50);
-            Ingredient in2 = new Ingredient("In_Test2", "g", 50);
+            _ = RecipeCrawl.GetRecipes(1,10/*38482*/,dbInfo);
 
-            List<Ingredient> inList = new List<Ingredient>();
-
-            Recipe recipe = new Recipe(1, "RecipeTest", "Something", inList, 10);
-
-            RecipeHandling rh = new RecipeHandling();
-
-            rh.addRecipe(recipe, dbInfo);
-
-            //_ = RecipeCrawl.GetRecipes(1,38482);
-
-            //Console.WriteLine("web crawler begins... fear its power");
-            //Console.ReadLine();
+            Console.WriteLine("web crawler begins... fear its power");
+            Console.ReadLine();
         }
     }
 }

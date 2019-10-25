@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using System.Net.Http;
+using B3_BiksBudget.BBDatabase;
 
 using System.IO;
 using B3_BiksBudget.BBObjects;
@@ -14,7 +15,7 @@ namespace B3_BiksBudget.Webcrawler
 {
     class RecipeCrawl
     {
-        public static async Task GetRecipes(int start_page, int Last_page)
+        public static async Task GetRecipes(int start_page, int Last_page, DatabaseInformation dbInfo)
         {
             List<Recipe> opskrifter = new List<Recipe>(); //The list that holdes the recipies
 
@@ -33,64 +34,28 @@ namespace B3_BiksBudget.Webcrawler
                 HtmlNodeCollection Beskrivels = htmlDocument.DocumentNode.SelectNodes("//div[@itemprop]");
                 HtmlNodeCollection name = htmlDocument.DocumentNode.SelectNodes("//center");
 
-                Console.WriteLine(CleanUpPerPerson(PerPerson));
-                /*if (PerPerson == null)
-                {
-                    _perPerson = "null";
-                    //This is only used in one case when crawling specefickly recipe 1028
-                }
-                else 
-                {
-                    _perPerson = PerPerson.ElementAt<HtmlNode>(0).InnerText;
-                }*/
+                //Console.WriteLine(CleanUpPerPerson(PerPerson));
 
-                if (Beskrivels.ElementAt<HtmlNode>(0).InnerText.Length == 0)
+                if (!CheckIfPageFound(name,Beskrivels,ingredienser))
                 {
                     Console.WriteLine("Cannot find recipie continues....");
                 }
                 else
                 {
-                    //if (i % 100 == 0)
-                    //{
-                    Console.WriteLine(i);
-
-                    //}
-
                     var response = HttpClient.GetAsync(url).Result;
 
                     if (response.StatusCode == System.Net.HttpStatusCode.OK)
                     {
-
                         foreach (var ind in ingredienser)
                         {
                             IngriedisensList.Add(CreateIngriedient(ind.InnerText));
-
-                            /*testIngriedisens.Add(ind.InnerText);
-                            string[] words = ind.InnerText.Split(' ');
-                            if (int.TryParse(words[0], out int value))
-                            {
-                                //Console.WriteLine("Amount: " + words[0] + " " + words[1] + " and Type: " + words[2]);
-
-                            }
-                            else
-                            {
-                                //Console.WriteLine("This is the end");
-                            }*/
+                            //Console.WriteLine(ind.InnerText);
                         }
-                        opskrifter.Add(new Recipe
+                        new RecipeHandling().addRecipe( new Recipe
                             (i,name.ElementAt<HtmlNode>(0).InnerText,
                             Beskrivels.ElementAt<HtmlNode>(0).InnerText,
                             IngriedisensList,
-                            CleanUpPerPerson(PerPerson)));
-                        /*Console.WriteLine(name.ElementAt<HtmlNode>(0).InnerText);
-                        Console.WriteLine(CleanUpPerPerson(PerPerson.ElementAt<HtmlNode>(0).InnerText));*/
-                        foreach (Ingredient ind in IngriedisensList) 
-                        {
-                            Console.WriteLine(ind._IngredientName);
-                            Console.WriteLine(ind._Amount);
-                            Console.WriteLine(ind._unit);
-                        }
-
+                            CleanUpPerPerson(PerPerson)),dbInfo);
                     }
                     else
                     {
@@ -158,7 +123,27 @@ namespace B3_BiksBudget.Webcrawler
         public static String DeterminName(String ingrediens) 
         {
             String[] SplitString = ingrediens.Split(' ');
-            return SplitString[2];
+            String ReturnString = "";
+            for (int i = 2; i < SplitString.Length; i++)
+            {
+                    ReturnString = ReturnString + " " + SplitString[i];
+                    
+            }
+            return ReturnString;
+            
+            
+        }
+
+        public static bool CheckIfPageFound(HtmlNodeCollection name, HtmlNodeCollection beskrivels, HtmlNodeCollection ingredienser) 
+        {
+            if (name == null || beskrivels == null || ingredienser == null)
+            {
+                return false;
+            }
+            else 
+            {
+                return true;
+            }
         }
 
 
