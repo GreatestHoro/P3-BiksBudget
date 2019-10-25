@@ -9,48 +9,60 @@ namespace B3_BiksBudget.BBDatabase
 {
     class RecipeHandling
     {
+
+
         public void addRecipe(Recipe recipe, DatabaseInformation dbInfo)
         {
-            RecipeToDatabase(recipe, dbInfo);
-            AddIngredientsToDatabase(recipe._ingredientList, dbInfo);
-            CombineRecipeAndIngredient(recipe, dbInfo);
+            MySqlConnection connection = null;
+
+            
+
+
+            try
+            {
+                connection = new MySqlConnection(dbInfo.connectionString(true));
+                connection.Open();
+
+                string recipeQuery = "INSERT INTO `Recipes`(`id`,`recipeName`,`amountPerson`,`recipeDesc`) VALUES(@RecipeID,@RecipeName,@RecipePersons,@RecipeDescription);";
+                MySqlCommand msc = new MySqlCommand(recipeQuery, connection);
+
+                msc.Parameters.AddWithValue("@RecipeID", recipe._recipeID);
+                msc.Parameters.AddWithValue("@RecipeName", recipe._Name);
+                msc.Parameters.AddWithValue("@RecipePersons", recipe._PerPerson);
+                msc.Parameters.AddWithValue("@RecipeDescription", recipe._description);
+
+                msc.ExecuteNonQuery();
+
+                addMultipleIngredients(recipe._ingredientList, dbInfo);
+                combineRecipeAndIngredient(recipe, dbInfo);
+            }
+            catch (MySqlException)
+            {
+                // Make exception
+            }
+            finally
+            {
+                if (connection != null)
+                {
+                    connection.Close();
+                }
+            }
+
+            
         }
 
-        private void RecipeToDatabase(Recipe recipe, DatabaseInformation dbInfo)
-        {
-            string recipeQuery = "INSERT INTO `Recipes`(`id`,`recipeName`,`amountPerson`,`recipeDesc`) VALUES(@RecipeID,@RecipeName,@RecipePersons,@RecipeDescription);";
-            MySqlCommand msc = new MySqlCommand(recipeQuery);
-
-            msc.Parameters.AddWithValue("@RecipeID", recipe._recipeID);
-            msc.Parameters.AddWithValue("@RecipeName", recipe._Name);
-            msc.Parameters.AddWithValue("@RecipePersons", recipe._PerPerson);
-            msc.Parameters.AddWithValue("@RecipeDescription", recipe._description);
-
-            ConnectionHandlingNonQuery(msc, dbInfo);
-        }
-
-        private void AddIngredientsToDatabase(List<Ingredient> ingredients, DatabaseInformation dbInfo)
+        public void addMultipleIngredients(List<Ingredient> ingredients, DatabaseInformation dbInfo)
         {
             foreach (Ingredient ingredient in ingredients)
             {
-                if (!IngredientExist(ingredient, dbInfo))
+                if (!ingredientExist(ingredient, dbInfo))
                 {
-                    AddIngredientToDatabase(ingredient, dbInfo);
+                    addIngredient(ingredient,dbInfo);
                 }
             }
         }
 
-        private void AddIngredientToDatabase(Ingredient ingredient, DatabaseInformation dbInfo)
-        {
-            string IngredientToDatabase = "INSERT INTO `Ingredients` (`ingredientName`) VALUES (@Ingredient);";
-            MySqlCommand msc = new MySqlCommand(IngredientToDatabase);
-
-            msc.Parameters.AddWithValue("@Ingredient", ingredient._IngredientName);
-
-            ConnectionHandlingNonQuery(msc, dbInfo);
-        }
-
-        private bool IngredientExist(Ingredient ingredient, DatabaseInformation dbInfo)
+        private bool ingredientExist(Ingredient ingredient, DatabaseInformation dbInfo)
         {
             bool exist = false;
             MySqlConnection connection = null;
@@ -89,48 +101,75 @@ namespace B3_BiksBudget.BBDatabase
             return exist;
         }
 
-        private void CombineRecipeAndIngredient(Recipe recipe, DatabaseInformation dbInfo)
-        {
-                foreach (Ingredient ingredient in recipe._ingredientList)
-                {
-                    string addIngredientReferance = "INSERT INTO `IngredientsInRecipe` (`recipeID`,`ingredientName`,`amount`,`unit`)" +
-                                                    "VALUES(@RecipeID,@Ingredient,@Amount,@Unit);";
-
-                    MySqlCommand msc = new MySqlCommand(addIngredientReferance);
-
-                    msc.Parameters.AddWithValue("@RecipeID", recipe._recipeID);
-                    msc.Parameters.AddWithValue("@Ingredient", ingredient._IngredientName);
-                    msc.Parameters.AddWithValue("@Amount", ingredient._Amount);
-                    msc.Parameters.AddWithValue("@Unit", ingredient._unit);
-
-                    ConnectionHandlingNonQuery(msc, dbInfo);
-                }
-        }
-
-        private void ConnectionHandlingNonQuery(MySqlCommand msc, DatabaseInformation dbInfo)
+        private void addIngredient(Ingredient ingredient, DatabaseInformation dbInfo)
         {
             MySqlConnection connection = null;
-
             try
             {
                 connection = new MySqlConnection(dbInfo.connectionString(true));
                 connection.Open();
 
-                msc.Connection = connection;
+                string addIngredient = "INSERT INTO `Ingredients` (`ingredientName`) VALUES (@Ingredient);";
+                MySqlCommand msc = new MySqlCommand(addIngredient, connection);
+
+                msc.Parameters.AddWithValue("@Ingredient", ingredient._IngredientName);
+
                 msc.ExecuteNonQuery();
+
             }
-            catch (MySqlException e)
+            catch (MySqlException)
             {
-                Console.Write(e);
+                // Make exception
             }
             finally
             {
-                if (connection != null)
+                if(connection != null)
                 {
                     connection.Close();
                 }
             }
         }
+
+
+
+        private void combineRecipeAndIngredient(Recipe recipe, DatabaseInformation dbInfo)
+        {
+            MySqlConnection connection = null;
+            try
+            {
+                connection = new MySqlConnection(dbInfo.connectionString(true));
+                connection.Open();
+                Console.WriteLine("QQ");
+                foreach (Ingredient ingredient in recipe._ingredientList)
+                {
+                    string addIngredientReferance = "INSERT INTO `IngredientsInRecipe` (`recipeID`,`ingredientName`,`amount`,`unit`)" +
+                                                    "VALUES(@RecipeID,@Ingredient,@Amount,@Unit);";
+
+
+                    MySqlCommand msc = new MySqlCommand(addIngredientReferance, connection);
+                    msc.Parameters.AddWithValue("@RecipeID", recipe._recipeID);
+                    msc.Parameters.AddWithValue("@Ingredient", ingredient._IngredientName);
+                    msc.Parameters.AddWithValue("@Amount", ingredient._Amount);
+                    msc.Parameters.AddWithValue("@Unit", ingredient._unit);
+
+                    msc.ExecuteNonQuery();
+                }
+            }
+            catch (MySqlException)
+            {
+                // Make exception
+            }
+            finally
+            {
+                if(connection != null)
+                {
+                    connection.Close();
+                }
+            }
+
+        }
+
+
 
     }
 }
