@@ -21,11 +21,16 @@ namespace B3_BiksBudget.BBDatabase
                 connection = new MySqlConnection(dbInfo.connectionString(true));
                 connection.Open();
 
-                string recipeQuery = "INSERT INTO `Recipes`(`id`,`recipeName`,`amountPerson`,`recipeDesc`) VALUES(1,\"" + recipe._Name + "\", " +
-                                                                                                                     "" + recipe._PerPerson + "," +
-                                                                                                                   "\"" + recipe._description + "\");";
+                string recipeQuery = "INSERT INTO `Recipes`(`id`,`recipeName`,`amountPerson`,`recipeDesc`) VALUES(@RecipeID,@RecipeName,@RecipePersons,@RecipeDescription);";
+                MySqlCommand recipeCommand = new MySqlCommand(recipeQuery, connection);
 
-                new MySqlCommand(recipeQuery, connection).ExecuteNonQuery();
+                recipeCommand.Parameters.AddWithValue("@RecipeID", recipe._recipeID);
+                recipeCommand.Parameters.AddWithValue("@RecipeName", recipe._Name);
+                recipeCommand.Parameters.AddWithValue("@RecipePersons", recipe._PerPerson);
+                recipeCommand.Parameters.AddWithValue("@RecipeDescription", recipe._description);
+
+                recipeCommand.ExecuteNonQuery();
+
                 addMultipleIngredients(recipe._ingredientList, dbInfo);
                 combineRecipeAndIngredient(recipe, dbInfo);
             }

@@ -8,7 +8,7 @@ using System.Net.Http;
 using System.IO;
 using B3_BiksBudget.BBDatabase;
 using B3_BiksBudget.Webcrawler;
-
+using B3_BiksBudget.BBObjects;
 
 namespace BiksBudget
 {
@@ -16,14 +16,24 @@ namespace BiksBudget
     {
         static void Main(string[] args)
         {
-            //DatabaseInformation dbInfo = new DatabaseInformation("localhost", "Test_BiksBudget", "root", "Bjarke05!");
+            DatabaseInformation dbInfo = new DatabaseInformation("localhost", "Test_BB", "root", "Bjarke05!");
             //new InitializeDatabase().start(dbInfo);
-            
 
-            _ = RecipeCrawl.GetRecipes(1,38482);
+            Ingredient in1 = new Ingredient("In_Test1", "Kg", 50);
+            Ingredient in2 = new Ingredient("In_Test2", "g", 50);
 
-            Console.WriteLine("web crawler begins... fear its power");
-            Console.ReadLine();
+            List<Ingredient> inList = new List<Ingredient>();
+
+            Recipe recipe = new Recipe(1, "RecipeTest", "Something", inList, 10);
+
+            RecipeHandling rh = new RecipeHandling();
+
+            rh.addRecipe(recipe, dbInfo);
+
+            //_ = RecipeCrawl.GetRecipes(1,38482);
+
+            //Console.WriteLine("web crawler begins... fear its power");
+            //Console.ReadLine();
         }
     }
 }
