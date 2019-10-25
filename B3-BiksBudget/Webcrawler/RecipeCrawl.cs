@@ -23,6 +23,7 @@ namespace B3_BiksBudget.Webcrawler
                 var url = ("https://www.dk-kogebogen.dk/opskrifter/" + i + "/");
                 var HttpClient = new HttpClient();
                 string html = await HttpClient.GetStringAsync(url);
+                String _perPerson;
                 var htmlDocument = new HtmlDocument();
                 htmlDocument.LoadHtml(html);
 
@@ -33,8 +34,17 @@ namespace B3_BiksBudget.Webcrawler
                 var PerPerson = htmlDocument.DocumentNode.SelectNodes("//span[@itemprop='recipeYield']");
                 var Beskrivels = htmlDocument.DocumentNode.SelectNodes("//div[@itemprop]");
                 var name = htmlDocument.DocumentNode.SelectNodes("//center");
-                
+
                 //parser til ingredienser =name,amount,unit
+                if (PerPerson == null)
+                {
+                    _perPerson = "null";
+                    //This is only used in one case when crawling specefickly recepi 1028
+                }
+                else
+                {
+                    _perPerson = PerPerson.ElementAt<HtmlNode>(0).InnerText;
+                }
 
                 if (Beskrivels.ElementAt<HtmlNode>(0).InnerText.Length == 0)
                 {
@@ -44,7 +54,7 @@ namespace B3_BiksBudget.Webcrawler
                 {
                     //if (i % 100 == 0)
                     //{
-                        Console.WriteLine(i + " elements found");
+                    Console.WriteLine(i);
 
                     //}
 
@@ -55,28 +65,21 @@ namespace B3_BiksBudget.Webcrawler
 
                         foreach (var ind in ingredienser)
                         {
-                            IngriedisensList.Add(CreateIngriedient(ind.InnerText));
-
-                            /*testIngriedisens.Add(ind.InnerText);
-                            string[] words = ind.InnerText.Split(' ');
-                            if (int.TryParse(words[0], out int value))
+                            if ( !ind.InnerText.Contains(':'))
                             {
-                                //Console.WriteLine("Amount: " + words[0] + " " + words[1] + " and Type: " + words[2]);
-
+                                IngriedisensList.Add(CreateIngriedient(ind.InnerText));
                             }
-                            else
-                            {
-                                //Console.WriteLine("This is the end");
-                            }*/
+
+                            //Console.WriteLine(ind.InnerText);
                         }
                         opskrifter.Add(new Recipe
                             (i,name.ElementAt<HtmlNode>(0).InnerText,
                             Beskrivels.ElementAt<HtmlNode>(0).InnerText,
                             IngriedisensList,
-                            CleanUpPerPerson(PerPerson.ElementAt<HtmlNode>(0).InnerText)));
+                            CleanUpPerPerson(_perPerson)));
                         /*Console.WriteLine(name.ElementAt<HtmlNode>(0).InnerText);
                         Console.WriteLine(CleanUpPerPerson(PerPerson.ElementAt<HtmlNode>(0).InnerText));
-                        foreach (Ingredient ind in IngriedisensList) 
+                        foreach (Ingredient ind in IngriedisensList)
                         {
                             Console.WriteLine(ind._IngredientName);
                             Console.WriteLine(ind._Amount);
@@ -96,29 +99,34 @@ namespace B3_BiksBudget.Webcrawler
 
         public static float CleanUpPerPerson(string PerPerson)
         {
-            String cleanUp = "";
-            float numb;
-            String[] characters = PerPerson.Split(' ', '&','-');
-            foreach (String c in characters)
+
+            if (!Equals(PerPerson, "null"))
             {
-                if (float.TryParse(c, out numb))
+                String cleanUp = "";
+                float numb;
+                String[] characters = PerPerson.Split(' ', '&', '-');
+                foreach (String c in characters)
                 {
-                    return numb;
+                    if (float.TryParse(c, out numb))
+                    {
+                        return numb;
+                    }
                 }
+                return float.Parse(cleanUp);
             }
-            return float.Parse(cleanUp);
+            else
+            {
+                return 4;
+            }
+
         }
 
         public static Ingredient CreateIngriedient(String ind)
         {
-            float amount;
-            String unit;
-            String name;
 
-            amount = DeterminAmount(ind);
-            unit = DeterminUnit(ind);
-            name = DeterminName(ind);
-
+            float amount = DeterminAmount(ind);
+            String unit = DeterminUnit(ind);
+            String name = DeterminName(ind).Trim();
 
             return new Ingredient(name,unit,amount);
         }
@@ -143,7 +151,7 @@ namespace B3_BiksBudget.Webcrawler
             return SplitString[1];
         }
 
-        public static String DeterminName(String ingrediens) 
+        public static String DeterminName(String ingrediens)
         {
             String[] SplitString = ingrediens.Split(' ');
             return SplitString[2];

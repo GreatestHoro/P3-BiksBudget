@@ -59,23 +59,5 @@ namespace B3_BiksBudget.Properties {
                 resourceCulture = value;
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to CREATE TABLE IF NOT EXISTS `Recipes` (
-        ///                                     `id` INT AUTO_INCREMENT,
-        ///                                     `recipe` VARCHAR(255) UNIQUE,
-        ///                                     PRIMARY KEY(id));
-        ///                                     
-        ///                                     
-        ///CREATE TABLE IF NOT EXISTS `Ingredients` (
-        ///                                     `id` INT AUTO_INCREMENT,
-        ///                                     `ingridient` VARCHAR(255) UNIQUE,
-        ///                                      [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string CreateDatabase {
-            get {
-                return ResourceManager.GetString("CreateDatabase", resourceCulture);
-            }
-        }
     }
 }
