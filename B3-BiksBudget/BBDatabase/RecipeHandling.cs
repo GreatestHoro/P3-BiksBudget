@@ -15,17 +15,24 @@ namespace B3_BiksBudget.BBDatabase
         {
             MySqlConnection connection = null;
 
+            
+
 
             try
             {
                 connection = new MySqlConnection(dbInfo.connectionString(true));
                 connection.Open();
 
-                string recipeQuery = "INSERT INTO `Recipes`(`id`,`recipeName`,`amountPerson`,`recipeDesc`) VALUES(1,\"" + recipe._Name + "\", " +
-                                                                                                                     "" + recipe._PerPerson + "," +
-                                                                                                                   "\"" + recipe._description + "\");";
+                string recipeQuery = "INSERT INTO `Recipes`(`id`,`recipeName`,`amountPerson`,`recipeDesc`) VALUES(@RecipeID,@RecipeName,@RecipePersons,@RecipeDescription);";
+                MySqlCommand msc = new MySqlCommand(recipeQuery, connection);
 
-                new MySqlCommand(recipeQuery, connection).ExecuteNonQuery();
+                msc.Parameters.AddWithValue("@RecipeID", recipe._recipeID);
+                msc.Parameters.AddWithValue("@RecipeName", recipe._Name);
+                msc.Parameters.AddWithValue("@RecipePersons", recipe._PerPerson);
+                msc.Parameters.AddWithValue("@RecipeDescription", recipe._description);
+
+                msc.ExecuteNonQuery();
+
                 addMultipleIngredients(recipe._ingredientList, dbInfo);
                 combineRecipeAndIngredient(recipe, dbInfo);
             }
@@ -40,6 +47,8 @@ namespace B3_BiksBudget.BBDatabase
                     connection.Close();
                 }
             }
+
+            
         }
 
         public void addMultipleIngredients(List<Ingredient> ingredients, DatabaseInformation dbInfo)
@@ -64,9 +73,12 @@ namespace B3_BiksBudget.BBDatabase
 
                 Console.WriteLine(ingredient._IngredientName);
 
-                string ingredientExist = "SELECT * FROM `Ingredients` WHERE `ingredientName` = '" + ingredient._IngredientName + "';";
+                string ingredientExist = "SELECT * FROM `Ingredients` WHERE `ingredientName` = @Ingredient;";
+                MySqlCommand msc = new MySqlCommand(ingredientExist, connection);
 
-                MySqlDataAdapter ingredientsFromQuery = new MySqlDataAdapter(new MySqlCommand(ingredientExist, connection));
+                msc.Parameters.AddWithValue("@Ingredient", ingredient._IngredientName);
+
+                MySqlDataAdapter ingredientsFromQuery = new MySqlDataAdapter(msc);
                 DataSet checkForIngredient = new DataSet();
                 ingredientsFromQuery.Fill(checkForIngredient);
 
@@ -97,9 +109,12 @@ namespace B3_BiksBudget.BBDatabase
                 connection = new MySqlConnection(dbInfo.connectionString(true));
                 connection.Open();
 
-                string addIngredient = "INSERT INTO `Ingredients` (`ingredientName`) VALUES ('"+ ingredient._IngredientName +"');";
+                string addIngredient = "INSERT INTO `Ingredients` (`ingredientName`) VALUES (@Ingredient);";
+                MySqlCommand msc = new MySqlCommand(addIngredient, connection);
 
-                new MySqlCommand(addIngredient, connection).ExecuteNonQuery();
+                msc.Parameters.AddWithValue("@Ingredient", ingredient._IngredientName);
+
+                msc.ExecuteNonQuery();
 
             }
             catch (MySqlException)
@@ -124,12 +139,20 @@ namespace B3_BiksBudget.BBDatabase
             {
                 connection = new MySqlConnection(dbInfo.connectionString(true));
                 connection.Open();
+                Console.WriteLine("QQ");
                 foreach (Ingredient ingredient in recipe._ingredientList)
                 {
                     string addIngredientReferance = "INSERT INTO `IngredientsInRecipe` (`recipeID`,`ingredientName`,`amount`,`unit`)" +
-                                                    "VALUES("+ recipe._recipeID + ", '" + ingredient._IngredientName + "', " + ingredient._Amount + ", '" + ingredient._unit + "');";
+                                                    "VALUES(@RecipeID,@Ingredient,@Amount,@Unit);";
 
-                    new MySqlCommand(addIngredientReferance, connection).ExecuteNonQuery();
+
+                    MySqlCommand msc = new MySqlCommand(addIngredientReferance, connection);
+                    msc.Parameters.AddWithValue("@RecipeID", recipe._recipeID);
+                    msc.Parameters.AddWithValue("@Ingredient", ingredient._IngredientName);
+                    msc.Parameters.AddWithValue("@Amount", ingredient._Amount);
+                    msc.Parameters.AddWithValue("@Unit", ingredient._unit);
+
+                    msc.ExecuteNonQuery();
                 }
             }
             catch (MySqlException)
