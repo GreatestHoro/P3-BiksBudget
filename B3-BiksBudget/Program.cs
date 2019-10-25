@@ -16,7 +16,7 @@ namespace BiksBudget
     {
         static void Main(string[] args)
         {
-            DatabaseInformation dbInfo = new DatabaseInformation("localhost", "DoubleFixYeet", "root", "JeppeJonHoltYeetYeet1999Peterbandsholm?");
+            DatabaseInformation dbInfo = new DatabaseInformation("localhost", "TEEY", "root", "JeppeJonHoltYeetYeet1999Peterbandsholm?");
             new InitializeDatabase().start(dbInfo);
 
             _ = RecipeCrawl.GetRecipes(1,10/*38482*/,dbInfo);

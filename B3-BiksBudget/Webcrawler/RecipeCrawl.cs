@@ -48,7 +48,11 @@ namespace B3_BiksBudget.Webcrawler
                     {
                         foreach (var ind in ingredienser)
                         {
-                            IngriedisensList.Add(CreateIngriedient(ind.InnerText));
+                            if ( !ind.InnerText.Contains(':')) 
+                            {
+                                IngriedisensList.Add(CreateIngriedient(ind.InnerText));
+                            }
+                            
                             //Console.WriteLine(ind.InnerText);
                         }
                         new RecipeHandling().addRecipe( new Recipe
@@ -93,9 +97,10 @@ namespace B3_BiksBudget.Webcrawler
 
         public static Ingredient CreateIngriedient(String ind)
         {
+
             float amount = DeterminAmount(ind);
             String unit = DeterminUnit(ind);
-            String name = DeterminName(ind);
+            String name = DeterminName(ind).Trim();
 
             return new Ingredient(name,unit,amount);
         }
