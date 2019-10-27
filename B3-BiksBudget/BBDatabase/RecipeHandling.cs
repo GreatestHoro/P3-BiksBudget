@@ -11,12 +11,12 @@ namespace B3_BiksBudget.BBDatabase
     {
         public void addRecipe(Recipe recipe, DatabaseInformation dbInfo)
         {
-            RecipeToDatabase(recipe, dbInfo);
+            AddRecipeToDatabase(recipe, dbInfo);
             AddIngredientsToDatabase(recipe._ingredientList, dbInfo);
             CombineRecipeAndIngredient(recipe, dbInfo);
         }
 
-        private void RecipeToDatabase(Recipe recipe, DatabaseInformation dbInfo)
+        private void AddRecipeToDatabase(Recipe recipe, DatabaseInformation dbInfo)
         {
             string recipeQuery = "INSERT INTO `Recipes`(`id`,`recipeName`,`amountPerson`,`recipeDesc`) VALUES(@RecipeID,@RecipeName,@RecipePersons,@RecipeDescription);";
             MySqlCommand msc = new MySqlCommand(recipeQuery);
