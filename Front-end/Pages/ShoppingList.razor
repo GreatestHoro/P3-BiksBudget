@@ -1,3 +1,41 @@
 ﻿@page "/shoppinglist"
 
 <h1>Shopping List</h1>
+
+<table class="ShoppingList">
+    <thead>
+        <tr>
+            <th>Remove</th>
+            <th>Name</th>
+            <th>Store</th>
+            <th>Price</th>
+            <th>Ammount</th>
+            <th>Add to storage</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var items in item)
+        {
+
+        }
+    </tbody>
+</table>
+
+@functions{
+    List<dank> item = new List<dank>();
+}
+
+@code{
+    class dank
+    {
+        public string Name { get; set; }
+        public string Store { get; set; }
+        public int Price { get; set; }
+        public string Ammount { get; set; }
+
+        public dank()
+        {
+
+        }
+    }
+}
