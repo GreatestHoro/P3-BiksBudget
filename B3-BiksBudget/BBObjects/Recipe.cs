@@ -19,6 +19,7 @@ namespace B3_BiksBudget.BBObjects
             _Name = name;
             _description = description;
             _ingredientList = ingredientList;
+            _PerPerson = PerPerson;
         }
     }
 }
