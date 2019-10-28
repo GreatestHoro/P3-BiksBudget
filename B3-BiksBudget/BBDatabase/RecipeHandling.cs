@@ -9,7 +9,7 @@ namespace B3_BiksBudget.BBDatabase
 {
     class RecipeHandling
     {
-        public void addRecipe(Recipe recipe, DatabaseInformation dbInfo)
+        public void AddRecipe(Recipe recipe, DatabaseInformation dbInfo)
         {
             AddRecipeToDatabase(recipe, dbInfo);
             AddIngredientsToDatabase(recipe._ingredientList, dbInfo);
