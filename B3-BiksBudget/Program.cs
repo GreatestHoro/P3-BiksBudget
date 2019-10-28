@@ -16,11 +16,11 @@ namespace BiksBudget
     {
         static void Main(string[] args)
         {
-            DatabaseInformation dbInfo = new DatabaseInformation("localhost", "testestpls", "root", "JeppeJonHoltYeetYeet1999Peterbandsholm?");
+            DatabaseInformation dbInfo = new DatabaseInformation("localhost", "Demonstration", "root", "JeppeJonHoltYeetYeet1999Peterbandsholm?");
             new InitializeDatabase().start(dbInfo);
 
 
-            _ = RecipeCrawl.GetRecipes(1,10, dbInfo);
+            _ = RecipeCrawl.GetRecipes(1,1000, dbInfo);
 
             Console.WriteLine("web crawler begins... fear its power");
             Console.ReadLine();
