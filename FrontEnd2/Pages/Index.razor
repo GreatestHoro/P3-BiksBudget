@@ -1,0 +1,15 @@
+﻿@page "/"
+@inject HttpClient  Http
+
+<p> YEET</p>
+
+@code{
+    string printRecipe = "hej hej";
+
+    protected override async Task OnInitializedAsync() => printRecipe = await Http.GetStringAsync("~/Backend/Controllers/recipeController/api/recipe");
+    //https://localhost:44325/api/recipe
+
+}
+
+<p>@printRecipe</p>
+
