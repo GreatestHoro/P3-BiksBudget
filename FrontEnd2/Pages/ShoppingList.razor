@@ -46,7 +46,7 @@ else
 
     protected async override Task OnInitializedAsync()
     {
-        //coopProduct = await Http.GetStreamAsync<List<CoopProduct>>("sample-data/productTest.json");
+        //coopProduct = await Http.GetJsonAsync<List<CoopProduct>>("sample-data/productTest.json");
         await Task.Delay(1);
     }
 
