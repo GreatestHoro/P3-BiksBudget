@@ -12,7 +12,7 @@ namespace Backend.Controllers
     public class recipeController : ControllerBase
     {
         // GET: api/recipe
-        //[Route("api/recipe/{gender:string}")]
+        //[Route("api/recipe/recipe?Title=laks?filter=keto")]
         [HttpGet]
         public string GetRecipes(string recipeTitle = "kaffe", string filter = "all")
         {

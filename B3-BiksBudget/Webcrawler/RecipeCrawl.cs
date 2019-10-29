@@ -55,7 +55,7 @@ namespace B3_BiksBudget.Webcrawler
 
                             //Console.WriteLine(ind.InnerText);
                         }
-                        new RecipeHandling().addRecipe(new Recipe
+                        new RecipeHandling().AddRecipe(new Recipe
                             (i, name.ElementAt<HtmlNode>(0).InnerText,
                             Beskrivels.ElementAt<HtmlNode>(0).InnerText,
                             IngriedisensList,
