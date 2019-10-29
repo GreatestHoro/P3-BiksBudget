@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Web;
 
-namespace BiksAPI
+namespace B3_BiksBudget.StoreApi.SallingApi
 {
     public enum Brand { bilka, foetex, netto, salling, br, carlsjr, starbucks };
 

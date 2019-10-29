@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BiksAPI
+namespace B3_BiksBudget.StoreApi.CoopApi
 {
     class CoopStoreData
     {

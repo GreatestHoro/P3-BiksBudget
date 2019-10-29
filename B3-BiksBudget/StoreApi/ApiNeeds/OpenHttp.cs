@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 
-namespace BiksAPI
+namespace B3_BiksBudget.StoreApi
 {
     class OpenHttp<T>
     {
