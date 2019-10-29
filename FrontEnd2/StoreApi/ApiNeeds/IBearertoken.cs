@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace B3_BiksBudget.StoreApi
+namespace FrontEnd2
 {
     interface IBearerToken
     {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 
-namespace B3_BiksBudget.StoreApi.CoopApi
+namespace FrontEnd2
 {
     class CoopDoStuff
     {
@@ -88,7 +88,7 @@ namespace B3_BiksBudget.StoreApi.CoopApi
                 }
             }
 
-            //foreach(var item in result)
+            //foreach (var item in result)
             //{
             //    Console.WriteLine(item.Navn + " - " + item.Pris);
             //}

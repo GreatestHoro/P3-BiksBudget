@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace B3_BiksBudget.StoreApi.CoopApi
+namespace FrontEnd2
 {
     class CoopStoreApi
     {

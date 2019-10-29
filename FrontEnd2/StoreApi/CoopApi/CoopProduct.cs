@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace B3_BiksBudget.StoreApi.CoopApi
+namespace FrontEnd2
 {
     class CoopProduct
     {
@@ -10,6 +10,6 @@ namespace B3_BiksBudget.StoreApi.CoopApi
         public string Navn { get; set; }
         public string Navn2 { get; set; }
         public double Pris { get; set; }
-        public int VareHierakiId { get; set; }
+        public Guid VareHierakiId { get; set; }
     }
 }

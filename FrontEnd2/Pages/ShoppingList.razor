@@ -1,3 +1,58 @@
 ﻿@page "/shoppinglist"
+@using System.IO
+@using System.Net.Http
+@using Newtonsoft.Json;
+@inject HttpClient Http
+
 
 <h1>Shopping List</h1>
+
+@if (coopProduct == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="ShoppingList">
+        <thead>
+            <tr>
+                <th>Remove</th>
+                <th>Name</th>
+                <th>Store</th>
+                <th>Price</th>
+                <th>Ammount</th>
+                <th>Add to storage</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var items in coopProduct)
+            {
+                <tr>
+                    <td>@items.Ean</td>
+                    <td>@items.Navn</td>
+                    <td>Fakta</td>
+                    <td>@items.Pris</td>
+                    <td>@items.Navn2</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+
+@functions{
+    List<CoopProduct> coopProduct = new List<CoopProduct>();
+    //private string newItem;
+
+    protected async override Task OnInitializedAsync()
+    {
+        //coopProduct = await Http.GetJsonAsync<List<CoopProduct>>("sample-data/productTest.json");
+        await Task.Delay(1);
+    }
+
+    //public void DeleteItem(Guid id)
+    //{
+    //    coopProduct.Remove(coopProduct.First(x => x.VareHierakiId == id));
+    //}
+    //<td><button onclick="@(() => DeleteItem(coopProduct.Name))"<i class="oi oi-trash"></i></button></td>
+}
