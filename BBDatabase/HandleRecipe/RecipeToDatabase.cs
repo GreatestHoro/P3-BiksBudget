@@ -27,7 +27,7 @@ namespace BBCollection.HandleRecipe
             msc.Parameters.AddWithValue("@RecipePersons", recipe._PerPerson);
             msc.Parameters.AddWithValue("@RecipeDescription", recipe._description);
 
-            NonQueryMSC(msc, dbConnect);
+            new SQLConnect().NonQueryMSC(msc, dbConnect);
         }
 
         private void AddIngredientsToDatabase(List<Ingredient> ingredients, DatabaseConnect dbConnect)
@@ -41,14 +41,14 @@ namespace BBCollection.HandleRecipe
             }
         }
 
-        private void AddIngredientToDatabase(Ingredient ingredient, DatabaseConnect dbInfo)
+        private void AddIngredientToDatabase(Ingredient ingredient, DatabaseConnect dbConnect)
         {
             string IngredientToDatabase = "INSERT INTO `Ingredients` (`ingredientName`) VALUES (@Ingredient);";
             MySqlCommand msc = new MySqlCommand(IngredientToDatabase);
 
             msc.Parameters.AddWithValue("@Ingredient", ingredient._IngredientName);
 
-            NonQueryMSC(msc, dbInfo);
+            new SQLConnect().NonQueryMSC(msc, dbConnect);
         }
 
         private bool IngredientExist(Ingredient ingredient, DatabaseConnect dbConnect)
@@ -59,8 +59,6 @@ namespace BBCollection.HandleRecipe
             {
                 connection = new MySqlConnection(dbConnect.ConnectionString(true));
                 connection.Open();
-
-                Console.WriteLine(ingredient._IngredientName);
 
                 string ingredientExist = "SELECT * FROM `Ingredients` WHERE `ingredientName` = @Ingredient;";
                 MySqlCommand msc = new MySqlCommand(ingredientExist, connection);
@@ -104,34 +102,11 @@ namespace BBCollection.HandleRecipe
                 msc.Parameters.AddWithValue("@Amount", ingredient._Amount);
                 msc.Parameters.AddWithValue("@Unit", ingredient._unit);
 
-                NonQueryMSC(msc, dbConnect);
+                new SQLConnect().NonQueryMSC(msc, dbConnect);
             }
         }
 
-        public void NonQueryMSC(MySqlCommand msc, DatabaseConnect dbConnect)
-        {
-            MySqlConnection connection = null;
-
-            try
-            {
-                connection = new MySqlConnection(dbConnect.ConnectionString(true));
-                connection.Open();
-
-                msc.Connection = connection;
-                msc.ExecuteNonQuery();
-            }
-            catch (MySqlException e)
-            {
-                Console.Write(e);
-            }
-            finally
-            {
-                if (connection != null)
-                {
-                    connection.Close();
-                }
-            }
-        }
+        
 
     }
 }
