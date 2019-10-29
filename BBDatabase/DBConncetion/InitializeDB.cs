@@ -14,21 +14,47 @@ namespace BBCollection.DBConncetion
     {
         public void start(DatabaseConnect dbConnect)
         {
-            checkDBExistence(dbConnect);
-            generateWebcrawelerDatabaseTables(dbConnect);
+            CheckDBExistence(dbConnect);
+            GenerateWebcrawelerDatabaseTables(dbConnect);
+            GenerateAPIDatabaseTables(dbConnect);
         }
 
         /*
          Check if database exist, if it don't it will create it
         */
-        private void checkDBExistence(DatabaseConnect dbConnect)
+        private void CheckDBExistence(DatabaseConnect dbConnect)
         {
-            string databaseExist = "CREATE DATABASE IF NOT EXISTS `" + dbConnect.DatabaseName + "`;";
+            
 
-            new SQLConnect().NonQueryString(databaseExist, dbConnect);
+            MySqlConnection connection = null;
+            try
+            {
+
+                connection = new MySqlConnection(dbConnect.ConnectionString(false));
+                connection.Open();
+
+                string databaseExist = "CREATE DATABASE IF NOT EXISTS `" + dbConnect.DatabaseName + "`;";
+
+                MySqlCommand msc = new MySqlCommand(databaseExist, connection);
+
+                msc.ExecuteNonQuery();
+            }
+            catch (MySqlException e)
+            {
+                Console.WriteLine(e);
+            }
+            finally
+            {
+                if (connection != null)
+                {
+                    connection.Close();
+                }
+            }
+
+            
         }
 
-        private void generateWebcrawelerDatabaseTables(DatabaseConnect dbConnect)
+        private void GenerateWebcrawelerDatabaseTables(DatabaseConnect dbConnect)
         {
             string recipeTable =
                 "CREATE TABLE IF NOT EXISTS `Recipes` (" +
@@ -56,6 +82,20 @@ namespace BBCollection.DBConncetion
             new SQLConnect().NonQueryString(recipeTable, dbConnect);
             new SQLConnect().NonQueryString(ingredientTable, dbConnect);
             new SQLConnect().NonQueryString(ingredientInRecipeTable, dbConnect);
+        }
+
+        private void GenerateAPIDatabaseTables(DatabaseConnect dbConnect)
+        {
+            string productTable =
+                "CREATE TABLE IF NOT EXISTS `Recipes` (" +
+                "`ean` VARCHAR(255) UNIQUE," +
+                "`productName` VARCHAR(255)," +
+                "`productName2` VARCHAR(255)," +
+                "`price` DECIMAL," +
+                "`productHierarchyID` INT," +
+                "PRIMARY KEY(id));";
+
+            new SQLConnect().NonQueryString(productTable, dbConnect);
         }
     }
 }

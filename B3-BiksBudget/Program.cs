@@ -16,15 +16,17 @@ namespace BiksBudget
     {
         static void Main(string[] args)
         {
-            DatabaseConnect dbConnect = new DatabaseConnect("localhost", "Demonstration", "root", "Bjarke05!");
+            DatabaseConnect dbConnect = new DatabaseConnect("localhost", "Demonstration3", "root", "Bjarke05!");
 
-            List<Recipe> recipes = dbConnect.GetRecipes("lammebov");
+            dbConnect.InitializeDatabase();
+
+            /*List<Recipe> recipes = dbConnect.GetRecipes("lammebov");
 
             foreach(Recipe r in recipes)
             {
                 Console.WriteLine(r._Name);
             }
-
+            */
             //dbConnect.InitializeDatabase();
             
             //_ = RecipeCrawl.GetRecipes(1,1000, dbConnect);

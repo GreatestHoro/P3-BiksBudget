@@ -17,9 +17,9 @@ namespace BBCollection.DBConncetion
 
                 new MySqlCommand(sqlQuery, connection);
             }
-            catch(MySqlException)
+            catch(MySqlException e)
             {
-
+                Console.WriteLine(e);
             }
             finally
             {
