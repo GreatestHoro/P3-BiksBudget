@@ -1,9 +1,8 @@
 ﻿using BBCollection.HandleRecipe;
 using BBCollection.BBObjects;
 using BBCollection.DBConncetion;
-using System;
+using Json;
 using System.Collections.Generic;
-using System.Text;
 
 namespace BBCollection
 {
@@ -44,9 +43,14 @@ namespace BBCollection
             new RecipeToDatabase().CombineRecipe(recipe, GetConnect());
         }
 
-        public void GetRecipe()
+        public List<Recipe> GetRecipes(string recipeName)
         {
+            return new RetrieveFromDatabase().RetrieveRecipeList(recipeName, GetConnect());
+        }
 
+        public List<Ingredient> GetIngredients(int recipeID)
+        {
+            return new RetrieveFromDatabase().GetIngredientsFromRecipeID(recipeID, GetConnect());
         }
 
         public void InitializeDatabase()
