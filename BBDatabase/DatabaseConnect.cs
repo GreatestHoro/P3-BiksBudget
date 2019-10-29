@@ -1,7 +1,7 @@
-﻿using BBCollection.HandleRecipe;
-using BBCollection.BBObjects;
+﻿using BBCollection.BBObjects;
 using BBCollection.DBConncetion;
-using Json;
+using BBCollection.DBHandling;
+using BBCollection.HandleRecipe;
 using System.Collections.Generic;
 
 namespace BBCollection
@@ -51,6 +51,11 @@ namespace BBCollection
         public List<Ingredient> GetIngredients(int recipeID)
         {
             return new RetrieveFromDatabase().GetIngredientsFromRecipeID(recipeID, GetConnect());
+        }
+
+        public void AddProduct(Product product)
+        {
+            new ProductHandling().Insert(product, GetConnect());
         }
 
         public void InitializeDatabase()

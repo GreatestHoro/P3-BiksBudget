@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace FrontEnd2
+﻿namespace FrontEnd2
 {
     class GeoCoordinate
     {
@@ -17,7 +13,7 @@ namespace FrontEnd2
 
         public override string ToString()
         {
-            return _longitude.ToString() + "," +  _latitude.ToString();
+            return _longitude.ToString() + "," + _latitude.ToString();
         }
     }
 }

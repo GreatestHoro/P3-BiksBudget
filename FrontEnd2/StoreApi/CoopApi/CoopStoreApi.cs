@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace FrontEnd2
 {
@@ -15,6 +13,6 @@ namespace FrontEnd2
         public string ApiVersion { get; set; }
         public int Status { get; set; }
         public string Message { get; set; }
-        
+
     }
 }

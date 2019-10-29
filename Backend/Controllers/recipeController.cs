@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace Backend.Controllers
 {
@@ -17,7 +12,7 @@ namespace Backend.Controllers
         public string GetRecipes(string recipeTitle = "kaffe", string filter = "all")
         {
             string res = "";
-            switch(recipeTitle)
+            switch (recipeTitle)
             {
                 case "kaffe":
                     res += "kaffe &";
@@ -33,7 +28,7 @@ namespace Backend.Controllers
                     break;
             }
 
-            switch(filter)
+            switch (filter)
             {
                 case "all":
                     res += "du er normal";

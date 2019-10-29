@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace B3_BiksBudget.StoreApi.SallingApi
+﻿namespace B3_BiksBudget.StoreApi.SallingApi
 {
     class SallingAPIStoreHours
     {
