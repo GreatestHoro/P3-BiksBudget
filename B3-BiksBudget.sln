@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FrontEnd2", "FrontEnd2\Fron
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BBCollection", "BBDatabase\BBCollection.csproj", "{DF5ADC2B-C063-427D-A00B-2F9C79FD9990}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FrontEnd3", "FrontEnd3\FrontEnd3.csproj", "{E1F8E55E-F4C4-4AE8-B09F-943B6534D35F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FrontEnd3", "FrontEnd3\FrontEnd3.csproj", "{E1F8E55E-F4C4-4AE8-B09F-943B6534D35F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

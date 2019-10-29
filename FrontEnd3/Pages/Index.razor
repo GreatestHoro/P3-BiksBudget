@@ -1,7 +1,22 @@
 ﻿@page "/"
+@inject HttpClient  Http
 
-<h1>Hello, world!</h1>
+<p> YEET</p>
 
-Welcome to your new app.
+@code{
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+    RecipeTitle recipeTitle = new RecipeTitle("default Title");
+    RecipeTitle recipe2 = new RecipeTitle("desværre2");
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        recipe2 = await Http.GetJsonAsync<RecipeTitle>("https://localhost:44325/api/recipe");
+        recipeTitle = await Http.GetJsonAsync<RecipeTitle>("https://localhost:44325/api/recipe");
+    }
+
+}
+
+<p>my recipe: @recipeTitle._title</p>
+<p>recipe 2: @recipe2._title</p>
