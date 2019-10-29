@@ -27,7 +27,7 @@ namespace BBCollection.HandleRecipe
             msc.Parameters.AddWithValue("@RecipePersons", recipe._PerPerson);
             msc.Parameters.AddWithValue("@RecipeDescription", recipe._description);
 
-            NonQuery(msc, dbConnect);
+            NonQueryMSC(msc, dbConnect);
         }
 
         private void AddIngredientsToDatabase(List<Ingredient> ingredients, DatabaseConnect dbConnect)
@@ -48,7 +48,7 @@ namespace BBCollection.HandleRecipe
 
             msc.Parameters.AddWithValue("@Ingredient", ingredient._IngredientName);
 
-            NonQuery(msc, dbInfo);
+            NonQueryMSC(msc, dbInfo);
         }
 
         private bool IngredientExist(Ingredient ingredient, DatabaseConnect dbConnect)
@@ -104,11 +104,11 @@ namespace BBCollection.HandleRecipe
                 msc.Parameters.AddWithValue("@Amount", ingredient._Amount);
                 msc.Parameters.AddWithValue("@Unit", ingredient._unit);
 
-                NonQuery(msc, dbConnect);
+                NonQueryMSC(msc, dbConnect);
             }
         }
 
-        public void NonQuery(MySqlCommand msc, DatabaseConnect dbConnect)
+        public void NonQueryMSC(MySqlCommand msc, DatabaseConnect dbConnect)
         {
             MySqlConnection connection = null;
 
