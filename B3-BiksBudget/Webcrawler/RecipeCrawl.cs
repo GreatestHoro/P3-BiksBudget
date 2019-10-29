@@ -6,16 +6,16 @@ using System.Text;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using System.Net.Http;
-using B3_BiksBudget.BBDatabase;
 
 using System.IO;
-using B3_BiksBudget.BBObjects;
+using BBCollection.BBObjects;
+using BBCollection;
 
 namespace B3_BiksBudget.Webcrawler
 {
     class RecipeCrawl
     {
-        public static async Task GetRecipes(int start_page, int Last_page, DatabaseInformation dbInfo)
+        public static async Task GetRecipes(int start_page, int Last_page, DatabaseConnect dbConnect)
         {
             List<Recipe> opskrifter = new List<Recipe>(); //The list that holdes the recipies
 
@@ -55,11 +55,12 @@ namespace B3_BiksBudget.Webcrawler
 
                             //Console.WriteLine(ind.InnerText);
                         }
-                        new RecipeHandling().addRecipe(new Recipe
+                        
+                        dbConnect.AddRecipe(new Recipe
                             (i, name.ElementAt<HtmlNode>(0).InnerText,
                             Beskrivels.ElementAt<HtmlNode>(0).InnerText,
                             IngriedisensList,
-                            CleanUpPerPerson(PerPerson)), dbInfo);
+                            CleanUpPerPerson(PerPerson)));
                     }
                     else
                     {
