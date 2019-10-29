@@ -1,23 +1,23 @@
-﻿using BBDatabase;
-using BBDatabase.DBObjects;
-using 
+﻿using BBCollection;
+using BBCollection.BBObjects;
+using BBCollection.DBConncetion;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
 
-namespace BBDatabase.HandleRecipe
+namespace BBCollection.HandleRecipe
 {
     class RecipeToDatabase
     {
-        public void CombineRecipe(Recipe recipe, Connect dbInfo)
+        public void CombineRecipe(Recipe recipe, DatabaseConnect dbConnect)
         {
-            AddRecipeToDatabase(recipe, dbInfo);
-            AddIngredientsToDatabase(recipe._ingredientList, dbInfo);
-            CombineRecipeAndIngredient(recipe, dbInfo);
+            AddRecipeToDatabase(recipe, dbConnect);
+            AddIngredientsToDatabase(recipe._ingredientList, dbConnect);
+            CombineRecipeAndIngredient(recipe, dbConnect);
         }
 
-        private void AddRecipeToDatabase(Recipe recipe, Connect dbInfo)
+        private void AddRecipeToDatabase(Recipe recipe, DatabaseConnect dbConnect)
         {
             string recipeQuery = "INSERT INTO `Recipes`(`id`,`recipeName`,`amountPerson`,`recipeDesc`) VALUES(@RecipeID,@RecipeName,@RecipePersons,@RecipeDescription);";
             MySqlCommand msc = new MySqlCommand(recipeQuery);
@@ -27,21 +27,21 @@ namespace BBDatabase.HandleRecipe
             msc.Parameters.AddWithValue("@RecipePersons", recipe._PerPerson);
             msc.Parameters.AddWithValue("@RecipeDescription", recipe._description);
 
-            NonQuery(msc, dbInfo);
+            NonQuery(msc, dbConnect);
         }
 
-        private void AddIngredientsToDatabase(List<Ingredient> ingredients, Connect dbInfo)
+        private void AddIngredientsToDatabase(List<Ingredient> ingredients, DatabaseConnect dbConnect)
         {
             foreach (Ingredient ingredient in ingredients)
             {
-                if (!IngredientExist(ingredient, dbInfo))
+                if (!IngredientExist(ingredient, dbConnect))
                 {
-                    AddIngredientToDatabase(ingredient, dbInfo);
+                    AddIngredientToDatabase(ingredient, dbConnect);
                 }
             }
         }
 
-        private void AddIngredientToDatabase(Ingredient ingredient, Connect dbInfo)
+        private void AddIngredientToDatabase(Ingredient ingredient, DatabaseConnect dbInfo)
         {
             string IngredientToDatabase = "INSERT INTO `Ingredients` (`ingredientName`) VALUES (@Ingredient);";
             MySqlCommand msc = new MySqlCommand(IngredientToDatabase);
@@ -51,13 +51,13 @@ namespace BBDatabase.HandleRecipe
             NonQuery(msc, dbInfo);
         }
 
-        private bool IngredientExist(Ingredient ingredient, Connect dbInfo)
+        private bool IngredientExist(Ingredient ingredient, DatabaseConnect dbConnect)
         {
             bool exist = false;
             MySqlConnection connection = null;
             try
             {
-                connection = new MySqlConnection(dbInfo.ConnectionString(true));
+                connection = new MySqlConnection(dbConnect.ConnectionString(true));
                 connection.Open();
 
                 Console.WriteLine(ingredient._IngredientName);
@@ -90,7 +90,7 @@ namespace BBDatabase.HandleRecipe
             return exist;
         }
 
-        private void CombineRecipeAndIngredient(Recipe recipe, Connect dbInfo)
+        private void CombineRecipeAndIngredient(Recipe recipe, DatabaseConnect dbConnect)
         {
             foreach (Ingredient ingredient in recipe._ingredientList)
             {
@@ -104,11 +104,34 @@ namespace BBDatabase.HandleRecipe
                 msc.Parameters.AddWithValue("@Amount", ingredient._Amount);
                 msc.Parameters.AddWithValue("@Unit", ingredient._unit);
 
-                NonQuery(msc, dbInfo);
+                NonQuery(msc, dbConnect);
             }
         }
 
-        
+        public void NonQuery(MySqlCommand msc, DatabaseConnect dbConnect)
+        {
+            MySqlConnection connection = null;
+
+            try
+            {
+                connection = new MySqlConnection(dbConnect.ConnectionString(true));
+                connection.Open();
+
+                msc.Connection = connection;
+                msc.ExecuteNonQuery();
+            }
+            catch (MySqlException e)
+            {
+                Console.Write(e);
+            }
+            finally
+            {
+                if (connection != null)
+                {
+                    connection.Close();
+                }
+            }
+        }
 
     }
 }

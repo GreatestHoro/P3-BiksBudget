@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using HtmlAgilityPack;
 using System.Net.Http;
 using System.IO;
-using B3_BiksBudget.BBDatabase;
 using B3_BiksBudget.Webcrawler;
-using B3_BiksBudget.BBObjects;
+using BBCollection;
+using BBCollection.BBObjects;
 
 namespace BiksBudget
 {
@@ -16,14 +16,21 @@ namespace BiksBudget
     {
         static void Main(string[] args)
         {
-            DatabaseInformation dbInfo = new DatabaseInformation("localhost", "Demonstration", "root", "Bjarke05!");
-            new InitializeDatabase().start(dbInfo);
+            DatabaseConnect dbConnect = new DatabaseConnect("localhost", "Demonstration", "root", "Bjarke05!");
 
+            List<Recipe> recipes = dbConnect.GetRecipes("lammebov");
 
-            _ = RecipeCrawl.GetRecipes(1,1000, dbInfo);
+            foreach(Recipe r in recipes)
+            {
+                Console.WriteLine(r._Name);
+            }
 
-            Console.WriteLine("web crawler begins... fear its power");
-            Console.ReadLine();
+            //dbConnect.InitializeDatabase();
+            
+            //_ = RecipeCrawl.GetRecipes(1,1000, dbConnect);
+
+            //Console.WriteLine("web crawler begins... fear its power");
+            //Console.ReadLine();
         }
     }
 }
