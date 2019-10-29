@@ -15,7 +15,7 @@ namespace BBCollection.DBConncetion
         public void start(DatabaseConnect dbConnect)
         {
             checkDBExistence(dbConnect);
-            generateDatabaseTables(dbConnect);
+            generateWebcrawelerDatabaseTables(dbConnect);
         }
 
         /*
@@ -44,7 +44,7 @@ namespace BBCollection.DBConncetion
             }
         }
 
-        private void generateDatabaseTables(DatabaseConnect dbConnect)
+        private void generateWebcrawelerDatabaseTables(DatabaseConnect dbConnect)
         {
             MySqlConnection connection = null;
             try
