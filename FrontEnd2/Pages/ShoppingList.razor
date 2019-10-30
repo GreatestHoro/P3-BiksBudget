@@ -47,7 +47,7 @@ else
     protected async override Task OnInitializedAsync()
     {
         //coopProduct = await Http.GetJsonAsync<List<CoopProduct>>("sample-data/productTest.json");
-        await Task.Delay(1);
+        string temporary = await Http.GetStringAsync("");
     }
 
     //public void DeleteItem(Guid id)
