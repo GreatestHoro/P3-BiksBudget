@@ -20,7 +20,7 @@
 
     protected override async Task OnInitializedAsync() {
 
-        printRecipe = await Http.GetStringAsync("https://localhost:44325/api/recipe");
+        printRecipe = await Http.GetStringAsync("https://localhost:44325/api/recipe?recipeTitle=bov");
 
         recipeData = JsonConvert.DeserializeObject<List<Recipe>>(printRecipe);
 
