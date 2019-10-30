@@ -10,7 +10,6 @@ namespace BBCollection.BBObjects
         public float _PerPerson;
         public int _recipeID;
 
-
         public Recipe(int recipeID, string name, string description, List<Ingredient> ingredientList, float PerPerson)
         {
             _recipeID = recipeID;
