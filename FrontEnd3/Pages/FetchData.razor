@@ -11,6 +11,7 @@
 }
 else
 {
+    <p>my recipe: @recipeTitle</p>
     <table class="table">
         <thead>
             <tr>
@@ -36,10 +37,13 @@ else
 
 @code {
     private WeatherForecast[] forecasts;
+    string recipeTitle = "default Title";
+
 
     protected override async Task OnInitializedAsync()
     {
         forecasts = await Http.GetJsonAsync<WeatherForecast[]>("sample-data/weather.json");
+        recipeTitle = await Http.GetStringAsync("https://localhost:44325/api/recipe");
     }
 
     public class WeatherForecast
@@ -53,3 +57,6 @@ else
         public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
     }
 }
+
+
+

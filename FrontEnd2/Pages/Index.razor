@@ -4,13 +4,11 @@
 <p> YEET</p>
 
 @code{
-    //string printRecipe = "hej hej";
+    string printRecipe = "hej hej";
 
-    //protected override async Task OnInitializedAsync() => printRecipe = await Http.GetStringAsync("https://localhost:44325/api/recipe");
-    ////https://localhost:44325/api/recipe
-    
-    //<p>@printRecipe</p>
+    protected override async Task OnInitializedAsync() => printRecipe = await Http.GetStringAsync("https://localhost:44325/api/recipe");
+    //https://localhost:44325/api/recipe
+
 
 }
-
-
+    <p>@printRecipe</p>
