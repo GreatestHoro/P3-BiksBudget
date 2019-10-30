@@ -1,14 +1,32 @@
 ﻿@page "/"
+@using BBCollection.BBObjects;
+@using Newtonsoft.Json;
+
 @inject HttpClient  Http
 
 <p> YEET</p>
 
+<p>@printRecipe</p>
+
+@foreach (var recipe in recipeData)
+{
+    <p>recipe: @recipe._Name</p>
+}
+
 @code{
     string printRecipe = "hej hej";
+    List<Recipe> recipeData = new List<Recipe>();
 
-    protected override async Task OnInitializedAsync() => printRecipe = await Http.GetStringAsync("https://localhost:44325/api/recipe");
+
+    protected override async Task OnInitializedAsync() {
+
+        printRecipe = await Http.GetStringAsync("https://localhost:44325/api/recipe");
+
+        recipeData = JsonConvert.DeserializeObject<List<Recipe>>(printRecipe);
+
+    }
     //https://localhost:44325/api/recipe
 
 
+
 }
-    <p>@printRecipe</p>

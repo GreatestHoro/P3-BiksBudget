@@ -1,13 +1,43 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using BBCollection.BBObjects;
+using Newtonsoft.Json;
 
 namespace Backend.Controllers
 {
+
+    public class DemoData
+    {
+        public List<Ingredient> in1 = new List<Ingredient> { new Ingredient("kalkun", "kg", 10f) };
+
+        public Recipe kalkun = new Recipe(1, "kalkun", "spis det nu bare!", new List<Ingredient> { new Ingredient("kalkun", "kg", 10f) }, 4);
+
+        public Recipe slik = new Recipe(1, "slik", "spis det om fredagen!", new List<Ingredient> { new Ingredient("sukker+chokolade", "ton", 1f) }, 1);
+
+        public List<Recipe> recipeDatak = new List<Recipe>();
+
+        public DemoData()
+        {
+            recipeDatak.Add(kalkun);
+            recipeDatak.Add(slik);
+        }
+
+        public List<Recipe> GetRecipes()
+        {
+            return recipeDatak;
+        }
+
+    }
+
     [Route("api/[controller]")]
     [ApiController]
     public class recipeController : ControllerBase
     {
+
+        public DemoData demodata = new DemoData();
+
         // GET: api/recipe
-        //[Route("api/recipe/recipe?Title=laks?filter=keto")]
+        //[Route("api/recipe/recipeTitle=laks?filter=keto")]
         [HttpGet]
         public string GetRecipes(string recipeTitle = "kaffe", string filter = "all")
         {
@@ -44,7 +74,11 @@ namespace Backend.Controllers
                     break;
             }
 
-            return res;
+            List<Recipe> recipeData = demodata.GetRecipes();
+
+            string jsonRecipes = JsonConvert.SerializeObject(recipeData);
+
+            return jsonRecipes;
         }
 
         // GET: api/recipe/5
@@ -73,4 +107,7 @@ namespace Backend.Controllers
         {
         }
     }
+
+    
+
 }
