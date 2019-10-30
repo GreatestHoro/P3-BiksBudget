@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Web;
 
 namespace B3_BiksBudget.StoreApi.SallingApi
@@ -40,12 +38,12 @@ namespace B3_BiksBudget.StoreApi.SallingApi
                 {
                     throw new ArgumentOutOfRangeException($"{nameof(value)} must be a positive integer.");
                 }
-               _pageCount = value;
+                _pageCount = value;
             }
         }
         string _perPageURL { get; set; }
         int _perPageCount;
-        int PerPageCount 
+        int PerPageCount
         {
             get { return _perPageCount; }
             set
@@ -56,13 +54,13 @@ namespace B3_BiksBudget.StoreApi.SallingApi
                 }
                 _perPageCount = value;
             }
-        } 
+        }
         string _brandURL { get; set; }
         string _storeId { get; set; }
         string _cityURL { get; set; }
         string _zipURL { get; set; }
         int _zip;
-        int Zip 
+        int Zip
         {
             get { return _zip; }
             set
@@ -198,7 +196,7 @@ namespace B3_BiksBudget.StoreApi.SallingApi
         {
             _geoPosition = geoPosition;
             return _geoPositionURL + HttpUtility.UrlEncode(geoPosition.ToString());
-        }        
+        }
 
         private string MultiStoreRadiusURLPart(int radiusLimit)
         {

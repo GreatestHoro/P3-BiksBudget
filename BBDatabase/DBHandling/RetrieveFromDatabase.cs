@@ -1,9 +1,6 @@
 ﻿using BBCollection.BBObjects;
 using MySql.Data.MySqlClient;
-using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Text;
 
 namespace BBCollection.HandleRecipe
 {
@@ -27,22 +24,22 @@ namespace BBCollection.HandleRecipe
 
                 MySqlDataReader msdr = msc.ExecuteReader();
 
-                while(msdr.Read())
+                while (msdr.Read())
                 {
 
-                    Recipe recipe = new Recipe(msdr.GetInt32("id"),msdr.GetString("recipeName"),msdr.GetString("recipeDesc"),
+                    Recipe recipe = new Recipe(msdr.GetInt32("id"), msdr.GetString("recipeName"), msdr.GetString("recipeDesc"),
                                                GetIngredientsFromRecipeID(msdr.GetInt32("id"), dbConnect), msdr.GetInt32("amountPerson"));
 
                     recipeList.Add(recipe);
                 }
-            } 
-            catch(MySqlException)
+            }
+            catch (MySqlException)
             {
                 // Make exception
-            } 
+            }
             finally
             {
-                if(connection != null)
+                if (connection != null)
                 {
                     connection.Close();
                 }
@@ -66,20 +63,20 @@ namespace BBCollection.HandleRecipe
                 msc.Parameters.AddWithValue("@RecipeID", recipeID);
                 MySqlDataReader msdr = msc.ExecuteReader();
 
-                while(msdr.Read())
+                while (msdr.Read())
                 {
                     Ingredient ingredient = new Ingredient(msdr.GetString("ingredientName"), msdr.GetString("unit"), msdr.GetInt32("amount"));
                     ingredients.Add(ingredient);
                 }
 
-            } 
+            }
             catch (MySqlException)
             {
 
             }
             finally
             {
-                if(connection != null)
+                if (connection != null)
                 {
                     connection.Close();
                 }

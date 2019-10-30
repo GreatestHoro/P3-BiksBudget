@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace FrontEnd2
 {
@@ -16,7 +14,7 @@ namespace FrontEnd2
         public string name { get; set; }
         public string phoneNumber { get; set; }
         public string sapSiteId { get; set; }
-        public string type { get; set; }    
+        public string type { get; set; }
         public string vikingStoreId { get; set; }
         public SallingAPIStoreAttributes attributes { get; set; }
         public string id { get; set; }
@@ -36,7 +34,7 @@ namespace FrontEnd2
             str += "\ntype: " + type;
             str += "\nvikingStoreId: " + vikingStoreId;
             str += "\nAttributes: " + attributes.ToString();
-            str += "\nid: " + id; 
+            str += "\nid: " + id;
             return str;
         }
 

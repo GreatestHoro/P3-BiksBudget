@@ -1,24 +1,21 @@
 ﻿using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 
 namespace B3_BiksBudget.StoreApi
 {
     class OpenHttp<T>
     {
-        HttpWebRequest _httpWebRequest { get; set; }  
+        HttpWebRequest _httpWebRequest { get; set; }
         string _apiLink { get; set; }
         string _accessToken { get; set; }
         string _jsonData { get; set; }
 
-        public OpenHttp(string apiLink, string accessToken) {
-            _apiLink = apiLink; 
+        public OpenHttp(string apiLink, string accessToken)
+        {
+            _apiLink = apiLink;
             _accessToken = accessToken;
         }
 
@@ -52,7 +49,7 @@ namespace B3_BiksBudget.StoreApi
             {
                 if (reader.TokenType == JsonToken.StartObject)
                 {
-                     resList.Add(serializer.Deserialize<T>(reader));
+                    resList.Add(serializer.Deserialize<T>(reader));
                 }
             }
 
@@ -62,7 +59,7 @@ namespace B3_BiksBudget.StoreApi
         public async Task<List<T>> ReadAndParseAPI(string searchword)
         {
 
-            HttpWebRequest httpWebRequest =  APIHttpWebReqeust();
+            HttpWebRequest httpWebRequest = APIHttpWebReqeust();
 
             HttpWebResponse response = await httpWebRequest.GetResponseAsync() as HttpWebResponse;
 
@@ -78,7 +75,7 @@ namespace B3_BiksBudget.StoreApi
             {
                 if (reader.TokenType == JsonToken.StartObject /*&& reader.DateFormatString.Contains(searchword)*/)
                 {
-                    
+
                     resList.Add(serializer.Deserialize<T>(reader));
                 }
             }

@@ -1,7 +1,5 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace BBCollection.DBConncetion
 {
@@ -15,15 +13,15 @@ namespace BBCollection.DBConncetion
                 connection = new MySqlConnection(dbConnect.ConnectionString(true));
                 connection.Open();
 
-                new MySqlCommand(sqlQuery, connection);
+                new MySqlCommand(sqlQuery, connection).ExecuteNonQuery();
             }
-            catch(MySqlException e)
+            catch (MySqlException e)
             {
                 Console.WriteLine(e);
             }
             finally
             {
-                if(connection != null) 
+                if (connection != null)
                 {
                     connection.Close();
                 }
@@ -41,6 +39,7 @@ namespace BBCollection.DBConncetion
                 connection.Open();
 
                 msc.Connection = connection;
+
                 msc.ExecuteNonQuery();
             }
             catch (MySqlException e)

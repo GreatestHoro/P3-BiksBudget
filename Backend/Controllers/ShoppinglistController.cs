@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Backend.Controllers
+﻿namespace Backend.Controllers
 {
     public class ShoppinglistController
     {
@@ -12,6 +7,6 @@ namespace Backend.Controllers
 
     class ShoppingList
     {
-        
+
     }
 }

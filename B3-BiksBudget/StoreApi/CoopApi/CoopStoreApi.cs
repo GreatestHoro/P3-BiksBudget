@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace B3_BiksBudget.StoreApi.CoopApi
 {
@@ -15,6 +13,6 @@ namespace B3_BiksBudget.StoreApi.CoopApi
         public string ApiVersion { get; set; }
         public int Status { get; set; }
         public string Message { get; set; }
-        
+
     }
 }

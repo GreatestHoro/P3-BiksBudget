@@ -1,12 +1,5 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Net.Http;
-using System.IO;
-using System.Reflection;
 
 namespace BBCollection.DBConncetion
 {
@@ -24,7 +17,7 @@ namespace BBCollection.DBConncetion
         */
         private void CheckDBExistence(DatabaseConnect dbConnect)
         {
-            
+
 
             MySqlConnection connection = null;
             try
@@ -51,7 +44,7 @@ namespace BBCollection.DBConncetion
                 }
             }
 
-            
+
         }
 
         private void GenerateWebcrawelerDatabaseTables(DatabaseConnect dbConnect)
@@ -64,12 +57,12 @@ namespace BBCollection.DBConncetion
                 "`recipeDesc` VARCHAR(8000)," +
                 "PRIMARY KEY(id));";
 
-            string ingredientTable = 
+            string ingredientTable =
                 "CREATE TABLE IF NOT EXISTS `Ingredients` (" +
                 "`ingredientName` VARCHAR(255) UNIQUE," +
                 "PRIMARY KEY(ingredientName));";
 
-            string ingredientInRecipeTable = 
+            string ingredientInRecipeTable =
                 "CREATE TABLE IF NOT EXISTS `IngredientsInRecipe` (`id` INT AUTO_INCREMENT," +
                 "`recipeID` INT," +
                 "`ingredientName` varchar(255)," +
@@ -87,11 +80,12 @@ namespace BBCollection.DBConncetion
         private void GenerateAPIDatabaseTables(DatabaseConnect dbConnect)
         {
             string productTable =
-                "CREATE TABLE IF NOT EXISTS `Recipes` (" +
+                "CREATE TABLE IF NOT EXISTS `products` (" +
+                "`id` INT AUTO_INCREMENT," +
                 "`ean` VARCHAR(255) UNIQUE," +
                 "`productName` VARCHAR(255)," +
                 "`productName2` VARCHAR(255)," +
-                "`price` DECIMAL," +
+                "`price` DECIMAL(6,2)," +
                 "`productHierarchyID` INT," +
                 "PRIMARY KEY(id));";
 

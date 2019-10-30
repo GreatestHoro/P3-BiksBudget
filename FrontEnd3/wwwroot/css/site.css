@@ -4,52 +4,6 @@ html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
-h1 {
-    text-align: center;
-}
-
-.top-nav {
-    width: 100%;
-    height: 100px;
-    background: url('https://image.shutterstock.com/image-photo/full-banner-wide-food-background-260nw-1037455726.jpg');
-    background-size: cover;
-}
-
-
-    .top-nav input[type=text] {
-        float: left;
-        padding: 6px;
-        border: none;
-        margin-top: 8px;
-        margin-right: 16px;
-        font-size: 17px;
-    }
-
-.topnav a {
-    float: left;
-    display: block;
-    color: black;
-    text-align: center;
-    padding: 14px 16px;
-    text-decoration: none;
-    font-size: 17px;
-}
-
-a, .btn-link {
-    /*color: #0366d6;*/
-    color: white;
-    font-size: 20px;
-    text-shadow: -2px 0 black, 0 2px black, 2px 0 black, 0 -2px black;
-    float: right;
-    padding: 10px;
-}
-
-.btn-primary {
-    color: #fff;
-    background-color: #1b6ec2;
-    border-color: #1861ac;
-}
-
 app {
     position: relative;
     display: flex;
@@ -67,14 +21,9 @@ app {
 }
 
     .main .top-row {
-        background-color: #f7f7f7;
+        background-color: #e6e6e6;
         border-bottom: 1px solid #d6d5d5;
-        justify-content: flex-end;
     }
-
-        .main .top-row > a {
-            margin-left: 1.5rem;
-        }
 
 .sidebar {
     background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
@@ -86,7 +35,6 @@ app {
 
     .sidebar .navbar-brand {
         font-size: 1.1rem;
-        text-shadow: none;
     }
 
     .sidebar .oi {
@@ -116,8 +64,6 @@ app {
         display: flex;
         align-items: center;
         line-height: 3rem;
-        text-shadow: none;
-        float: left;
     }
 
         .nav-item a.active {

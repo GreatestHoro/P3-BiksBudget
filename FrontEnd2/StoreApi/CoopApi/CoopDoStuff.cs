@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Linq;
+﻿using System.Collections.Generic;
 
 namespace FrontEnd2
 {
@@ -80,7 +77,7 @@ namespace FrontEnd2
             List<CoopProduct> product = CoopFindEverythingInStore(storeId);
             List<CoopProduct> result = new List<CoopProduct>();
 
-            foreach(var item in product)
+            foreach (var item in product)
             {
                 if (item.Navn.Contains(SearchWord.ToUpper()))
                 {

@@ -1,39 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace Backend.Controllers
 {
-
-    public class Recipe
-    {
-        public string _title { get; set; }
-        public Recipe(string title)
-        {
-            _title = title;
-        }
-    }
-
     [Route("api/[controller]")]
     [ApiController]
     public class recipeController : ControllerBase
     {
         // GET: api/recipe
-        //[Route("api/recipe/{gender:string}")]
-
-        Recipe recipe = new Recipe("default");
-
+        //[Route("api/recipe/recipe?Title=laks?filter=keto")]
         [HttpGet]
         public string GetRecipes(string recipeTitle = "kaffe", string filter = "all")
         {
-
-            string res = "{ ";
-            switch(recipeTitle)
+            string res = "";
+            switch (recipeTitle)
             {
                 case "kaffe":
                     res += "kaffe &";
@@ -49,7 +28,7 @@ namespace Backend.Controllers
                     break;
             }
 
-            switch(filter)
+            switch (filter)
             {
                 case "all":
                     res += "du er normal";
@@ -65,12 +44,7 @@ namespace Backend.Controllers
                     break;
             }
 
-            recipe._title = res;
-
-            string str = JsonConvert.SerializeObject(recipe);
-
-
-            return str;
+            return res;
         }
 
         // GET: api/recipe/5

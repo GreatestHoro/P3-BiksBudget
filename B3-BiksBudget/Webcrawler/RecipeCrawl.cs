@@ -1,15 +1,11 @@
-﻿using MySql.Data.MySqlClient;
+﻿using BBCollection;
+using BBCollection.BBObjects;
+using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HtmlAgilityPack;
 using System.Net.Http;
-
-using System.IO;
-using BBCollection.BBObjects;
-using BBCollection;
+using System.Threading.Tasks;
 
 namespace B3_BiksBudget.Webcrawler
 {

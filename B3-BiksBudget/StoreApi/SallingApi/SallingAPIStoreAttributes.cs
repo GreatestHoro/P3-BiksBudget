@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace B3_BiksBudget.StoreApi.SallingApi
+﻿namespace B3_BiksBudget.StoreApi.SallingApi
 {
     class SallingAPIStoreAttributes
     {
-        public bool garden {get; set;}
+        public bool garden { get; set; }
         public bool holidayOpen { get; set; }
         public bool nonFood { get; set; }
         public bool open247 { get; set; }
@@ -15,7 +11,7 @@ namespace B3_BiksBudget.StoreApi.SallingApi
 
         public override string ToString()
         {
-            string str = "Garden: " + garden + " | Holiday Open: " + holidayOpen + " | nonFood: " + nonFood + " | Open 24/7: " + open247 + " | Pet Food: " + petFood + "\n Smiley Scheme: " + smileyScheme;  
+            string str = "Garden: " + garden + " | Holiday Open: " + holidayOpen + " | nonFood: " + nonFood + " | Open 24/7: " + open247 + " | Pet Food: " + petFood + "\n Smiley Scheme: " + smileyScheme;
             return str;
         }
     }

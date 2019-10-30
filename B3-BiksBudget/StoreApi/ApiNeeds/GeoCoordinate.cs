@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace B3_BiksBudget.StoreApi
+﻿namespace B3_BiksBudget.StoreApi
 {
     class GeoCoordinate
     {
@@ -17,7 +13,7 @@ namespace B3_BiksBudget.StoreApi
 
         public override string ToString()
         {
-            return _longitude.ToString() + "," +  _latitude.ToString();
+            return _longitude.ToString() + "," + _latitude.ToString();
         }
     }
 }
