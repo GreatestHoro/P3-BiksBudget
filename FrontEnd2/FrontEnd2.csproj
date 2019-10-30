@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\B3-BiksBudget\B3-BiksBudget.csproj" />
+    <ProjectReference Include="..\BBDatabase\BBCollection.csproj" />
   </ItemGroup>
 
 </Project>

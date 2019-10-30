@@ -1,32 +1,30 @@
-﻿using MySql.Data.MySqlClient;
+﻿using BBCollection.DBConncetion;
+using MySql.Data.MySqlClient;
 using System;
 
-namespace BBCollection.DBConncetion
+namespace BBCollection.DBHandling
 {
     class InitializeDB
     {
-        public void start(DatabaseConnect dbConnect)
+        public void start(DatabaseInformation dbInformation)
         {
-            CheckDBExistence(dbConnect);
-            GenerateWebcrawelerDatabaseTables(dbConnect);
-            GenerateAPIDatabaseTables(dbConnect);
+            CreateDB(dbInformation);
+            GenerateWebcrawelerDatabaseTables(dbInformation);
+            GenerateAPIDatabaseTables(dbInformation);
         }
 
         /*
          Check if database exist, if it don't it will create it
         */
-        private void CheckDBExistence(DatabaseConnect dbConnect)
+        private void CreateDB(DatabaseInformation dbInformation)
         {
-
-
             MySqlConnection connection = null;
             try
             {
-
-                connection = new MySqlConnection(dbConnect.ConnectionString(false));
+                connection = new MySqlConnection(dbInformation.ConnectionString(false));
                 connection.Open();
 
-                string databaseExist = "CREATE DATABASE IF NOT EXISTS `" + dbConnect.DatabaseName + "`;";
+                string databaseExist = "CREATE DATABASE IF NOT EXISTS `" + dbInformation.DatabaseName + "`;";
 
                 MySqlCommand msc = new MySqlCommand(databaseExist, connection);
 
@@ -43,11 +41,9 @@ namespace BBCollection.DBConncetion
                     connection.Close();
                 }
             }
-
-
         }
 
-        private void GenerateWebcrawelerDatabaseTables(DatabaseConnect dbConnect)
+        private void GenerateWebcrawelerDatabaseTables(DatabaseInformation dbInformation)
         {
             string recipeTable =
                 "CREATE TABLE IF NOT EXISTS `Recipes` (" +
@@ -72,12 +68,12 @@ namespace BBCollection.DBConncetion
                 "FOREIGN KEY(recipeID) REFERENCES RECIPES(id)," +
                 "FOREIGN KEY(ingredientName) REFERENCES INGREDIENTS(ingredientName)); ";
 
-            new SQLConnect().NonQueryString(recipeTable, dbConnect);
-            new SQLConnect().NonQueryString(ingredientTable, dbConnect);
-            new SQLConnect().NonQueryString(ingredientInRecipeTable, dbConnect);
+            new SQLConnect().NonQueryString(recipeTable, dbInformation);
+            new SQLConnect().NonQueryString(ingredientTable, dbInformation);
+            new SQLConnect().NonQueryString(ingredientInRecipeTable, dbInformation);
         }
 
-        private void GenerateAPIDatabaseTables(DatabaseConnect dbConnect)
+        private void GenerateAPIDatabaseTables(DatabaseInformation dbInformation)
         {
             string productTable =
                 "CREATE TABLE IF NOT EXISTS `products` (" +
@@ -89,7 +85,7 @@ namespace BBCollection.DBConncetion
                 "`productHierarchyID` INT," +
                 "PRIMARY KEY(id));";
 
-            new SQLConnect().NonQueryString(productTable, dbConnect);
+            new SQLConnect().NonQueryString(productTable, dbInformation);
         }
     }
 }
