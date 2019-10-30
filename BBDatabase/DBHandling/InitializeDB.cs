@@ -78,7 +78,7 @@ namespace BBCollection.DBHandling
             string productTable =
                 "CREATE TABLE IF NOT EXISTS `products` (" +
                 "`id` INT AUTO_INCREMENT," +
-                "`ean` VARCHAR(255) UNIQUE," +
+                "`ean` VARCHAR(255)," +
                 "`productName` VARCHAR(255)," +
                 "`productName2` VARCHAR(255)," +
                 "`price` DECIMAL(6,2)," +

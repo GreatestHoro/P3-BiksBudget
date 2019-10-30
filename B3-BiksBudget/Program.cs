@@ -1,4 +1,5 @@
 ﻿using B3_BiksBudget.StoreApi.CoopApi;
+using B3_BiksBudget.Webcrawler;
 using BBCollection;
 using BBCollection.BBObjects;
 using System;
@@ -10,7 +11,7 @@ namespace BiksBudget
     {
         static void Main(string[] args)
         {
-            DatabaseConnect dbConnect = new DatabaseConnect("localhost", "Test_Prod", "root", "Bjarke05!");
+            DatabaseConnect dbConnect = new DatabaseConnect("localhost", "Test_Prod7", "root", "Bjarke05!");
 
             dbConnect.InitializeDatabase();
 
@@ -18,13 +19,13 @@ namespace BiksBudget
 
             List<CoopProduct> coopProducts = tryCoop.CoopFindEverythingInStore("24073");
             int count = 0;
-            foreach(CoopProduct c in coopProducts)
+            foreach (CoopProduct c in coopProducts)
             {
                 count++;
                 Console.WriteLine(count);
                 dbConnect.AddProduct(new Product(c.Ean, c.Navn, c.Navn2, c.Pris, c.VareHierakiId));
             }
-            
+
 
             /*List<Recipe> recipes = dbConnect.GetRecipes("lammebov");
 
