@@ -8,59 +8,46 @@ namespace BBCollection
 {
     public class DatabaseConnect
     {
-        public string ServerName { get; }
-        public string DatabaseName { get; }
-        public string DatabaseUser { get; }
-        public string DatabasePassword { get; }
-
+        DatabaseInformation dbInfo = null;
         public DatabaseConnect(string sName, string dBName, string dBUser, string dBPw)
         {
-            ServerName = sName;
-            DatabaseName = dBName;
-            DatabaseUser = dBUser;
-            DatabasePassword = dBPw;
+            dbInfo = new DatabaseInformation(sName, dBName, dBUser, dBPw);
         }
 
-        private DatabaseConnect GetConnect()
-        {
-            return new DatabaseConnect(ServerName, DatabaseName, DatabaseUser, DatabasePassword);
-        }
-
-        public string ConnectionString(bool withDB)
-        {
-            if (withDB)
-            {
-                return @"server=" + ServerName + ";database=" + DatabaseName + ";userid=" + DatabaseUser + ";password=" + DatabasePassword;
-            }
-            else
-            {
-                return @"server=" + ServerName + ";userid=" + DatabaseUser + ";password=" + DatabasePassword;
-            }
-        }
+        /* In this section the Recipe functions will be handled*/
 
         public void AddRecipe(Recipe recipe)
         {
-            new RecipeToDatabase().CombineRecipe(recipe, GetConnect());
+            new RecipeToDatabase().CombineRecipe(recipe, dbInfo.GetConnect());
         }
 
         public List<Recipe> GetRecipes(string recipeName)
         {
-            return new RetrieveFromDatabase().RetrieveRecipeList(recipeName, GetConnect());
+            return new RetrieveFromDatabase().RetrieveRecipeList(recipeName, dbInfo.GetConnect());
         }
 
         public List<Ingredient> GetIngredients(int recipeID)
         {
-            return new RetrieveFromDatabase().GetIngredientsFromRecipeID(recipeID, GetConnect());
+            return new RetrieveFromDatabase().GetIngredientsFromRecipeID(recipeID, dbInfo.GetConnect());
         }
+
+        /* In this section the Product functions will be handled */ 
 
         public void AddProduct(Product product)
         {
-            new ProductHandling().Insert(product, GetConnect());
+            new ProductHandling().Insert(product, dbInfo.GetConnect());
         }
+
+        public List<Product> GetProducts(string productName)
+        {
+            return new ProductHandling().ListOfProductsFromName(productName, dbInfo.GetConnect());
+        } 
+
+        /* In this section the initalization of the database will be handled */
 
         public void InitializeDatabase()
         {
-            new InitializeDB().start(GetConnect());
+            new InitializeDB().start(dbInfo.GetConnect());
         }
     }
 }
