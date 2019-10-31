@@ -1,4 +1,4 @@
-﻿namespace B3_BiksBudget.StoreApi.SallingApi
+﻿namespace BBGatherer.StoreApi.SallingApi
 {
     abstract class APILink
     {

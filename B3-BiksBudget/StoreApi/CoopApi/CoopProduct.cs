@@ -1,4 +1,4 @@
-﻿namespace B3_BiksBudget.StoreApi.CoopApi
+﻿namespace BBGatherer.StoreApi.CoopApi
 {
     class CoopProduct
     {
