@@ -7,7 +7,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace B3_BiksBudget.Webcrawler
+namespace BBGatherer.Webcrawler
 {
     class RecipeCrawl
     {

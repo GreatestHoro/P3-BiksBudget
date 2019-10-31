@@ -4,7 +4,7 @@ using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace B3_BiksBudget.StoreApi
+namespace BBGatherer.StoreApi
 {
     class OpenHttp<T>
     {

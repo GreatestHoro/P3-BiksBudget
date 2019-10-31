@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace B3_BiksBudget.Properties {
+namespace BBGatherer.Properties {
     using System;
     
     

@@ -1,11 +1,11 @@
-﻿using B3_BiksBudget.StoreApi.CoopApi;
-using B3_BiksBudget.Webcrawler;
+﻿using BBGatherer.StoreApi.CoopApi;
+using BBGatherer.Webcrawler;
 using BBCollection;
 using BBCollection.BBObjects;
 using System;
 using System.Collections.Generic;
 
-namespace BiksBudget
+namespace BBGatherer
 {
     class Program
     {

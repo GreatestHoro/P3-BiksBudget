@@ -1,4 +1,4 @@
-﻿namespace B3_BiksBudget.StoreApi
+﻿namespace BBGatherer.StoreApi
 {
     class BearerAccessToken : IBearerToken
     {
