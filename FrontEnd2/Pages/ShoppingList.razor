@@ -1,9 +1,6 @@
 ﻿@page "/shoppinglist"
-@using System.IO
-@using System.Net.Http
 @using Newtonsoft.Json;
 @inject HttpClient Http
-
 
 <h1>Shopping List</h1>
 
@@ -18,41 +15,71 @@ else
             <tr>
                 <th>Remove</th>
                 <th>Name</th>
-                <th>Store</th>
+                <th>Description</th>
                 <th>Price</th>
-                <th>Ammount</th>
-                <th>Add to storage</th>
+                <th>Add To Storage</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var items in coopProduct)
             {
-                <tr>
-                    <td>@items.Ean</td>
-                    <td>@items.Navn</td>
-                    <td>Fakta</td>
-                    <td>@items.Pris</td>
-                    <td>@items.Navn2</td>
-                </tr>
+            <tr>
+                <td><button @onclick="(() => DeleteProduct(items.VareHierakiId))"><i class="oi oi-trash"></i></button></td>
+                <td>@items.Navn</td>
+                <td>@items.Navn2</td>
+                <td>@items.Pris.ToString() kr</td>
+                <td><button @onclick="(() => AddProductToStorage(items.VareHierakiId))"><i class="oi oi-basket"></i></button></td>
+            </tr>
             }
         </tbody>
     </table>
+
+    @if (coopProduct != null)
+    {
+        <input placeholder="A new Product" @bind="@newProduct" />
+        <button @onclick="AddProduct">Create</button>
+    }
 }
 
 
-@functions{
+@code{
     List<CoopProduct> coopProduct = new List<CoopProduct>();
+    string productString;
+    string newProduct;
     //private string newItem;
 
     protected async override Task OnInitializedAsync()
     {
-        //coopProduct = await Http.GetJsonAsync<List<CoopProduct>>("sample-data/productTest.json");
-        await Task.Delay(1);
+        productString = await Http.GetStringAsync("https://localhost:44325/api/Shoppinglist");
+
+        coopProduct = JsonConvert.DeserializeObject<List<CoopProduct>>(productString);
     }
 
-    //public void DeleteItem(Guid id)
-    //{
-    //    coopProduct.Remove(coopProduct.First(x => x.VareHierakiId == id));
-    //}
-    //<td><button onclick="@(() => DeleteItem(coopProduct.Name))"<i class="oi oi-trash"></i></button></td>
+    private void AddProduct()
+    {
+        // *Insert search method here*
+
+        coopProduct.Add( new CoopProduct
+        {
+            Navn = newProduct,
+            Navn2 = "-1 g.",
+            Ean = "0000",
+            Pris = -1,
+            VareHierakiId = -1
+        });
+
+        newProduct = string.Empty;
+    }
+
+    private void DeleteProduct(int id)
+    {
+        coopProduct.Remove(coopProduct.First(x => x.VareHierakiId == id));
+    }
+
+    private void AddProductToStorage(int id)
+    {
+        // *Insert Add To Storage Method*
+
+        coopProduct.Remove(coopProduct.First(x => x.VareHierakiId == id));
+    }
 }

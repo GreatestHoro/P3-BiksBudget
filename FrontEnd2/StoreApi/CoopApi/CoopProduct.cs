@@ -8,6 +8,6 @@ namespace FrontEnd2
         public string Navn { get; set; }
         public string Navn2 { get; set; }
         public double Pris { get; set; }
-        public Guid VareHierakiId { get; set; }
+        public int VareHierakiId { get; set; }
     }
 }
