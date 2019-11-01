@@ -75,15 +75,15 @@ namespace Backend.Controllers
                     break;
             }
 
-            List<Recipe> recipeData = demodata.GetRecipes();
+            //List<Recipe> recipeData = demodata.GetRecipes();
 
-            string jsonRecipes = JsonConvert.SerializeObject(recipeData);
+            //string jsonRecipes = JsonConvert.SerializeObject(recipeData);
 
-            //DatabaseConnect dbConnect = new DatabaseConnect("localhost", "Test_db", "root", "miladsql123_");
+            DatabaseConnect dbConnect = new DatabaseConnect("localhost", "Test_db", "root", "miladsql123_");
 
-            //string jsonDBRecipes = JsonConvert.SerializeObject(dbConnect.GetRecipes(recipeTitle));
+            string jsonDBRecipes = JsonConvert.SerializeObject(dbConnect.GetRecipes(recipeTitle));
 
-            return jsonRecipes;
+            return jsonDBRecipes;
         }
 
         // GET: api/recipe/5
