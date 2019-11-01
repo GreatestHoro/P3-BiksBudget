@@ -79,7 +79,7 @@ namespace Backend.Controllers
 
             //string jsonRecipes = JsonConvert.SerializeObject(recipeData);
 
-            DatabaseConnect dbConnect = new DatabaseConnect("localhost", "RecipeDB", "root", "BiksBudget123");
+            DatabaseConnect dbConnect = new DatabaseConnect("localhost", "BiksBudgetDB", "root", "BiksBudget123");
 
             string jsonDBRecipes = JsonConvert.SerializeObject(dbConnect.GetRecipes(recipeTitle));
 

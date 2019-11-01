@@ -11,35 +11,26 @@ namespace BBGatherer
     {
         static void Main(string[] args)
         {
-            DatabaseConnect dbConnect = new DatabaseConnect("localhost", "Test-1", "root", "yeet");
+            //DatabaseConnect dbConnect = new DatabaseConnect("localhost", "BiksBudgetDB", "root", "BiksBudget123");
 
-            dbConnect.InitializeDatabase();
-
-            /*CoopDoStuff tryCoop = new CoopDoStuff("d0b9a5266a2749cda99d4468319b6d9f");
-
-            List<CoopProduct> coopProducts = tryCoop.CoopFindEverythingInStore("24073");
-            int count = 0;
-            foreach (CoopProduct c in coopProducts)
-            {
-                count++;
-                Console.WriteLine(count);
-                dbConnect.AddProduct(new Product(c.Ean, c.Navn, c.Navn2, c.Pris, c.VareHierakiId));
-            }*/
-
-
-            /*List<Recipe> recipes = dbConnect.GetRecipes("lammebov");
-
-            foreach(Recipe r in recipes)
-            {
-                Console.WriteLine(r._Name);
-            }
-            */
             //dbConnect.InitializeDatabase();
 
-            _ = RecipeCrawl.GetRecipes(489,491, dbConnect);
+            //CoopDoStuff tryCoop = new CoopDoStuff("d0b9a5266a2749cda99d4468319b6d9f");
 
-            Console.WriteLine("web runner begins... fear its power");
-            Console.ReadLine();
+            //List<CoopProduct> coopProducts = tryCoop.CoopFindEverythingInStore("24073");
+            //int count = 0;
+            //foreach (CoopProduct c in coopProducts)
+            //{
+            //    count++;
+            //    Console.WriteLine(count);
+            //    dbConnect.AddProduct(new Product(c.Ean, c.Navn, c.Navn2, c.Pris, c.VareHierakiId));
+            //}
+
+
+            //_ = RecipeCrawl.GetRecipes(1, 1000, dbConnect);
+
+            //Console.WriteLine("web runner begins... fear its power");
+            //Console.ReadLine();
         }
     }
 }
