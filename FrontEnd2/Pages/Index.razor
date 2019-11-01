@@ -2,7 +2,7 @@
 @using BBCollection.BBObjects;
 @using Newtonsoft.Json;
 @inject HttpClientHandler  httpClientHandler
-@inject HttpClient http
+@inject HttpClient Http
 
 <p> YEET</p>
 
@@ -19,7 +19,7 @@
 
     protected override async Task OnInitializedAsync() {
 
-        printRecipe = await Http.GetStringAsync("https://localhost:44325/api/recipe");
+        printRecipe = await Http.GetStringAsync("https://localhost:44325/api/recipe?recipetitle=ris");
 
         recipeData = JsonConvert.DeserializeObject<List<Recipe>>(printRecipe);
 
