@@ -36,7 +36,7 @@ namespace BBGatherer
             */
             //dbConnect.InitializeDatabase();
 
-            _ = RecipeCrawl.GetRecipes(489,491, dbConnect);
+            _ = RecipeCrawl.GetRecipes(1,1000, dbConnect);
 
             Console.WriteLine("web runner begins... fear its power");
             Console.ReadLine();
