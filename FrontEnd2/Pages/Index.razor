@@ -19,12 +19,7 @@
 
     protected override async Task OnInitializedAsync() {
 
-
-        httpClientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
-
-        http = new HttpClient(httpClientHandler);
-
-        printRecipe = await http.GetStringAsync("https://localhost:44325/api/recipe?recipeTitle=bov");
+        printRecipe = await Http.GetStringAsync("https://localhost:44325/api/recipe");
 
         recipeData = JsonConvert.DeserializeObject<List<Recipe>>(printRecipe);
 

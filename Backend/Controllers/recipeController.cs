@@ -87,11 +87,12 @@ namespace Backend.Controllers
         }
 
         // GET: api/recipe/5
-        [Route("api/recipe/{id}")]
+        [Route("api/recipe/{search}")]
         [HttpGet]
-        public string GetRecipes(int id)
+        public string GetRecipes(string search)
         {
-            return "value";
+            DatabaseConnect Database = new DatabaseConnect("pass","yoot","root","yeet");
+            return JsonConvert.SerializeObject(Database.GetRecipes(search));
         }
 
         // POST: api/recipe
@@ -113,6 +114,6 @@ namespace Backend.Controllers
         }
     }
 
-    
+
 
 }

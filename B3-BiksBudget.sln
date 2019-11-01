@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29230.47
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "B3-BiksBudget", "B3-BiksBudget\B3-BiksBudget.csproj", "{50C63801-6EC0-44DF-9924-02B9C446D48D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BBGatherer", "B3-BiksBudget\BBGatherer.csproj", "{50C63801-6EC0-44DF-9924-02B9C446D48D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Backend", "Backend\Backend.csproj", "{44DE56F7-83C1-489D-AD88-A6E6C46BD9B1}"
 EndProject

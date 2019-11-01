@@ -7,7 +7,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace B3_BiksBudget.Webcrawler
+namespace BBGatherer.Webcrawler
 {
     class RecipeCrawl
     {
@@ -22,6 +22,7 @@ namespace B3_BiksBudget.Webcrawler
                 string html = await HttpClient.GetStringAsync(url);
                 HtmlDocument htmlDocument = new HtmlDocument();
                 htmlDocument.LoadHtml(html);
+                bool validity;
 
 
                 List<Ingredient> IngriedisensList = new List<Ingredient>();
@@ -46,7 +47,12 @@ namespace B3_BiksBudget.Webcrawler
                         {
                             if (!ind.InnerText.Contains(':'))
                             {
-                                IngriedisensList.Add(CreateIngriedient(ind.InnerText));
+                                Ingredient ingredient = CreateIngriedient(ind.InnerText, out validity);
+                                if (validity) 
+                                {
+                                    IngriedisensList.Add(ingredient);
+                                }
+                                
                             }
 
                             //Console.WriteLine(ind.InnerText);
@@ -93,12 +99,14 @@ namespace B3_BiksBudget.Webcrawler
 
         }
 
-        public static Ingredient CreateIngriedient(String ind)
+        public static Ingredient CreateIngriedient(String ind, out bool validity)
         {
-
             float amount = DeterminAmount(ind);
             String unit = DeterminUnit(ind);
             String name = DeterminName(ind).Trim();
+            name = NameCleanUp(name);
+
+            validity = EvaluateName(name);
 
             return new Ingredient(name, unit, amount);
         }
@@ -133,6 +141,50 @@ namespace B3_BiksBudget.Webcrawler
 
             }
             return ReturnString;
+        }
+
+        public static bool EvaluateName(String name) 
+        {
+            if (String.IsNullOrWhiteSpace(name))
+            {
+                return false;
+            }
+            else 
+            {
+                return true;
+            }
+        }
+
+        public static String NameCleanUp(String name) 
+        {
+            return RemoveParentheses(name);
+        }
+
+        public static String RemoveParentheses(string name) 
+        {
+            char[] chars = name.ToCharArray();
+            bool ParenthesesFlag = false;
+            String _string = "";
+
+            foreach (char character in chars) 
+            {
+                if (ParenthesesFlag)
+                {
+                    if (character.Equals(')')) 
+                    {
+                        ParenthesesFlag = false;
+                    }
+                }
+                else if (character.Equals('('))
+                {
+                    ParenthesesFlag = true;
+                }
+                else 
+                {
+                    _string += character;
+                }
+            }
+            return _string;
         }
 
         public static bool CheckIfPageFound(HtmlNodeCollection name, HtmlNodeCollection beskrivels, HtmlNodeCollection ingredienser)
