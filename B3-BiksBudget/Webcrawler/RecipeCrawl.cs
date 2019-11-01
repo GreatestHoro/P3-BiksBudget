@@ -100,6 +100,11 @@ namespace BBGatherer.Webcrawler
             String unit = DeterminUnit(ind);
             String name = DeterminName(ind).Trim();
 
+            if () 
+            {
+            
+            }
+
             return new Ingredient(name, unit, amount);
         }
 
@@ -133,6 +138,11 @@ namespace BBGatherer.Webcrawler
 
             }
             return ReturnString;
+        }
+
+        public static bool EvaluateName(String name) 
+        {
+        
         }
 
         public static bool CheckIfPageFound(HtmlNodeCollection name, HtmlNodeCollection beskrivels, HtmlNodeCollection ingredienser)
