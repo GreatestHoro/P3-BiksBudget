@@ -11,7 +11,7 @@ namespace BBGatherer
     {
         static void Main(string[] args)
         {
-            DatabaseConnect dbConnect = new DatabaseConnect("localhost", "YEETER", "root", "yeet");
+            DatabaseConnect dbConnect = new DatabaseConnect("localhost", "Test-1", "root", "yeet");
 
             dbConnect.InitializeDatabase();
 
@@ -36,9 +36,9 @@ namespace BBGatherer
             */
             //dbConnect.InitializeDatabase();
 
-            _ = RecipeCrawl.GetRecipes(1,1000, dbConnect);
+            _ = RecipeCrawl.GetRecipes(489,491, dbConnect);
 
-            Console.WriteLine("web crawler begins... fear its power");
+            Console.WriteLine("web runner begins... fear its power");
             Console.ReadLine();
         }
     }
