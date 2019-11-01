@@ -1,8 +1,8 @@
 ﻿@page "/"
 @using BBCollection.BBObjects;
 @using Newtonsoft.Json;
-@inject HttpClientHandler  httpClientHandler
-@inject HttpClient Http
+
+@inject HttpClient  Http
 
 <p> YEET</p>
 
@@ -17,9 +17,10 @@
     string printRecipe = "hej hej";
     List<Recipe> recipeData = new List<Recipe>();
 
+
     protected override async Task OnInitializedAsync() {
 
-        printRecipe = await Http.GetStringAsync("https://localhost:44325/api/recipe?recipetitle=ris");
+        printRecipe = await Http.GetStringAsync("https://localhost:44325/api/recipe");
 
         recipeData = JsonConvert.DeserializeObject<List<Recipe>>(printRecipe);
 

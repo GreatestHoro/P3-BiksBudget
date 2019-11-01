@@ -23,6 +23,7 @@ namespace BBGatherer.Webcrawler
                 HtmlDocument htmlDocument = new HtmlDocument();
                 htmlDocument.LoadHtml(html);
                 bool validity;
+                bool fatalError = false;
 
 
                 List<Ingredient> IngriedisensList = new List<Ingredient>();
@@ -32,6 +33,7 @@ namespace BBGatherer.Webcrawler
                 HtmlNodeCollection Beskrivels = htmlDocument.DocumentNode.SelectNodes("//div[@itemprop]");
                 HtmlNodeCollection name = htmlDocument.DocumentNode.SelectNodes("//center");
 
+                Console.WriteLine(i);
                 if (!CheckIfPageFound(name, Beskrivels, ingredienser))
                 {
                     Console.WriteLine("Cannot find recipie continues....");
@@ -47,22 +49,25 @@ namespace BBGatherer.Webcrawler
                         {
                             if (!ind.InnerText.Contains(':'))
                             {
-                                Ingredient ingredient = CreateIngriedient(ind.InnerText, out validity);
+                                Ingredient ingredient = CreateIngriedient(ind.InnerText, out validity, out fatalError);
                                 if (validity) 
                                 {
                                     IngriedisensList.Add(ingredient);
                                 }
-                                
                             }
-
+                            if (fatalError) { break; }
                             //Console.WriteLine(ind.InnerText);
                         }
 
-                        dbConnect.AddRecipe(new Recipe
+                        if (!fatalError) 
+                        {
+                            dbConnect.AddRecipe(new Recipe
                             (i, name.ElementAt<HtmlNode>(0).InnerText,
                             Beskrivels.ElementAt<HtmlNode>(0).InnerText,
                             IngriedisensList,
                             CleanUpPerPerson(PerPerson)));
+                        }
+
                     }
                     else
                     {
@@ -99,14 +104,14 @@ namespace BBGatherer.Webcrawler
 
         }
 
-        public static Ingredient CreateIngriedient(String ind, out bool validity)
+        public static Ingredient CreateIngriedient(String ind, out bool validity, out bool fatalError)
         {
             float amount = DeterminAmount(ind);
             String unit = DeterminUnit(ind);
             String name = DeterminName(ind).Trim();
             name = NameCleanUp(name);
 
-            validity = EvaluateName(name);
+            validity = EvaluateName(name,out fatalError);
 
             return new Ingredient(name, unit, amount);
         }
@@ -143,8 +148,19 @@ namespace BBGatherer.Webcrawler
             return ReturnString;
         }
 
-        public static bool EvaluateName(String name) 
+        public static bool EvaluateName(String name,out bool fatalError) 
         {
+            String[] SplitString = name.Split(" ");
+            if (SplitString.Length > 2)
+            {
+                //Console.WriteLine(name +" "+ SplitString.Length);
+                fatalError = true;
+            }
+            else 
+            {
+                fatalError = false;
+            }
+
             if (String.IsNullOrWhiteSpace(name))
             {
                 return false;
@@ -157,7 +173,19 @@ namespace BBGatherer.Webcrawler
 
         public static String NameCleanUp(String name) 
         {
-            return RemoveParentheses(name);
+            name = RemoveParentheses(name);
+            name = RemoveSubstring(name, "evt. ");
+
+            return name;
+
+        }
+        public static string RemoveSubstring(String name,String substring) 
+        {
+            if (name.Contains(substring)) 
+            {
+                name.Replace(substring, "");
+            }
+            return name;
         }
 
         public static String RemoveParentheses(string name) 

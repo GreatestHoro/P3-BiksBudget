@@ -4,11 +4,11 @@ namespace BBCollection.BBObjects
 {
     public class Recipe
     {
-        public string _Name;
-        public string _description;
-        public List<Ingredient> _ingredientList;
-        public float _PerPerson;
-        public int _recipeID;
+        public string _Name { get; }
+        public string _description { get; }
+        public List<Ingredient> _ingredientList { get; }
+        public float _PerPerson { get; }
+        public int _recipeID { get; }
 
         public Recipe(int recipeID, string name, string description, List<Ingredient> ingredientList, float PerPerson)
         {
