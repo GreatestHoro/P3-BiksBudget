@@ -75,9 +75,9 @@ namespace Backend.Controllers
                     break;
             }
 
-            //List<Recipe> recipeData = demodata.GetRecipes();
+            List<Recipe> recipeData = demodata.GetRecipes();
 
-            //string jsonRecipes = JsonConvert.SerializeObject(recipeData);
+            string jsonRecipes = JsonConvert.SerializeObject(recipeData);
 
             DatabaseConnect dbConnect = new DatabaseConnect("localhost", "BiksBudgetDB", "root", "BiksBudget123");
 

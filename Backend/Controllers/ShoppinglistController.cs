@@ -55,10 +55,10 @@ namespace Backend.Controllers
 
         // GET: api/Shoppinglist/5
         [HttpGet("{id}")]
-        public void Get([FromBody]string _test)
+        public void Get(string id)
         {
             //return "value";
-            productData = JsonConvert.DeserializeObject<List<CoopProduct>>(_test);
+            productData = JsonConvert.DeserializeObject<List<CoopProduct>>(id);
         }
 
         // POST: api/Shoppinglist
