@@ -1,7 +1,7 @@
 ﻿@page "/recipes"
 @using BBCollection.BBObjects;
 @using Newtonsoft.Json;
-@inject HttpClient  Http
+@inject HttpClient  Https
 
 
 <h1>Recipes</h1>
@@ -13,7 +13,7 @@
 
     protected async Task SearchRecipe(string searchTerm)
     {
-        String RecipiesList = await Http.GetStringAsync("https://localhost:44325/api/recipe/" + searchTerm);
+        String RecipiesList = await Https.GetStringAsync("https://localhost:44325/api/recipe/" + searchTerm);
 
         recipes = JsonConvert.DeserializeObject<List<Recipe>>(RecipiesList);
     }

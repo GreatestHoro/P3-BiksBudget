@@ -11,11 +11,11 @@ namespace BBGatherer
     {
         static void Main(string[] args)
         {
-            DatabaseConnect dbConnect = new DatabaseConnect("localhost", "CombineIngrediensAndProducts2", "root", "Bjarke05!");
+            DatabaseConnect dbConnect = new DatabaseConnect("localhost", "Test-1", "root", "yeet");
 
-            /*dbConnect.InitializeDatabase();
+            dbConnect.InitializeDatabase();
 
-            CoopDoStuff tryCoop = new CoopDoStuff("d0b9a5266a2749cda99d4468319b6d9f");
+            /*CoopDoStuff tryCoop = new CoopDoStuff("d0b9a5266a2749cda99d4468319b6d9f");
 
             List<CoopProduct> coopProducts = tryCoop.CoopFindEverythingInStore("24073");
             int count = 0;
@@ -34,11 +34,11 @@ namespace BBGatherer
                 Console.WriteLine(r._Name);
             }
             */
-            dbConnect.InitializeDatabase();
+            //dbConnect.InitializeDatabase();
 
             _ = RecipeCrawl.GetRecipes(1,1000, dbConnect);
 
-            Console.WriteLine("web crawler begins... fear its power");
+            Console.WriteLine("web runner begins... fear its power");
             Console.ReadLine();
         }
     }
