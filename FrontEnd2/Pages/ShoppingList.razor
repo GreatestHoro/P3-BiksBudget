@@ -66,7 +66,7 @@ else
         coopProduct = JsonConvert.DeserializeObject<List<CoopProduct>>(productString);
     }
 
-    private void AddProduct()
+    private async void AddProduct()
     {
         // *Insert search method here*
 
@@ -79,6 +79,10 @@ else
             VareHierakiId = 0000,
             Id = coopProduct.Count() + 1
         });
+
+        productString = JsonConvert.SerializeObject(coopProduct[coopProduct.Count-1]);
+
+        //await Http.PostAsync("https://localhost:44325/api/Shoppinglist", new HttpStringContent(productString));
 
         newProduct = string.Empty;
     }
@@ -108,7 +112,7 @@ else
         // *Insert Add To Storage Method*
         //await Http.DeleteAsync("https://localhost:44325/api/ApiWithActions/" + id);
 
-        coopProduct.Remove(coopProduct.First(x => x.Id == id));
+        //coopProduct.Remove(coopProduct.First(x => x.Id == id));
     }
 
 

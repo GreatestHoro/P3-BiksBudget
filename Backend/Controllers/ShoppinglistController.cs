@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MySqlX.XDevAPI.Common;
 using Newtonsoft.Json;
 
 namespace Backend.Controllers
@@ -46,11 +47,7 @@ namespace Backend.Controllers
         [HttpGet]
         public string Get()
         {
-            if (productData == null)
-            {
-                productData = test.GetStuff();
-
-            }
+            productData = test.GetStuff();
 
             string jsonRecipes = JsonConvert.SerializeObject(productData);
 
@@ -91,8 +88,10 @@ namespace Backend.Controllers
 
         // DELETE: api/ApiWithActions/5
         [HttpDelete("{id}")]
-        public ActionResult Delete(int id)
+        public HttpResponseMessage Delete(int id)
         {
+            HttpResponseMessage pls = new HttpResponseMessage();
+
             productData.Remove(productData.First(x => x.Id == id));
 
             //int i = 1;
@@ -103,7 +102,7 @@ namespace Backend.Controllers
             //    i++;
             //}
 
-            return Ok();
+            return pls;
         }
     }
 }
