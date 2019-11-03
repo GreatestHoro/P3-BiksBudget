@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,10 +13,10 @@ namespace Backend.Controllers
     {
         List<CoopProduct> stuff = new List<CoopProduct>
         {
-            new CoopProduct{Navn = "Kyllingebryst", Navn2 = "100g", Ean = "1233", Pris = 100.00, VareHierakiId = 2525},
-            new CoopProduct{Navn = "Kyllingepålæg", Navn2 = "80g", Ean = "0239", Pris = 15.00, VareHierakiId = 5525},
-            new CoopProduct{Navn = "Mælk", Navn2 = "1000g", Ean = "1293", Pris = 9.99, VareHierakiId = 2125},
-            new CoopProduct{Navn = "Mel", Navn2 = "2000g", Ean = "1533", Pris = 20.00, VareHierakiId = 2540}
+            new CoopProduct{Navn = "Kyllingebryst", Navn2 = "100g", Ean = "1233", Pris = 100.00, VareHierakiId = 2525, Id = 1},
+            new CoopProduct{Navn = "Kyllingepålæg", Navn2 = "80g", Ean = "0239", Pris = 15.00, VareHierakiId = 5525, Id = 2},
+            new CoopProduct{Navn = "Mælk", Navn2 = "1000g", Ean = "1293", Pris = 9.99, VareHierakiId = 2125, Id = 3},
+            new CoopProduct{Navn = "Mel", Navn2 = "2000g", Ean = "1533", Pris = 20.00, VareHierakiId = 2540, Id = 4}
         };
 
         public List<CoopProduct> GetStuff()
@@ -31,6 +32,7 @@ namespace Backend.Controllers
         public string Navn2 { get; set; }
         public double Pris { get; set; }
         public int VareHierakiId { get; set; }
+        public int Id;
     }
 
     [Route("api/[controller]")]
@@ -44,30 +46,41 @@ namespace Backend.Controllers
         [HttpGet]
         public string Get()
         {
-            productData = test.GetStuff();
+            if (productData == null)
+            {
+                productData = test.GetStuff();
+
+            }
 
             string jsonRecipes = JsonConvert.SerializeObject(productData);
 
             return jsonRecipes;
-
-            //return new string[] { "value1", "value2" };
         }
 
         // GET: api/Shoppinglist/5
-        [HttpGet("{id}")]
-        public void Get(string id)
+        [Route("Shop/{id}")]
+        [HttpGet]
+        public string Get(int id)
         {
-            //return "value";
-            productData = JsonConvert.DeserializeObject<List<CoopProduct>>(id);
+
+
+            return "Person nr " + id.ToString();
+
+            //productData = JsonConvert.DeserializeObject<List<CoopProduct>>(id);
         }
 
         // POST: api/Shoppinglist
-        [Route("api/Shoppinglist/save")]
         [HttpPost]
-        public void Post([FromBody] string value)
+        public void Post([FromBody]String value)
         {
-            productData = JsonConvert.DeserializeObject<List<CoopProduct>>(value);
-            Console.WriteLine("stuff");
+
+
+            //HttpResponseMessage response = new HttpResponseMessage();
+            //string stuff = value.ToString();
+
+            //productData = JsonConvert.DeserializeObject<List<CoopProduct>>(stuff);
+
+            //return Ok();
         }
 
         // PUT: api/Shoppinglist/5
@@ -78,8 +91,19 @@ namespace Backend.Controllers
 
         // DELETE: api/ApiWithActions/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public ActionResult Delete(int id)
         {
+            productData.Remove(productData.First(x => x.Id == id));
+
+            //int i = 1;
+
+            //foreach (var product in productData)
+            //{
+            //    product.Id = i;
+            //    i++;
+            //}
+
+            return Ok();
         }
     }
 }
