@@ -54,30 +54,55 @@ namespace Backend.Controllers
             return jsonRecipes;
         }
 
+
+
         // GET: api/Shoppinglist/5
-        [Route("Shop/{id}")]
+        [Route("api/Shoppinglist/{value}")]
         [HttpGet]
-        public string Get(int id)
+        public HttpResponseMessage Get(string value)
         {
+            var stuff = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
 
+            List<CoopProduct> newItem = JsonConvert.DeserializeObject<List<CoopProduct>>(value);
 
-            return "Person nr " + id.ToString();
+            productData.Add(newItem[0]);
 
-            //productData = JsonConvert.DeserializeObject<List<CoopProduct>>(id);
+            return stuff;
         }
 
+        //// GET: api/Shoppinglist/5
+        //[Route("api/Shoppinglist/{id}")]
+        //[HttpGet]
+        //public string Get(int id)
+        //{
+        //    productData.Remove(productData.First(x => x.Id == id));
+
+        //    int i = 1;
+
+        //    foreach (var product in productData)
+        //    {
+        //        product.Id = i;
+        //        i++;
+        //    }
+
+        //    return "Person nr " + id.ToString();
+
+        //    //productData = JsonConvert.DeserializeObject<List<CoopProduct>>(id);
+        //}
+
         // POST: api/Shoppinglist
+        [Route("api/Shoppinglist/my")]
         [HttpPost]
         public void Post([FromBody]String value)
         {
 
 
-            //HttpResponseMessage response = new HttpResponseMessage();
-            //string stuff = value.ToString();
+            var stuffTwo = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
 
-            //productData = JsonConvert.DeserializeObject<List<CoopProduct>>(stuff);
+            string stuff = value.ToString();
 
-            //return Ok();
+            productData = JsonConvert.DeserializeObject<List<CoopProduct>>(stuff);
+
         }
 
         // PUT: api/Shoppinglist/5

@@ -2,6 +2,8 @@
 @using Newtonsoft.Json;
 @using Microsoft.AspNetCore.Mvc;
 @inject HttpClient Http
+@using System.Text;
+@using System.Net.Http.Headers;
 
 <h1>Shopping List</h1>
 
@@ -69,6 +71,8 @@ else
     private async void AddProduct()
     {
         // *Insert search method here*
+        var httpResponse = new HttpResponseMessage();
+
 
         coopProduct.Add(new CoopProduct
         {
@@ -80,9 +84,21 @@ else
             Id = coopProduct.Count() + 1
         });
 
-        productString = JsonConvert.SerializeObject(coopProduct[coopProduct.Count-1]);
+        //var content = new FormUrlEncodedContent(coopProduct[coopProduct.Count - 1]);
 
-        //await Http.PostAsync("https://localhost:44325/api/Shoppinglist", new HttpStringContent(productString));
+
+        productString = JsonConvert.SerializeObject(coopProduct[coopProduct.Count - 1]);
+        await Http.PostAsync("https://localhost:44325/api/Shoppinglist/my", new StringContent(productString, Encoding.UTF8, "application/json"));
+
+        //stuff = await Http.GetAsync("https://localhost:44325/api/Shoppinglist/" + productString);
+        //Http = new HttpClient();
+
+        //httpResponse = await Http.PostAsync("https://localhost:44325/api/Shoppinglist/my", new StringContent(productString, Encoding.UTF8, "application/json"));
+
+        //httpResponse.EnsureSuccessStatusCode();
+        //string responseStr = await httpResponse.Content.ReadAsStringAsync();
+
+
 
         newProduct = string.Empty;
     }
