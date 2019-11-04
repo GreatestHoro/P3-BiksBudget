@@ -1,21 +1,42 @@
-﻿@page "/recipes"
+﻿@page "/recipe"
 @using BBCollection.BBObjects;
 @using Newtonsoft.Json;
-@inject HttpClient  Https
 
+@inject HttpClient  Http
 
-<h1>Recipes</h1>
+    <span class="text-muted ml-5">
+        Showing @recipeData.Count out of 1000
+    </span>
 
-@code
-{
-    String searchTerm = "";
-    List<Recipe> recipes = new List<Recipe>();
+<input placeholder="search" @bind="searchTerm" />
+<button class="btn btn-success" @onclick="(() => SearchIt())">Søg For Ronis Helbred</button>
 
-    protected async Task SearchRecipe(string searchTerm)
+<ul>
+    @foreach (var recipe in recipeData)
     {
-        String RecipiesList = await Https.GetStringAsync("https://localhost:44325/api/recipe/" + searchTerm);
+        <li> <button class="btn-group-toggle"> @recipe._Name </button></li>
+    }
+</ul>
 
-        recipes = JsonConvert.DeserializeObject<List<Recipe>>(RecipiesList);
+
+@code{
+    string printRecipe = "hej hej";
+    string searchTerm;
+    List<Recipe> recipeData = new List<Recipe>();
+
+
+    protected async Task SearchIt()
+    {
+
+        printRecipe = await Http.GetStringAsync("https://localhost:44325/api/recipe?recipeTitle=" + searchTerm);
+
+        recipeData = JsonConvert.DeserializeObject<List<Recipe>>(printRecipe);
+
     }
 
+    protected override async Task OnInitializedAsync()
+    {
+
+    }
+    //https://localhost:44325/api/recipe
 }
