@@ -50,6 +50,8 @@ else
         <input placeholder="A new Product" @bind="@newProduct" />
         <button @onclick="AddProduct">Create</button>
 
+        <button @onclick="stuff">Get Fucked</button>
+
     }
 }
 
@@ -71,7 +73,7 @@ else
     private async void AddProduct()
     {
         // *Insert search method here*
-        var httpResponse = new HttpResponseMessage();
+        var response = new HttpResponseMessage();
 
 
         coopProduct.Add(new CoopProduct
@@ -88,7 +90,10 @@ else
 
 
         productString = JsonConvert.SerializeObject(coopProduct[coopProduct.Count - 1]);
-        await Http.PostAsync("https://localhost:44325/api/Shoppinglist/my", new StringContent(productString, Encoding.UTF8, "application/json"));
+        var content = new StringContent(productString, Encoding.UTF8, "application/json");
+        response = await Http.PostAsync("https://localhost:44325/api/Shoppinglist", content);
+
+        string result = response.Content.ReadAsStringAsync().Result;
 
         //stuff = await Http.GetAsync("https://localhost:44325/api/Shoppinglist/" + productString);
         //Http = new HttpClient();
@@ -97,7 +102,6 @@ else
 
         //httpResponse.EnsureSuccessStatusCode();
         //string responseStr = await httpResponse.Content.ReadAsStringAsync();
-
 
 
         newProduct = string.Empty;
@@ -131,8 +135,6 @@ else
         //coopProduct.Remove(coopProduct.First(x => x.Id == id));
     }
 
-
-
     private async void SaveList()
     {
         productString = JsonConvert.SerializeObject(coopProduct);
@@ -143,5 +145,34 @@ else
         //var stringContent = new StringContent(productString);
 
         //HttpResponseMessage result = await Http.PostAsync("https://localhost:44325/api/Save", stringContent);
+    }
+}
+@code{
+    public class Person
+    {
+        public string Name { get; set; }
+        public string Occupation { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Name}: {Occupation}";
+        }
+    }
+
+    private async void stuff()
+    {
+        var person = new Person();
+        person.Name = "John Doe";
+        person.Occupation = "gardener";
+
+        var json = JsonConvert.SerializeObject(person);
+        var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+        var url = "https://httpbin.org/post";
+
+        var response = await Http.PostAsync(url, data);
+
+        string result = response.Content.ReadAsStringAsync().Result;
+        Console.WriteLine(result);
     }
 }

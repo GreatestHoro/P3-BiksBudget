@@ -91,18 +91,17 @@ namespace Backend.Controllers
         //}
 
         // POST: api/Shoppinglist
-        [Route("api/Shoppinglist/my")]
+        //[Route("api/create")]
         [HttpPost]
-        public void Post([FromBody]String value)
+        public HttpResponseMessage Post([FromBody]String value)
         {
-
-
             var stuffTwo = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
 
             string stuff = value.ToString();
 
             productData = JsonConvert.DeserializeObject<List<CoopProduct>>(stuff);
 
+            return stuffTwo;
         }
 
         // PUT: api/Shoppinglist/5
