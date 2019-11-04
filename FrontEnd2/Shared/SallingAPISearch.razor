@@ -1,0 +1,96 @@
+﻿@using System.Globalization
+@using FrontEnd2.StoreApi.ApiNeeds
+
+<h3>Search A Product</h3>
+<div class="form-row">
+    <div class="form-group col-md-6">
+        <label for="search">Søg Efter En Råvare!</label>
+        <input type="text" id="search" class="form-control" placeholder="Råvare.." @bind="@searchBox" />
+    </div>
+    <div class="form-group" col-md-6>
+        <label for="minPriceB">Minimum Price</label>
+        <input type="number" class="form-control" placeholder="Min Price" @bind="minPrice" />
+    </div>
+    <div class="form-group" col-md-6>
+        <label for="maxPriceB">Maximum Price</label>
+        <input type="number" class="form-control" placeholder="Max Price" @bind="maxPrice" />
+    </div>
+    <button type="button" class="btn btn-success" @onclick="@(() => SearchForProducts())">Find Mig En Spise!</button>
+
+</div>
+
+    @if (print == true)
+    {
+        <p>hej 2: @counter</p>
+        <p>you want: @searchBox</p>
+        foreach (var product in resultProductQuery)
+        {
+            <div class="flex-sm-row">
+                <img src="@product.img" class="img-thumbnail" alt="billede af @product.title">
+                <div class="card-body">
+                    <h5 class="card-title" style="font-weight:bold">@product.title</h5>
+                    <p class="btn btn-warning">@product.price DKK</p>
+                    <button href="#" class="btn btn-success">Læg Til Shoppinglisten</button>
+                </div>
+            </div>
+        }
+    }
+
+@code {
+
+    string searchBox;
+    double minPrice;
+    double maxPrice;
+    double MaxPrice {
+        get
+        {
+            if (maxPrice <= 0)
+            {
+                maxPrice = double.MaxValue;
+            }
+            return maxPrice;
+        }
+        set
+        {
+            if (value <= 0)
+            {
+                maxPrice = double.MaxValue;
+            } else
+            {
+                maxPrice = value;
+            }
+        }
+    }
+    BearerAccessToken bearerAccessToken = new BearerAccessToken("a6f4495c-ace4-4c39-805c-46071dd536db");
+    SallingAPILink linkMaker = new SallingAPILink();
+    bool print = false;
+    int counter = 0;
+    string save;
+
+    SallingAPIProductSuggestions productSuggestions = new SallingAPIProductSuggestions();
+    List<SallingAPIProduct> resultProductQuery = new List<SallingAPIProduct>();
+    Filter<SallingAPIProduct> productFilter = new Filter<SallingAPIProduct>();
+
+    private void SearchForProducts()
+    {
+        save = searchBox;
+        string apiLink = linkMaker.GetProductAPILink(searchBox);
+
+        OpenHttp<SallingAPIProductSuggestions> openHttp = new OpenHttp<SallingAPIProductSuggestions>(apiLink, bearerAccessToken.GetBearerToken());
+
+        productSuggestions = openHttp.ReadAndParseAPISingle();
+
+        productSuggestions.Suggestions.Sort((a, b) => a.price.CompareTo(b.price));
+
+        resultProductQuery = productFilter.GetFiltered(productSuggestions.Suggestions, p => p.price > minPrice & p.price < MaxPrice);
+
+        foreach (var product in productSuggestions.Suggestions)
+        {
+            Console.WriteLine(product.title);
+        }
+        print = true;
+        Console.WriteLine(counter);
+        counter++;
+    }
+
+}

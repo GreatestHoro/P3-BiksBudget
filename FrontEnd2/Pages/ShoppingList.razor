@@ -23,21 +23,24 @@ else
         <tbody>
             @foreach (var items in coopProduct)
             {
-            <tr>
-                <td><button @onclick="(() => DeleteProduct(items.VareHierakiId))"><i class="oi oi-trash"></i></button></td>
-                <td>@items.Navn</td>
-                <td>@items.Navn2</td>
-                <td>@items.Pris.ToString() kr</td>
-                <td><button @onclick="(() => AddProductToStorage(items.VareHierakiId))"><i class="oi oi-basket"></i></button></td>
-            </tr>
+                <tr>
+                    <td><button @onclick="(() => DeleteProduct(items.VareHierakiId))"><i class="oi oi-trash"></i></button></td>
+                    <td>@items.Navn</td>
+                    <td>@items.Navn2</td>
+                    <td>@items.Pris.ToString() kr</td>
+                    <td><button @onclick="(() => AddProductToStorage(items.VareHierakiId))"><i class="oi oi-basket"></i></button></td>
+                </tr>
             }
         </tbody>
     </table>
+
+    <button @onclick="SaveList">Save Progress</button>
 
     @if (coopProduct != null)
     {
         <input placeholder="A new Product" @bind="@newProduct" />
         <button @onclick="AddProduct">Create</button>
+
     }
 }
 
@@ -59,7 +62,7 @@ else
     {
         // *Insert search method here*
 
-        coopProduct.Add( new CoopProduct
+        coopProduct.Add(new CoopProduct
         {
             Navn = newProduct,
             Navn2 = "-1 g.",
@@ -76,10 +79,20 @@ else
         coopProduct.Remove(coopProduct.First(x => x.VareHierakiId == id));
     }
 
-    private void AddProductToStorage(int id)
+    public void AddProductToStorage(int id)
     {
         // *Insert Add To Storage Method*
 
         coopProduct.Remove(coopProduct.First(x => x.VareHierakiId == id));
+    }
+
+    
+
+    private async void SaveList()
+    {
+        productString = JsonConvert.SerializeObject(coopProduct);
+
+        //await Http.GetStringAsync("https://localhost:44325/api/Shoppinglist/5" + productString);
+        await Http.PostAsync("https://localhost:44325/api/Shoppinglist/save" + productString, new StringContent(productString));
     }
 }

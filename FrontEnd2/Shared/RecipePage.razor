@@ -1,0 +1,40 @@
+﻿@page "/ronis"
+@using BBCollection.BBObjects;
+@using Newtonsoft.Json;
+
+@inject HttpClient  Http
+
+<p> YEET</p>
+
+<input placeholder="search" @bind="searchTerm"/>
+<button class="btn btn-success" @onclick="(() => SearchIt())">Søg For Ronis Helbred</button>
+
+
+<p>@printRecipe</p>
+
+@foreach (var recipe in recipeData)
+{
+    <p>recipe: @recipe._Name</p>
+}
+
+@code{
+    string printRecipe = "hej hej";
+    string searchTerm;
+    List<Recipe> recipeData = new List<Recipe>();
+
+
+    protected async Task SearchIt()
+    {
+
+        printRecipe = await Http.GetStringAsync("https://localhost:44325/api/recipe?recipeTitle=" + searchTerm);
+
+        recipeData = JsonConvert.DeserializeObject<List<Recipe>>(printRecipe);
+
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+
+    }
+    //https://localhost:44325/api/recipe
+}

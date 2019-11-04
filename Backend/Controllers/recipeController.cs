@@ -79,7 +79,11 @@ namespace Backend.Controllers
 
             string jsonRecipes = JsonConvert.SerializeObject(recipeData);
 
-            return jsonRecipes;
+            DatabaseConnect dbConnect = new DatabaseConnect("localhost", "BiksBudgetDB", "root", "BiksBudget123");
+
+            string jsonDBRecipes = JsonConvert.SerializeObject(dbConnect.GetRecipes(recipeTitle));
+
+            return jsonDBRecipes;
         }
 
         // GET: api/recipe/5
@@ -110,6 +114,6 @@ namespace Backend.Controllers
         }
     }
 
-    
+
 
 }

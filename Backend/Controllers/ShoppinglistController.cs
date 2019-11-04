@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 
 namespace Backend.Controllers
 {
-    class TestProduct
+    public class TestProduct
     {
         List<CoopProduct> stuff = new List<CoopProduct>
         {
@@ -24,7 +24,7 @@ namespace Backend.Controllers
         }
     }
 
-    class CoopProduct
+    public class CoopProduct
     {
         public string Ean { get; set; }
         public string Navn { get; set; }
@@ -37,13 +37,14 @@ namespace Backend.Controllers
     [ApiController]
     public class ShoppinglistController : ControllerBase
     {
-        TestProduct test = new TestProduct();
+        public TestProduct test = new TestProduct();
+        List<CoopProduct> productData;
 
         // GET: api/Shoppinglist
         [HttpGet]
         public string Get()
         {
-            List<CoopProduct> productData = test.GetStuff();
+            productData = test.GetStuff();
 
             string jsonRecipes = JsonConvert.SerializeObject(productData);
 
@@ -54,15 +55,19 @@ namespace Backend.Controllers
 
         // GET: api/Shoppinglist/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public void Get(string id)
         {
-            return "value";
+            //return "value";
+            productData = JsonConvert.DeserializeObject<List<CoopProduct>>(id);
         }
 
         // POST: api/Shoppinglist
+        [Route("api/Shoppinglist/save")]
         [HttpPost]
         public void Post([FromBody] string value)
         {
+            productData = JsonConvert.DeserializeObject<List<CoopProduct>>(value);
+            Console.WriteLine("stuff");
         }
 
         // PUT: api/Shoppinglist/5
