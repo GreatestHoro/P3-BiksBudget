@@ -1,0 +1,50 @@
+﻿@page "/yeet"
+@using BBCollection.BBObjects;
+@using Newtonsoft.Json;
+@using System.Text;
+@using System.Text.Json;
+@inject HttpClient Http
+
+<h3>@yeet</h3>
+
+
+@code {
+    string yeet;
+
+    protected async override Task OnInitializedAsync()
+    {
+        DemoData yoot = new DemoData();
+        String test = JsonConvert.SerializeObject(yoot.GetRecipes());
+        var yeeter = new StringContent(test, Encoding.UTF8, "application/json");
+        //yeeter.Headers.Add("Accept", "application/json");
+
+
+        HttpResponseMessage hej = await Http.PostAsync(new Uri("https://localhost:44325/post"),yeeter);
+
+        yeet = await Http.GetStringAsync("https://localhost:44325/api/Send/"+test);
+        //coopProduct = JsonConvert.DeserializeObject<List<CoopProduct>>(productString);
+    }
+
+    public class DemoData
+    {
+        public List<Ingredient> in1 = new List<Ingredient> { new Ingredient("kalkun", "kg", 10f) };
+
+        public Recipe kalkun = new Recipe(1, "kalkun", "spis det nu bare!", new List<Ingredient> { new Ingredient("kalkun", "kg", 10f) }, 4);
+
+        public Recipe slik = new Recipe(1, "slik", "spis", new List<Ingredient> { new Ingredient("sukker", "ton", 1f) }, 1);
+
+        public List<Recipe> recipeDatak = new List<Recipe>();
+
+        public DemoData()
+        {
+            //recipeDatak.Add(kalkun);
+            recipeDatak.Add(slik);
+        }
+
+        public List<Recipe> GetRecipes()
+        {
+            return recipeDatak;
+        }
+
+    }
+}

@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Text;
+using System.Net.Http;
 
 namespace Backend.Controllers
 {
@@ -13,9 +15,18 @@ namespace Backend.Controllers
     {
         // GET: api/Send/5
         [HttpGet("{Serialized}")]
-        public string Get(int id)
+        public string Get(String Serialized)
         {
-            return "value";
+            return Serialized;
+        }
+        
+        // Post: api/Send/5
+
+        [HttpPost]
+        [Route(nameof(Post))]
+        public void Post([FromBody]String Serialized)
+        {
+            
         }
 
     }
