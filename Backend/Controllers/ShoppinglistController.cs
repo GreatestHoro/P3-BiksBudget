@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -33,7 +34,7 @@ namespace Backend.Controllers
         public string Navn2 { get; set; }
         public double Pris { get; set; }
         public int VareHierakiId { get; set; }
-        public int Id;
+        public int Id { get; set; }
     }
 
     [Route("api/[controller]")]
@@ -54,21 +55,19 @@ namespace Backend.Controllers
             return jsonRecipes;
         }
 
-
-
         // GET: api/Shoppinglist/5
-        [Route("api/Shoppinglist/{value}")]
-        [HttpGet]
-        public HttpResponseMessage Get(string value)
-        {
-            var stuff = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
+        //[Route("api/Shoppinglist/{value}")]
+        //[HttpGet]
+        //public HttpResponseMessage Get(string value)
+        //{
+        //    var stuff = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
 
-            List<CoopProduct> newItem = JsonConvert.DeserializeObject<List<CoopProduct>>(value);
+        //    List<CoopProduct> newItem = JsonConvert.DeserializeObject<List<CoopProduct>>(value);
 
-            productData.Add(newItem[0]);
+        //    productData.Add(newItem[0]);
 
-            return stuff;
-        }
+        //    return stuff;
+        //}
 
         //// GET: api/Shoppinglist/5
         //[Route("api/Shoppinglist/{id}")]
@@ -91,17 +90,34 @@ namespace Backend.Controllers
         //}
 
         // POST: api/Shoppinglist
-        //[Route("api/create")]
         [HttpPost]
-        public HttpResponseMessage Post([FromBody]String value)
+        public void Post(String value)
         {
-            var response = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
+            string buffer;
+            List<CoopProduct> newItem = new List<CoopProduct>();
+            productData = test.GetStuff();
 
-            string stuff = value.ToString();
+            HttpRequest request = HttpContext.Request;
+            Microsoft.AspNetCore.Http.HttpRequestRewindExtensions.EnableBuffering(request);
 
-            productData = JsonConvert.DeserializeObject<List<CoopProduct>>(stuff);
+            using (var sr = new StreamReader(request.Body))
+            {
+                buffer = sr.ReadToEnd();
+            }
 
-            return response;
+            if (buffer.Substring(0, 1) != "[")
+            {
+                buffer = "[" + buffer + "]";
+
+                newItem = JsonConvert.DeserializeObject<List<CoopProduct>>(buffer);
+                productData.Add(newItem[0]);
+                newItem.Clear();
+            }
+            else
+            {
+                newItem = JsonConvert.DeserializeObject<List<CoopProduct>>(buffer);
+                productData = newItem;
+            }
         }
 
         // PUT: api/Shoppinglist/5
@@ -112,21 +128,18 @@ namespace Backend.Controllers
 
         //// DELETE: api/ApiWithActions/5
         //[HttpDelete("{id}")]
-        //public HttpResponseMessage Delete(int id)
+        //public void Delete(int id)
         //{
-        //    HttpResponseMessage pls = new HttpResponseMessage();
+        //    productData = test.GetStuff();
 
         //    productData.Remove(productData.First(x => x.Id == id));
 
-        //    //int i = 1;
-
-        //    //foreach (var product in productData)
-        //    //{
-        //    //    product.Id = i;
-        //    //    i++;
-        //    //}
-
-        //    return pls;
+        //    int i = 1;
+        //    foreach (var product in productData)
+        //    {
+        //        product.Id = i;
+        //        i++;
+        //    }
         //}
     }
 }

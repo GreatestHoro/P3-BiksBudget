@@ -5,6 +5,7 @@
 @using System.Text;
 @using System.Net.Http.Headers;
 
+
 <h1>Shopping List</h1>
 
 @if (coopProduct == null)
@@ -15,44 +16,41 @@
 }
 else
 {
-    <table class="ShoppingList">
-        <thead>
-            <tr>
-                <th>Remove</th>
-                <th>Name</th>
-                <th>Description</th>
-                <th>Price</th>
-                <th>Add To Storage</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var items in coopProduct)
+    <div class="container">
+        <div class="row col-md-6 col-md-offset-2 custyle">
+            <table class="ShoppingList">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Price</th>
+                        <th>Remove / To Storage</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var items in coopProduct)
+                    {
+                        <tr>
+                            <td>@items.Navn</td>
+                            <td>@items.Navn2</td>
+                            <td>@items.Pris.ToString() kr</td>
+                            <td>
+                                <div class="text-center">
+                                    <button @onclick="(() => AddProductToStorage(items.VareHierakiId))"><i class="oi oi-basket"></i></button>
+                                    <button @onclick="(() => DeleteProduct(items.Id))"><i class="oi oi-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            @if (coopProduct != null)
             {
-                <tr>
-                    <td>
-                        <button @onclick="(() => DeleteProduct(items.Id))"><i class="oi oi-trash"></i></button>
-                    </td>
-                    <td>@items.Navn</td>
-                    <td>@items.Navn2</td>
-                    <td>@items.Pris.ToString() kr</td>
-                    <td>
-                        <button @onclick="(() => AddProductToStorage(items.VareHierakiId))"><i class="oi oi-basket"></i></button>
-                    </td>
-                </tr>
+                <input placeholder="A new Product" @bind="@newProduct"/>
+                <button @onclick="AddProduct">Create</button>
             }
-        </tbody>
-    </table>
-
-    <button @onclick="SaveList">Save Progress</button>
-
-    @if (coopProduct != null)
-    {
-        <input placeholder="A new Product" @bind="@newProduct" />
-        <button @onclick="AddProduct">Create</button>
-
-        <button @onclick="stuff">Get Fucked</button>
-
-    }
+        </div>
+    </div>
 }
 
 
@@ -60,7 +58,7 @@ else
     List<CoopProduct> coopProduct = new List<CoopProduct>();
     string productString;
     string newProduct;
-    bool isDone = false;
+    //bool isDone = false;
     //private string newItem;
 
     protected async override Task OnInitializedAsync()
@@ -68,6 +66,17 @@ else
         productString = await Http.GetStringAsync("https://localhost:44325/api/Shoppinglist");
 
         coopProduct = JsonConvert.DeserializeObject<List<CoopProduct>>(productString);
+    }
+
+    protected double CompletePrice()
+    {
+        double result = 0;
+
+        foreach (var item in coopProduct)
+        {
+            result += item.Pris;
+        }
+        return result;
     }
 
     private async void AddProduct()
@@ -79,15 +88,12 @@ else
         coopProduct.Add(new CoopProduct
         {
             Navn = newProduct,
-            Navn2 = "EMPTY",
-            Ean = "EMPTY",
+            Navn2 = "Name two",
+            Ean = "Item Number (EAN)",
             Pris = 0.00,
             VareHierakiId = 0000,
             Id = coopProduct.Count() + 1
         });
-
-        //var content = new FormUrlEncodedContent(coopProduct[coopProduct.Count - 1]);
-
 
         productString = JsonConvert.SerializeObject(coopProduct[coopProduct.Count - 1]);
         var content = new StringContent(productString, Encoding.UTF8, "application/json");
@@ -95,44 +101,30 @@ else
 
         string result = response.Content.ReadAsStringAsync().Result;
 
-        //stuff = await Http.GetAsync("https://localhost:44325/api/Shoppinglist/" + productString);
-        //Http = new HttpClient();
-
-        //httpResponse = await Http.PostAsync("https://localhost:44325/api/Shoppinglist/my", new StringContent(productString, Encoding.UTF8, "application/json"));
-
-        //httpResponse.EnsureSuccessStatusCode();
-        //string responseStr = await httpResponse.Content.ReadAsStringAsync();
-
-
         newProduct = string.Empty;
     }
 
     private async void DeleteProduct(int id)
     {
+        var response = new HttpResponseMessage();
         coopProduct.Remove(coopProduct.First(x => x.Id == id));
 
-        var isDone = await Http.DeleteAsync("https://localhost:44325/api/ApiWithActions/" + id);
-
-        if (isDone.IsSuccessStatusCode == false)
-        {
-            Console.WriteLine("Pls Work");
-        }
-
         int i = 1;
-
         foreach (var product in coopProduct)
         {
             product.Id = i;
             i++;
         }
+
+        //var response = await Http.DeleteAsync("https://localhost:44325/api/ApiWithActions/" + id);
+        productString = JsonConvert.SerializeObject(coopProduct);
+        var content = new StringContent(productString, Encoding.UTF8, "application/json");
+        response = await Http.PostAsync("https://localhost:44325/api/Shoppinglist", content);
     }
 
     private void AddProductToStorage(int id)
     {
-        // *Insert Add To Storage Method*
-        //await Http.DeleteAsync("https://localhost:44325/api/ApiWithActions/" + id);
-
-        //coopProduct.Remove(coopProduct.First(x => x.Id == id));
+        coopProduct.Remove(coopProduct.First(x => x.Id == id));
     }
 
     private async void SaveList()
@@ -145,34 +137,6 @@ else
         //var stringContent = new StringContent(productString);
 
         //HttpResponseMessage result = await Http.PostAsync("https://localhost:44325/api/Save", stringContent);
-    }
-}
-@code{
-    public class Person
-    {
-        public string Name { get; set; }
-        public string Occupation { get; set; }
 
-        public override string ToString()
-        {
-            return $"{Name}: {Occupation}";
-        }
-    }
-
-    private async void stuff()
-    {
-        var person = new Person();
-        person.Name = "John Doe";
-        person.Occupation = "gardener";
-
-        var json = JsonConvert.SerializeObject(person);
-        var data = new StringContent(json, Encoding.UTF8, "application/json");
-
-        var url = "https://httpbin.org/post";
-
-        var response = await Http.PostAsync(url, data);
-
-        string result = response.Content.ReadAsStringAsync().Result;
-        Console.WriteLine(result);
     }
 }
