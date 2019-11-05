@@ -1,20 +1,39 @@
 ﻿@page "/recipe"
 @using BBCollection.BBObjects;
 @using Newtonsoft.Json;
+@using System.Text;
 
 @inject HttpClient  Http
 
-    <span class="text-muted ml-5">
-        Showing @recipeData.Count out of 1000
-    </span>
+<span class="text-muted ml-5">
+    Showing @recipeData.Count out of 1000
+</span>
 
 <input placeholder="search" @bind="searchTerm" />
 <button class="btn btn-success" @onclick="(() => SearchIt())">Søg For Ronis Helbred</button>
 
+<button class="btn btn-danger" @onclick="AddToPost">Tilføj til Post - Le Test</button>
+
+@if (httpResponseMessage.IsSuccessStatusCode)
+{
+    <p class="text-success">works</p>
+    <p class="text-info">@httpResponseMessage.Content</p>
+    <p class="text-info">@httpResponseMessage.StatusCode</p>
+    <p class="text-info">@httpResponseMessage.RequestMessage</p>
+}
+else
+{
+    <p class="text-warning">NOT works</p>
+    <p class="text-info">@httpResponseMessage.Content</p>
+    <p class="text-info">@httpResponseMessage.StatusCode</p>
+    <p class="text-info">@httpResponseMessage.StatusCode</p>
+    <p class="text-info">@httpResponseMessage.RequestMessage</p>
+}
+
 <ul>
     @foreach (var recipe in recipeData)
     {
-        <li> <button class="btn-group-toggle"> @recipe._Name </button></li>
+        <li> <button class="btn btn-info">@recipe._Name</button></li>
     }
 </ul>
 
@@ -23,20 +42,23 @@
     string printRecipe = "hej hej";
     string searchTerm;
     List<Recipe> recipeData = new List<Recipe>();
-
+    HttpResponseMessage httpResponseMessage = new HttpResponseMessage();
 
     protected async Task SearchIt()
     {
-
         printRecipe = await Http.GetStringAsync("https://localhost:44325/api/recipe?recipeTitle=" + searchTerm);
 
         recipeData = JsonConvert.DeserializeObject<List<Recipe>>(printRecipe);
-
     }
 
-    protected override async Task OnInitializedAsync()
+    protected async Task AddToPost()
     {
+        string recipeDataSerialized = JsonConvert.SerializeObject(recipeData);
+        StringContent content = new StringContent(recipeDataSerialized, Encoding.UTF8, "application/json");
+
+        httpResponseMessage = await Http.PostAsync("https://localhost:44325/api/recipe", content);
 
     }
+
     //https://localhost:44325/api/recipe
 }
