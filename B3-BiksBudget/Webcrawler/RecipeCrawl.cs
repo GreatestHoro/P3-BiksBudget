@@ -2,16 +2,21 @@
 using BBCollection.BBObjects;
 using HtmlAgilityPack;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using BBGatherer.StoreApi.SallingApi;
+using BBGatherer.StoreApi;
+
+
 
 namespace BBGatherer.Webcrawler
 {
     class RecipeCrawl
     {
-        public static async Task GetRecipes(int start_page, int Last_page, DatabaseConnect dbConnect)
+        public async Task GetRecipes(int start_page, int Last_page, DatabaseConnect dbConnect)
         {
             List<Recipe> opskrifter = new List<Recipe>(); //The list that holdes the recipies
 
@@ -49,8 +54,8 @@ namespace BBGatherer.Webcrawler
                         {
                             if (!ind.InnerText.Contains(':'))
                             {
-                                Ingredient ingredient = CreateIngriedient(ind.InnerText, out validity, out fatalError);
-                                if (validity) 
+                                Ingredient ingredient = CreateIngriedient(ind.InnerText, out validity, out fatalError,dbConnect);
+                                if (validity)
                                 {
                                     IngriedisensList.Add(ingredient);
                                 }
@@ -59,7 +64,7 @@ namespace BBGatherer.Webcrawler
                             //Console.WriteLine(ind.InnerText);
                         }
 
-                        if (!fatalError) 
+                        if (!fatalError)
                         {
                             dbConnect.AddRecipe(new Recipe
                             (i, name.ElementAt<HtmlNode>(0).InnerText,
@@ -79,7 +84,7 @@ namespace BBGatherer.Webcrawler
 
         }
 
-        public static float CleanUpPerPerson(HtmlNodeCollection _PerPerson)
+        private float CleanUpPerPerson(HtmlNodeCollection _PerPerson)
         {
 
             if (_PerPerson != null)
@@ -104,19 +109,82 @@ namespace BBGatherer.Webcrawler
 
         }
 
-        public static Ingredient CreateIngriedient(String ind, out bool validity, out bool fatalError)
+        private Ingredient CreateIngriedient(String ind, out bool validity, out bool fatalError, DatabaseConnect dbConnect)
         {
             float amount = DeterminAmount(ind);
             String unit = DeterminUnit(ind);
             String name = DeterminName(ind).Trim();
             name = NameCleanUp(name);
+           /* name =*/ CheckForValidIndgredients("hakkede krydderurter yeet", dbConnect);
 
-            validity = EvaluateName(name,out fatalError);
+            validity = EvaluateName(name, out fatalError);
 
             return new Ingredient(name, unit, amount);
         }
+        private void CheckForValidIndgredients(String name, DatabaseConnect dbConnect)
+        {
+            String[] str = name.Split(" ");
+            int CombinationSize = 1;
+            int Start = 0;
 
-        public static float DeterminAmount(String ingrediens)
+            while (CombinationSize <= str.Length) 
+            {
+                while (Start <= str.Length - CombinationSize)
+                {
+                    Console.WriteLine(GetCombination(str, CombinationSize, Start++));
+                }
+                Start = 0;
+                CombinationSize++;
+            }
+            
+            Console.WriteLine("finish");
+            
+            
+
+        }
+        private string GetCombination(string[] str, int size,int i) 
+        {
+            String ReturnString = "";
+            foreach (String word in Combination(str, size, i))
+            {
+                ReturnString = ReturnString +" "+ word;
+            }
+            return ReturnString;
+        }
+
+        private List<String> Combination(string[] str, int size, int i) 
+        {
+            List<String> Comb = new List<string>();
+            List<String> ReturnArray = new List<string>();
+            if (size == 0)
+            { 
+                return ReturnArray;
+            }
+            else
+            {
+                ReturnArray.Add(str[i]);
+                
+                Comb = Combination(str, --size, ++i);
+                foreach (String strList in Comb) 
+                {
+                    ReturnArray.Add(strList);
+                }
+                return ReturnArray;
+
+            }
+        }
+        private bool CheckIngredient(String Searchterm,DatabaseConnect dbConnect) 
+        {
+            List<Product> Products = dbConnect.GetProducts(Searchterm);
+            bool IfExist = false;
+            if (Products.Count != 0) 
+            {
+                IfExist = true;
+            }
+            return IfExist;
+        }
+
+        private float DeterminAmount(String ingrediens)
         {
             String[] SplitString = ingrediens.Split(' ');
             float Amount;
@@ -130,13 +198,13 @@ namespace BBGatherer.Webcrawler
             return 0;
         }
 
-        public static String DeterminUnit(String ingrediens)
+        private String DeterminUnit(String ingrediens)
         {
             String[] SplitString = ingrediens.Split(' ');
             return SplitString[1];
         }
 
-        public static String DeterminName(String ingrediens)
+        private String DeterminName(String ingrediens)
         {
             String[] SplitString = ingrediens.Split(' ');
             String ReturnString = "";
@@ -148,8 +216,9 @@ namespace BBGatherer.Webcrawler
             return ReturnString;
         }
 
-        public static bool EvaluateName(String name,out bool fatalError) 
+        private bool EvaluateName(String name,out bool fatalError) 
         {
+            //Subject to big changes
             String[] SplitString = name.Split(" ");
             if (SplitString.Length > 2)
             {
@@ -171,15 +240,16 @@ namespace BBGatherer.Webcrawler
             }
         }
 
-        public static String NameCleanUp(String name) 
+        private String NameCleanUp(String name) 
         {
             name = RemoveParentheses(name);
             name = RemoveSubstring(name, "evt. ");
+            name = name.ToLower();
 
-            return name;
+            return name.Trim();
 
         }
-        public static string RemoveSubstring(String name,String substring) 
+        private string RemoveSubstring(String name,String substring) 
         {
             if (name.Contains(substring)) 
             {
@@ -188,7 +258,7 @@ namespace BBGatherer.Webcrawler
             return name;
         }
 
-        public static String RemoveParentheses(string name) 
+        private String RemoveParentheses(string name) 
         {
             char[] chars = name.ToCharArray();
             bool ParenthesesFlag = false;
@@ -215,7 +285,7 @@ namespace BBGatherer.Webcrawler
             return _string;
         }
 
-        public static bool CheckIfPageFound(HtmlNodeCollection name, HtmlNodeCollection beskrivels, HtmlNodeCollection ingredienser)
+        private bool CheckIfPageFound(HtmlNodeCollection name, HtmlNodeCollection beskrivels, HtmlNodeCollection ingredienser)
         {
             if (name == null || beskrivels == null || ingredienser == null)
             {
