@@ -95,38 +95,38 @@ namespace Backend.Controllers
         [HttpPost]
         public HttpResponseMessage Post([FromBody]String value)
         {
-            var stuffTwo = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
+            var response = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
 
             string stuff = value.ToString();
 
             productData = JsonConvert.DeserializeObject<List<CoopProduct>>(stuff);
 
-            return stuffTwo;
+            return response;
         }
 
         // PUT: api/Shoppinglist/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
+        //[HttpPut("{id}")]
+        //public void Put(int id, [FromBody] string value)
+        //{
+        //}
 
-        // DELETE: api/ApiWithActions/5
-        [HttpDelete("{id}")]
-        public HttpResponseMessage Delete(int id)
-        {
-            HttpResponseMessage pls = new HttpResponseMessage();
+        //// DELETE: api/ApiWithActions/5
+        //[HttpDelete("{id}")]
+        //public HttpResponseMessage Delete(int id)
+        //{
+        //    HttpResponseMessage pls = new HttpResponseMessage();
 
-            productData.Remove(productData.First(x => x.Id == id));
+        //    productData.Remove(productData.First(x => x.Id == id));
 
-            //int i = 1;
+        //    //int i = 1;
 
-            //foreach (var product in productData)
-            //{
-            //    product.Id = i;
-            //    i++;
-            //}
+        //    //foreach (var product in productData)
+        //    //{
+        //    //    product.Id = i;
+        //    //    i++;
+        //    //}
 
-            return pls;
-        }
+        //    return pls;
+        //}
     }
 }
