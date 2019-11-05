@@ -49,5 +49,17 @@ namespace BBCollection
         {
             new InitializeDB().start(dbInfo.GetConnect());
         }
+
+        public void InitializeUserDatabase()
+        {
+            new InitializeDB().CreateUserDB(dbInfo.GetConnect());
+        }
+
+        /* In this section the user functions will get handled. */
+
+        public void AddUser(string username, string password, string email)
+        {
+            new UserHandling().InsertUser(username, password, dbInfo.GetConnect());
+        }
     }
 }

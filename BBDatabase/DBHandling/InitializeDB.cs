@@ -13,6 +13,11 @@ namespace BBCollection.DBHandling
             GenerateAPIDatabaseTables(dbInformation);
         }
 
+        public void CreateUserDB(DatabaseInformation dbInfo)
+        {
+            GenerateUserDatabaseTables(dbInfo);
+        }
+
         /*
          Check if database exist, if it don't it will create it
         */
@@ -77,7 +82,7 @@ namespace BBCollection.DBHandling
         {
             string productTable =
                 "CREATE TABLE IF NOT EXISTS `products` (" +
-                "`id` INT AUTO_INCREMENT," +
+                "`id` INT AUTO_INCREMENT UNIQUE," +
                 "`ean` VARCHAR(255)," +
                 "`productName` VARCHAR(255)," +
                 "`productName2` VARCHAR(255)," +
@@ -86,6 +91,18 @@ namespace BBCollection.DBHandling
                 "PRIMARY KEY(id));";
 
             new SQLConnect().NonQueryString(productTable, dbInformation);
+        }
+
+        private void GenerateUserDatabaseTables(DatabaseInformation databaseInformation)
+        {
+            string userTable =
+                "CREATE TABLE IF NOT EXISTS `users` (" +
+                "`id` INT AUTO_INCREMENT UNIQUE, " +
+                "`username` VARCHAR(255) UNIQUE, " +
+                "`password` VARCHAR(255), " +
+                "PRIMARY KEY(id))";
+
+            new SQLConnect().NonQueryString(userTable, databaseInformation);
         }
     }
 }
