@@ -122,24 +122,30 @@ namespace BBGatherer.Webcrawler
         private void CheckForValidIndgredients(String name, DatabaseConnect dbConnect)
         {
             String[] str = name.Split(" ");
+            List<String> AllMacthes = new List<string>();
+            AllMacthes.Add("");
             String IndgrdientName;
             bool IngredientFlag = false;
             int CombinationSize = 1;
             int Start = 0;
-            dbConnect.GetProducts("KINDER MÆLKESNITTE");
+            
             while (CombinationSize <= str.Length)
             {
                 while (Start <= str.Length - CombinationSize)
                 {
                     IndgrdientName = GetCombination(str, CombinationSize, Start++);
                     IngredientFlag = CheckIngredient(IndgrdientName,dbConnect);
-                    if (IngredientFlag) { Console.WriteLine(IndgrdientName); }
+                    if (IngredientFlag) { AllMacthes.Add(IndgrdientName); }
                 }
                 Start = 0;
                 CombinationSize++;
             }
 
-            Console.WriteLine("finish");
+            Console.WriteLine(AllMacthes[AllMacthes.Count-1]);
+            /*foreach (string s in AllMacthes) 
+            {
+                Console.WriteLine(s);
+            }*/
 
 
 
@@ -176,9 +182,8 @@ namespace BBGatherer.Webcrawler
         }
         private bool CheckIngredient(String Searchterm, DatabaseConnect dbConnect)
         {
-            List<Product> Products = dbConnect.GetProducts("MÆLK");
+            List<Product> Products = dbConnect.GetProducts(Searchterm);
             bool IfExist = true;
-
 
             if (Products.Count == 0)
             {
@@ -246,6 +251,7 @@ namespace BBGatherer.Webcrawler
         {
             name = RemoveParentheses(name);
             name = RemoveSubstring(name, "evt. ");
+            //name = RemoveSubstring(name, "med ");
             name = name.ToLower();
 
             return name.Trim();
