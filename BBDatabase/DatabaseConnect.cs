@@ -61,5 +61,10 @@ namespace BBCollection
         {
             new UserHandling().InsertUser(username, password, dbInfo.GetConnect());
         }
+
+        public bool CheckUser(string username, string password)
+        {
+            return new UserHandling().VerifyUser(username, password, dbInfo.GetConnect());
+        }
     }
 }

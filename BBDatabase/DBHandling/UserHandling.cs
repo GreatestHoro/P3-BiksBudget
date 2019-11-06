@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Text;
 using BBCollection.DBConncetion;
 using Microsoft.AspNet.Identity;
@@ -9,38 +10,57 @@ namespace BBCollection.DBHandling
 {
     class UserHandling
     {
-        public void InsertUser(string userName, string password, DatabaseInformation dbInfo)
+        public void InsertUser(string username, string password, DatabaseInformation dbInformation)
         {
-            InsertUserToDB(userName, password, dbInfo);
+            InsertUserToDB(username, password, dbInformation);
         }
 
-        public bool VerifyUser(string userName, string password)
+        public bool VerifyUser(string username, string password, DatabaseInformation dbInformation)
         {
-            return false;
+            return CheckHashedPassword(password, GetHashedPWFromUsername(username, dbInformation));
         }
 
-        private void InsertUserToDB(string userName, string password, DatabaseInformation dbInfo)
+        private void InsertUserToDB(string username, string password, DatabaseInformation dbInformation)
         {
-            string insertUser =
+            string insertUserQuery =
                 "INSERT INTO `users`(`username`,`password`) VALUES(@Username,@Password)";
-            MySqlCommand msc = new MySqlCommand(insertUser);
+            MySqlCommand msc = new MySqlCommand(insertUserQuery);
 
-            msc.Parameters.AddWithValue("@Username", userName);
+            msc.Parameters.AddWithValue("@Username", username);
             msc.Parameters.AddWithValue("@Password", ConvertPasswordToHash(password));
 
-            new SQLConnect().NonQueryMSC(msc, dbInfo);
+            new SQLConnect().NonQueryMSC(msc, dbInformation);
         }
 
-        private string GetHashedPWFromUsername(string username)
+        private string GetHashedPWFromUsername(string username, DatabaseInformation dbInformation)
         {
-            return null;
+            string getPasswordQuery =
+                "SELECT password FROM users WHERE username = @Username ;";
+
+            MySqlCommand msc = new MySqlCommand(getPasswordQuery);
+            msc.Parameters.AddWithValue("@Username", username);
+
+            DataSet ds = new SQLConnect().DynamicSimpleListSQL(msc, dbInformation);
+
+            string test = (string) ds.Tables[0].Rows[0]["password"];
+
+            return test;
+        }
+
+        private bool CheckHashedPassword(string password, string hashedPassword)
+        {
+            if(new PasswordHasher().VerifyHashedPassword(hashedPassword, password) == PasswordVerificationResult.Success)
+            {
+                return true;
+            } else
+            {
+                return false;
+            }
         }
 
         private string ConvertPasswordToHash(string password)
         {
-            string pwh = new PasswordHasher().HashPassword(password);
-            Console.WriteLine(new PasswordHasher().VerifyHashedPassword(pwh, password));
-            return pwh;
+            return new PasswordHasher().HashPassword(password);
         }
     }
 }
