@@ -1,12 +1,14 @@
 ﻿using BBCollection;
 using BBCollection.BBObjects;
+using BBGatherer.StoreApi;
+using BBGatherer.StoreApi.SallingApi;
 using HtmlAgilityPack;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+
 
 namespace BBGatherer.Webcrawler
 {
@@ -182,6 +184,11 @@ namespace BBGatherer.Webcrawler
         }
         private bool CheckIngredient(String Searchterm, DatabaseConnect dbConnect)
         {
+            return   CheckIngredientInDatabase(Searchterm, dbConnect) || CheckIngredientsInApi(Searchterm.Trim());
+        }
+
+        private bool CheckIngredientInDatabase(String Searchterm, DatabaseConnect dbConnect) 
+        {
             List<Product> Products = dbConnect.GetProducts(Searchterm);
             bool IfExist = true;
 
@@ -191,6 +198,25 @@ namespace BBGatherer.Webcrawler
             }
             return IfExist;
         }
+
+        private bool CheckIngredientsInApi(string Searchterm) 
+        {
+             BearerAccessToken bearerAccessToken = new BearerAccessToken("a6f4495c-ace4-4c39-805c-46071dd536db");
+             
+             SallingAPILink linkMaker = new SallingAPILink();
+             SallingAPIProductSuggestions productSuggestions = new SallingAPIProductSuggestions();
+             string apiLink = linkMaker.GetProductAPILink("Kaffe");
+             Console.WriteLine("Kaffe");
+             OpenHttp<SallingAPIProductSuggestions> openHttp = new OpenHttp<SallingAPIProductSuggestions>(apiLink, bearerAccessToken.GetBearerToken());
+
+             productSuggestions = openHttp.ReadAndParseAPISingle();
+
+
+             //Console.WriteLine(productSuggestions.Suggestions.Count);
+             return productSuggestions.Suggestions.Count != 0?true:false;
+
+
+            }
 
         private float DeterminAmount(String ingrediens)
         {
