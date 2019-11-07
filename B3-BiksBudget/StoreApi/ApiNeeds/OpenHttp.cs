@@ -86,7 +86,7 @@ namespace BBGatherer.StoreApi
         public T ReadAndParseAPISingle()
         {
             HttpWebRequest httpWebRequest = APIHttpWebReqeust();
-
+            
             HttpWebResponse response = httpWebRequest.GetResponse() as HttpWebResponse;
 
             StreamReader streamReader = new StreamReader(response.GetResponseStream());
@@ -128,8 +128,8 @@ namespace BBGatherer.StoreApi
             _httpWebRequest.CookieContainer = cookies;
 
             // write the "Authorization" header
-            //_httpWebRequest.Headers.Add("Authorization", "Bearer " + _accessToken);
-            _httpWebRequest.Headers.Add("Ocp-Apim-Subscription-Key", _accessToken);
+            _httpWebRequest.Headers.Add("Authorization", "Bearer " + _accessToken);
+           // _httpWebRequest.Headers.Add("Ocp-Apim-Subscription-Key", _accessToken);
 
             _httpWebRequest.Method = "GET";
 

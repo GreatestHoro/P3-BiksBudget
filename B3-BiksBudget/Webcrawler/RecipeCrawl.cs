@@ -82,46 +82,26 @@ namespace BBGatherer.Webcrawler
 
         }
 
-        private float CleanUpPerPerson(HtmlNodeCollection _PerPerson)
-        {
 
-            if (_PerPerson != null)
-            {
-                String PerPerson = _PerPerson.ElementAt<HtmlNode>(0).InnerText;
-                String cleanUp = "";
-                float numb;
-                String[] characters = PerPerson.Split(' ', '&', '-');
-                foreach (String c in characters)
-                {
-                    if (float.TryParse(c, out numb))
-                    {
-                        return numb;
-                    }
-                }
-                return float.Parse(cleanUp);
-            }
-            else
-            {
-                return 4;
-            }
-
-        }
 
         private Ingredient CreateIngriedient(String ind, out bool validity, out bool fatalError, DatabaseConnect dbConnect)
         {
+            List<BearerAccessToken> TokenRotation = InitializeTokes();
+            selctor _selctor = new selctor(TokenRotation.Count);
+
             float amount = DeterminAmount(ind);
             String unit = DeterminUnit(ind);
             String name = DeterminName(ind).Trim();
             name = NameCleanUp(name);
             
-            CheckForValidIndgredients(name, dbConnect);
+            CheckForValidIndgredients(name, dbConnect, TokenRotation,_selctor);
 
             validity = EvaluateName(name,out fatalError);
 
             return new Ingredient(name, unit, amount);
         }
-
-        private void CheckForValidIndgredients(String name, DatabaseConnect dbConnect)
+        #region(Check if Indgredients)
+        private void CheckForValidIndgredients(String name, DatabaseConnect dbConnect, List<BearerAccessToken> Tokens, selctor Selector)
         {
             String[] str = name.Split(" ");
             List<String> AllMacthes = new List<string>();
@@ -136,7 +116,7 @@ namespace BBGatherer.Webcrawler
                 while (Start <= str.Length - CombinationSize)
                 {
                     IndgrdientName = GetCombination(str, CombinationSize, Start++);
-                    IngredientFlag = CheckIngredient(IndgrdientName,dbConnect);
+                    IngredientFlag = CheckIngredient(IndgrdientName,dbConnect,Tokens,Selector);
                     if (IngredientFlag) { AllMacthes.Add(IndgrdientName); }
                 }
                 Start = 0;
@@ -182,9 +162,9 @@ namespace BBGatherer.Webcrawler
 
             }
         }
-        private bool CheckIngredient(String Searchterm, DatabaseConnect dbConnect)
+        private bool CheckIngredient(String Searchterm, DatabaseConnect dbConnect, List<BearerAccessToken> Tokens,selctor Selector)
         {
-            return   CheckIngredientInDatabase(Searchterm, dbConnect) || CheckIngredientsInApi(Searchterm.Trim());
+            return   CheckIngredientInDatabase(Searchterm, dbConnect) || CheckIngredientsInApi(Searchterm.Trim(),Tokens,Selector);
         }
 
         private bool CheckIngredientInDatabase(String Searchterm, DatabaseConnect dbConnect) 
@@ -199,25 +179,44 @@ namespace BBGatherer.Webcrawler
             return IfExist;
         }
 
-        private bool CheckIngredientsInApi(string Searchterm) 
+        private bool CheckIngredientsInApi(string Searchterm,List<BearerAccessToken> Tokens, selctor Selector) 
         {
-             BearerAccessToken bearerAccessToken = new BearerAccessToken("a6f4495c-ace4-4c39-805c-46071dd536db");
-             
+            
+
+            BearerAccessToken bearerAccessToken = TokenSelecter(Tokens,Selector);
+
+
              SallingAPILink linkMaker = new SallingAPILink();
              SallingAPIProductSuggestions productSuggestions = new SallingAPIProductSuggestions();
-             string apiLink = linkMaker.GetProductAPILink("Kaffe");
-             Console.WriteLine("Kaffe");
+             string apiLink = linkMaker.GetProductAPILink(Searchterm);
+             
              OpenHttp<SallingAPIProductSuggestions> openHttp = new OpenHttp<SallingAPIProductSuggestions>(apiLink, bearerAccessToken.GetBearerToken());
 
              productSuggestions = openHttp.ReadAndParseAPISingle();
 
-
-             //Console.WriteLine(productSuggestions.Suggestions.Count);
              return productSuggestions.Suggestions.Count != 0?true:false;
 
 
             }
+        #endregion
+        private BearerAccessToken TokenSelecter(List<BearerAccessToken> Tokens, selctor Selector) 
+        {
+            Task.Delay(1000);
+            return Tokens.ElementAt(Selector.GetTokenNum());
+        }
 
+        private List<BearerAccessToken> InitializeTokes() 
+        {
+            List<BearerAccessToken> Tokens = new List<BearerAccessToken>();
+            Tokens.Add(new BearerAccessToken("a6f4495c-ace4-4c39-805c-46071dd536db"));//original
+            Tokens.Add(new BearerAccessToken("01ef1546-341d-4459-9249-74b21c5f6bd6"));//yeet1
+            Tokens.Add(new BearerAccessToken("fc5aefca-c70f-4e59-aaaa-1c4603607df8"));//yeet2
+            Tokens.Add(new BearerAccessToken("8699f173-07ac-4eff-b5c4-0e2946d2ab79"));//yeet3
+
+            return Tokens;
+        }
+
+        #region(Determin ingredient values)
         private float DeterminAmount(String ingrediens)
         {
             String[] SplitString = ingrediens.Split(' ');
@@ -249,30 +248,9 @@ namespace BBGatherer.Webcrawler
             }
             return ReturnString;
         }
+        #endregion
 
-        private bool EvaluateName(String name,out bool fatalError) 
-        {
-            String[] SplitString = name.Split(" ");
-            if (SplitString.Length > 2)
-            {
-                //Console.WriteLine(name +" "+ SplitString.Length);
-                fatalError = true;
-            }
-            else 
-            {
-                fatalError = false;
-            }
-
-            if (String.IsNullOrWhiteSpace(name))
-            {
-                return false;
-            }
-            else 
-            {
-                return true;
-            }
-        }
-
+        #region(String Cleanups)
         private String NameCleanUp(String name) 
         {
             name = RemoveParentheses(name);
@@ -283,6 +261,34 @@ namespace BBGatherer.Webcrawler
             return name.Trim();
 
         }
+
+        private float CleanUpPerPerson(HtmlNodeCollection _PerPerson)
+        {
+
+            if (_PerPerson != null)
+            {
+                String PerPerson = _PerPerson.ElementAt<HtmlNode>(0).InnerText;
+                String cleanUp = "";
+                float numb;
+                String[] characters = PerPerson.Split(' ', '&', '-');
+                foreach (String c in characters)
+                {
+                    if (float.TryParse(c, out numb))
+                    {
+                        return numb;
+                    }
+                }
+                return float.Parse(cleanUp);
+            }
+            else
+            {
+                return 4;
+            }
+
+        }
+        #endregion
+
+        #region(remove)
         private string RemoveSubstring(String name,String substring) 
         {
             if (name.Contains(substring)) 
@@ -291,7 +297,7 @@ namespace BBGatherer.Webcrawler
             }
             return name;
         }
-
+        
         private String RemoveParentheses(string name) 
         {
             char[] chars = name.ToCharArray();
@@ -318,7 +324,9 @@ namespace BBGatherer.Webcrawler
             }
             return _string;
         }
+        #endregion
 
+        #region(Process critical checks)
         private bool CheckIfPageFound(HtmlNodeCollection name, HtmlNodeCollection beskrivels, HtmlNodeCollection ingredienser)
         {
             if (name == null || beskrivels == null || ingredienser == null)
@@ -329,6 +337,44 @@ namespace BBGatherer.Webcrawler
             {
                 return true;
             }
+        }
+
+        private bool EvaluateName(String name, out bool fatalError)
+        {
+            String[] SplitString = name.Split(" ");
+            if (SplitString.Length > 2)
+            {
+                //Console.WriteLine(name +" "+ SplitString.Length);
+                fatalError = true;
+            }
+            else
+            {
+                fatalError = false;
+            }
+
+            if (String.IsNullOrWhiteSpace(name))
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+        #endregion
+    }
+    public class selctor 
+    {
+        private int Token = 0;
+        private int numberOfTokens;
+        public selctor(int numOfTokens)
+        {
+            numberOfTokens = numOfTokens;
+        }
+        public int GetTokenNum() 
+        {
+            if (Token > numberOfTokens) { Token = 0; }
+            return Token++;
         }
     }
 }
