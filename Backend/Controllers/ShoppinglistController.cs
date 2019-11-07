@@ -15,10 +15,10 @@ namespace Backend.Controllers
     {
         List<CoopProduct> stuff = new List<CoopProduct>
         {
-            new CoopProduct{Navn = "Kyllingebryst", Navn2 = "100g", Ean = "1233", Pris = 100.00, VareHierakiId = 2525, Id = 1},
-            new CoopProduct{Navn = "Kyllingepålæg", Navn2 = "80g", Ean = "0239", Pris = 15.00, VareHierakiId = 5525, Id = 2},
-            new CoopProduct{Navn = "Mælk", Navn2 = "1000g", Ean = "1293", Pris = 9.99, VareHierakiId = 2125, Id = 3},
-            new CoopProduct{Navn = "Mel", Navn2 = "2000g", Ean = "1533", Pris = 20.00, VareHierakiId = 2540, Id = 4}
+            new CoopProduct{Navn = "Kyllingebryst", Navn2 = "100g", Ean = "1233", Pris = 100.00, VareHierakiId = 2525, Id = 1, State = "Full", TimeAdded = "07/11/2019 10:37:43"},
+            new CoopProduct{Navn = "Kyllingepålæg", Navn2 = "80g", Ean = "0239", Pris = 15.00, VareHierakiId = 5525, Id = 2, State = "Full", TimeAdded = "06/10/2019 22:00:43"},
+            new CoopProduct{Navn = "Mælk", Navn2 = "1000g", Ean = "1293", Pris = 9.99, VareHierakiId = 2125, Id = 3, State = "Full", TimeAdded = "06/02/2019 07:27:20"},
+            new CoopProduct{Navn = "Mel", Navn2 = "2000g", Ean = "1533", Pris = 20.00, VareHierakiId = 2540, Id = 4, State = "Full", TimeAdded = "06/11/2019 13:01:52"}
         };
 
         public List<CoopProduct> GetStuff()
@@ -35,6 +35,8 @@ namespace Backend.Controllers
         public double Pris { get; set; }
         public int VareHierakiId { get; set; }
         public int Id { get; set; }
+        public string State { get; set; }
+        public string TimeAdded { get; set; }
     }
 
     [Route("api/[controller]")]
