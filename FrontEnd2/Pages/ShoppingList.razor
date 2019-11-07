@@ -89,9 +89,10 @@ else
         responseMessage = await ListFunc.DeleteProduct(id);
     }
 
-    private void AddProductToStorage(int id)
+    private async void AddProductToStorage(int id)
     {
         ListFunc.AddProductToStorage(id, "api/Storage");
+        responseMessage = await ListFunc.DeleteProduct(id);
 
         //ListFunc.itemList.Remove(ListFunc.itemList.First(x => x.Id == id));
     }

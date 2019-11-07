@@ -81,7 +81,6 @@ namespace FrontEnd2.Data
                 i++;
             }
 
-            //var response = await Http.DeleteAsync("https://localhost:44325/api/ApiWithActions/" + id);
             productString = JsonConvert.SerializeObject(itemList);
             var content = new StringContent(productString, Encoding.UTF8, "application/json");
             response = await Http.PostAsync("https://localhost:44325/" + get, content);
@@ -97,11 +96,13 @@ namespace FrontEnd2.Data
                 {
                     item.TimeAdded = DateTime.Now.ToString();
                     response = await AddProductToList(item, dest);
+                    //response = await DeleteProduct(id);
+                    
                     break;
                 }
             }
-            //itemList[itemList.FinditemList.First(x => x.Id == id)]
-            itemList.Remove(itemList.First(x => x.Id == id));
+
+            //itemList.Remove(itemList.First(x => x.Id == id));
         }
 
         public async Task<HttpResponseMessage> AddProductToList(CoopProduct newItem, string dest)
@@ -109,9 +110,9 @@ namespace FrontEnd2.Data
             // *Insert search method here*
             var response = new HttpResponseMessage();
 
-            itemList.Add(newItem);
+            //itemList.Add(newItem);
 
-            productString = JsonConvert.SerializeObject(itemList[itemList.Count - 1]);
+            productString = JsonConvert.SerializeObject(newItem);
             var content = new StringContent(productString, Encoding.UTF8, "application/json");
             response = await Http.PostAsync("https://localhost:44325/" + dest, content);
 
