@@ -86,22 +86,19 @@ namespace BBGatherer.Webcrawler
 
         private Ingredient CreateIngriedient(String ind, out bool validity, out bool fatalError, DatabaseConnect dbConnect)
         {
-            List<BearerAccessToken> TokenRotation = InitializeTokes();
-            selctor _selctor = new selctor(TokenRotation.Count);
-
             float amount = DeterminAmount(ind);
             String unit = DeterminUnit(ind);
             String name = DeterminName(ind).Trim();
             name = NameCleanUp(name);
             
-            CheckForValidIndgredients(name, dbConnect, TokenRotation,_selctor);
+            CheckForValidIndgredients(name, dbConnect);
 
             validity = EvaluateName(name,out fatalError);
 
             return new Ingredient(name, unit, amount);
         }
         #region(Check if Indgredients)
-        private void CheckForValidIndgredients(String name, DatabaseConnect dbConnect, List<BearerAccessToken> Tokens, selctor Selector)
+        private void CheckForValidIndgredients(String name, DatabaseConnect dbConnect)
         {
             String[] str = name.Split(" ");
             List<String> AllMacthes = new List<string>();
@@ -115,14 +112,19 @@ namespace BBGatherer.Webcrawler
             {
                 while (Start <= str.Length - CombinationSize)
                 {
+                    //Console.WriteLine("yeet...");
                     IndgrdientName = GetCombination(str, CombinationSize, Start++);
-                    IngredientFlag = CheckIngredient(IndgrdientName,dbConnect,Tokens,Selector);
+                    //Console.WriteLine("wait...");
+                    IngredientFlag = CheckIngredient(IndgrdientName,dbConnect);
+                    
                     if (IngredientFlag) { AllMacthes.Add(IndgrdientName); }
+                    
+                    
                 }
                 Start = 0;
                 CombinationSize++;
             }
-
+            
             Console.WriteLine(AllMacthes[AllMacthes.Count-1]);
             /*foreach (string s in AllMacthes) 
             {
@@ -162,13 +164,14 @@ namespace BBGatherer.Webcrawler
 
             }
         }
-        private bool CheckIngredient(String Searchterm, DatabaseConnect dbConnect, List<BearerAccessToken> Tokens,selctor Selector)
+        private bool CheckIngredient(String Searchterm, DatabaseConnect dbConnect)
         {
-            return   CheckIngredientInDatabase(Searchterm, dbConnect) || CheckIngredientsInApi(Searchterm.Trim(),Tokens,Selector);
+            return   CheckIngredientInDatabase(Searchterm, dbConnect) || CheckIngredientsInApi(Searchterm.Trim());
         }
 
         private bool CheckIngredientInDatabase(String Searchterm, DatabaseConnect dbConnect) 
         {
+            
             List<Product> Products = dbConnect.GetProducts(Searchterm);
             bool IfExist = true;
 
@@ -179,42 +182,27 @@ namespace BBGatherer.Webcrawler
             return IfExist;
         }
 
-        private bool CheckIngredientsInApi(string Searchterm,List<BearerAccessToken> Tokens, selctor Selector) 
+        private bool CheckIngredientsInApi(string Searchterm) 
         {
+            System.Threading.Thread.Sleep(1000);
+            BearerAccessToken bearerAccessToken = new BearerAccessToken("a6f4495c-ace4-4c39-805c-46071dd536db");
+
+
+            SallingAPILink linkMaker = new SallingAPILink();
+            SallingAPIProductSuggestions productSuggestions = new SallingAPIProductSuggestions();
+            string apiLink = linkMaker.GetProductAPILink(Searchterm);
+
             
-
-            BearerAccessToken bearerAccessToken = TokenSelecter(Tokens,Selector);
-
-
-             SallingAPILink linkMaker = new SallingAPILink();
-             SallingAPIProductSuggestions productSuggestions = new SallingAPIProductSuggestions();
-             string apiLink = linkMaker.GetProductAPILink(Searchterm);
-             
-             OpenHttp<SallingAPIProductSuggestions> openHttp = new OpenHttp<SallingAPIProductSuggestions>(apiLink, bearerAccessToken.GetBearerToken());
-
-             productSuggestions = openHttp.ReadAndParseAPISingle();
-
-             return productSuggestions.Suggestions.Count != 0?true:false;
+            OpenHttp<SallingAPIProductSuggestions> openHttp = new OpenHttp<SallingAPIProductSuggestions>(apiLink, bearerAccessToken.GetBearerToken());
+            
+            productSuggestions = openHttp.ReadAndParseAPISingle();
+            
+            return productSuggestions.Suggestions.Count != 0?true:false;
 
 
             }
         #endregion
-        private BearerAccessToken TokenSelecter(List<BearerAccessToken> Tokens, selctor Selector) 
-        {
-            Task.Delay(1000);
-            return Tokens.ElementAt(Selector.GetTokenNum());
-        }
 
-        private List<BearerAccessToken> InitializeTokes() 
-        {
-            List<BearerAccessToken> Tokens = new List<BearerAccessToken>();
-            Tokens.Add(new BearerAccessToken("a6f4495c-ace4-4c39-805c-46071dd536db"));//original
-            Tokens.Add(new BearerAccessToken("01ef1546-341d-4459-9249-74b21c5f6bd6"));//yeet1
-            Tokens.Add(new BearerAccessToken("fc5aefca-c70f-4e59-aaaa-1c4603607df8"));//yeet2
-            Tokens.Add(new BearerAccessToken("8699f173-07ac-4eff-b5c4-0e2946d2ab79"));//yeet3
-
-            return Tokens;
-        }
 
         #region(Determin ingredient values)
         private float DeterminAmount(String ingrediens)
@@ -363,18 +351,5 @@ namespace BBGatherer.Webcrawler
         }
         #endregion
     }
-    public class selctor 
-    {
-        private int Token = 0;
-        private int numberOfTokens;
-        public selctor(int numOfTokens)
-        {
-            numberOfTokens = numOfTokens;
-        }
-        public int GetTokenNum() 
-        {
-            if (Token > numberOfTokens) { Token = 0; }
-            return Token++;
-        }
-    }
+    
 }
