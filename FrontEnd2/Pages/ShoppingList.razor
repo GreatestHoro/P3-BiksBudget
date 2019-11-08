@@ -79,9 +79,9 @@ else
     {
         CoopProduct newItemObject = new CoopProduct() { Ean = "", Id = 0, Navn = newProduct, Navn2 = "", Pris = 0.00, VareHierakiId = 0 };
 
-        responseMessage = await ListFunc.AddProductToList(newItemObject);
-
         newProduct = string.Empty;
+        
+        responseMessage = await ListFunc.AddProductToList(newItemObject);
     }
 
     private async void DeleteProduct(int id)

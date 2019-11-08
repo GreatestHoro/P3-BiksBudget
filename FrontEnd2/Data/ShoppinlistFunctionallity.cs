@@ -17,12 +17,6 @@ namespace FrontEnd2.Data
             get = _get;
         }
 
-        public ShoppinlistFunctionality(string _get, string _toOtherList)
-        {
-            get = _get;
-            toOtherList = _toOtherList;
-        }
-
         public string productString;
         string newProduct;
         HttpClient Http = new HttpClient();
@@ -69,6 +63,24 @@ namespace FrontEnd2.Data
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
 
+        public async Task<HttpResponseMessage> AddProductToList(CoopProduct newItem, string dest)
+        {
+            // *Insert search method here*
+            var response = new HttpResponseMessage();
+
+            //itemList.Add(newItem);
+
+            productString = JsonConvert.SerializeObject(newItem);
+            var content = new StringContent(productString, Encoding.UTF8, "application/json");
+            response = await Http.PostAsync("https://localhost:44325/" + dest, content);
+
+            string result = response.Content.ReadAsStringAsync().Result;
+
+            newProduct = string.Empty;
+
+            return new HttpResponseMessage(HttpStatusCode.OK);
+        }
+
         public async Task<HttpResponseMessage> DeleteProduct(int id)
         {
             var response = new HttpResponseMessage();
@@ -105,31 +117,15 @@ namespace FrontEnd2.Data
             //itemList.Remove(itemList.First(x => x.Id == id));
         }
 
-        public async Task<HttpResponseMessage> AddProductToList(CoopProduct newItem, string dest)
-        {
-            // *Insert search method here*
-            var response = new HttpResponseMessage();
-
-            //itemList.Add(newItem);
-
-            productString = JsonConvert.SerializeObject(newItem);
-            var content = new StringContent(productString, Encoding.UTF8, "application/json");
-            response = await Http.PostAsync("https://localhost:44325/" + dest, content);
-
-            string result = response.Content.ReadAsStringAsync().Result;
-
-            newProduct = string.Empty;
-
-            return new HttpResponseMessage(HttpStatusCode.OK);
-        }
 
 
 
-        private async void SaveList(List<CoopProduct> list)
-        {
-            productString = JsonConvert.SerializeObject(list);
 
-            string stuff = await Http.GetStringAsync("https://localhost:44325/api/Shoppinglist/5/" + productString);
-        }
+        //private async void SaveList(List<CoopProduct> list)
+        //{
+        //    productString = JsonConvert.SerializeObject(list);
+
+        //    string stuff = await Http.GetStringAsync("https://localhost:44325/api/Shoppinglist/5/" + productString);
+        //}
     }
 }
