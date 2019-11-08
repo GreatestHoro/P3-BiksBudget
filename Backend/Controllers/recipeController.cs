@@ -80,8 +80,8 @@ namespace Backend.Controllers
             string jsonRecipes = JsonConvert.SerializeObject(recipeData);
 
             DatabaseConnect dbConnect = new DatabaseConnect("localhost", "BiksBudgetDB", "root", "BiksBudget123");
-
-            string jsonDBRecipes = JsonConvert.SerializeObject(dbConnect.GetRecipes(recipeTitle));
+            var data = dbConnect.GetRecipes(recipeTitle);
+            string jsonDBRecipes = JsonConvert.SerializeObject(data);
 
             return jsonDBRecipes;
         }
@@ -91,7 +91,7 @@ namespace Backend.Controllers
         [HttpGet]
         public string GetRecipes(string search)
         {
-            DatabaseConnect Database = new DatabaseConnect("pass","yoot","root","yeet");
+            DatabaseConnect Database = new DatabaseConnect("localhost", "BiksBudgetDB", "root", "BiksBudget123");
             return JsonConvert.SerializeObject(Database.GetRecipes(search));
         }
 

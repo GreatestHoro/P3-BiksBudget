@@ -19,7 +19,14 @@ else
 {
     <div class="container">
         <div class="row col-md-12">
-            <table class="ShoppinglistTable">
+            <table class="ShoppinglistTable table-bordered">
+                <colgroup>
+                    <col style="width: 150px" />
+                    <col style="width: 100px" />
+                    <col style="width: 150px" />
+                    <col style="width: 100px" />
+                    <col style="width: 75px" />
+                </colgroup>
                 <thead>
                     <tr>
                         <th>Name</th>
@@ -44,7 +51,7 @@ else
                                         <ul class="dropdown-menu" role="menu">
                                             @foreach (var State in ItemState)
                                             {
-                                                <li><a class="dropdownListStrorage" @onclick="(() => ChangeState(items.Id, State))">@State</a></li>
+                                                <li><button class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(() => ChangeState(items.Id, State))">@State</button></li>
                                             }
                                         </ul>
                                 </div>
