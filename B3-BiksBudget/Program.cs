@@ -26,10 +26,10 @@ namespace BBGatherer
             foreach (CoopProduct c in coopProducts)
             {
                 dbConnect.AddProduct(new Product(c.Ean, c.Navn, c.Navn2, c.Pris, c.VareHierakiId));
-            }*/
-            
+            }
+            */
             RecipeCrawl WebRunner = new RecipeCrawl();
-            _ = WebRunner.GetRecipes(1, 1200, dbConnect);
+            _ = WebRunner.GetRecipes(620, 1200, dbConnect);
 
             Console.WriteLine("web runner begins... fear its power");
             Console.ReadLine();

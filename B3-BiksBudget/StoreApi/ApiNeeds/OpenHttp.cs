@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
@@ -86,27 +87,34 @@ namespace BBGatherer.StoreApi
         public T ReadAndParseAPISingle()
         {
             HttpWebRequest httpWebRequest = APIHttpWebReqeust();
-            
-            HttpWebResponse response = httpWebRequest.GetResponse() as HttpWebResponse;
+            /*try
+            {*/
+                HttpWebResponse response = httpWebRequest.GetResponse() as HttpWebResponse;
 
-            StreamReader streamReader = new StreamReader(response.GetResponseStream());
+                StreamReader streamReader = new StreamReader(response.GetResponseStream());
 
-            JsonTextReader reader = new JsonTextReader(streamReader);
+                JsonTextReader reader = new JsonTextReader(streamReader);
 
-            reader.SupportMultipleContent = true;
-            T resObject = default(T);
+                reader.SupportMultipleContent = true;
+                T resObject = default(T);
 
-            var serializer = new JsonSerializer();
+                var serializer = new JsonSerializer();
 
-            while (reader.Read())
-            {
-                if (reader.TokenType == JsonToken.StartObject)
+                while (reader.Read())
                 {
-                    resObject = serializer.Deserialize<T>(reader);
+                    if (reader.TokenType == JsonToken.StartObject)
+                    {
+                        resObject = serializer.Deserialize<T>(reader);
+                    }
                 }
-            }
 
-            return resObject;
+                return resObject;
+           /* }
+            catch(Exception e)
+            {
+                throw (e);
+            }*/
+
         }
         #endregion
 
@@ -129,7 +137,7 @@ namespace BBGatherer.StoreApi
 
             // write the "Authorization" header
             _httpWebRequest.Headers.Add("Authorization", "Bearer " + _accessToken);
-           // _httpWebRequest.Headers.Add("Ocp-Apim-Subscription-Key", _accessToken);
+           //_httpWebRequest.Headers.Add("Ocp-Apim-Subscription-Key", _accessToken);
 
             _httpWebRequest.Method = "GET";
 

@@ -50,7 +50,7 @@ namespace BBGatherer.Webcrawler
 
                         foreach (var ind in ingredienser)
                         {
-                            Console.WriteLine(ind.InnerText);
+                            //Console.WriteLine(ind.InnerText);
                             if (!ind.InnerText.Contains(':'))
                             {
                                 Ingredient ingredient = CreateIngriedient(ind.InnerText, out validity, out fatalError, dbConnect);
@@ -63,13 +63,17 @@ namespace BBGatherer.Webcrawler
                             //Console.WriteLine(ind.InnerText);
                         }
 
-                        if (!fatalError) 
+                        if (!fatalError)
                         {
                             dbConnect.AddRecipe(new Recipe
                             (i, name.ElementAt<HtmlNode>(0).InnerText,
                             Beskrivels.ElementAt<HtmlNode>(0).InnerText,
                             IngriedisensList,
                             CleanUpPerPerson(PerPerson)));
+                        }
+                        else 
+                        {
+                            Console.WriteLine("Recipie determined false..");
                         }
 
                     }
@@ -92,7 +96,7 @@ namespace BBGatherer.Webcrawler
             String name = DeterminName(ind).Trim();
             name = NameCleanUp(name);
             
-            Console.WriteLine(CheckForValidIndgredients(name, dbConnect,out fatalError));
+            name = CheckForValidIndgredients(name, dbConnect,out fatalError);
 
             validity = EvaluateName(name,out fatalError);
 
@@ -119,24 +123,17 @@ namespace BBGatherer.Webcrawler
 
                     if (IngredientFlag)
                     {
+                        //Console.WriteLine(IndgrdientName);
                         AllMacthes.Add(IndgrdientName);
                     }
-                    else 
-                    {
-                        fatalError = true;
-                        break;
-                    }
-                    
-                }
-                if (fatalError) 
-                {
-                    Console.WriteLine("Recipie determined useless");
-                    break;
                 }
                 Start = 0;
                 CombinationSize++;
             }
-            
+            if (AllMacthes.Count() == 0)
+            {
+                fatalError = true;
+            }
             Console.WriteLine(AllMacthes[AllMacthes.Count-1]);
             return AllMacthes[AllMacthes.Count - 1];
         }
@@ -190,22 +187,31 @@ namespace BBGatherer.Webcrawler
 
         private bool CheckIngredientsInApi(string Searchterm) 
         {
-            System.Threading.Thread.Sleep(1000);
-            BearerAccessToken bearerAccessToken = new BearerAccessToken("a6f4495c-ace4-4c39-805c-46071dd536db");
+            //Console.WriteLine("Salling api check");
+            System.Threading.Thread.Sleep(2000);
+            BearerAccessToken bearerAccessToken = new BearerAccessToken("5c9040ad-6229-477f-8123-64d281c76768");
 
 
             SallingAPILink linkMaker = new SallingAPILink();
             SallingAPIProductSuggestions productSuggestions = new SallingAPIProductSuggestions();
             string apiLink = linkMaker.GetProductAPILink(Searchterm);
+            OpenHttp<SallingAPIProductSuggestions> openHttp;
 
-            
-            OpenHttp<SallingAPIProductSuggestions> openHttp = new OpenHttp<SallingAPIProductSuggestions>(apiLink, bearerAccessToken.GetBearerToken());
-            
-            productSuggestions = openHttp.ReadAndParseAPISingle();
+
+            try
+            {
+                openHttp = new OpenHttp<SallingAPIProductSuggestions>(apiLink, bearerAccessToken.GetBearerToken());
+                productSuggestions = openHttp.ReadAndParseAPISingle();
+            }
+            catch(System.Net.WebException)
+            {
+               Console.WriteLine("Exseption found is being handled");
+               System.Threading.Thread.Sleep(30000);
+                Console.WriteLine("Exseption resolved");
+                return CheckIngredientsInApi(Searchterm);
+            }
             
             return productSuggestions.Suggestions.Count != 0?true:false;
-
-
             }
         #endregion
 
