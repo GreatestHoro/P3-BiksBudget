@@ -1,5 +1,6 @@
 ﻿@using System.Globalization
 @using FrontEnd2.StoreApi.ApiNeeds
+@using FrontEnd2.Data
 
 <h3>Search A Product</h3>
 <div class="form-row">
@@ -71,8 +72,10 @@
     List<SallingAPIProduct> resultProductQuery = new List<SallingAPIProduct>();
     Filter<SallingAPIProduct> productFilter = new Filter<SallingAPIProduct>();
 
+
     private void SearchForProducts()
     {
+        
         save = searchBox;
         string apiLink = linkMaker.GetProductAPILink(searchBox);
 

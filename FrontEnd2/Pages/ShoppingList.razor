@@ -1,98 +1,111 @@
 ﻿@page "/shoppinglist"
 @using Newtonsoft.Json;
 @inject HttpClient Http
+@using FrontEnd2.Data;
+
+
 
 <h1>Shopping List</h1>
 
-@if (coopProduct == null)
+@if (ListFunc.itemList == null)
 {
-    <p><em>Loading...</em></p>
+    <p>
+        <em>Loading...</em>
+    </p>
 }
 else
 {
-    <table class="ShoppingList">
-        <thead>
-            <tr>
-                <th>Remove</th>
-                <th>Name</th>
-                <th>Description</th>
-                <th>Price</th>
-                <th>Add To Storage</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var items in coopProduct)
+    <div class="container">
+        <div class="row col-md-12">
+            <table class="ShoppinglistTable">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Price</th>
+                        <th>Remove / To Storage</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var items in ListFunc.itemList)
+                    {
+                        <tr>
+                            <td>@items.Navn</td>
+                            <td>@items.Navn2</td>
+                            <td>@items.Pris.ToString() kr</td>
+                            <td>
+                                <div class="text-center">
+                                    <button @onclick="(() => AddProductToStorage(items.Id))"><i class="oi oi-basket"></i></button>
+                                    <button @onclick="(() => DeleteProduct(items.Id))"><i class="oi oi-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            @if (ListFunc.itemList != null)
             {
-                <tr>
-                    <td><button @onclick="(() => DeleteProduct(items.VareHierakiId))"><i class="oi oi-trash"></i></button></td>
-                    <td>@items.Navn</td>
-                    <td>@items.Navn2</td>
-                    <td>@items.Pris.ToString() kr</td>
-                    <td><button @onclick="(() => AddProductToStorage(items.VareHierakiId))"><i class="oi oi-basket"></i></button></td>
-                </tr>
+                <input placeholder="A new Product" @bind="@newProduct"/>
+                <button @onclick="AddProduct">Create</button>
             }
-        </tbody>
-    </table>
-
-    <button @onclick="SaveList">Save Progress</button>
-
-    @if (coopProduct != null)
-    {
-        <input placeholder="A new Product" @bind="@newProduct" />
-        <button @onclick="AddProduct">Create</button>
-
-    }
+        </div>
+    </div>
 }
 
 
 @code{
-    List<CoopProduct> coopProduct = new List<CoopProduct>();
     string productString;
     string newProduct;
-    //private string newItem;
+    ShoppinlistFunctionality ListFunc = new ShoppinlistFunctionality("api/Shoppinglist");
+    HttpResponseMessage responseMessage = new HttpResponseMessage();
 
     protected async override Task OnInitializedAsync()
     {
-        productString = await Http.GetStringAsync("https://localhost:44325/api/Shoppinglist");
-
-        coopProduct = JsonConvert.DeserializeObject<List<CoopProduct>>(productString);
+        responseMessage = await ListFunc.GetProductsOnStart();
     }
 
-    private void AddProduct()
+    protected double CompletePrice()
     {
-        // *Insert search method here*
+        double result = 0;
 
-        coopProduct.Add(new CoopProduct
+        foreach (var item in ListFunc.itemList)
         {
-            Navn = newProduct,
-            Navn2 = "-1 g.",
-            Ean = "0000",
-            Pris = -1,
-            VareHierakiId = -1
-        });
+            result += item.Pris;
+        }
+        return result;
+    }
+
+    private async void AddProduct()
+    {
+        CoopProduct newItemObject = new CoopProduct() { Ean = "", Id = 0, Navn = newProduct, Navn2 = "", Pris = 0.00, VareHierakiId = 0 };
 
         newProduct = string.Empty;
+        
+        responseMessage = await ListFunc.AddProductToList(newItemObject);
     }
 
-    private void DeleteProduct(int id)
+    private async void DeleteProduct(int id)
     {
-        coopProduct.Remove(coopProduct.First(x => x.VareHierakiId == id));
+        responseMessage = await ListFunc.DeleteProduct(id);
     }
 
-    public void AddProductToStorage(int id)
+    private async void AddProductToStorage(int id)
     {
-        // *Insert Add To Storage Method*
+        ListFunc.AddProductToStorage(id, "api/Storage");
+        responseMessage = await ListFunc.DeleteProduct(id);
 
-        coopProduct.Remove(coopProduct.First(x => x.VareHierakiId == id));
+        //ListFunc.itemList.Remove(ListFunc.itemList.First(x => x.Id == id));
     }
-
-    
 
     private async void SaveList()
     {
-        productString = JsonConvert.SerializeObject(coopProduct);
+        productString = JsonConvert.SerializeObject(ListFunc.itemList);
 
-        //await Http.GetStringAsync("https://localhost:44325/api/Shoppinglist/5" + productString);
-        await Http.PostAsync("https://localhost:44325/api/Shoppinglist/save" + productString, new StringContent(productString));
+        string stuff = await Http.GetStringAsync("https://localhost:44325/api/Shoppinglist/5/" + productString);
+        //await Http.PostAsync("https://localhost:44325/api/Shoppinglist/save" + productString, new StringContent(productString));
+
+        //var stringContent = new StringContent(productString);
+
+        //HttpResponseMessage result = await Http.PostAsync("https://localhost:44325/api/Save", stringContent);
     }
 }
