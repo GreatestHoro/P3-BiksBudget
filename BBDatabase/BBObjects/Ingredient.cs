@@ -4,9 +4,9 @@ namespace BBCollection.BBObjects
 {
     public class Ingredient
     {
-        public float _Amount { get; }
-        public string _unit { get; }
-        public string _IngredientName { get; }
+        public float _Amount;
+        public string _unit;
+        public string _IngredientName;
 
         public Ingredient(String IngredientName, string unit, float Amount)
         {
