@@ -31,11 +31,11 @@ namespace BBGatherer.Webcrawler
 
                 List<Ingredient> IngriedisensList = new List<Ingredient>();
 
-                HtmlNodeCollection ingredienser = htmlDocument.DocumentNode.SelectNodes("//span[@class][@itemprop]");
+                HtmlNodeCollection ingredienser = htmlDocument.DocumentNode.SelectNodes("//span[@class][@itemprop='recipeIngredient']");
                 HtmlNodeCollection PerPerson = htmlDocument.DocumentNode.SelectNodes("//span[@itemprop='recipeYield']");
                 HtmlNodeCollection Beskrivels = htmlDocument.DocumentNode.SelectNodes("//div[@itemprop]");
                 HtmlNodeCollection name = htmlDocument.DocumentNode.SelectNodes("//center");
-
+                
                 Console.WriteLine(i);
                 if (!CheckIfPageFound(name, Beskrivels, ingredienser))
                 {
@@ -50,6 +50,7 @@ namespace BBGatherer.Webcrawler
 
                         foreach (var ind in ingredienser)
                         {
+                            Console.WriteLine(ind.InnerText);
                             if (!ind.InnerText.Contains(':'))
                             {
                                 Ingredient ingredient = CreateIngriedient(ind.InnerText, out validity, out fatalError, dbConnect);
@@ -91,15 +92,16 @@ namespace BBGatherer.Webcrawler
             String name = DeterminName(ind).Trim();
             name = NameCleanUp(name);
             
-            CheckForValidIndgredients(name, dbConnect);
+            Console.WriteLine(CheckForValidIndgredients(name, dbConnect,out fatalError));
 
             validity = EvaluateName(name,out fatalError);
 
             return new Ingredient(name, unit, amount);
         }
         #region(Check if Indgredients)
-        private void CheckForValidIndgredients(String name, DatabaseConnect dbConnect)
+        private String CheckForValidIndgredients(String name, DatabaseConnect dbConnect, out bool fatalError)
         {
+            fatalError = false;
             String[] str = name.Split(" ");
             List<String> AllMacthes = new List<string>();
             AllMacthes.Add("");
@@ -112,27 +114,31 @@ namespace BBGatherer.Webcrawler
             {
                 while (Start <= str.Length - CombinationSize)
                 {
-                    //Console.WriteLine("yeet...");
                     IndgrdientName = GetCombination(str, CombinationSize, Start++);
-                    //Console.WriteLine("wait...");
                     IngredientFlag = CheckIngredient(IndgrdientName,dbConnect);
+
+                    if (IngredientFlag)
+                    {
+                        AllMacthes.Add(IndgrdientName);
+                    }
+                    else 
+                    {
+                        fatalError = true;
+                        break;
+                    }
                     
-                    if (IngredientFlag) { AllMacthes.Add(IndgrdientName); }
-                    
-                    
+                }
+                if (fatalError) 
+                {
+                    Console.WriteLine("Recipie determined useless");
+                    break;
                 }
                 Start = 0;
                 CombinationSize++;
             }
             
             Console.WriteLine(AllMacthes[AllMacthes.Count-1]);
-            /*foreach (string s in AllMacthes) 
-            {
-                Console.WriteLine(s);
-            }*/
-
-
-
+            return AllMacthes[AllMacthes.Count - 1];
         }
         private string GetCombination(string[] str, int size, int i)
         {

@@ -29,7 +29,7 @@ namespace BBGatherer
             }*/
             
             RecipeCrawl WebRunner = new RecipeCrawl();
-            _ = WebRunner.GetRecipes(1000, 1010, dbConnect);
+            _ = WebRunner.GetRecipes(1, 1200, dbConnect);
 
             Console.WriteLine("web runner begins... fear its power");
             Console.ReadLine();
