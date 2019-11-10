@@ -6,6 +6,10 @@ html, body {
 h1 {
     text-align: center;
 }
+
+.absolute{
+    position: absolute;
+}
 .LogIn {
     box-shadow: 0px 1px 0px 0px #fff6af;
     background: linear-gradient(to bottom, #ffec64 5%, #ffab23 100%);
@@ -24,32 +28,130 @@ h1 {
     margin-right: 10px;
     margin-top: 2px;
 }
-    .LogIn:hover {
-        background: linear-gradient(to bottom, #ffab23 5%, #ffec64 100%);
-        background-color: #ffab23;
-    }
-    .LogIn:active {
-        position: relative;
-        top: 1px;
-    }
+.LogIn:hover {
+    background: linear-gradient(to bottom, #ffab23 5%, #ffec64 100%);
+    background-color: #ffab23;
+}
+.LogIn:active {
+    position: relative;
+    top: 1px;
+}
+.dropdownListStrorage{
+    text-align: center;
+    text-shadow: none;
+    outline-color: black;
+    font-size: medium;
+    height: auto;
+}
+
+
+.dropdown-toggle {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-menu a:hover {
+    background-color: #ddd;
+}
+
+.dropdown-menu a {
+    color: black;
+    padding: 12px 16px;
+    min-width: 100%;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 140px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
 
 .top-nav {
     width: 100%;
     height: 100px;
     background: url('https://image.shutterstock.com/image-photo/full-banner-wide-food-background-260nw-1037455726.jpg');
     background-size: cover;
-
 }
 
 
-    .top-nav input[type=text] {
-        float: left;
-        padding: 6px;
-        border: none;
-        margin-top: 8px;
-        margin-right: 16px;
-        font-size: 17px;
-    }
+
+.recipeSearch{
+    width: 40%;
+    height: 5%;
+    text-align: center;
+}
+table.fixed {
+    table-layout: fixed;
+    word-break: break-all;
+}
+
+ul.fixed {
+    width: 400px;
+    word-break: break-all;
+}
+
+.increaseDecreaseBtn{
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.ingredientsTable{
+    display: inline-block;
+}
+
+#perPersonRecipe{
+    display: inline-block;
+}
+.recipeDivDisplay {
+    text-align: left;
+    margin-top: auto;
+}
+
+.recipeDestribtionDisplay {
+    padding-top: 20px;
+    padding-left: 50px;
+}
+
+.recipeDescribtion {
+    width: 50%;
+    height: auto;
+    text-align: left;
+    padding-left: 50px;
+    padding-right: 20px;
+}
+.top-nav input[type=text] {
+    float: left;
+    padding: 6px;
+    border: none;
+    margin-top: 8px;
+    margin-right: 16px;
+    font-size: 17px;
+}
+
+.dropdown-menu{
+    padding-top: 0;
+}
+
+.ShoppinglistTable {
+    table-layout: fixed;
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 15px 50px;
+}
+
+.ShoppinglistTable tr:hover {
+    background-color: #f5f5f5;
+}
+
+.ShoppinglistTable th {
+    background-color: dodgerblue;
+    color: white;
+}
 
 .topnav a {
     float: left;
@@ -75,7 +177,6 @@ a, .btn-link {
   color:#fff ;
   background-color: #1b6ec2;
   border-color: #1861ac;
-
 }
 
 app {
@@ -178,7 +279,7 @@ app {
 }
 
 .validation-message {
-    color: red;
+    /*color: red;*/
 }
 
 @media (max-width: 767.98px) {
@@ -215,6 +316,10 @@ app {
 
     .sidebar .collapse {
         /* Never collapse the sidebar for wide screens */
+        display: block;
+    }
+
+    .show-on-hover:hover > ul.dropdown-menu {
         display: block;
     }
 }

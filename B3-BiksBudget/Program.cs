@@ -25,8 +25,11 @@ namespace BBGatherer
             int count = 0;
             foreach (CoopProduct c in coopProducts)
             {
+                count++;
+                Console.WriteLine(count);
                 dbConnect.AddProduct(new Product(c.Ean, c.Navn, c.Navn2, c.Pris, c.VareHierakiId));
             }
+
             */
 
             _ = RecipeCrawl.GetRecipes(1, 1000, dbConnect);

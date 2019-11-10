@@ -2,11 +2,11 @@
 {
     public class Product
     {
-        public string _ean { get; }
-        public string _name { get; }
-        public string _name2 { get; }
-        public double _price { get; }
-        public int _productHierarchyID { get; }
+        public string _ean;
+        public string _name;
+        public string _name2;
+        public double _price;
+        public int _productHierarchyID;
 
         public Product(string ean, string name, string name2, double price, int productHierachyID)
         {

@@ -532,3 +532,8 @@ B3-BiksBudget/obj/B3-BiksBudget.csproj.nuget.g.props
 B3-BiksBudget/obj/project.assets.json
 .vs/B3-BiksBudget/v16/Server/sqlite3/storage.ide
 >>>>>>> aca47e2dfcd221b42dfba332a71db8febd3d8e25
+.vs/B3-BiksBudget/v16/Server/sqlite3/storage.ide
+.vs/B3-BiksBudget/v16/.suo
+*.ide
+.vs/B3-BiksBudget/v16/.suo
+.vs/B3-BiksBudget/v16/Server/sqlite3/storage.ide

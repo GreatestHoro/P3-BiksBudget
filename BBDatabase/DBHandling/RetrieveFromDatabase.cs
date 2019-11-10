@@ -20,7 +20,7 @@ namespace BBCollection.HandleRecipe
             foreach (DataRow r in new SQLConnect().DynamicSimpleListSQL(msc, dbInformation).Tables[0].Rows)
             {
                 Recipe recipe = new Recipe((int)r[0], (string)r[1], (string)r[3], GetIngredientsFromRecipeID((int)r[0], dbInformation), Convert.ToSingle(r[2]));
-                
+
                 recipeList.Add(recipe);
             }
 

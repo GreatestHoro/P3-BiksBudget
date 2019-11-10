@@ -1,12 +1,156 @@
 ﻿@page "/storage"
+@using Newtonsoft.Json;
+@inject HttpClient Http
+@using FrontEnd2.Data;
+@using System.Text;
+@using System.Globalization;
 
 <h1>Storage</h1>
-<table style="width:100%">
-    <tr>
-        <th>Storage</th>
-    </tr>
-    <tr>
-        <td>Milk</td>
-        <td>Eggs</td>
-    </tr>
-</table>
+
+@if (ListFunc.itemList == null)
+{
+    <p>
+        <em>Loading...</em>
+    </p>
+}
+else
+{
+<div class="container">
+    <div class="row col-md-12">
+        <table class="ShoppinglistTable table-bordered">
+            <colgroup>
+                <col style="width: 150px" />
+                <col style="width: 130px" />
+                <col style="width: 80px" />
+                <col style="width: 120px" />
+                <col style="width: 75px" />
+            </colgroup>
+            <thead>
+                <tr class="text-center">
+                    <th>Name</th>
+                    <th>Full Amount</th>
+                    <th>Amount Remaining</th>
+                    <th>Added Date</th>
+                    <th>Item is Empty</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var items in ListFunc.itemList)
+                {
+                    <tr class="text-center">
+                        <td>@items.Name</td>
+                        <td>@items.Amount</td>
+                        <td>
+                            <p class="lead"></p>
+                            <div class="btn-group show-on-hover">
+                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                                    @items.State <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu" role="menu">
+                                    @foreach (var State in ItemState)
+                                    {
+                                        <li><button class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(() => ChangeState(items.Id, State))">@State</button></li>
+                                    }
+                                </ul>
+                            </div>
+                        </td>
+                        <td>@items.TimeAdded</td>
+                        <td>
+                            <div class="text-center">
+                                <button @onclick="(() => DeleteProduct(items.Id))"><i class="oi oi-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        @if (ListFunc.itemList != null)
+        {
+            <input placeholder="A new Product" @bind="@newProduct" />
+            <button @onclick="AddProduct">Create</button>
+        }
+    </div>
+    <div>
+        <button @onclick="DeleteAll"><i class="oi oi-trash">Empty Shoppinglist</i></button>
+    </div>
+</div>
+}
+
+
+@code{
+    string productString;
+    string newProduct;
+    ShoppinlistFunctionality ListFunc = new ShoppinlistFunctionality("api/Storage");
+    HttpResponseMessage responseMessage = new HttpResponseMessage();
+
+    List<string> ItemState = new List<string>() { "Full", "Almost Full", "Half Full", "Almost Empty" };
+
+    private void DeleteAll()
+    {
+        ListFunc.itemList.Clear();
+    }
+
+    protected async void ChangeState(int id, string state)
+    {
+        //ListFunc.itemList[ListFunc.itemList.Find(x => x.Id.Equals(id))].State = state;
+
+        foreach (var item in ListFunc.itemList)
+        {
+            if (item.Id == id)
+            {
+                item.State = state;
+                productString = JsonConvert.SerializeObject(item);
+                var content = new StringContent(productString, Encoding.UTF8, "application/json");
+                HttpResponseMessage responce = await Http.PutAsync("https://localhost:44325/api/Storage/" + item.Id, content);
+                break;
+            }
+        }
+    }
+
+    protected async override Task OnInitializedAsync()
+    {
+        responseMessage = await ListFunc.GetProductsOnStart();
+    }
+
+    protected double CompletePrice()
+    {
+        double result = 0;
+
+        foreach (var item in ListFunc.itemList)
+        {
+            result += item.Price;
+        }
+        return result;
+    }
+
+    private async void AddProduct()
+    {
+        CoopProduct newItem = new CoopProduct() { Navn = newProduct, Navn2 = "", Pris = 0.00};
+
+        newProduct = string.Empty;
+
+        responseMessage = await ListFunc.AddProductToList(newItem.Navn, newItem.Navn2, newItem.Pris);
+    }
+
+    private async void DeleteProduct(int id)
+    {
+        responseMessage = await ListFunc.DeleteProduct(id);
+    }
+
+    private void AddProductToStorage(int id)
+    {
+        ListFunc.itemList.Remove(ListFunc.itemList.First(x => x.Id == id));
+    }
+
+    private async void SaveList()
+    {
+        productString = JsonConvert.SerializeObject(ListFunc.itemList);
+
+        string stuff = await Http.GetStringAsync("https://localhost:44325/api/Shoppinglist/5/" + productString);
+        //await Http.PostAsync("https://localhost:44325/api/Shoppinglist/save" + productString, new StringContent(productString));
+
+        //var stringContent = new StringContent(productString);
+
+        //HttpResponseMessage result = await Http.PostAsync("https://localhost:44325/api/Save", stringContent);
+    }
+}
