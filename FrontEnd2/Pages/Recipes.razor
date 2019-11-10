@@ -1,6 +1,7 @@
 ﻿@page "/recipe"
 @using BBCollection.BBObjects;
 @using Newtonsoft.Json;
+@using FrontEnd2.Data;
 
 @inject HttpClient  Http
 
@@ -70,6 +71,7 @@
             <p> For @recipePerPerson persons</p>
             <button @onclick="(() => decrementRecipeAmount())"><i class="oi oi-chevron-bottom"></i></button>
         </div>
+        <button @onclick="(() => AddToShoppinglist())"><i class="oi oi-basket">Add All To Storage</i></button>
         }
     </div>
 </div>
@@ -90,16 +92,29 @@
     List<Ingredient> ingredients = new List<Ingredient>();
     List<Recipe> recipeData = new List<Recipe>();
 
+    HttpResponseMessage responseMessage = new HttpResponseMessage();
+
+    async void AddToShoppinglist()
+    {
+        ShoppinlistFunctionality ShopList = new ShoppinlistFunctionality("api/Shoppinglist");
+        
+
+        foreach (var item in ingredients)
+        {
+            responseMessage = await ShopList.AddProductToList(item._IngredientName, item._Amount.ToString() + item._unit, 0.00);
+        }
+    }
+
     void incrementRecipeAmount()
     {
-            for (int i = 0; i < recipeAmount.Count; i++)
+        for (int i = 0; i < recipeAmount.Count; i++)
+        {
+            if (recipeAmount[i] != 0)
             {
-                if (recipeAmount[i] != 0)
-                {
-                    recipeAmount[i] = (recipeAmount[i]  / recipePerPerson) * (recipePerPerson +1F);
-                }
+                recipeAmount[i] = (recipeAmount[i]  / recipePerPerson) * (recipePerPerson +1F);
             }
-            recipePerPerson += 1;
+        }
+        recipePerPerson += 1;
     }
 
 

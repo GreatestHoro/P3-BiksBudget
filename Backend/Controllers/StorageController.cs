@@ -9,17 +9,26 @@ using Newtonsoft.Json;
 
 namespace Backend.Controllers
 {
+    public class AddedProduct
+    {
+        public string Name { get; set; }
+        public string Amount { get; set; }
+        public double Price { get; set; }
+        public int Id { get; set; }
+        public string State { get; set; }
+        public string TimeAdded { get; set; }
+    }
+
     public class StorageTestList
     {
-        List<CoopProduct> StorageTest = new List<CoopProduct>
+        List<AddedProduct> StorageTest = new List<AddedProduct>
         {
-            new CoopProduct{Navn = "Kyllingebryst", Navn2 = "100g", Ean = "1233", Pris = 100.00, VareHierakiId = 2525, Id = 1, State = "Full", TimeAdded = "07/11/2019 10:37:43"},
-            new CoopProduct{Navn = "Kyllingepålæg", Navn2 = "80g", Ean = "0239", Pris = 15.00, VareHierakiId = 5525, Id = 2, State = "Full", TimeAdded = "06/10/2019 22:00:43"},
-            new CoopProduct{Navn = "Mælk", Navn2 = "1000g", Ean = "1293", Pris = 9.99, VareHierakiId = 2125, Id = 3, State = "Full", TimeAdded = "06/02/2019 07:27:20"},
-            new CoopProduct{Navn = "Mel", Navn2 = "2000g", Ean = "1533", Pris = 20.00, VareHierakiId = 2540, Id = 4, State = "Full", TimeAdded = "06/11/2019 13:01:52"}
-        };
+            new AddedProduct{Name = "Kylling", Amount = "200g", Id = 1, State = "Full", TimeAdded = "07/11/2019 10:37:43", Price = 27.00 },
+            new AddedProduct{Name = "Oksekød", Amount = "500g", Id = 2, State = "Full", TimeAdded = "06/10/2019 22:00:43", Price = 36.00 },
+            new AddedProduct{Name = "Laks", Amount = "280g", Id = 3, State = "Full", TimeAdded = "06/02/2019 07:27:20", Price = 55.00 },
+            new AddedProduct{Name = "Lammebov", Amount = "1000g", Id = 4, State = "Full", TimeAdded = "06/11/2019 13:01:52", Price = 270.00 }        };
 
-        public List<CoopProduct> GetStuff()
+        public List<AddedProduct> GetStuff()
         {
             return StorageTest;
         }
@@ -30,7 +39,7 @@ namespace Backend.Controllers
     public class StorageController : ControllerBase
     {
         public StorageTestList StorageTest = new StorageTestList();
-        List<CoopProduct> productData;
+        List<AddedProduct> productData;
 
         // GET: api/Storage
         [HttpGet]
@@ -66,7 +75,7 @@ namespace Backend.Controllers
         public void Post(string value)
         {
             string buffer;
-            List<CoopProduct> newItem = new List<CoopProduct>();
+            List<AddedProduct> newItem = new List<AddedProduct>();
             productData = StorageTest.GetStuff();
 
             HttpRequest request = HttpContext.Request;
@@ -81,14 +90,21 @@ namespace Backend.Controllers
             {
                 buffer = "[" + buffer + "]";
 
-                newItem = JsonConvert.DeserializeObject<List<CoopProduct>>(buffer);
+                newItem = JsonConvert.DeserializeObject<List<AddedProduct>>(buffer);
                 productData.Add(newItem[0]);
                 newItem.Clear();
             }
             else
             {
-                newItem = JsonConvert.DeserializeObject<List<CoopProduct>>(buffer);
+                newItem = JsonConvert.DeserializeObject<List<AddedProduct>>(buffer);
                 productData = newItem;
+                
+            }
+
+            if (productData.Count != 0)
+            {
+                productData.Last().Id = productData.Count;
+
             }
         }
 
@@ -97,7 +113,7 @@ namespace Backend.Controllers
         public void Put(int id, string value)
         {
             string buffer;
-            CoopProduct newItem = new CoopProduct();
+            AddedProduct newItem = new AddedProduct();
             productData = StorageTest.GetStuff();
 
             HttpRequest request = HttpContext.Request;
@@ -108,7 +124,7 @@ namespace Backend.Controllers
                 buffer = sr.ReadToEnd();
             }
 
-            newItem = JsonConvert.DeserializeObject<CoopProduct>(buffer);
+            newItem = JsonConvert.DeserializeObject<AddedProduct>(buffer);
 
             foreach (var item in productData)
             {

@@ -21,34 +21,41 @@ namespace FrontEnd2.Data
         string newProduct;
         HttpClient Http = new HttpClient();
         string get;
-        string toOtherList;
-        public List<CoopProduct> itemList = new List<CoopProduct>();
+        public List<AddedProduct> itemList = new List<AddedProduct>();
         HttpResponseMessage response = new HttpResponseMessage();
 
         public async Task<HttpResponseMessage> GetProductsOnStart()
         {
             productString = await Http.GetStringAsync("https://localhost:44325/" + get);
 
-            itemList = JsonConvert.DeserializeObject<List<CoopProduct>>(productString);
+            itemList = JsonConvert.DeserializeObject<List<AddedProduct>>(productString);
 
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
 
-        protected double CompletePrice(List<CoopProduct> list)
+        public double CompletePrice()
         {
             double result = 0;
 
-            foreach (var item in list)
+            foreach (var item in itemList)
             {
-                result += item.Pris;
+                result += item.Price;
             }
             return result;
         }
 
-        public async Task<HttpResponseMessage> AddProductToList(CoopProduct newItem)
+        public async Task<HttpResponseMessage> AddProductToList(string name, string amount, double price)
         {
             // *Insert search method here*
             var response = new HttpResponseMessage();
+
+            AddedProduct newItem = new AddedProduct() 
+            {   Name = name,
+                Amount = amount, 
+                Price = price, 
+                TimeAdded = DateTime.Now.ToString(), 
+                State = "Full" 
+            };
 
             itemList.Add(newItem);
 
@@ -63,12 +70,9 @@ namespace FrontEnd2.Data
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
 
-        public async Task<HttpResponseMessage> AddProductToList(CoopProduct newItem, string dest)
+        public async Task<HttpResponseMessage> AddProductToList(AddedProduct newItem, string dest)
         {
-            // *Insert search method here*
             var response = new HttpResponseMessage();
-
-            //itemList.Add(newItem);
 
             productString = JsonConvert.SerializeObject(newItem);
             var content = new StringContent(productString, Encoding.UTF8, "application/json");
@@ -107,6 +111,7 @@ namespace FrontEnd2.Data
                 if (item.Id == id)
                 {
                     item.TimeAdded = DateTime.Now.ToString();
+                    item.State = "Full";
                     response = await AddProductToList(item, dest);
                     //response = await DeleteProduct(id);
                     
@@ -116,16 +121,5 @@ namespace FrontEnd2.Data
 
             //itemList.Remove(itemList.First(x => x.Id == id));
         }
-
-
-
-
-
-        //private async void SaveList(List<CoopProduct> list)
-        //{
-        //    productString = JsonConvert.SerializeObject(list);
-
-        //    string stuff = await Http.GetStringAsync("https://localhost:44325/api/Shoppinglist/5/" + productString);
-        //}
     }
 }

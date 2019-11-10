@@ -11,19 +11,18 @@ using Newtonsoft.Json;
 
 namespace Backend.Controllers
 {
-    public class TestProduct
+    public class ShoppinglistTestList
     {
-        List<CoopProduct> stuff = new List<CoopProduct>
+        List<AddedProduct> StorageTest = new List<AddedProduct>
         {
-            new CoopProduct{Navn = "Kyllingebryst", Navn2 = "100g", Ean = "1233", Pris = 100.00, VareHierakiId = 2525, Id = 1, State = "Full", TimeAdded = "07/11/2019 10:37:43"},
-            new CoopProduct{Navn = "Kyllingepålæg", Navn2 = "80g", Ean = "0239", Pris = 15.00, VareHierakiId = 5525, Id = 2, State = "Full", TimeAdded = "06/10/2019 22:00:43"},
-            new CoopProduct{Navn = "Mælk", Navn2 = "1000g", Ean = "1293", Pris = 9.99, VareHierakiId = 2125, Id = 3, State = "Full", TimeAdded = "06/02/2019 07:27:20"},
-            new CoopProduct{Navn = "Mel", Navn2 = "2000g", Ean = "1533", Pris = 20.00, VareHierakiId = 2540, Id = 4, State = "Full", TimeAdded = "06/11/2019 13:01:52"}
-        };
+            new AddedProduct{ Name = "Kylling", Amount = "200g", Id = 1, State = "Full", TimeAdded = "07/11/2019 10:37:43", Price = 27.00 },
+            new AddedProduct{ Name = "Oksekød", Amount = "500g", Id = 2, State = "Full", TimeAdded = "06/10/2019 22:00:43", Price = 36.00 },
+            new AddedProduct{ Name = "Laks", Amount = "280g", Id = 3, State = "Full", TimeAdded = "06/02/2019 07:27:20", Price = 55.00 },
+            new AddedProduct{ Name = "Lammebov", Amount = "1000g", Id = 4, State = "Full", TimeAdded = "06/11/2019 13:01:52", Price = 270.00 }        };
 
-        public List<CoopProduct> GetStuff()
+        public List<AddedProduct> GetStuff()
         {
-            return stuff;
+            return StorageTest;
         }
     }
 
@@ -43,8 +42,8 @@ namespace Backend.Controllers
     [ApiController]
     public class ShoppinglistController : ControllerBase
     {
-        public TestProduct test = new TestProduct();
-        List<CoopProduct> productData;
+        public ShoppinglistTestList test = new ShoppinglistTestList();
+        List<AddedProduct> productData;
 
         // GET: api/Shoppinglist
         [HttpGet]
@@ -96,7 +95,7 @@ namespace Backend.Controllers
         public void Post(String value)
         {
             string buffer;
-            List<CoopProduct> newItem = new List<CoopProduct>();
+            List<AddedProduct> newItem = new List<AddedProduct>();
             productData = test.GetStuff();
 
             HttpRequest request = HttpContext.Request;
@@ -111,13 +110,13 @@ namespace Backend.Controllers
             {
                 buffer = "[" + buffer + "]";
 
-                newItem = JsonConvert.DeserializeObject<List<CoopProduct>>(buffer);
+                newItem = JsonConvert.DeserializeObject<List<AddedProduct>>(buffer);
                 productData.Add(newItem[0]);
                 newItem.Clear();
             }
             else
             {
-                newItem = JsonConvert.DeserializeObject<List<CoopProduct>>(buffer);
+                newItem = JsonConvert.DeserializeObject<List<AddedProduct>>(buffer);
                 productData = newItem;
             }
         }
