@@ -19,17 +19,17 @@ namespace BBGatherer
             dbConnect.GenerateSallingDB();
             //dbConnect.InitializeUserDatabase();
 
-            //CoopDoStuff tryCoop = new CoopDoStuff("d0b9a5266a2749cda99d4468319b6d9f");
+            CoopDoStuff tryCoop = new CoopDoStuff("d0b9a5266a2749cda99d4468319b6d9f");
 
-            //List<CoopProduct> coopProducts = tryCoop.CoopFindEverythingInStore("24073");
+            List<CoopProduct> coopProducts = tryCoop.CoopFindEverythingInStore("24073");
 
-            /*int count = 0;
+            int count = 0;
             foreach (CoopProduct c in coopProducts)
             {
                 count++;
                 Console.WriteLine(count);
                 dbConnect.AddProduct(new Product(c.Ean, c.Navn, c.Navn2, c.Pris, c.VareHierakiId));
-            }*/
+            }
 
 
             RecipeCrawl WebRunner = new RecipeCrawl();
