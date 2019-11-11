@@ -121,7 +121,7 @@ namespace BBCollection.DBHandling
                 "`description` VARCHAR(255), " +
                 "`link` VARCHAR(255), " +
                 "`img` VARCHAR(255), " +
-                "PRIMARY KEY(prodid));";
+                "PRIMARY KEY(id));";
 
             new SQLConnect().NonQueryString(sallingTable, databaseInformation);
         }
