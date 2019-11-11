@@ -17,9 +17,15 @@ else
 {
     <div class="container">
         <div class="row col-md-12">
-            <table class="ShoppinglistTable">
+            <table class="ShoppinglistTable table-bordered">
+                <colgroup>
+                    <col style="width: 100px" />
+                    <col style="width: 200px" />
+                    <col style="width: 100px" />
+                    <col style="width: 80px" />
+                </colgroup>
                 <thead>
-                    <tr>
+                    <tr class="text-center">
                         <th>Name</th>
                         <th>Description</th>
                         <th>Price</th>
@@ -29,10 +35,10 @@ else
                 <tbody>
                     @foreach (var items in ListFunc.itemList)
                     {
-                        <tr>
-                            <td>@items.Navn</td>
-                            <td>@items.Navn2</td>
-                            <td>@items.Pris.ToString() kr</td>
+                        <tr class="text-center">
+                            <td>@items.Name</td>
+                            <td>@items.Amount</td>
+                            <td>@items.Price.ToString() kr</td>
                             <td>
                                 <div class="text-center">
                                     <button @onclick="(() => AddProductToStorage(items.Id))"><i class="oi oi-basket"></i></button>
@@ -41,13 +47,21 @@ else
                             </td>
                         </tr>
                     }
+
                 </tbody>
             </table>
             @if (ListFunc.itemList != null)
             {
-                <input placeholder="A new Product" @bind="@newProduct"/>
+                <input placeholder="A new Product" @bind="@newProduct" />
                 <button @onclick="AddProduct">Create</button>
             }
+        </div>
+        <div class="buttom-list">
+            <button @onclick="AddAlltoStorage"><i class="oi oi-basket">Add All To Storage</i></button>
+            <i>(@ListFunc.CompletePrice() kr)</i>
+        </div>
+        <div>
+            <button @onclick="DeleteAll"><i class="oi oi-trash">Empty Shoppinglist</i></button>
         </div>
     </div>
 }
@@ -64,24 +78,27 @@ else
         responseMessage = await ListFunc.GetProductsOnStart();
     }
 
-    protected double CompletePrice()
+    private void AddAlltoStorage()
     {
-        double result = 0;
-
         foreach (var item in ListFunc.itemList)
         {
-            result += item.Pris;
+            ListFunc.AddProductToStorage(item.Id, "api/Storage");
         }
-        return result;
+        ListFunc.itemList.Clear();
+    }
+
+    private void DeleteAll()
+    {
+        ListFunc.itemList.Clear();
     }
 
     private async void AddProduct()
     {
-        CoopProduct newItemObject = new CoopProduct() { Ean = "", Id = 0, Navn = newProduct, Navn2 = "", Pris = 0.00, VareHierakiId = 0 };
+        CoopProduct newItem = new CoopProduct() { Navn = newProduct, Navn2 = "", Pris = 0.00 };
 
         newProduct = string.Empty;
-        
-        responseMessage = await ListFunc.AddProductToList(newItemObject);
+
+        responseMessage = await ListFunc.AddProductToList(newItem.Navn, newItem.Navn2, newItem.Pris);
     }
 
     private async void DeleteProduct(int id)
@@ -102,6 +119,8 @@ else
         productString = JsonConvert.SerializeObject(ListFunc.itemList);
 
         string stuff = await Http.GetStringAsync("https://localhost:44325/api/Shoppinglist/5/" + productString);
+
+
         //await Http.PostAsync("https://localhost:44325/api/Shoppinglist/save" + productString, new StringContent(productString));
 
         //var stringContent = new StringContent(productString);

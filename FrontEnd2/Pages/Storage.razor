@@ -2,8 +2,6 @@
 @using Newtonsoft.Json;
 @inject HttpClient Http
 @using FrontEnd2.Data;
-@using Syncfusion.EJ2.DropDowns;
-@using Syncfusion.EJ2.Grids;
 @using System.Text;
 @using System.Globalization;
 
@@ -17,62 +15,65 @@
 }
 else
 {
-    <div class="container">
-        <div class="row col-md-12">
-            <table class="ShoppinglistTable table-bordered">
-                <colgroup>
-                    <col style="width: 150px" />
-                    <col style="width: 100px" />
-                    <col style="width: 150px" />
-                    <col style="width: 100px" />
-                    <col style="width: 75px" />
-                </colgroup>
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Full Amount</th>
-                        <th>Amount Remaining</th>
-                        <th>Added Date</th>
-                        <th>Item is Empty</th>
+<div class="container">
+    <div class="row col-md-12">
+        <table class="ShoppinglistTable table-bordered">
+            <colgroup>
+                <col style="width: 150px" />
+                <col style="width: 130px" />
+                <col style="width: 80px" />
+                <col style="width: 120px" />
+                <col style="width: 75px" />
+            </colgroup>
+            <thead>
+                <tr class="text-center">
+                    <th>Name</th>
+                    <th>Full Amount</th>
+                    <th>Amount Remaining</th>
+                    <th>Added Date</th>
+                    <th>Item is Empty</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var items in ListFunc.itemList)
+                {
+                    <tr class="text-center">
+                        <td>@items.Name</td>
+                        <td>@items.Amount</td>
+                        <td>
+                            <p class="lead"></p>
+                            <div class="btn-group show-on-hover">
+                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                                    @items.State <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu" role="menu">
+                                    @foreach (var State in ItemState)
+                                    {
+                                        <li><button class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(() => ChangeState(items.Id, State))">@State</button></li>
+                                    }
+                                </ul>
+                            </div>
+                        </td>
+                        <td>@items.TimeAdded</td>
+                        <td>
+                            <div class="text-center">
+                                <button @onclick="(() => DeleteProduct(items.Id))"><i class="oi oi-trash"></i></button>
+                            </div>
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                    @foreach (var items in ListFunc.itemList)
-                    {
-                        <tr>
-                            <td>@items.Navn</td>
-                            <td>@items.Navn2</td>
-                            <td>
-                                <p class="lead"></p>
-                                <div class="btn-group show-on-hover">
-                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                                        @items.State <span class="caret"></span>
-                                    </button>
-                                        <ul class="dropdown-menu" role="menu">
-                                            @foreach (var State in ItemState)
-                                            {
-                                                <li><button class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(() => ChangeState(items.Id, State))">@State</button></li>
-                                            }
-                                        </ul>
-                                </div>
-                            </td>
-                            <td>@items.TimeAdded</td>
-                            <td>
-                                <div class="text-center">
-                                    <button @onclick="(() => DeleteProduct(items.Id))"><i class="oi oi-trash"></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-            @if (ListFunc.itemList != null)
-            {
-                <input placeholder="A new Product" @bind="@newProduct" />
-                <button @onclick="AddProduct">Create</button>
-            }
-        </div>
+                }
+            </tbody>
+        </table>
+        @if (ListFunc.itemList != null)
+        {
+            <input placeholder="A new Product" @bind="@newProduct" />
+            <button @onclick="AddProduct">Create</button>
+        }
     </div>
+    <div>
+        <button @onclick="DeleteAll"><i class="oi oi-trash">Empty Shoppinglist</i></button>
+    </div>
+</div>
 }
 
 
@@ -84,6 +85,10 @@ else
 
     List<string> ItemState = new List<string>() { "Full", "Almost Full", "Half Full", "Almost Empty" };
 
+    private void DeleteAll()
+    {
+        ListFunc.itemList.Clear();
+    }
 
     protected async void ChangeState(int id, string state)
     {
@@ -113,18 +118,18 @@ else
 
         foreach (var item in ListFunc.itemList)
         {
-            result += item.Pris;
+            result += item.Price;
         }
         return result;
     }
 
     private async void AddProduct()
     {
-        CoopProduct newItemObject = new CoopProduct() { Ean = "", Id = 0, Navn = newProduct, Navn2 = "", Pris = 0.00, VareHierakiId = 0, State = "Full", TimeAdded = DateTime.Now.ToString()};
-
-        responseMessage = await ListFunc.AddProductToList(newItemObject);
+        CoopProduct newItem = new CoopProduct() { Navn = newProduct, Navn2 = "", Pris = 0.00};
 
         newProduct = string.Empty;
+
+        responseMessage = await ListFunc.AddProductToList(newItem.Navn, newItem.Navn2, newItem.Pris);
     }
 
     private async void DeleteProduct(int id)

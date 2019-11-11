@@ -25,7 +25,7 @@
         <ul class="fixed">
             @foreach (var recipe in recipeData)
             {
-                <li class="no-bullets"><button type="button" class="btn btn-block bg-light recipeDivDisplay rounded-0" 
+                <li class="no-bullets"><button type="button" class="btn btn-block bg-light recipeDivDisplay rounded-0"
                                                            @onclick="(() => retriveInfo(recipe._recipeID))"> @recipe._Name</button></li>
             }
         </ul>
@@ -67,6 +67,7 @@
             <p> For @recipePerPerson persons</p>
             <button @onclick="(() => decrementRecipeAmount())"><i class="oi oi-chevron-bottom noPadding"></i></button>
         </div>
+        <button @onclick="(() => AddToShoppinglist())"><i class="oi oi-basket">Add All To Storage</i></button>
         }
     @*<button class="bg-success" @onclick="(() => addToShoopinglist())"> Add to Shopping list</button>*@
     </div>
@@ -89,15 +90,18 @@
     List<Ingredient> ingredients = new List<Ingredient>();
     List<Recipe> recipeData = new List<Recipe>();
 
+    HttpResponseMessage responseMessage = new HttpResponseMessage();
 
-    //void addToShoopinglist()
-    //{
-    //    ShoppinlistFunctionality toList = new ShoppinlistFunctionality("api/Shoppinglist");
+    async void AddToShoppinglist()
+    {
+        ShoppinlistFunctionality ShopList = new ShoppinlistFunctionality("api/Shoppinglist");
 
-    //    foreach (var item in ingredients)
-    //    {
-    //    }
-    //}
+
+        foreach (var item in ingredients)
+        {
+            responseMessage = await ShopList.AddProductToList(item._IngredientName, item._Amount.ToString() + item._unit, 0.00);
+        }
+    }
 
     void incrementRecipeAmount()
     {
