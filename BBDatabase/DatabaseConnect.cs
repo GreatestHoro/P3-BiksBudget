@@ -66,5 +66,23 @@ namespace BBCollection
         {
             return new UserHandling().VerifyUser(username, password, dbInfo.GetConnect());
         }
+
+        /* Insert Sallingproduct to database */
+
+        public void GenerateSallingDB()
+        {
+            new InitializeDB().CreateSallingProduct(dbInfo.GetConnect());
+        }
+
+
+        public void AddSallingProduct(SallingProduct sallingProduct)
+        {
+            new ProductHandling().insertSalling(sallingProduct, dbInfo.GetConnect());
+        }
+
+        public List<SallingProduct> GetSallingProduct(string nameToSearch)
+        {
+            return new ProductHandling().ListOfSallingProductsFromName(nameToSearch, dbInfo.GetConnect());
+        }
     }
 }

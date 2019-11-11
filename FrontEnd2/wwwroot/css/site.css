@@ -120,6 +120,14 @@ ul.fixed {
 .recipeDivDisplay {
     text-align: left;
     margin-top: auto;
+
+}
+
+.recipeListDisplay{
+    height: 400px; 
+    width: 20%;
+    overflow: hidden; 
+    overflow-y:scroll;
 }
 
 .recipeDestribtionDisplay {

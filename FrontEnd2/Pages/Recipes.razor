@@ -19,10 +19,10 @@
     @if (viewRecipeTitle == true)
     {
         <h3>Recipes with @searchTerm : </h3>
-    }
+    
 
     <div>
-        <ul class="fixed">
+        <ul class="fixed recipeListDisplay">
             @foreach (var recipe in recipeData)
             {
                 <li class="no-bullets"><button type="button" class="btn btn-block bg-light recipeDivDisplay rounded-0"
@@ -30,6 +30,7 @@
             }
         </ul>
     </div>
+    }
 </div>
 
 <div class="recipeDestribtionDisplay">
