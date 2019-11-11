@@ -181,7 +181,8 @@ namespace BBGatherer.Webcrawler
 
         private bool CheckSallingProductsInDatabase(String Searchterm, DatabaseConnect dbConnect) 
         {
-            return false;
+            List<SallingProduct> sallingP = dbConnect.GetSallingProduct(Searchterm);
+            return sallingP.Count != 0 ? true : false;
         }
 
         private bool CheckIngredientsInApi(string Searchterm, DatabaseConnect dbConnect) 
@@ -202,7 +203,7 @@ namespace BBGatherer.Webcrawler
                 productSuggestions = openHttp.ReadAndParseAPISingle();
                 foreach (var p in productSuggestions.Suggestions)
                 {
-
+                    dbConnect.AddSallingProduct(new SallingProduct(p.title,p.id,p.prod_id,p.price,p.description,p.link,p.img));
                 }
             }
             catch(System.Net.WebException)
