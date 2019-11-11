@@ -18,6 +18,11 @@ namespace BBCollection.DBHandling
             GenerateUserDatabaseTables(dbInfo);
         }
 
+        public void CreateSallingProduct(DatabaseInformation dbInfo)
+        {
+            GenerateSallingProductDB(dbInfo);
+        }
+
         /*
          Check if database exist, if it don't it will create it
         */
@@ -100,9 +105,25 @@ namespace BBCollection.DBHandling
                 "`id` INT AUTO_INCREMENT UNIQUE, " +
                 "`username` VARCHAR(255) UNIQUE, " +
                 "`password` VARCHAR(255), " +
-                "PRIMARY KEY(id))";
+                "PRIMARY KEY(id));";
 
             new SQLConnect().NonQueryString(userTable, databaseInformation);
+        }
+
+        private void GenerateSallingProductDB(DatabaseInformation databaseInformation)
+        {
+            string sallingTable =
+                "CREATE TABLE IF NOT EXISTS `sallingproducts` (" +
+                "`title` VARCHAR(255), " +
+                "`id` VARCHAR(255), " +
+                "`prodid` VARCHAR(255) UNIQUE, " +
+                "`price` DECIMAL(6,2), " +
+                "`description` VARCHAR(255), " +
+                "`link` VARCHAR(255), " +
+                "`img` VARCHAR(255), " +
+                "PRIMARY KEY(prodid));";
+
+            new SQLConnect().NonQueryString(sallingTable, databaseInformation);
         }
     }
 }
