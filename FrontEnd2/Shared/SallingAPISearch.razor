@@ -31,13 +31,15 @@
                 <div class="card-body">
                     <h5 class="card-title" style="font-weight:bold">@product.title</h5>
                     <p class="btn btn-warning">@product.price DKK</p>
-                    <button href="#" class="btn btn-success">Læg Til Shoppinglisten</button>
+                    <button @onclick="(()=>AddToShoppinglist(product))" class="btn btn-success">Læg Til Shoppinglisten</button>
                 </div>
             </div>
         }
     }
 
 @code {
+    ShoppinlistFunctionality func = new ShoppinlistFunctionality("api/Shoppinglist");
+    HttpResponseMessage response = new HttpResponseMessage();
 
     string searchBox;
     double minPrice;
@@ -72,10 +74,15 @@
     List<SallingAPIProduct> resultProductQuery = new List<SallingAPIProduct>();
     Filter<SallingAPIProduct> productFilter = new Filter<SallingAPIProduct>();
 
+    async void AddToShoppinglist(SallingAPIProduct item)
+    {
+        response = await func.AddProductToList(item.title, item.description, item.price);
+    }
+
 
     private void SearchForProducts()
     {
-        
+
         save = searchBox;
         string apiLink = linkMaker.GetProductAPILink(searchBox);
 

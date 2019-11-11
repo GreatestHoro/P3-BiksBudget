@@ -49,12 +49,12 @@ namespace FrontEnd2.Data
             // *Insert search method here*
             var response = new HttpResponseMessage();
 
-            AddedProduct newItem = new AddedProduct() 
-            {   Name = name,
-                Amount = amount, 
-                Price = price, 
-                TimeAdded = DateTime.Now.ToString(), 
-                State = "Full" 
+            AddedProduct newItem = new AddedProduct()
+            {
+                Name = name,
+                Amount = amount,
+                Price = price,
+                Id = itemList.Count()
             };
 
             itemList.Add(newItem);
