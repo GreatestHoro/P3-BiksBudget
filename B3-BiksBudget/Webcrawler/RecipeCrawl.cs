@@ -25,7 +25,6 @@ namespace BBGatherer.Webcrawler
                 string html = await HttpClient.GetStringAsync(url);
                 HtmlDocument htmlDocument = new HtmlDocument();
                 htmlDocument.LoadHtml(html);
-                bool validity;
                 bool fatalError = false;
 
 
@@ -53,11 +52,8 @@ namespace BBGatherer.Webcrawler
                             //Console.WriteLine(ind.InnerText);
                             if (!ind.InnerText.Contains(':'))
                             {
-                                Ingredient ingredient = CreateIngriedient(ind.InnerText, out validity, out fatalError, dbConnect);
-                                if (validity) 
-                                {
+                                Ingredient ingredient = CreateIngriedient(ind.InnerText, out fatalError, dbConnect);
                                     IngriedisensList.Add(ingredient);
-                                }
                             }
                             if (fatalError) { break; }
                             //Console.WriteLine(ind.InnerText);
@@ -89,7 +85,7 @@ namespace BBGatherer.Webcrawler
 
 
 
-        private Ingredient CreateIngriedient(String ind, out bool validity, out bool fatalError, DatabaseConnect dbConnect)
+        private Ingredient CreateIngriedient(String ind, out bool fatalError, DatabaseConnect dbConnect)
         {
             float amount = DeterminAmount(ind);
             String unit = DeterminUnit(ind);
@@ -98,7 +94,7 @@ namespace BBGatherer.Webcrawler
             
             name = CheckForValidIndgredients(name, dbConnect,out fatalError);
 
-            validity = EvaluateName(name,out fatalError);
+            
 
             return new Ingredient(name, unit, amount);
         }
@@ -123,7 +119,6 @@ namespace BBGatherer.Webcrawler
 
                     if (IngredientFlag)
                     {
-                        //Console.WriteLine(IndgrdientName);
                         AllMacthes.Add(IndgrdientName);
                     }
                 }
@@ -169,25 +164,29 @@ namespace BBGatherer.Webcrawler
         }
         private bool CheckIngredient(String Searchterm, DatabaseConnect dbConnect)
         {
-            return   CheckIngredientInDatabase(Searchterm, dbConnect) || CheckIngredientsInApi(Searchterm.Trim());
+            return   CheckIngredientInDatabase(Searchterm, dbConnect) || CheckIngredientsInApi(Searchterm.Trim(),dbConnect);
         }
 
         private bool CheckIngredientInDatabase(String Searchterm, DatabaseConnect dbConnect) 
         {
-            
-            List<Product> Products = dbConnect.GetProducts(Searchterm);
-            bool IfExist = true;
-
-            if (Products.Count == 0)
-            {
-                IfExist = false;
-            }
-            return IfExist;
+            return CheckCOOPProductsInDatabase(Searchterm, dbConnect) || CheckSallingProductsInDatabase(Searchterm,dbConnect);
         }
 
-        private bool CheckIngredientsInApi(string Searchterm) 
+        private bool CheckCOOPProductsInDatabase(String Searchterm, DatabaseConnect dbConnect) 
         {
-            //Console.WriteLine("Salling api check");
+            List<Product> Products = dbConnect.GetProducts(Searchterm);
+
+            return Products.Count != 0 ? true : false;
+        }
+
+        private bool CheckSallingProductsInDatabase(String Searchterm, DatabaseConnect dbConnect) 
+        {
+            List<SallingProduct> sallingP = dbConnect.GetSallingProduct(Searchterm);
+            return sallingP.Count != 0 ? true : false;
+        }
+
+        private bool CheckIngredientsInApi(string Searchterm, DatabaseConnect dbConnect) 
+        {
             System.Threading.Thread.Sleep(2000);
             BearerAccessToken bearerAccessToken = new BearerAccessToken("5c9040ad-6229-477f-8123-64d281c76768");
 
@@ -202,19 +201,23 @@ namespace BBGatherer.Webcrawler
             {
                 openHttp = new OpenHttp<SallingAPIProductSuggestions>(apiLink, bearerAccessToken.GetBearerToken());
                 productSuggestions = openHttp.ReadAndParseAPISingle();
+                foreach (var p in productSuggestions.Suggestions)
+                {
+                    dbConnect.AddSallingProduct(new SallingProduct(p.title,p.id,p.prod_id,p.price,p.description,p.link,p.img));
+                }
             }
             catch(System.Net.WebException)
             {
-               Console.WriteLine("Exseption found is being handled");
+               Console.WriteLine("Exception found is being handled");
                System.Threading.Thread.Sleep(30000);
-                Console.WriteLine("Exseption resolved");
-                return CheckIngredientsInApi(Searchterm);
+               Console.WriteLine("Exception resolved");
+               return CheckIngredientsInApi(Searchterm,dbConnect);
             }
+
             
             return productSuggestions.Suggestions.Count != 0?true:false;
             }
         #endregion
-
 
         #region(Determin ingredient values)
         private float DeterminAmount(String ingrediens)
@@ -330,29 +333,6 @@ namespace BBGatherer.Webcrawler
         private bool CheckIfPageFound(HtmlNodeCollection name, HtmlNodeCollection beskrivels, HtmlNodeCollection ingredienser)
         {
             if (name == null || beskrivels == null || ingredienser == null)
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
-        }
-
-        private bool EvaluateName(String name, out bool fatalError)
-        {
-            String[] SplitString = name.Split(" ");
-            if (SplitString.Length > 2)
-            {
-                //Console.WriteLine(name +" "+ SplitString.Length);
-                fatalError = true;
-            }
-            else
-            {
-                fatalError = false;
-            }
-
-            if (String.IsNullOrWhiteSpace(name))
             {
                 return false;
             }

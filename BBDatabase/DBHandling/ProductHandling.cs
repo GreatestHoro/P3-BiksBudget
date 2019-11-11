@@ -45,5 +45,44 @@ namespace BBCollection.DBHandling
 
             return productList;
         }
+
+        public void insertSalling(SallingProduct sallingProduct, DatabaseInformation databaseInformation)
+        {
+            string addProduct = "INSERT INTO `sallingproducts`(`title`,`id`,`prodid`,`price`,`description`,`link`,`img`)" +
+                                     "VALUES(@Title,@Id,@ProdId,@Price,@Description,@Link,@Img);";
+
+            MySqlCommand msc = new MySqlCommand(addProduct);
+
+            msc.Parameters.AddWithValue("@Title", sallingProduct._title);
+            msc.Parameters.AddWithValue("@Id", sallingProduct._id);
+            msc.Parameters.AddWithValue("@ProdId", sallingProduct._prod_id);
+            msc.Parameters.AddWithValue("@Price", sallingProduct._price);
+            msc.Parameters.AddWithValue("@Description", sallingProduct._description);
+            msc.Parameters.AddWithValue("@Link", sallingProduct._link);
+            msc.Parameters.AddWithValue("@Img", sallingProduct._img);
+
+            new SQLConnect().NonQueryMSC(msc, databaseInformation);
+        }
+
+        public List<SallingProduct> ListOfSallingProductsFromName(string productName, DatabaseInformation dbInformation)
+        {
+            List<SallingProduct> productList = new List<SallingProduct>();
+
+            string productQuery = "SELECT * FROM sallingproducts WHERE title LIKE @ProductName";
+
+            MySqlCommand msc = new MySqlCommand(productQuery);
+            msc.Parameters.AddWithValue("@ProductName", "%" + productName + "%");
+
+
+
+            foreach (DataRow r in new SQLConnect().DynamicSimpleListSQL(msc, dbInformation).Tables[0].Rows)
+            {
+                SallingProduct sallingProduct = new SallingProduct((string)r[0], (string)r[1], (string)r[2], Convert.ToDouble(r[3]),
+                                              (string)r[4], (string)r[5], (string)r[6]);
+                productList.Add(sallingProduct);
+            }
+
+            return productList;
+        }
     }
 }
