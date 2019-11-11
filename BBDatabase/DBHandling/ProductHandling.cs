@@ -34,7 +34,7 @@ namespace BBCollection.DBHandling
             MySqlCommand msc = new MySqlCommand(recipesQuery);
             msc.Parameters.AddWithValue("@ProductName", "%" + productName + "%");
 
-            
+
 
             foreach(DataRow r in new SQLConnect().DynamicSimpleListSQL(msc, dbInformation).Tables[0].Rows)
             {

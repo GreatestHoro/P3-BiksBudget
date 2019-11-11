@@ -86,7 +86,7 @@ namespace FrontEnd2
         public T ReadAndParseAPISingle()
         {
             HttpWebRequest httpWebRequest = APIHttpWebReqeust();
-
+            
             HttpWebResponse response = httpWebRequest.GetResponse() as HttpWebResponse;
 
             StreamReader streamReader = new StreamReader(response.GetResponseStream());

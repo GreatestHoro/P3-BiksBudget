@@ -11,18 +11,18 @@ namespace BBGatherer
     {
         static void Main(string[] args)
         {
-            DatabaseConnect dbConnect = new DatabaseConnect("localhost", "BiksBudgetDB", "root", "BiksBudget123");
+            DatabaseConnect dbConnect = new DatabaseConnect("localhost", "biksbudgetcooper", "root", "BiksBudget123");
 
             //dbConnect.AddUser("Test3", "Test", "Test");
 
             dbConnect.InitializeDatabase();
-            /*dbConnect.InitializeUserDatabase();
+            //dbConnect.InitializeUserDatabase();
 
-            CoopDoStuff tryCoop = new CoopDoStuff("d0b9a5266a2749cda99d4468319b6d9f");
+            //CoopDoStuff tryCoop = new CoopDoStuff("d0b9a5266a2749cda99d4468319b6d9f");
 
-            List<CoopProduct> coopProducts = tryCoop.CoopFindEverythingInStore("24073");
+            //List<CoopProduct> coopProducts = tryCoop.CoopFindEverythingInStore("24073");
 
-            int count = 0;
+            /*int count = 0;
             foreach (CoopProduct c in coopProducts)
             {
                 count++;
@@ -31,8 +31,8 @@ namespace BBGatherer
             }
 
             */
-
-            _ = RecipeCrawl.GetRecipes(1, 1000, dbConnect);
+            RecipeCrawl WebRunner = new RecipeCrawl();
+            _ = WebRunner.GetRecipes(620, 1200, dbConnect);
 
             Console.WriteLine("web runner begins... fear its power");
             Console.ReadLine();
