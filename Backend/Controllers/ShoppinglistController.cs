@@ -119,6 +119,12 @@ namespace Backend.Controllers
                 newItem = JsonConvert.DeserializeObject<List<AddedProduct>>(buffer);
                 productData = newItem;
             }
+
+            if (productData.Count != 0)
+            {
+                productData.Last().Id = productData.Count;
+
+            }
         }
 
         // PUT: api/Shoppinglist/5
