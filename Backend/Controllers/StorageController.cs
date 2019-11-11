@@ -17,16 +17,21 @@ namespace Backend.Controllers
         public int Id { get; set; }
         public string State { get; set; }
         public string TimeAdded { get; set; }
+        public string UniqueId { get; set; }
+        public string Image { get; set; }
+        public string StoreName { get; set; }
+        public int AmountOfItem { get; set; }
     }
 
     public class StorageTestList
     {
         List<AddedProduct> StorageTest = new List<AddedProduct>
         {
-            new AddedProduct{Name = "Kylling", Amount = "200g", Id = 1, State = "Full", TimeAdded = "07/11/2019 10:37:43", Price = 27.00 },
-            new AddedProduct{Name = "Oksekød", Amount = "500g", Id = 2, State = "Full", TimeAdded = "06/10/2019 22:00:43", Price = 36.00 },
-            new AddedProduct{Name = "Laks", Amount = "280g", Id = 3, State = "Full", TimeAdded = "06/02/2019 07:27:20", Price = 55.00 },
-            new AddedProduct{Name = "Lammebov", Amount = "1000g", Id = 4, State = "Full", TimeAdded = "06/11/2019 13:01:52", Price = 270.00 }        };
+            new AddedProduct{Name = "Kylling", Amount = "200g", Id = 1, State = "Full", TimeAdded = "07/11/2019 10:37:43", Price = 27.00, AmountOfItem = 1 },
+            new AddedProduct{Name = "Oksekød", Amount = "500g", Id = 2, State = "Full", TimeAdded = "06/10/2019 22:00:43", Price = 36.00, AmountOfItem = 4 },
+            new AddedProduct{Name = "Laks", Amount = "280g", Id = 3, State = "Full", TimeAdded = "06/02/2019 07:27:20", Price = 55.00, AmountOfItem = 10 },
+            new AddedProduct{Name = "Lammebov", Amount = "1000g", Id = 4, State = "Full", TimeAdded = "06/11/2019 13:01:52", Price = 270.00, AmountOfItem = 2 }        
+        };
 
         public List<AddedProduct> GetStuff()
         {
@@ -131,6 +136,7 @@ namespace Backend.Controllers
                 if (item.Id == id)
                 {
                     item.State = newItem.State;
+                    item.AmountOfItem = newItem.AmountOfItem;
                     break;
                 }
             }

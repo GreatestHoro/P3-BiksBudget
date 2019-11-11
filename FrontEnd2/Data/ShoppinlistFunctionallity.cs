@@ -39,7 +39,7 @@ namespace FrontEnd2.Data
 
             foreach (var item in itemList)
             {
-                result += item.Price;
+                result += item.Price * item.AmountOfItem;
             }
             return result;
         }

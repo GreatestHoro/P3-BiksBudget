@@ -39,7 +39,7 @@ else
                 {
                     <tr class="text-center">
                         <td>@items.Name</td>
-                        <td>@items.Amount</td>
+                        <td>@items.AmountOfItem * @items.Amount</td>
                         <td>
                             <p class="lead"></p>
                             <div class="btn-group show-on-hover">
@@ -102,6 +102,7 @@ else
                 productString = JsonConvert.SerializeObject(item);
                 var content = new StringContent(productString, Encoding.UTF8, "application/json");
                 HttpResponseMessage responce = await Http.PutAsync("https://localhost:44325/api/Storage/" + item.Id, content);
+
                 break;
             }
         }
@@ -112,16 +113,6 @@ else
         responseMessage = await ListFunc.GetProductsOnStart();
     }
 
-    protected double CompletePrice()
-    {
-        double result = 0;
-
-        foreach (var item in ListFunc.itemList)
-        {
-            result += item.Price;
-        }
-        return result;
-    }
 
     private async void AddProduct()
     {
@@ -134,23 +125,26 @@ else
 
     private async void DeleteProduct(int id)
     {
-        responseMessage = await ListFunc.DeleteProduct(id);
-    }
+        bool isFound = false;
+        foreach (var item in ListFunc.itemList)
+        {
+            if (item.Id == id && item.AmountOfItem > 1)
+            {
+                item.AmountOfItem--;
 
-    private void AddProductToStorage(int id)
-    {
-        ListFunc.itemList.Remove(ListFunc.itemList.First(x => x.Id == id));
-    }
+                productString = JsonConvert.SerializeObject(item);
+                var content = new StringContent(productString, Encoding.UTF8, "application/json");
+                HttpResponseMessage responce = await Http.PutAsync("https://localhost:44325/api/Storage/" + item.Id, content);
 
-    private async void SaveList()
-    {
-        productString = JsonConvert.SerializeObject(ListFunc.itemList);
+                isFound = true;
 
-        string stuff = await Http.GetStringAsync("https://localhost:44325/api/Shoppinglist/5/" + productString);
-        //await Http.PostAsync("https://localhost:44325/api/Shoppinglist/save" + productString, new StringContent(productString));
+                break;
+            }
+        }
 
-        //var stringContent = new StringContent(productString);
-
-        //HttpResponseMessage result = await Http.PostAsync("https://localhost:44325/api/Save", stringContent);
+        if (isFound == false)
+        {
+            responseMessage = await ListFunc.DeleteProduct(id);
+        }
     }
 }
