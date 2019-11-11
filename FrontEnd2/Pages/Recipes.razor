@@ -5,15 +5,15 @@
 
 @inject HttpClient  Http
 
+<div>
     <div>
-        <div>
-            <input class="rounded-bottom recipeSearch" placeholder="Search..." @bind="searchTerm" />
-            <span class="text-muted ml-5">
-                Showing @recipeData.Count out of 1000
-            </span>
-            <button type="button" class="btn-success btn-block" @onclick="(() => Search())">Find recipe</button>
-        </div>
+        <input class="rounded-bottom recipeSearch" placeholder="Search..." @bind="searchTerm" />
+        <span class="text-muted ml-5">
+            Showing @recipeData.Count out of 255
+        </span>
+        <button type="button" class="btn-success btn-block" @onclick="(() => Search())">Find recipe</button>
     </div>
+</div>
 
 <div class="float-left absolute" >
     @if (viewRecipeTitle == true)
@@ -22,10 +22,10 @@
     }
 
     <div>
-        <ul class="list-group fixed">
+        <ul class="fixed">
             @foreach (var recipe in recipeData)
             {
-                <li class="list-group-item-light "><button type="button" class="btn-group-sm btn-block recipeDivDisplay focus btn-warning" 
+                <li class="no-bullets"><button type="button" class="btn btn-block bg-light recipeDivDisplay rounded-0"
                                                            @onclick="(() => retriveInfo(recipe._recipeID))"> @recipe._Name</button></li>
             }
         </ul>
@@ -41,17 +41,14 @@
         @if (viewIngredients == true)
         {
 
-        <table class="table-bordered float-left fixed">
-            <caption class="figure-caption"> Ingredients</caption>
+        <table class="table-bordered float-left fixed ingredientsTable">
             <colgroup>
-                <col style="width: 75px" />
-                <col style="width: 75px" />
-                <col style="width: 75px" />
+                <col style="width: 100px" />
+                <col style="width: 150px" />
             </colgroup>
             <thead>
                 <tr>
                     <th>Amount</th>
-                    <th> Unit </th>
                     <th>Name</th>
                 </tr>
             </thead>
@@ -59,20 +56,20 @@
                     @for (int i = 0; i < ingredients.Count; i++)
                     {
                         <tr>
-                            <td>@recipeAmount[i]</td>
-                            <td>@ingredients[i]._unit</td>
+                            <td>@recipeAmount[i] @ingredients[i]._unit</td>
                             <td>@ingredients[i]._IngredientName</td>
                         </tr>
                     }
             </tbody>
         </table>
         <div id="perPersonRecipe">
-            <button @onclick="(() => incrementRecipeAmount())" class="oi oi-chevron-top"></button>
+            <button @onclick="(() => incrementRecipeAmount())" class="oi oi-chevron-top noPadding"></button>
             <p> For @recipePerPerson persons</p>
-            <button @onclick="(() => decrementRecipeAmount())"><i class="oi oi-chevron-bottom"></i></button>
+            <button @onclick="(() => decrementRecipeAmount())"><i class="oi oi-chevron-bottom noPadding"></i></button>
         </div>
         <button @onclick="(() => AddToShoppinglist())"><i class="oi oi-basket">Add All To Storage</i></button>
         }
+    @*<button class="bg-success" @onclick="(() => addToShoopinglist())"> Add to Shopping list</button>*@
     </div>
 </div>
 
@@ -87,6 +84,7 @@
 
     bool viewRecipeTitle = false;
     bool viewIngredients = false;
+    //bool viewAddToshoppinglist = false;
 
     List<float> recipeAmount = new List<float>();
     List<Ingredient> ingredients = new List<Ingredient>();
@@ -97,7 +95,7 @@
     async void AddToShoppinglist()
     {
         ShoppinlistFunctionality ShopList = new ShoppinlistFunctionality("api/Shoppinglist");
-        
+
 
         foreach (var item in ingredients)
         {
@@ -166,6 +164,7 @@
             }
         }
         viewIngredients = true;
+        //viewAddToshoppinglist = true;
     }
 
     protected async Task Search()
