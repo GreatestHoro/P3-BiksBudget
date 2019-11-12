@@ -77,7 +77,9 @@ namespace BBCollection
 
         public void AddSallingProduct(SallingProduct sallingProduct)
         {
-            new ProductHandling().insertSalling(sallingProduct, dbInfo.GetConnect());
+            Product convert = new Product("B" + sallingProduct._id, sallingProduct._title, sallingProduct._description, sallingProduct._price, sallingProduct._img, "Bilka");
+
+            new ProductHandling().Insert(convert, dbInfo.GetConnect());
         }
 
         public List<SallingProduct> GetSallingProduct(string nameToSearch)

@@ -11,7 +11,7 @@ namespace BBGatherer
     {
         static void Main(string[] args)
         {
-            DatabaseConnect dbConnect = new DatabaseConnect("localhost", "biksbudgetyeet", "root", "BiksBudget123");
+            DatabaseConnect dbConnect = new DatabaseConnect("localhost", "biksbudgetyeet", "root", "Bjarke05!");
 
             //dbConnect.AddUser("Test3", "Test", "Test");
 
@@ -28,15 +28,25 @@ namespace BBGatherer
             {
                 count++;
                 Console.WriteLine(count);
-                dbConnect.AddProduct(new Product(c.Ean, c.Navn, c.Navn2, c.Pris, c.VareHierakiId));
+                dbConnect.AddProduct(new Product("F" + c.Ean, c.Navn, c.Navn2, c.Pris, "" ,"Fakta"));
+            }
+
+            coopProducts = tryCoop.CoopFindEverythingInStore("2096");
+
+            count = 0;
+            foreach (CoopProduct c in coopProducts)
+            {
+                count++;
+                Console.WriteLine(count);
+                dbConnect.AddProduct(new Product("B" + c.Ean, c.Navn, c.Navn2, c.Pris, "", "Brugsen"));
             }
 
 
-            RecipeCrawl WebRunner = new RecipeCrawl();
+            /*RecipeCrawl WebRunner = new RecipeCrawl();
             _ = WebRunner.GetRecipes(620, 1200, dbConnect);
 
             Console.WriteLine("web runner begins... fear its power");
-            Console.ReadLine();
+            Console.ReadLine();*/
         }
     }
 }

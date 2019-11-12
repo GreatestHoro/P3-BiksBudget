@@ -11,16 +11,29 @@ namespace BBCollection.DBHandling
     {
         public void Insert(Product product, DatabaseInformation dbInformation)
         {
-            string addProductQuery = "INSERT INTO `products`(`ean`,`productName`,`productName2`,`price`,`productHierarchyID`)" +
-                                     "VALUES(@Ean,@ProductName,@ProductName2,@Price,@ProductHierarchyID);";
+            string addProductQuery = "INSERT INTO `products`(`id`,`productname`,`amount`,`price`,`image`, `store`)" +
+                                     "VALUES(@Id,@ProductName,@Amount,@Price,@Image,@Store);";
 
             MySqlCommand msc = new MySqlCommand(addProductQuery);
 
-            msc.Parameters.AddWithValue("@Ean", product._ean);
-            msc.Parameters.AddWithValue("@ProductName", product._name);
-            msc.Parameters.AddWithValue("@ProductName2", product._name2);
+            msc.Parameters.AddWithValue("@Id", product._id);
+            msc.Parameters.AddWithValue("@ProductName", product._productName);
+            msc.Parameters.AddWithValue("@Amount", product._amount);
+            //msc.Parameters.AddWithValue("@AmountLeft", product._amountleft);
+            //msc.Parameters.AddWithValue("@TimeAdded", product._timeAdded);
             msc.Parameters.AddWithValue("@Price", product._price);
-            msc.Parameters.AddWithValue("@ProductHierarchyID", product._productHierarchyID);
+            msc.Parameters.AddWithValue("@Image", product._image);
+            msc.Parameters.AddWithValue("@Store", product._storeName);
+
+            /*"CREATE TABLE IF NOT EXISTS `products` (" +
+                "`id` VARCHAR(255) UNIQUE, " +
+                "`productname` VARCHAR(255), " +
+                "`amount` VARCHAR(255), " +
+                "`price` DECIMAL(6,2), " +
+                "`image` varchar(255), " +
+                "`store` varchar(255), " +
+                "PRIMARY KEY(id)); ";*/
+
 
             new SQLConnect().NonQueryMSC(msc, dbInformation);
         }
@@ -39,30 +52,14 @@ namespace BBCollection.DBHandling
             foreach(DataRow r in new SQLConnect().DynamicSimpleListSQL(msc, dbInformation).Tables[0].Rows)
             {
                 Console.WriteLine((string) r[1]);
-                Product product = new Product((string)r[1], (string)r[2], (string)r[3], Convert.ToDouble(r[4]), (int)r[5]);
+                Product product = new Product((string)r[0], (string)r[1], (string)r[2], Convert.ToDouble(r[3]), (string)r[4], (string)r[5]);
                 productList.Add(product);
             }
 
             return productList;
         }
 
-        public void insertSalling(SallingProduct sallingProduct, DatabaseInformation databaseInformation)
-        {
-            string addProduct = "INSERT INTO `sallingproducts`(`title`,`id`,`prodid`,`price`,`description`,`link`,`img`)" +
-                                     "VALUES(@Title,@Id,@ProdId,@Price,@Description,@Link,@Img);";
-
-            MySqlCommand msc = new MySqlCommand(addProduct);
-
-            msc.Parameters.AddWithValue("@Title", sallingProduct._title);
-            msc.Parameters.AddWithValue("@Id", sallingProduct._id);
-            msc.Parameters.AddWithValue("@ProdId", sallingProduct._prod_id);
-            msc.Parameters.AddWithValue("@Price", sallingProduct._price);
-            msc.Parameters.AddWithValue("@Description", sallingProduct._description);
-            msc.Parameters.AddWithValue("@Link", sallingProduct._link);
-            msc.Parameters.AddWithValue("@Img", sallingProduct._img);
-
-            new SQLConnect().NonQueryMSC(msc, databaseInformation);
-        }
+        
 
         public List<SallingProduct> ListOfSallingProductsFromName(string productName, DatabaseInformation dbInformation)
         {
