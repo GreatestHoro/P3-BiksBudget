@@ -6,6 +6,7 @@ using BBCollection;
 using System.IO;
 using Microsoft.AspNetCore.Http;
 using System;
+using BBGatherer.Queries;
 
 namespace Backend.Controllers
 {
@@ -78,6 +79,10 @@ namespace Backend.Controllers
                     break;
             }
 
+            //RecipeQuery recipeQuery = new RecipeQuery();
+
+            //recipeQuery.CheapestCRecipes(recipeTitle);
+
             List<Recipe> recipeData = demodata.GetRecipes();
 
             string jsonRecipes = JsonConvert.SerializeObject(recipeData);
@@ -85,6 +90,7 @@ namespace Backend.Controllers
             DatabaseConnect dbConnect = new DatabaseConnect("localhost", "BiksBudgetDB", "root", "BiksBudget123");
 
             string jsonDBRecipes = JsonConvert.SerializeObject(dbConnect.GetRecipes(recipeTitle));
+ 
 
             return jsonDBRecipes;
         }
