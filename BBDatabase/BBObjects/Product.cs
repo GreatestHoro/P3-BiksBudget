@@ -5,11 +5,12 @@
         public string _id;
         public string _productName;
         public string _amount;
-        public int _amountleft;
-        public string _timeAdded;
         public double _price;
         public string _image;
         public string _storeName;
+
+        public int _amountleft;
+        public string _timeAdded;
 
         public Product(string id, string productName, string amount, double price, string image, string storeName)
         {
@@ -20,6 +21,8 @@
             _image = image;
             _storeName = storeName;
         }
+
+
 
         /*public string _ean;
         public string _name;

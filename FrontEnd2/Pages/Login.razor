@@ -1,5 +1,43 @@
-﻿@page "/login"
+﻿@page "/Login"
+@using BBCollection.BBObjects;
+@using Newtonsoft.Json;
+@using  System.Text;
 
-<h1>login</h1>
-<textarea class="align-text-bottom"></textarea>
-<button class="btn-group-toggle" >test</button>
+@inject HttpClient Http
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+
+<h1>Login</h1>
+<input placeholder="Email" @bind="@email" />
+<input type="password" placeholder="Password" @bind="@password" />
+<button @onclick="AutorizeLogin">test</button>
+
+@code{
+    string email;
+    string password;
+    string userString;
+
+    protected async void AutorizeLogin()
+    {
+        var response = new HttpResponseMessage();
+
+        User user = new User(email, password);
+
+        userString = JsonConvert.SerializeObject(user);
+
+        var content = new StringContent(userString, Encoding.UTF8, "application/json");
+
+        response = await Http.PostAsync("Https://localhost:44325/api/Login", content);
+
+
+    }
+
+
+
+    /*protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await GetLocalSession();
+        }
+    }*/
+}
