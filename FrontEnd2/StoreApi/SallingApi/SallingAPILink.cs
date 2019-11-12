@@ -95,7 +95,7 @@ namespace FrontEnd2
         #region Public Functions
         public string GetProductAPILink(string searchWord)
         {
-            string encodedSearchWord = HttpUtility.UrlEncode(searchWord);
+            string encodedSearchWord = HttpUtility.UrlEncode(searchWord.ToLower());
 
             return _productSuggestionsBaseLink + encodedSearchWord;
         }
@@ -118,7 +118,7 @@ namespace FrontEnd2
 
         public string GetMultiStoreAPILink(string city)
         {
-            string cityEncoded = HttpUtility.UrlEncode(city);
+            string cityEncoded = HttpUtility.UrlEncode(city.ToLower());
             return MultiStoreBaseURL() + _cityURL + cityEncoded;
         }
         #endregion
@@ -195,7 +195,7 @@ namespace FrontEnd2
         private string MultiStoreGeoURLPart(GeoCoordinate geoPosition)
         {
             _geoPosition = geoPosition;
-            return _geoPositionURL + HttpUtility.UrlEncode(geoPosition.ToString());
+            return _geoPositionURL + HttpUtility.UrlEncode(geoPosition.ToString().ToLower());
         }
 
         private string MultiStoreRadiusURLPart(int radiusLimit)
