@@ -8,7 +8,7 @@
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject AuthenticationFunctionallity uf
 
-@if (email != "")
+@if (email != null)
 {
     <h1>@email</h1>
 }
@@ -26,7 +26,12 @@ else
         if (firstRender)
         {
             await GetLocalSession();
-            Debug.WriteLine(email);
+            localStorage.Changed += (sender, e) =>
+            {
+                Console.WriteLine($"Value for key {e.Key} changed from {e.OldValue} to {e.NewValue}");
+            };
+
+            StateHasChanged();
         }
     }
 
