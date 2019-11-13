@@ -5,7 +5,7 @@ using System.Data;
 
 namespace BBCollection.DBConncetion
 {
-    class SQLConnect
+    public class SQLConnect
     {
         public void NonQueryString(string sqlQuery, DatabaseInformation dbInformation)
         {
@@ -97,6 +97,37 @@ namespace BBCollection.DBConncetion
             }
 
             return ds;
+        }
+
+        public bool CheckRecordExist(MySqlCommand msc, DatabaseInformation databaseInformation)
+        {
+            bool exist = false;
+            MySqlConnection connection = null;
+            try
+            {
+                connection = new MySqlConnection(databaseInformation.ConnectionString(true));
+                connection.Open();
+
+                msc.Connection = connection;
+
+                int amountOfObjects = Convert.ToInt32(msc.ExecuteScalar());
+
+                if(amountOfObjects > 0)
+                {
+                    exist = true;
+                }
+
+            } catch(MySqlException e)
+            {
+                Console.WriteLine(e);
+            } finally
+            {
+                if(connection != null)
+                {
+                    connection.Close();
+                }
+            }
+            return exist;
         }
     }
 }

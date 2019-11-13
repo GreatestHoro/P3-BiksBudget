@@ -40,7 +40,7 @@ else
                     @foreach (var items in ListFunc.itemList)
                     {
                         <tr class="text-center">
-                            <td>@items.Name</td>
+                            <td>@items.Id - @items.Name</td>
                             <td>@items.Amount</td>
                             <td>@items.StoreName - @items.Price.ToString() kr</td>
                             <td>
@@ -74,6 +74,7 @@ else
         </div>
         <div>
             <button @onclick="DeleteAll"><i class="oi oi-trash">Empty Shoppinglist</i></button>
+            <button @onclick="SaveList"><i class="oi oi-transfer">Save Shoppinglist</i></button>
         </div>
     </div>
 }
@@ -85,6 +86,7 @@ else
     ShoppinlistFunctionality ListFunc = new ShoppinlistFunctionality("api/Shoppinglist");
     HttpResponseMessage responseMessage = new HttpResponseMessage();
     int ammount;
+    string email = "Test";
 
     protected void IncrementAmount(int id)
     {
@@ -101,8 +103,8 @@ else
     {
         foreach (var item in ListFunc.itemList)
         {
-           
-            if (item.Id == id && item.AmountOfItem > 0)
+
+            if (item.Id == id && item.AmountOfItem > 1)
             {
                 item.AmountOfItem--;
             }
@@ -116,52 +118,61 @@ else
 
     private void AddAlltoStorage()
     {
-        foreach (var item in ListFunc.itemList)
-        {
-            ListFunc.AddProductToStorage(item.Id, "api/Storage");
-        }
+        ListFunc.AddListToStorage("api/Storage", email);
         ListFunc.itemList.Clear();
     }
 
     private void DeleteAll()
     {
-        //This needs to go to backend
+        //ListFunc.DeleteList("Test");
         ListFunc.itemList.Clear();
     }
 
     private async void AddProduct()
     {
-        CoopProduct newItem = new CoopProduct() { Navn = newProduct, Navn2 = "", Pris = 0.00 };
+        if (newProduct != null)
+        {
+            //CoopProduct newItem = new CoopProduct() { Navn = newProduct, Navn2 = "", Pris = 0.00 };
+            AddedProduct newItem = new AddedProduct()
+            {
+                Name = newProduct,
+                Amount = "",
+                Price = 0.00,
+                Id = ListFunc.itemList.Count + 1,
+                AmountOfItem = 1
+            };
 
-        newProduct = string.Empty;
+            newProduct = string.Empty;
 
-        responseMessage = await ListFunc.AddProductToList(newItem.Navn, newItem.Navn2, newItem.Pris);
+            ListFunc.itemList.Add(newItem);
+            //responseMessage = await ListFunc.AddProductItem(newItem, email);
+        }
+
+
     }
 
     private async void DeleteProduct(int id)
     {
-        responseMessage = await ListFunc.DeleteProduct(id);
+        ListFunc.itemList.Remove(ListFunc.itemList.First(x => x.Id == id));
+
+        int i = 1;
+        foreach (var product in ListFunc.itemList)
+        {
+            product.Id = i;
+            i++;
+        }
+
+        //responseMessage = await ListFunc.DeleteItem(id, "Test");
     }
 
     private async void AddProductToStorage(int id)
     {
-        ListFunc.AddProductToStorage(id, "api/Storage");
-        responseMessage = await ListFunc.DeleteProduct(id);
-
-        //ListFunc.itemList.Remove(ListFunc.itemList.First(x => x.Id == id));
+        ListFunc.AddItemToStorage(id, "api/Storage", email);
+        responseMessage = await ListFunc.DeleteItem(id, email);
     }
 
-    private async void SaveList()
+    private void SaveList()
     {
-        productString = JsonConvert.SerializeObject(ListFunc.itemList);
-
-        string stuff = await Http.GetStringAsync("https://localhost:44325/api/Shoppinglist/5/" + productString);
-
-
-        //await Http.PostAsync("https://localhost:44325/api/Shoppinglist/save" + productString, new StringContent(productString));
-
-        //var stringContent = new StringContent(productString);
-
-        //HttpResponseMessage result = await Http.PostAsync("https://localhost:44325/api/Save", stringContent);
+        ListFunc.AddList(email);
     }
 }
