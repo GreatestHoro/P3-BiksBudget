@@ -23,6 +23,11 @@ namespace BBCollection.DBHandling
             GenerateSallingProductDB(dbInfo);
         }
 
+        public void CreateStorageDB(DatabaseInformation dbInformation)
+        {
+            GenerateStorageTables(dbInformation);
+        }
+
         /*
          Check if database exist, if it don't it will create it
         */
@@ -113,10 +118,9 @@ namespace BBCollection.DBHandling
         {
             string userTable =
                 "CREATE TABLE IF NOT EXISTS `users` (" +
-                "`id` INT AUTO_INCREMENT UNIQUE, " +
                 "`username` VARCHAR(255) UNIQUE, " +
                 "`password` VARCHAR(255), " +
-                "PRIMARY KEY(id));";
+                "PRIMARY KEY(username));";
 
             new SQLConnect().NonQueryString(userTable, databaseInformation);
         }
@@ -136,5 +140,29 @@ namespace BBCollection.DBHandling
 
             new SQLConnect().NonQueryString(sallingTable, databaseInformation);
         }
+
+        private void GenerateStorageTables(DatabaseInformation databaseInformation)
+        {
+            string storageTable =
+                "CREATE TABLE IF NOT EXISTS `userstorage` (" +
+                "`id` int AUTO_INCREMENT UNIQUE, " +
+                "`username` VARCHAR(255), " +
+                "`prodid` VARCHAR(255), " +
+                "`amountStored` int, " +
+                "`timeadded` DATETIME DEFAULT CURRENT_TIMESTAMP, " +
+                "primary key(id), " +
+                "foreign key(username) REFERENCES users(username), " +
+                "foreign key(prodid) REFERENCES products(id));";
+
+            new SQLConnect().NonQueryString(storageTable, databaseInformation);
+        }
     }
 }
+
+/*use biksbudgetdb;
+
+
+
+SELECT*
+FROM userstorage
+INNER JOIN userstorage ON userstorage.prodid = products.id WHERE username = ;*/

@@ -22,8 +22,25 @@
             _storeName = storeName;
         }
 
+        public Product(string id, string productName, string amount, 
+                       double price, string image, string storename, 
+                       int amountleft, string timeAdded)
+        {
+            _id = id;
+            _productName = productName;
+            _amount = amount;
+            _price = price;
+            _image = image;
+            _storeName = storename;
+            _amountleft = amountleft;
+            _timeAdded = timeAdded;
+        }
 
-
+        public Product(string id, int amountleft)
+        {
+            _id = id;
+            _amountleft = amountleft;
+        }
         /*public string _ean;
         public string _name;
         public string _name2;
