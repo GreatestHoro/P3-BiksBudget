@@ -66,7 +66,7 @@ namespace FrontEnd2.Data
             return result;
         }
 
-        public async Task<HttpResponseMessage> AddProductString(string name, string amount, double price, string email)
+        public async Task<HttpResponseMessage> AddProductAsString(string name, string amount, double price, string email)
         {
             var response = new HttpResponseMessage();
 
@@ -79,7 +79,7 @@ namespace FrontEnd2.Data
             };
 
             //itemList.Add(newItem);
-            await AddProductItem(newItem, email);
+            await AddProductAsItem(newItem, email);
 
             
 
@@ -94,7 +94,7 @@ namespace FrontEnd2.Data
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
 
-        public async Task<HttpResponseMessage> AddProductItem(AddedProduct newItem, string email)
+        public async Task<HttpResponseMessage> AddProductAsItem(AddedProduct newItem, string email)
         {
             var response = new HttpResponseMessage();
 
@@ -116,7 +116,7 @@ namespace FrontEnd2.Data
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
 
-        public async Task<HttpResponseMessage> AddProductItem(AddedProduct newItem, string email, string newDest)
+        public async Task<HttpResponseMessage> AddProductAsItem(AddedProduct newItem, string email, string newDest)
         {
             var response = new HttpResponseMessage();
 
@@ -138,7 +138,7 @@ namespace FrontEnd2.Data
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
 
-        public async void AddList(string email)
+        public async void AddFuncList(string email)
         {
             var response = new HttpResponseMessage();
 
@@ -181,7 +181,7 @@ namespace FrontEnd2.Data
                 {
                     item.TimeAdded = DateTime.Now.ToString();
                     item.State = "Full";
-                    response = await AddProductItem(item, newDest, email);
+                    response = await AddProductAsItem(item, newDest, email);
 
                     break;
                 }
@@ -189,7 +189,7 @@ namespace FrontEnd2.Data
 
         }
 
-        public async void AddListToStorage(string dest, string email)
+        public async void AddShoppinlistToStorage(string dest, string email)
         {
             foreach (var item in itemList)
             {
@@ -206,7 +206,7 @@ namespace FrontEnd2.Data
             await SendToApi(productString, dest);
         }
 
-        public async void DeleteList(string email)
+        public async void DeleteFuncList(string email)
         {
             var response = new HttpResponseMessage();
 

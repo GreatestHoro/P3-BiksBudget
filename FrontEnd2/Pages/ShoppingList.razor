@@ -118,7 +118,7 @@ else
 
     private void AddAlltoStorage()
     {
-        ListFunc.AddListToStorage("api/Storage", email);
+        ListFunc.AddShoppinlistToStorage("api/Storage", email);
         ListFunc.itemList.Clear();
     }
 
@@ -173,6 +173,6 @@ else
 
     private void SaveList()
     {
-        ListFunc.AddList(email);
+        ListFunc.AddShoppinlistToStorage("api/Storage", email);
     }
 }
