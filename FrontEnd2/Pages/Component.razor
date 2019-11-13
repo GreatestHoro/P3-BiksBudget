@@ -1,0 +1,192 @@
+﻿@page "/recipe"
+
+@using BBCollection.BBObjects;
+@using Newtonsoft.Json;
+@using FrontEnd2.Data;
+
+@inject HttpClient Http
+
+<div class="container-fluid">
+    <div class="row no-gutters">
+        <div class="col-sm-4">
+            <input class="form-check-input" placeholder="Search..." @bind="searchTerm" @onkeyup="OnKeyPress" />
+        </div>
+        <div class="col-sm-4">
+            <button type="button" class="btn-success" @onclick="(() => Search())"> Find Recipe </button>
+        </div>
+        <div class="col-sm-4">
+            <span class="text-muted">
+                Showing @recipeData.Count out of 255
+            </span>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid top-margin">
+    <div class="row">
+        <div class="col-3">
+            @if (viewRecipeTitle == true)
+            {
+                <h3> @searchTerm Recipes:</h3>
+                <ul class="recipeListDisplay">
+                    @foreach (var rep in recipeData)
+                    {
+                        <li class="no-bullets"> <button type="button" class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => retriveInfo(rep._recipeID))"> @rep._Name </button> </li>
+                    }
+                </ul>
+            }
+        </div>
+        <div class="col-2 offset-2">
+            @if (viewIngredients == true)
+            {
+                <table class="table-bordered ingredientsTable">
+                    <colgroup>
+                        <col style="width: 100px" />
+                        <col style="width: 150px" />
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th> Amount </th>
+                            <th> Name </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < ingredients.Count; i++)
+                        {
+                            <tr>
+                                <td>@recipeAmount[i] @ingredients[i]._unit</td>
+                                <td>@ingredients[i]._IngredientName</td>
+                            </tr>
+                        }
+                        <tr> 
+                            <td colspan="2" class="text-sm-center"> <button class="buttonPadding" @onclick="incrementRecipeAmount"> <i class="oi oi-plus"></i> </button>
+                            @recipePerPerson <button class="buttonPadding" @onclick="decrementRecipeAmount"> <i class="oi oi-minus"></i></button> </td>
+                        </tr>
+                    </tbody>
+                </table>
+            }
+        </div>
+        <div class="col-4">
+            <h3> @recipeName </h3>
+            <p> @recipeDescription </p>
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
+    <div class="row no-gutters">
+        <div class="col-sm-2 offset-sm-5">
+            <p>THIS IS RIGHT BELOW TABLE</p>
+        </div>
+    </div>
+</div>
+@code{
+    string recipeDescription = " ";
+    string recipeName = " ";
+    string printRecipe = " ";
+    string searchTerm;
+
+    float recipePerPerson;
+
+    bool viewRecipeTitle = false;
+    bool viewIngredients = false;
+    bool isSearching = false;
+
+    //bool viewAddToshoppinglist = false;
+
+    List<float> recipeAmount = new List<float>();
+    List<Ingredient> ingredients = new List<Ingredient>();
+    List<Recipe> recipeData = new List<Recipe>();
+
+    HttpResponseMessage responseMessage = new HttpResponseMessage();
+
+    async void AddToShoppinglist()
+    {
+        ShoppinlistFunctionality ShopList = new ShoppinlistFunctionality("api/Shoppinglist");
+
+
+        foreach (var item in ingredients)
+        {
+            responseMessage = await ShopList.AddProductToList(item._IngredientName, item._Amount.ToString() + item._unit, 0.00);
+        }
+    }
+
+    void incrementRecipeAmount()
+    {
+        for (int i = 0; i < recipeAmount.Count; i++)
+        {
+            if (recipeAmount[i] != 0)
+            {
+                recipeAmount[i] = (recipeAmount[i] / recipePerPerson) * (recipePerPerson + 1F);
+            }
+        }
+        recipePerPerson += 1;
+    }
+
+
+    void decrementRecipeAmount()
+    {
+        if (recipePerPerson >= 2)
+        {
+            for (int i = 0; i < recipeAmount.Count; i++)
+            {
+                if (recipeAmount[i] != 0)
+                {
+                    recipeAmount[i] = (recipeAmount[i] / recipePerPerson) * (recipePerPerson - 1F);
+
+                }
+            }
+            recipePerPerson -= 1;
+        }
+    }
+
+
+    void clear()
+    {
+        ingredients.Clear();
+        recipeAmount.Clear();
+    }
+
+    void retriveInfo(int ID)
+    {
+        Recipe show = recipeData.First(x => x._recipeID == ID);
+        recipeDescription = show._description;
+        recipeName = show._Name;
+        recipePerPerson = show._PerPerson;
+
+        if (show._ingredientList == null)
+        {
+            foreach (var item in show._ingredientList)
+            {
+                ingredients.Add(item);
+                recipeAmount.Add(item._Amount);
+            }
+        }
+        else
+        {
+            clear();
+            foreach (var item in show._ingredientList)
+            {
+                ingredients.Add(item);
+                recipeAmount.Add(item._Amount);
+            }
+        }
+        viewIngredients = true;
+        //viewAddToshoppinglist = true;
+    }
+
+    protected async Task Search()
+    {
+        printRecipe = await Http.GetStringAsync("https://localhost:44325/api/recipe?recipeTitle=" + searchTerm);
+        recipeData = JsonConvert.DeserializeObject<List<Recipe>>(printRecipe);
+        viewRecipeTitle = true;
+    }
+
+    private async void OnKeyPress(KeyboardEventArgs args)
+        {
+        if (args.Key == "Enter")
+        {
+            await Search();
+            StateHasChanged();
+        }
+    }
+}
