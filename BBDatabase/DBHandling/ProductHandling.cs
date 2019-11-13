@@ -38,7 +38,7 @@ namespace BBCollection.DBHandling
 
             foreach(DataRow r in new SQLConnect().DynamicSimpleListSQL(msc, dbInformation).Tables[0].Rows)
             {
-                Console.WriteLine((string) r[1]);
+                //Console.WriteLine((string) r[1]);
                 Product product = new Product((string)r[1], (string)r[2], (string)r[3], Convert.ToDouble(r[4]), (int)r[5]);
                 productList.Add(product);
             }

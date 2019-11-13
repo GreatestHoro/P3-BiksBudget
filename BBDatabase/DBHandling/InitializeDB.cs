@@ -42,7 +42,7 @@ namespace BBCollection.DBHandling
             }
             catch (MySqlException e)
             {
-                Console.WriteLine(e);
+                //Console.WriteLine(e);
             }
             finally
             {

@@ -26,6 +26,7 @@ namespace BBGatherer.Webcrawler
                 HtmlDocument htmlDocument = new HtmlDocument();
                 htmlDocument.LoadHtml(html);
                 bool fatalError = false;
+                bool valdity = false;
 
 
                 List<Ingredient> IngriedisensList = new List<Ingredient>();
@@ -52,8 +53,12 @@ namespace BBGatherer.Webcrawler
                             //Console.WriteLine(ind.InnerText);
                             if (!ind.InnerText.Contains(':'))
                             {
-                                Ingredient ingredient = CreateIngriedient(ind.InnerText, out fatalError, dbConnect);
+                                Ingredient ingredient = CreateIngriedient(ind.InnerText, out valdity, out fatalError, dbConnect);
+                                if (valdity) 
+                                {
                                     IngriedisensList.Add(ingredient);
+                                }
+
                             }
                             if (fatalError) { break; }
                             //Console.WriteLine(ind.InnerText);
@@ -85,16 +90,18 @@ namespace BBGatherer.Webcrawler
 
 
 
-        private Ingredient CreateIngriedient(String ind, out bool fatalError, DatabaseConnect dbConnect)
+        private Ingredient CreateIngriedient(String ind,out bool validity, out bool fatalError, DatabaseConnect dbConnect)
         {
             float amount = DeterminAmount(ind);
             String unit = DeterminUnit(ind);
             String name = DeterminName(ind).Trim();
             name = NameCleanUp(name);
-            
+            Console.WriteLine(name);
             name = CheckForValidIndgredients(name, dbConnect,out fatalError);
+            Console.WriteLine(name);
+            validity = EvaluateName(name,fatalError);
 
-            
+
 
             return new Ingredient(name, unit, amount);
         }
@@ -187,7 +194,7 @@ namespace BBGatherer.Webcrawler
 
         private bool CheckIngredientsInApi(string Searchterm, DatabaseConnect dbConnect) 
         {
-            System.Threading.Thread.Sleep(2000);
+            System.Threading.Thread.Sleep(4000);
             BearerAccessToken bearerAccessToken = new BearerAccessToken("5c9040ad-6229-477f-8123-64d281c76768");
 
 
@@ -330,6 +337,27 @@ namespace BBGatherer.Webcrawler
         #endregion
 
         #region(Process critical checks)
+        private bool EvaluateName(String name, out bool fatalError)
+        {
+            String[] SplitString = name.Split(" ");
+            if (SplitString.Length > 3)
+            {
+                fatalError = true;
+            }
+            else
+            {
+                fatalError = false;
+            }
+
+            if (String.IsNullOrWhiteSpace(name))
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
         private bool CheckIfPageFound(HtmlNodeCollection name, HtmlNodeCollection beskrivels, HtmlNodeCollection ingredienser)
         {
             if (name == null || beskrivels == null || ingredienser == null)
