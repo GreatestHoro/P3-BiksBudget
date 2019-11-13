@@ -85,9 +85,14 @@ h1 {
     height: 5%;
     text-align: center;
 }
+
 table.fixed {
     table-layout: fixed;
     word-break: break-all;
+}
+
+.top-margin{
+    margin-top: 50px;
 }
 
 ul.fixed {
@@ -117,15 +122,28 @@ ul.fixed {
     display: inline-block;
 }
 
+.buttonPadding{
+   margin: 10px;
+}
+
+.card-img-top {
+    width: 200%;
+    height: 30px;
+    object-fit: cover;
+}
+.card-title {
+    width: 100px;
+    word-break:break-all;
+}
+
 .recipeDivDisplay {
     text-align: left;
     margin-top: auto;
-
 }
 
 .recipeListDisplay{
-    height: 400px; 
-    width: 20%;
+    max-height: 400px;
+    min-height: 40px;
     overflow: hidden; 
     overflow-y:scroll;
 }

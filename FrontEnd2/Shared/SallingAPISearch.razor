@@ -22,19 +22,47 @@
 
     @if (_viewProducts == true)
     {
-        <p>hej 2: @counter</p>
-        <p>you want: @searchBox</p>
-        foreach (var product in resultProductQuery)
+<div class="container-fluid">
+    <p>hej 2: @counter</p>
+    <p>you want: @searchBox</p>
+    @for (int i = 0; i <= resultProductQuery.Count-4; i+=4)
+    {
+        @if (i >= resultProductQuery.Count)
         {
-            <div class="flex-sm-row">
-                <img src="@product.img" class="img-thumbnail" alt="billede af @product.title">
-                <div class="card-body">
-                    <h5 class="card-title" style="font-weight:bold">@product.title</h5>
-                    <p class="btn btn-warning">@product.price DKK</p>
-                    <button @onclick="(()=>AddToShoppinglist(product))" class="btn btn-success">Læg Til Shoppinglisten</button>
-                </div>
-            </div>
+            break;
         }
+        else
+        {
+
+        <div class="row">
+            <div class="col-sm-3 card-body">
+                <img src="@resultProductQuery[i].img" class="card-img-top" style="width: 30px" >
+                <h4 class="card-title" style="font-weight:bold">@resultProductQuery[i].title</h4>
+                <p class="card-text">@resultProductQuery[i].price DKK</p>
+                <button @onclick="(()=>AddToShoppinglist(resultProductQuery[i]))" class="btn btn-success">Læg Til Shoppinglisten</button>
+            </div>
+            <div class="col-sm-3 card-body">
+                <img src="@resultProductQuery[i+1].img" class="card-img-top" style="width: 30px">
+                <h4 class="card-title">@resultProductQuery[i+1].title</h4>
+                <p class="card-text">@resultProductQuery[i+1].price DKK</p>
+                <button @onclick="(()=>AddToShoppinglist(resultProductQuery[i+1]))" class="btn btn-success">Læg Til Shoppinglisten</button>
+            </div>
+            <div class="col-sm-3 card-body">
+                <img src="@resultProductQuery[i+2].img" class="card-img-top" style="width: 30px">
+                <h4 class="card-title" style="font-weight:bold">@resultProductQuery[i+2].title</h4>
+                <p class="card-text">@resultProductQuery[i+2].price DKK</p>
+                <button @onclick="(()=>AddToShoppinglist(resultProductQuery[i+2]))" class="btn btn-success">Læg Til Shoppinglisten</button>
+            </div>
+            <div class="col-sm-3 card-body">
+                <img src="@resultProductQuery[i+3].img" class="card-img-top" style="width: 30px">
+                <h4 class="card-title" style="font-weight:bold">@resultProductQuery[i+3].title</h4>
+                <p class="card-text">@resultProductQuery[i+3].price DKK</p>
+                <button @onclick="(()=>AddToShoppinglist(resultProductQuery[i+3]))" class="btn btn-success">Læg Til Shoppinglisten</button>
+            </div>
+        </div>
+        }
+    }
+</div>
     }
 
 @code {
