@@ -8,5 +8,9 @@
         public int Id { get; set; }
         public string State { get; set; }
         public string TimeAdded { get; set; }
+        public string UniqueId { get; set; }
+        public string Image { get; set; }
+        public string StoreName { get; set; }
+        public int AmountOfItem { get; set; }
     }
 }

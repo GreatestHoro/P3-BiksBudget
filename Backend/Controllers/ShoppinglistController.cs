@@ -15,10 +15,11 @@ namespace Backend.Controllers
     {
         List<AddedProduct> StorageTest = new List<AddedProduct>
         {
-            new AddedProduct{ Name = "Kylling", Amount = "200g", Id = 1, State = "Full", TimeAdded = "07/11/2019 10:37:43", Price = 27.00 },
-            new AddedProduct{ Name = "Oksekød", Amount = "500g", Id = 2, State = "Full", TimeAdded = "06/10/2019 22:00:43", Price = 36.00 },
-            new AddedProduct{ Name = "Laks", Amount = "280g", Id = 3, State = "Full", TimeAdded = "06/02/2019 07:27:20", Price = 55.00 },
-            new AddedProduct{ Name = "Lammebov", Amount = "1000g", Id = 4, State = "Full", TimeAdded = "06/11/2019 13:01:52", Price = 270.00 }        };
+            new AddedProduct{ Name = "Kylling", Amount = "200g", Id = 1, State = "Full", TimeAdded = "07/11/2019 10:37:43", Price = 27.00, AmountOfItem = 1, StoreName = "Fakta" },
+            new AddedProduct{ Name = "Oksekød", Amount = "500g", Id = 2, State = "Full", TimeAdded = "06/10/2019 22:00:43", Price = 36.00, AmountOfItem = 1, StoreName = "Fakta" },
+            new AddedProduct{ Name = "Laks", Amount = "280g", Id = 3, State = "Full", TimeAdded = "06/02/2019 07:27:20", Price = 55.00, AmountOfItem = 1, StoreName = "DagliBrugsen" },
+            new AddedProduct{ Name = "Lammebov", Amount = "1000g", Id = 4, State = "Full", TimeAdded = "06/11/2019 13:01:52", Price = 270.00, AmountOfItem = 1, StoreName = "Føtex" }        
+        };
 
         public List<AddedProduct> GetStuff()
         {
@@ -128,10 +129,33 @@ namespace Backend.Controllers
         }
 
         // PUT: api/Shoppinglist/5
-        //[HttpPut("{id}")]
-        //public void Put(int id, [FromBody] string value)
-        //{
-        //}
+        [HttpPut("{id}")]
+        public void Put(int id, string value)
+        {
+            string buffer;
+            AddedProduct newItem = new AddedProduct();
+            productData = test.GetStuff();
+
+            HttpRequest request = HttpContext.Request;
+            Microsoft.AspNetCore.Http.HttpRequestRewindExtensions.EnableBuffering(request);
+
+            using (var sr = new StreamReader(request.Body))
+            {
+                buffer = sr.ReadToEnd();
+            }
+
+            newItem = JsonConvert.DeserializeObject<AddedProduct>(buffer);
+
+            foreach (var item in productData)
+            {
+                if (item.Id == id)
+                {
+                    item.Amount = newItem.Amount;
+                    
+                    break;
+                }
+            }
+        }
 
         //// DELETE: api/ApiWithActions/5
         //[HttpDelete("{id}")]
