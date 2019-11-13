@@ -26,7 +26,6 @@ namespace BBGatherer.Webcrawler
                 HtmlDocument htmlDocument = new HtmlDocument();
                 htmlDocument.LoadHtml(html);
                 bool fatalError = false;
-                bool valdity = false;
 
 
                 List<Ingredient> IngriedisensList = new List<Ingredient>();
@@ -53,12 +52,11 @@ namespace BBGatherer.Webcrawler
                             //Console.WriteLine(ind.InnerText);
                             if (!ind.InnerText.Contains(':'))
                             {
-                                Ingredient ingredient = CreateIngriedient(ind.InnerText, out valdity, out fatalError, dbConnect);
-                                if (valdity) 
+                                Ingredient ingredient = CreateIngriedient(ind.InnerText, out fatalError, dbConnect);
+                                if (!ingredient._IngredientName.Equals("none")) 
                                 {
                                     IngriedisensList.Add(ingredient);
                                 }
-
                             }
                             if (fatalError) { break; }
                             //Console.WriteLine(ind.InnerText);
@@ -90,18 +88,26 @@ namespace BBGatherer.Webcrawler
 
 
 
-        private Ingredient CreateIngriedient(String ind,out bool validity, out bool fatalError, DatabaseConnect dbConnect)
+        private Ingredient CreateIngriedient(String ind,out bool fatalError, DatabaseConnect dbConnect)
         {
             float amount = DeterminAmount(ind);
             String unit = DeterminUnit(ind);
             String name = DeterminName(ind).Trim();
             name = NameCleanUp(name);
-            Console.WriteLine(name);
-            name = CheckForValidIndgredients(name, dbConnect,out fatalError);
-            Console.WriteLine(name);
-            validity = EvaluateName(name,fatalError);
-
-
+            Console.WriteLine("INPUT: "+name);
+            
+            if (!String.IsNullOrWhiteSpace(name.Trim()))
+            {
+                name = CheckForValidIndgredients(name, dbConnect, out fatalError);
+                name = EdgeCaseCleanUp(name);
+                Console.WriteLine("OUTPUT: " + name);
+                fatalError = EvaluateName(name);
+            }
+            else 
+            {
+                fatalError = false;
+                name = "none";
+            }
 
             return new Ingredient(name, unit, amount);
         }
@@ -136,7 +142,7 @@ namespace BBGatherer.Webcrawler
             {
                 fatalError = true;
             }
-            Console.WriteLine(AllMacthes[AllMacthes.Count-1]);
+            
             return AllMacthes[AllMacthes.Count - 1];
         }
         private string GetCombination(string[] str, int size, int i)
@@ -264,12 +270,37 @@ namespace BBGatherer.Webcrawler
         private String NameCleanUp(String name) 
         {
             name = RemoveParentheses(name);
-            name = RemoveSubstring(name, "evt. ");
-            //name = RemoveSubstring(name, "med ");
+            name = RemoveEverythingAfter(name,"eller");
+            name = RemoveEverythingAfter(name, "i");
+            name = RemoveEverythingAfter(name, "med");
+            name = RemoveSubstring(name, "evt.");
             name = name.ToLower();
 
             return name.Trim();
 
+        }
+
+        private String EdgeCaseCleanUp(String name) 
+        {
+            name = new String(name.Where(c => c != '-' && (c < '0' || c > '9')).ToArray());
+            name = RemoveSubstring(name.Trim(), "u");
+            name = RemoveSubstring(name.Trim(), "dl.");
+            name.Replace(".", string.Empty);
+            name.Replace(",", string.Empty);
+            name.Replace(".", string.Empty);
+            name = RemoveSubstring(name.Trim(), "ca.");
+            name = RemoveSubstring(name.Trim(), "á");
+            name = RemoveSubstring(name.Trim(), "g.");
+            name = RemoveSubstring(name.Trim(), "kg.");
+            name = RemoveSubstring(name.Trim(), "til");
+
+
+
+            if (name.Trim().Equals("i tern")|| name.Trim().Equals("i")) 
+            {
+                name = "";
+            }
+            return name;
         }
 
         private float CleanUpPerPerson(HtmlNodeCollection _PerPerson)
@@ -301,11 +332,36 @@ namespace BBGatherer.Webcrawler
         #region(remove)
         private string RemoveSubstring(String name,String substring) 
         {
-            if (name.Contains(substring)) 
+            String[] Words = name.Split(" ");
+            string ReturnString = "";
+            foreach (string w in Words) 
             {
-                name.Replace(substring, "");
+                if (!w.Equals(substring))
+                {
+                    ReturnString = ReturnString + w +" ";
+                }
             }
-            return name;
+
+            return ReturnString;
+        }
+
+        private string RemoveEverythingAfter(string _string, string RemoveStart) 
+        {
+            String[] Words = _string.Split(" ");
+            String _return = "";
+            bool KeyFlag = false;
+            foreach (String s in Words) 
+            {
+                if (s.Equals(RemoveStart)) 
+                {
+                    KeyFlag = true;
+                }
+                if (!KeyFlag) 
+                {
+                    _return = _return + s + " ";
+                }
+            }
+            return _return;
         }
         
         private String RemoveParentheses(string name) 
@@ -337,10 +393,12 @@ namespace BBGatherer.Webcrawler
         #endregion
 
         #region(Process critical checks)
-        private bool EvaluateName(String name, out bool fatalError)
+        private bool EvaluateName(String name)
         {
             String[] SplitString = name.Split(" ");
-            if (SplitString.Length > 3)
+            bool fatalError = false;
+
+            if (SplitString.Length > 4 && !fatalError)
             {
                 fatalError = true;
             }
@@ -349,15 +407,27 @@ namespace BBGatherer.Webcrawler
                 fatalError = false;
             }
 
-            if (String.IsNullOrWhiteSpace(name))
+            if (name.Equals("") && !fatalError)
             {
-                return false;
+                fatalError = true;
+            }
+            else 
+            {
+                fatalError = false;
+            }
+
+            if (String.IsNullOrWhiteSpace(name.Trim()) && !fatalError)
+            {
+                fatalError = true;
             }
             else
             {
-                return true;
+                fatalError = false;
             }
+            
+            return fatalError;
         }
+
         private bool CheckIfPageFound(HtmlNodeCollection name, HtmlNodeCollection beskrivels, HtmlNodeCollection ingredienser)
         {
             if (name == null || beskrivels == null || ingredienser == null)
