@@ -108,26 +108,34 @@ namespace Backend.Controllers
             Email = buffer.Substring(indexNumber.ToString().Length + pNum, number);
             buffer = buffer.Remove(0, indexNumber.ToString().Length + number + pNum);
 
-            if (buffer.Substring(0, 1) != "[")
+            if (buffer.Contains("PLS_DELETE"))
             {
-                buffer = "[" + buffer + "]";
-
-                newItem = JsonConvert.DeserializeObject<List<AddedProduct>>(buffer);
-                productData.Add(newItem[0]);
-                newItem.Clear();
+                //Delete the entire list
+                productData.Clear();
             }
             else
             {
-                newItem = JsonConvert.DeserializeObject<List<AddedProduct>>(buffer);
-                productData = newItem;
+                if (buffer.Substring(0, 1) != "[")
+                {
+                    buffer = "[" + buffer + "]";
 
-            }
+                    newItem = JsonConvert.DeserializeObject<List<AddedProduct>>(buffer);
+                    productData.Add(newItem[0]);
+                    newItem.Clear();
+                }
+                else
+                {
+                    newItem = JsonConvert.DeserializeObject<List<AddedProduct>>(buffer);
+                    productData = newItem;
 
-            if (productData.Count != 0)
-            {
-                productData.Last().Id = productData.Count;
+                }
 
-            }
+                if (productData.Count != 0)
+                {
+                    productData.Last().Id = productData.Count;
+
+                }
+            } 
         }
 
         // PUT: api/Storage/5
@@ -137,6 +145,7 @@ namespace Backend.Controllers
             string buffer;
             AddedProduct newItem = new AddedProduct();
             productData = StorageTest.GetStuff();
+            int pNum;
 
             HttpRequest request = HttpContext.Request;
             Microsoft.AspNetCore.Http.HttpRequestRewindExtensions.EnableBuffering(request);
@@ -146,17 +155,24 @@ namespace Backend.Controllers
                 buffer = sr.ReadToEnd();
             }
 
+            int indexNumber = buffer.IndexOf("|");
+            int number = Convert.ToInt32(buffer.Substring(0, indexNumber));
+            if (number >= 10)
+            {
+                pNum = 2;
+            }
+            else
+            {
+                pNum = 1;
+            }
+
+            Email = buffer.Substring(indexNumber.ToString().Length + pNum, number);
+            buffer = buffer.Remove(0, indexNumber.ToString().Length + number + pNum);
+
+
             newItem = JsonConvert.DeserializeObject<AddedProduct>(buffer);
 
-            foreach (var item in productData)
-            {
-                if (item.Id == id)
-                {
-                    item.State = newItem.State;
-                    item.AmountOfItem = newItem.AmountOfItem;
-                    break;
-                }
-            }
+            productData[id-1] = newItem;
         }
 
         // DELETE: api/ApiWithActions/5

@@ -38,7 +38,7 @@ else
                 @foreach (var items in ListFunc.itemList)
                 {
                     <tr class="text-center">
-                        <td>@items.Name</td>
+                        <td>@items.Id - @items.Name</td>
                         <td>@items.AmountOfItem * @items.Amount</td>
                         <td>
                             <p class="lead"></p>
@@ -72,6 +72,7 @@ else
     </div>
     <div>
         <button @onclick="DeleteAll"><i class="oi oi-trash">Empty Shoppinglist</i></button>
+        <button @onclick="SaveList"><i class="oi oi-transfer">Save Shoppinglist</i></button>
     </div>
 </div>
 }
@@ -82,17 +83,19 @@ else
     string newProduct;
     ShoppinlistFunctionality ListFunc = new ShoppinlistFunctionality("api/Storage");
     HttpResponseMessage responseMessage = new HttpResponseMessage();
-
+    string email = "Test";
     List<string> ItemState = new List<string>() { "Full", "Almost Full", "Half Full", "Almost Empty" };
 
     private void DeleteAll()
     {
         ListFunc.itemList.Clear();
+        //ListFunc.DeleteList(email);
     }
 
     protected async void ChangeState(int id, string state)
     {
         //ListFunc.itemList[ListFunc.itemList.Find(x => x.Id.Equals(id))].State = state;
+        AddedProduct ChangedItem = new AddedProduct();
 
         foreach (var item in ListFunc.itemList)
         {
@@ -100,8 +103,8 @@ else
             {
                 item.State = state;
                 productString = JsonConvert.SerializeObject(item);
-                var content = new StringContent(productString, Encoding.UTF8, "application/json");
-                HttpResponseMessage responce = await Http.PutAsync("https://localhost:44325/api/Storage/" + item.Id, content);
+
+                //await ListFunc.ChangeItem(item.Id, productString, email);
 
                 break;
             }
@@ -116,11 +119,24 @@ else
 
     private async void AddProduct()
     {
-        CoopProduct newItem = new CoopProduct() { Navn = newProduct, Navn2 = "", Pris = 0.00};
+        if (newProduct != null)
+        {
+            AddedProduct newItem = new AddedProduct()
+            {
+                Name = newProduct,
+                Amount = "",
+                State = "Full",
+                Id = ListFunc.itemList.Count + 1,
+                AmountOfItem = 1,
+                TimeAdded = DateTime.Now.ToString()
+            };
 
-        newProduct = string.Empty;
+            newProduct = string.Empty;
 
-        responseMessage = await ListFunc.AddProductToList(newItem.Navn, newItem.Navn2, newItem.Pris);
+            ListFunc.itemList.Add(newItem);
+            //responseMessage = await ListFunc.AddProductItem(newItem, email);
+        }
+
     }
 
     private async void DeleteProduct(int id)
@@ -133,8 +149,8 @@ else
                 item.AmountOfItem--;
 
                 productString = JsonConvert.SerializeObject(item);
-                var content = new StringContent(productString, Encoding.UTF8, "application/json");
-                HttpResponseMessage responce = await Http.PutAsync("https://localhost:44325/api/Storage/" + item.Id, content);
+
+                //await ListFunc.ChangeItem(item.Id, productString, email);
 
                 isFound = true;
 
@@ -144,7 +160,22 @@ else
 
         if (isFound == false)
         {
-            responseMessage = await ListFunc.DeleteProduct(id);
+            //responseMessage = await ListFunc.DeleteItem(id, email);
+            ListFunc.itemList.Remove(ListFunc.itemList.First(x => x.Id == id));
+
+            int i = 1;
+            foreach (var product in ListFunc.itemList)
+            {
+
+                product.Id = i;
+                i++;
+            }
+
         }
+    }
+
+    private void SaveList()
+    {
+        ListFunc.AddList(email);
     }
 }
