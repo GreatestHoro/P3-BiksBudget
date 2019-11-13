@@ -45,6 +45,8 @@ namespace Backend.Controllers
     {
         public StorageTestList StorageTest = new StorageTestList();
         List<AddedProduct> productData;
+        int i = 0;
+        string Email;
 
         // GET: api/Storage
         [HttpGet]
@@ -82,6 +84,7 @@ namespace Backend.Controllers
             string buffer;
             List<AddedProduct> newItem = new List<AddedProduct>();
             productData = StorageTest.GetStuff();
+            int pNum;
 
             HttpRequest request = HttpContext.Request;
             Microsoft.AspNetCore.Http.HttpRequestRewindExtensions.EnableBuffering(request);
@@ -90,6 +93,20 @@ namespace Backend.Controllers
             {
                 buffer = sr.ReadToEnd();
             }
+
+            int indexNumber = buffer.IndexOf("|");
+            int number = Convert.ToInt32(buffer.Substring(0, indexNumber));
+            if (number >= 10)
+            {
+                pNum = 2;
+            }
+            else
+            {
+                 pNum = 1;
+            }
+
+            Email = buffer.Substring(indexNumber.ToString().Length + pNum, number);
+            buffer = buffer.Remove(0, indexNumber.ToString().Length + number + pNum);
 
             if (buffer.Substring(0, 1) != "[")
             {
@@ -103,7 +120,7 @@ namespace Backend.Controllers
             {
                 newItem = JsonConvert.DeserializeObject<List<AddedProduct>>(buffer);
                 productData = newItem;
-                
+
             }
 
             if (productData.Count != 0)

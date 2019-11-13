@@ -20,16 +20,28 @@ namespace Backend.Controllers
     {
         // GET: api/Login
         [HttpGet]
-        public IEnumerable<string> Get()
+        public void Get()
         {
-            return new string[] { "value1", "value2" };
         }
 
         // GET: api/Login/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public string Get(string id)
         {
-            return "value";
+            char test = id[id.Length-1];
+
+            if (test.Equals('S') == true)
+            {
+                return "This is the Storage";
+            }
+            else if(test.Equals('L') == true)
+            {
+                return "This is the Shoppinnlist:";
+            }
+            else
+            {
+                return "ERROR";
+            }
         }
 
         // POST: api/Login
@@ -37,7 +49,6 @@ namespace Backend.Controllers
         public IActionResult Post(string value)
         {
             string buffer;
-            HttpResponse response;
             DatabaseConnect dbConnect = new DatabaseConnect("localhost", "biksbudgetdb", "root", "BiksBudget123");
 
             User user = new User();

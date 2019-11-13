@@ -10,7 +10,7 @@
 
 @if (email != null)
 {
-    <h1>@email</h1>
+    <h1>@email (@gottenData)</h1>
 }
 else
 {
@@ -20,7 +20,17 @@ else
 @code {
     private string _headingText;
     private string email;
-    
+    private string gottenData;
+
+    ////protected async override Task OnInitializedAsync()
+    //protected async void doStuff()
+    //{
+    //    if (email != null)
+    //    {
+    //        gottenData = await Http.GetStringAsync("https://localhost:44325/api/Login/" + email);
+    //    }
+    //}
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -30,9 +40,14 @@ else
             {
                 Console.WriteLine($"Value for key {e.Key} changed from {e.OldValue} to {e.NewValue}");
             };
-
+            
+            if (email != null)
+            {
+                gottenData = await Http.GetStringAsync("https://localhost:44325/api/Login/" + email + "S");
+            }
             StateHasChanged();
         }
+
     }
 
     async Task GetLocalSession()

@@ -45,6 +45,7 @@ namespace Backend.Controllers
     {
         public ShoppinglistTestList test = new ShoppinglistTestList();
         List<AddedProduct> productData;
+        string Email;
 
         // GET: api/Shoppinglist
         [HttpGet]
