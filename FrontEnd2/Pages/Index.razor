@@ -8,7 +8,16 @@
 
 <p> YEET</p>
 
-<p>@printRecipe</p>
+<p>You are in:</p>
+<p>
+    Continent: @ipItem.continent_name <br />
+    Country: @ipItem.country_name <br />
+    Region: @ipItem.region_name <br />
+    City: @ipItem.city <br />
+    Zip: @ipItem.zip <br />
+    Longtitude: @ipItem.longitude <br />
+    Lantitude: @ipItem.latitude <br />
+</p>
 
 @foreach (var recipe in recipeData)
 {
@@ -18,7 +27,8 @@
 @code{
     string printRecipe = "hej hej";
     List<Recipe> recipeData = new List<Recipe>();
-    
+    GetIP getIP = new GetIP();
+    IpItem ipItem = new IpItem();
     
     
 
@@ -27,8 +37,9 @@
 
         printRecipe = await Http.GetStringAsync("https://localhost:44325/api/recipe");
 
-        recipeData = JsonConvert.DeserializeObject<List<Recipe>>(printRecipe);
+        //recipeData = JsonConvert.DeserializeObject<List<Recipe>>(printRecipe);
 
+        ipItem = getIP.GetIpData();
     }
     //https://localhost:44325/api/recipe
 }

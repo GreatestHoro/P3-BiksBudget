@@ -12,16 +12,13 @@ using System.Web;
 using Json.Net;
 using System.IO;
 using Newtonsoft.Json.Linq;
-using IpData;
+using FrontEnd2.Data;
 
-namespace IP.Data
+namespace FrontEnd2.Data
 {
-    
-
     class GetIP
     {
         public IpItem ipItem = new IpItem();
-
         string key = "3adf07b57437481add9e64472cc055f5";
         string url = "http://api.ipstack.com/check?access_key=";
 
@@ -35,11 +32,8 @@ namespace IP.Data
             using (StreamReader reader = new StreamReader(stream))
             {
                 string json = reader.ReadToEnd();
-                var obj = JObject.Parse(json);
+                ipItem = JsonConvert.DeserializeObject<IpItem>(json);
             }
-
-
-
             return ipItem;
         }
     }

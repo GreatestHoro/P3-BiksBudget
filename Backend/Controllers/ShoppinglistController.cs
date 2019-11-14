@@ -48,7 +48,7 @@ namespace Backend.Controllers
         DatabaseConnect dbConnect = new DatabaseConnect("localhost", "biksbudgetDB", "root", "BiksBudget123");
         List<Product> resultList = new List<Product>();
         string Email;
-        DatabaseConnect dbConnect = new DatabaseConnect("localhost", "biksbudgetDB", "root", "BiksBudget123");
+        //DatabaseConnect dbConnect = new DatabaseConnect("localhost", "biksbudgetDB", "root", "BiksBudget123");
         // GET: api/Shoppinglist
         [HttpGet]
         public void Get()
