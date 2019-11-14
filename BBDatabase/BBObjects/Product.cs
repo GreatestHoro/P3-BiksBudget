@@ -38,10 +38,11 @@
             _state = state;
         }
 
-        public Product(string id, int amountleft)
+        public Product(string id, int amountleft, string state)
         {
             _id = id;
             _amountleft = amountleft;
+            _state = state;
         }
         /*public string _ean;
         public string _name;

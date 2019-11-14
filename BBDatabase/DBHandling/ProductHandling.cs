@@ -72,7 +72,7 @@ namespace BBCollection.DBHandling
 
             
 
-            if (ds.Tables[0].Rows.Count != 0) 
+            if (ds.Tables.Count != 0) 
             {
                 foreach (DataRow r in ds.Tables[0].Rows)
                 {
@@ -88,7 +88,7 @@ namespace BBCollection.DBHandling
         {
             foreach(Product p in storage)
             {
-                string productQuery = "INSERT INTO `userstorage`(`username`,`prodid`,`amountstored`) VALUES(@Username,@ProductID,@AmountStored,@State);";
+                string productQuery = "INSERT INTO `userstorage`(`username`,`prodid`,`amountstored`,`state`) VALUES(@Username,@ProductID,@AmountStored,@State);";
                 string checkExist = "SELECT COUNT(*) FROM userstorage WHERE prodid = @ProductID";
 
                 MySqlCommand exist = new MySqlCommand(checkExist);
@@ -104,7 +104,7 @@ namespace BBCollection.DBHandling
                     msc.Parameters.AddWithValue("@ProductID", p._id);
                     msc.Parameters.AddWithValue("@AmountStored", p._amountleft);
                     msc.Parameters.AddWithValue("@State", p._state);
-
+                    Console.WriteLine("ADD ITEM HERE!");
                     new SQLConnect().NonQueryMSC(msc, dbInforamtion);
                 }
             }
@@ -114,11 +114,12 @@ namespace BBCollection.DBHandling
 
         public void AddSingleProductToStorage(string username, Product product, DatabaseInformation databaseInformation)
         {
-            string productQuery = "INSERT INTO `userstorage`(`username`,`prodid`,`amountstored`) VALUES(@Username,@ProductID,@AmountStored);";
+            string productQuery = "INSERT INTO `userstorage`(`username`,`prodid`,`amountstored`,`state`) VALUES(@Username,@ProductID,@AmountStored,@State);";
             string checkExist = "SELECT COUNT(*) FROM userstorage WHERE prodid = @ProductID";
 
             MySqlCommand exist = new MySqlCommand(checkExist);
             exist.Parameters.AddWithValue("@ProductID", product._id);
+
 
             Console.WriteLine(new SQLConnect().CheckRecordExist(exist, databaseInformation));
 
@@ -129,6 +130,7 @@ namespace BBCollection.DBHandling
                 msc.Parameters.AddWithValue("@Username", username);
                 msc.Parameters.AddWithValue("@ProductID", product._id);
                 msc.Parameters.AddWithValue("@AmountStored", product._amountleft);
+                msc.Parameters.AddWithValue("@State", product._state);
 
                 new SQLConnect().NonQueryMSC(msc, databaseInformation);
             }
