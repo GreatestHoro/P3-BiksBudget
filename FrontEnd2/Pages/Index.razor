@@ -1,7 +1,6 @@
 ﻿@page "/"
 @using BBCollection.BBObjects;
 @using Newtonsoft.Json;
-@using FrontEnd2.Data;
 
 @inject HttpClient  Http
 
@@ -18,9 +17,6 @@
 @code{
     string printRecipe = "hej hej";
     List<Recipe> recipeData = new List<Recipe>();
-    
-    
-    
 
 
     protected override async Task OnInitializedAsync() {

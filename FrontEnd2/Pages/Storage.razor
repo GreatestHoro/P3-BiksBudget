@@ -6,7 +6,6 @@
 @using System.Globalization;
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject AuthenticationFunctionallity uf
-@using BBCollection.BBObjects;
 
 <h1>Storage</h1>
 
@@ -44,26 +43,26 @@
                         @foreach (var items in ListFunc.itemList)
                         {
                             <tr class="text-center">
-                                <td>@items._id - @items._productName</td>
-                                <td>@items._amountleft * @items._amount</td>
+                                <td>@items.Id - @items.Name</td>
+                                <td>@items.AmountOfItem * @items.Amount</td>
                                 <td>
                                     <p class="lead"></p>
                                     <div class="btn-group show-on-hover">
                                         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                                            @items._state <span class="caret"></span>
+                                            @items.State <span class="caret"></span>
                                         </button>
                                         <ul class="dropdown-menu" role="menu">
                                             @foreach (var State in ItemState)
                                             {
-                                                <li><button class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(() => ChangeState(items._id, State))">@State</button></li>
+                                                <li><button class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(() => ChangeState(items.Id, State))">@State</button></li>
                                             }
                                         </ul>
                                     </div>
                                 </td>
-                                <td>@items._timeAdded</td>
+                                <td>@items.TimeAdded</td>
                                 <td>
                                     <div class="text-center">
-                                        <button @onclick="(() => DeleteProduct(items._id))"><i class="oi oi-trash"></i></button>
+                                        <button @onclick="(() => DeleteProduct(items.Id))"><i class="oi oi-trash"></i></button>
                                     </div>
                                 </td>
                             </tr>
@@ -109,16 +108,16 @@ else
         //ListFunc.DeleteList(userId);
     }
 
-    protected async void ChangeState(string id, string state)
+    protected async void ChangeState(long id, string state)
     {
         //ListFunc.itemList[ListFunc.itemList.Find(x => x.Id.Equals(id))].State = state;
         AddedProduct ChangedItem = new AddedProduct();
 
         foreach (var item in ListFunc.itemList)
         {
-            if (item._id == id)
+            if (item.Id == id)
             {
-                item._state = state;
+                item.State = state;
                 //productString = JsonConvert.SerializeObject(item);
 
                 //await ListFunc.ChangeItem(item.Id, productString, userId);
@@ -145,14 +144,14 @@ else
     {
         if (newProduct != null)
         {
-            Product newItem = new Product()
+            AddedProduct newItem = new AddedProduct()
             {
-                _productName = newProduct,
-                _amount = "",
-                _state = "Full",
-                _id = "2000000000045000",
-                _amountleft = 1,
-                _timeAdded = DateTime.Now.ToString()
+                Name = newProduct,
+                Amount = "",
+                State = "Full",
+                Id = 2000000000045000,
+                AmountOfItem = 1,
+                TimeAdded = DateTime.Now.ToString()
             };
 
             newProduct = string.Empty;
@@ -163,14 +162,14 @@ else
 
     }
 
-    private async void DeleteProduct(string id)
+    private async void DeleteProduct(long id)
     {
         bool isFound = false;
         foreach (var item in ListFunc.itemList)
         {
-            if (item._id == id && item._amountleft != 1)
+            if (item.Id == id && item.AmountOfItem != 1)
             {
-                item._amountleft--;
+                item.AmountOfItem--;
 
                 //productString = JsonConvert.SerializeObject(item);
 
@@ -185,7 +184,7 @@ else
         if (isFound == false)
         {
             //responseMessage = await ListFunc.DeleteItem(id, userId);
-            ListFunc.itemList.Remove(ListFunc.itemList.First(x => x._id == id));
+            ListFunc.itemList.Remove(ListFunc.itemList.First(x => x.Id == id));
 
             //int i = 1;
             //foreach (var product in ListFunc.itemList)
