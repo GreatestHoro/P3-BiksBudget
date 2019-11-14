@@ -4,7 +4,6 @@
 @using FrontEnd2.Data;
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject AuthenticationFunctionallity uf
-@using BBCollection.BBObjects;
 
 
 
@@ -43,21 +42,21 @@ else
                     @foreach (var items in ListFunc.itemList)
                     {
                         <tr class="text-center">
-                            <td>@items._id - @items._productName</td>
-                            <td>@items._amount</td>
-                            <td>@items._storeName - @items._price.ToString() kr</td>
+                            <td>@items.Id - @items.Name</td>
+                            <td>@items.Amount</td>
+                            <td>@items.StoreName - @items.Price.ToString() kr</td>
                             <td>
                                 <div class="text-center">
-                                    <button @onclick="(() => DecrementAmount(items._id))"><i class="oi oi-minus"></i></button>
-                                    @items._amountleft
-                                    <button @onclick="(() => IncrementAmount(items._id))"><i class="oi oi-plus"></i></button>
+                                    <button @onclick="(() => DecrementAmount(items.Id))"><i class="oi oi-minus"></i></button>
+                                    @items.AmountOfItem
+                                    <button @onclick="(() => IncrementAmount(items.Id))"><i class="oi oi-plus"></i></button>
                                 </div>
                             </td>
-                            <td>@(items._price * items._amountleft)</td>
+                            <td>@(items.Price * items.AmountOfItem)</td>
                             <td>
                                 <div class="text-center">
-                                    <button @onclick="(() => AddProductToStorage(items._id))"><i class="oi oi-basket"></i></button>
-                                    <button @onclick="(() => DeleteProduct(items._id))"><i class="oi oi-trash"></i></button>
+                                    <button @onclick="(() => AddProductToStorage(items.Id))"><i class="oi oi-basket"></i></button>
+                                    <button @onclick="(() => DeleteProduct(items.Id))"><i class="oi oi-trash"></i></button>
                                 </div>
                             </td>
                         </tr>
@@ -91,25 +90,25 @@ else
     int ammount;
     string email = "Test";
 
-    protected void IncrementAmount(string id)
+    protected void IncrementAmount(long id)
     {
         foreach (var item in ListFunc.itemList)
         {
-            if (item._id == id)
+            if (item.Id == id)
             {
-                item._amountleft++;
+                item.AmountOfItem++;
             }
         }
     }
 
-    protected void DecrementAmount(string id)
+    protected void DecrementAmount(long id)
     {
         foreach (var item in ListFunc.itemList)
         {
 
-            if (item._id == id && item._amountleft > 1)
+            if (item.Id == id && item.AmountOfItem > 1)
             {
-                item._amountleft--;
+                item.AmountOfItem--;
             }
         }
     }
@@ -136,13 +135,13 @@ else
         if (newProduct != null)
         {
             //CoopProduct newItem = new CoopProduct() { Navn = newProduct, Navn2 = "", Pris = 0.00 };
-            Product newItem = new Product()
+            AddedProduct newItem = new AddedProduct()
             {
-                _productName = newProduct,
-                _amount = "",
-                _price = 0.00,
-                _id = "11123828382392",
-                _amountleft = 1
+                Name = newProduct,
+                Amount = "",
+                Price = 0.00,
+                Id = ListFunc.itemList.Count + 1,
+                AmountOfItem = 1
             };
 
             newProduct = string.Empty;
@@ -154,21 +153,21 @@ else
 
     }
 
-    private async void DeleteProduct(string id)
+    private async void DeleteProduct(long id)
     {
-        ListFunc.itemList.Remove(ListFunc.itemList.First(x => x._id == id));
+        ListFunc.itemList.Remove(ListFunc.itemList.First(x => x.Id == id));
 
-        //int i = 1;
-        //foreach (var product in ListFunc.itemList)
-        //{
-        //    product._id = i;
-        //    i++;
-        //}
+        int i = 1;
+        foreach (var product in ListFunc.itemList)
+        {
+            product.Id = i;
+            i++;
+        }
 
         //responseMessage = await ListFunc.DeleteItem(id, "Test");
     }
 
-    private async void AddProductToStorage(string id)
+    private async void AddProductToStorage(long id)
     {
         ListFunc.AddItemToStorage(id, "api/Storage", email);
         responseMessage = await ListFunc.DeleteItem(id, email);

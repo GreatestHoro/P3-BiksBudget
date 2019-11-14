@@ -56,26 +56,22 @@ namespace BBCollection.HandleRecipe
 
             msc.Parameters.AddWithValue("@Ingredient", ingredient._IngredientName);
 
-            if (new SQLConnect().DynamicSimpleListSQL(msc, dbInformation).Tables[0].Rows.Count == 1)
-            {
-                return true;
-            } else
-            {
-                return false;
-            }
+            return new SQLConnect().CheckRecordExist(msc, dbInformation);
         }
 
         private void CombineRecipeAndIngredient(Recipe recipe, DatabaseInformation dbInformation)
         {
             foreach (Ingredient ingredient in recipe._ingredientList)
             {
-                string addIngredientReferance = "INSERT INTO `IngredientsInRecipe` (`recipeID`,`ingredientName`,`amount`,`unit`)" +
-                                                "VALUES(@RecipeID,@Ingredient,@Amount,@Unit);";
+                string addIngredientReferance = "INSERT INTO `IngredientsInRecipe` (`recipeID`,`ingredientID`,`amount`,`unit`)" +
+                                                "VALUES(@RecipeID," +
+                                                "(SELECT id FROM ingredients WHERE ingredientName = @Ingredient)" +
+                                                ",@Amount,@Unit);";
 
                 MySqlCommand msc = new MySqlCommand(addIngredientReferance);
 
                 msc.Parameters.AddWithValue("@RecipeID", recipe._recipeID);
-                msc.Parameters.AddWithValue("@Ingredient", ingredient._IngredientName);
+                msc.Parameters.AddWithValue("@IngredientID", ingredient._IngredientName);
                 msc.Parameters.AddWithValue("@Amount", ingredient._Amount);
                 msc.Parameters.AddWithValue("@Unit", ingredient._unit);
 

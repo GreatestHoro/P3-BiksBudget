@@ -9,7 +9,7 @@
         public string _image;
         public string _storeName;
 
-        public int _amountleft;
+        public int _amountleft; //Kan navngives anderledes
         public string _timeAdded;
         public string _state;
 

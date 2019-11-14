@@ -1,7 +1,6 @@
 ﻿@page "/"
 @using BBCollection.BBObjects;
 @using Newtonsoft.Json;
-@using FrontEnd2.Data;
 
 @inject HttpClient  Http
 
@@ -29,8 +28,8 @@
     List<Recipe> recipeData = new List<Recipe>();
     GetIP getIP = new GetIP();
     IpItem ipItem = new IpItem();
-    
-    
+
+
 
 
     protected override async Task OnInitializedAsync() {
