@@ -17,7 +17,7 @@ namespace BBGatherer.Webcrawler
         public async Task GetRecipes(int start_page, int Last_page, DatabaseConnect dbConnect)
         {
             List<Recipe> opskrifter = new List<Recipe>(); //The list that holdes the recipies
-
+            
             for (int i = start_page; i <= Last_page; i++) //loop that goes from the first page to the last page
             {
                 String url = ("https://www.dk-kogebogen.dk/opskrifter/" + i + "/");
@@ -49,7 +49,6 @@ namespace BBGatherer.Webcrawler
 
                         foreach (var ind in ingredienser)
                         {
-                            //Console.WriteLine(ind.InnerText);
                             if (!ind.InnerText.Contains(':'))
                             {
                                 Ingredient ingredient = CreateIngriedient(ind.InnerText, out fatalError, dbConnect);
@@ -59,7 +58,6 @@ namespace BBGatherer.Webcrawler
                                 }
                             }
                             if (fatalError) { break; }
-                            //Console.WriteLine(ind.InnerText);
                         }
 
                         if (!fatalError)
@@ -72,6 +70,7 @@ namespace BBGatherer.Webcrawler
                         }
                         else 
                         {
+                            
                             Console.WriteLine("Recipie determined false..");
                         }
 
@@ -109,7 +108,7 @@ namespace BBGatherer.Webcrawler
                 name = "none";
             }
 
-            return new Ingredient(name, unit, amount);
+            return new Ingredient(name.Trim(), unit, amount);
         }
         #region(Check if Indgredients)
         private String CheckForValidIndgredients(String name, DatabaseConnect dbConnect, out bool fatalError)
@@ -219,15 +218,16 @@ namespace BBGatherer.Webcrawler
                     dbConnect.AddSallingProduct(new SallingProduct(p.title,p.id,p.prod_id,p.price,p.description,p.link,p.img));
                 }
             }
-            catch(System.Net.WebException)
+            
+            catch (System.Net.WebException)
             {
                Console.WriteLine("Exception found is being handled");
                System.Threading.Thread.Sleep(30000);
                Console.WriteLine("Exception resolved");
-               return CheckIngredientsInApi(Searchterm,dbConnect);
+                return false;
             }
+        
 
-            
             return productSuggestions.Suggestions.Count != 0?true:false;
             }
         #endregion
@@ -269,11 +269,27 @@ namespace BBGatherer.Webcrawler
         #region(String Cleanups)
         private String NameCleanUp(String name) 
         {
+            List<char> _char = new List<char>() {',', '.', '+', '-', '!', '?','&','%'};
+            List<string> splitString = new List<string>() {"eller","i","med"};
+            List<string> removeSub = new List<string>() { "evt" };
+
             name = RemoveParentheses(name);
-            name = RemoveEverythingAfter(name,"eller");
-            name = RemoveEverythingAfter(name, "i");
-            name = RemoveEverythingAfter(name, "med");
-            name = RemoveSubstring(name, "evt.");
+            foreach (string s in splitString) 
+            {
+                name = RemoveEverythingAfter(name, s);
+            }
+            foreach (char c in _char)
+            {
+                name = RemoveCharFromString(name, c);
+            }
+            foreach (string s in removeSub)
+            {
+                name = RemoveSubstring(name, s);
+            }
+
+            
+            
+     
             name = name.ToLower();
 
             return name.Trim();
@@ -283,20 +299,13 @@ namespace BBGatherer.Webcrawler
         private String EdgeCaseCleanUp(String name) 
         {
             name = new String(name.Where(c => c != '-' && (c < '0' || c > '9')).ToArray());
-            name = RemoveSubstring(name.Trim(), "u");
-            name = RemoveSubstring(name.Trim(), "dl.");
-            name.Replace(".", string.Empty);
-            name.Replace(",", string.Empty);
-            name.Replace(".", string.Empty);
-            name = RemoveSubstring(name.Trim(), "ca.");
-            name = RemoveSubstring(name.Trim(), "á");
-            name = RemoveSubstring(name.Trim(), "g.");
-            name = RemoveSubstring(name.Trim(), "kg.");
-            name = RemoveSubstring(name.Trim(), "til");
+            List<String> Substring = new List<string>() {"u","dl", "ca", "á", "g", "kg", "til"};
+            foreach (String s in Substring)
+            {
+                name = RemoveSubstring(name.Trim(), s);
+            }
 
-
-
-            if (name.Trim().Equals("i tern")|| name.Trim().Equals("i")) 
+            if (name.Trim().Equals("i tern") || name.Trim().Equals("i") || name.Trim().Equals("med")) 
             {
                 name = "";
             }
@@ -389,6 +398,22 @@ namespace BBGatherer.Webcrawler
                 }
             }
             return _string;
+        }
+
+        private String RemoveCharFromString(string _string, char _char) 
+        {
+            Char[] charArray = _string.ToCharArray();
+            string returnString = "";
+
+            foreach (Char c in charArray) 
+            {
+                if (c != _char) 
+                {
+                    returnString = returnString + c;
+                }
+            }
+
+            return returnString;
         }
         #endregion
 
