@@ -88,10 +88,10 @@ namespace BBCollection
             new ProductHandling().Insert(convert, dbInfo.GetConnect());
         }
 
-        public List<SallingProduct> GetSallingProduct(string nameToSearch)
-        {
-            return new ProductHandling().ListOfSallingProductsFromName(nameToSearch, dbInfo.GetConnect());
-        }
+        //public List<SallingProduct> GetSallingProduct(string nameToSearch)
+        //{
+        //    return new ProductHandling().ListOfSallingProductsFromName(nameToSearch, dbInfo.GetConnect());
+        //}
 
         /* Storagehandling */
         public void AddListToStorage(string username, List<Product> storage)

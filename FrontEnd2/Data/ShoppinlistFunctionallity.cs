@@ -159,13 +159,13 @@ namespace FrontEnd2.Data
 
             productString = userIdLength.ToString() + "|" + userId + productString;
 
-            ////await SendToApi(productString);
+            await SendToApi(productString);
         }
 
         async Task<HttpResponseMessage> SendToApi(string productString)
         {
             var content = new StringContent(productString, Encoding.UTF8, "application/json");
-            ////response = await Http.PostAsync("https://localhost:44325/" + dest, content);
+            response = await Http.PostAsync("https://localhost:44325/" + dest, content);
 
             string result = response.Content.ReadAsStringAsync().Result;
 
@@ -177,7 +177,7 @@ namespace FrontEnd2.Data
         async Task<HttpResponseMessage> SendToApi(string productString, string newDest)
         {
             var content = new StringContent(productString, Encoding.UTF8, "application/json");
-            ////response = await Http.PostAsync("https://localhost:44325/" + newDest, content);
+            response = await Http.PostAsync("https://localhost:44325/" + newDest, content);
 
             string result = response.Content.ReadAsStringAsync().Result;
 

@@ -64,11 +64,13 @@ namespace BBCollection.DBHandling
             List<Product> productList = new List<Product>();
 
             string storageQuery =
-                "SELECT userstorage.prodid, products.productname , products.amount, products.price, products.image, products.store, userstorage.amountStored, userstorage.timeadded,  FROM userstorage INNER JOIN products ON userstorage.prodid = products.id WHERE userstorage.username = @Username";
+                "SELECT userstorage.prodid, products.productname , products.amount, products.price, products.image, products.store, userstorage.amountStored, userstorage.timeadded, userstorage.state FROM userstorage INNER JOIN products ON userstorage.prodid = products.id WHERE userstorage.username = @Username";
 
             MySqlCommand msc = new MySqlCommand(storageQuery);
             msc.Parameters.AddWithValue("@Username", username);
             DataSet ds = new SQLConnect().DynamicSimpleListSQL(msc, dbInformation);
+
+            
 
             if (ds.Tables[0].Rows.Count != 0) 
             {
@@ -142,7 +144,7 @@ namespace BBCollection.DBHandling
 
             msc.Parameters.AddWithValue("@Username", username);
 
-            new SQLConnect().NonQueryMSC(msc, databaseInformation):
+            new SQLConnect().NonQueryMSC(msc, databaseInformation);
         }
     }
 }

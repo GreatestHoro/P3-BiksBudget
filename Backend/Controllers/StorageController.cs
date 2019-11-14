@@ -106,7 +106,7 @@ namespace Backend.Controllers
         {
             string buffer;
             List<AddedProduct> newItem = new List<AddedProduct>();
-            List<Product> storageList = dbConnect.GetStorageFromUsername("Test6");
+            List<Product> storageList = new List<Product>(); /*dbConnect.GetStorageFromUsername("Test6");*/
 
             List<AddedProduct> resultList = ConvertBeforeSending(storageList);
             int pNum;

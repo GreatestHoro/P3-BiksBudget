@@ -113,12 +113,12 @@ else
 
     protected async override Task OnInitializedAsync()
     {
-        responseMessage = await ListFunc.GetProductsOnStart();
+        responseMessage = await ListFunc.GetProductsOnStart(email);
     }
 
     private void AddAlltoStorage()
     {
-        ListFunc.AddListToStorage("api/Storage", email);
+        //ListFunc.AddListToStorage("api/Storage", email);
         ListFunc.itemList.Clear();
     }
 
