@@ -12,8 +12,8 @@ namespace BBGatherer
         static void Main(string[] args)
         {
             DataHandling dh = new DataHandling();
-            //dh.GenerateDatabase();
-            //dh.GenerateData();
+            dh.GenerateDatabase();
+            dh.GenerateData();
             dh.TestCollection();
         }
     }
@@ -24,9 +24,9 @@ namespace BBGatherer
         public void GenerateDatabase()
         {
             dbConnect.InitializeDatabase();
+            //dbConnect.GenerateSallingDB();
             dbConnect.InitializeUserDatabase();
             dbConnect.InitializeStorageDatabase();
-            dbConnect.InitializeShoppinglistDatabase();
         }
 
         public void GenerateData()
@@ -64,22 +64,10 @@ namespace BBGatherer
 
         public void TestCollection()
         {
-            List<Recipe> res = dbConnect.GetRecipes("Test");
-            List<Shoppinglist> shoppinglists = dbConnect.GetShoppinglists("TestUser");
 
-            Console.WriteLine(res[0]._ingredientList[0]._IngredientName);
-            
-            foreach(Shoppinglist sl in shoppinglists)
-            {
-                foreach(Product p in sl._products)
-                {
-                    Console.WriteLine(p._productName + sl._name);
-
-                }
-            }
 
             //Console.WriteLine(dbConnect.checkIfSomethingExist("users", "username", "Test"));
-            /*
+
             dbConnect.AddUser("Test6", "Test", "email");
             //Console.WriteLine(dbConnect.CheckUser("Test", "Test"));
 
@@ -93,7 +81,7 @@ namespace BBGatherer
             testList.Add(tProd2);
             testList.Add(tProd3);
             dbConnect.AddListToStorage("Test6", testList);
-            */
+            
 
             //List<Product> testList = new List<Product>();
 
