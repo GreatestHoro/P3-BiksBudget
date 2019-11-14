@@ -2,6 +2,8 @@
 @using Newtonsoft.Json;
 @inject HttpClient Http
 @using FrontEnd2.Data;
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject AuthenticationFunctionallity uf
 
 
 
@@ -50,7 +52,7 @@ else
                                     <button @onclick="(() => IncrementAmount(items.Id))"><i class="oi oi-plus"></i></button>
                                 </div>
                             </td>
-                            <td>@(items.Price*items.AmountOfItem)</td>
+                            <td>@(items.Price * items.AmountOfItem)</td>
                             <td>
                                 <div class="text-center">
                                     <button @onclick="(() => AddProductToStorage(items.Id))"><i class="oi oi-basket"></i></button>
@@ -111,10 +113,10 @@ else
         }
     }
 
-    protected async override Task OnInitializedAsync()
-    {
-        responseMessage = await ListFunc.GetProductsOnStart(email);
-    }
+    //protected async override Task OnInitializedAsync()
+    //{
+    //    responseMessage = await ListFunc.GetProductsOnStart(email);
+    //}
 
     private void AddAlltoStorage()
     {
@@ -174,5 +176,31 @@ else
     private void SaveList()
     {
         ListFunc.AddList(email);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await GetLocalSession();
+            localStorage.Changed += (sender, e) =>
+            {
+                Console.WriteLine($"Value for key {e.Key} changed from {e.OldValue} to {e.NewValue}");
+            };
+
+            //if (email != null)
+            //{
+            //    gottenData = await Http.GetStringAsync("https://localhost:44325/api/Login/" + email + "S");
+            //}
+            responseMessage = await ListFunc.GetProductsOnStart(email);
+
+            StateHasChanged();
+        }
+
+    }
+
+    async Task GetLocalSession()
+    {
+        email = await localStorage.GetItemAsync<string>("Email");
     }
 }

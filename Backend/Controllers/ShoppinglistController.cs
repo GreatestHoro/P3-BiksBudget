@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MySqlX.XDevAPI.Common;
 using Newtonsoft.Json;
+using BBCollection;
+using BBCollection.BBObjects;
 
 namespace Backend.Controllers
 {
@@ -44,6 +46,8 @@ namespace Backend.Controllers
     public class ShoppinglistController : ControllerBase
     {
         public ShoppinglistTestList test = new ShoppinglistTestList();
+        DatabaseConnect dbConnect = new DatabaseConnect("localhost", "biksbudgetDB", "root", "BiksBudget123");
+        List<AddedProduct> resultList = new List<AddedProduct>();
         List<AddedProduct> productData;
         string Email;
 
@@ -56,6 +60,59 @@ namespace Backend.Controllers
             string jsonRecipes = JsonConvert.SerializeObject(productData);
 
             return jsonRecipes;
+        }
+
+        // GET: api/Storage/5
+        [HttpGet("{id}")]
+        public string Get(string id)
+        {
+            List<Product> storageList = dbConnect.GetStorageFromUsername(id);
+
+            List<AddedProduct> resultList = ConvertBeforeSending(storageList);
+
+            string jsonStorage = JsonConvert.SerializeObject(resultList);
+
+            return jsonStorage;
+
+            //productData = StorageTest.GetStuff();
+
+            //foreach (var item in productData)
+            //{
+            //    if (item.Id == id)
+            //    {
+            //        item.State = state;
+            //        break;
+            //    }
+            //}
+
+            //return "value";
+        }
+
+        private List<AddedProduct> ConvertBeforeSending(List<Product> bbList)
+        {
+            List<AddedProduct> result = new List<AddedProduct>();
+            AddedProduct tempProduct = new AddedProduct();
+            int i = 1;
+
+            foreach (var item in bbList)
+            {
+                item._id = item._id.Remove(0, 1);
+
+                result.Add(new AddedProduct
+                {
+                    Amount = item._amount,
+                    Id = Convert.ToInt64(item._id),
+                    State = item._amountleft.ToString(),
+                    Image = item._image,
+                    Name = item._productName,
+                    Price = item._price,
+                    StoreName = item._storeName,
+                    TimeAdded = item._timeAdded,
+                    AmountOfItem = 2 // IMPLEMENT PLS
+                });
+            }
+
+            return result;
         }
 
         // GET: api/Shoppinglist/5
