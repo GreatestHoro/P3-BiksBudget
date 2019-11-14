@@ -12,7 +12,7 @@ namespace BBGatherer
         static void Main(string[] args)
         {
             DataHandling dh = new DataHandling();
-            //dh.GenerateDatabase();
+            dh.GenerateDatabase();
             //dh.GenerateData();
             dh.TestCollection();
         }
@@ -68,29 +68,29 @@ namespace BBGatherer
 
             //Console.WriteLine(dbConnect.checkIfSomethingExist("users", "username", "Test"));
 
-            /*dbConnect.AddUser("Test6", "Test", "email");
-            Console.WriteLine(dbConnect.CheckUser("Test", "Test"));
+            dbConnect.AddUser("Test6", "Test", "email");
+            //Console.WriteLine(dbConnect.CheckUser("Test", "Test"));
 
             List<Product> testList = new List<Product>();
 
-            Product tProd1 = new Product("B2000020000002", 500);
-            Product tProd2 = new Product("B2000110000004", 300);
-            Product tProd3 = new Product("B2000060000000", 500);
+            Product tProd1 = new Product("B2000020000002", 5);
+            Product tProd2 = new Product("B2000110000004", 3);
+            Product tProd3 = new Product("B2000060000000", 5);
 
             testList.Add(tProd1);
             testList.Add(tProd2);
             testList.Add(tProd3);
+            dbConnect.AddListToStorage("Test6", testList);
+            
 
-            dbConnect.AddToStorage("Test6", testList);*/
+            //List<Product> testList = new List<Product>();
 
-            List<Product> testList = new List<Product>();
+            //testList = dbConnect.GetStorageFromUsername("Test3");
 
-            testList = dbConnect.GetStorageFromUsername("Test3");
-
-            foreach (Product p in testList)
-            {
-                Console.WriteLine(p._timeAdded);
-            }
+            //foreach (Product p in testList)
+            //{
+            //    Console.WriteLine(p._timeAdded);
+            //}
         }
     }
 }

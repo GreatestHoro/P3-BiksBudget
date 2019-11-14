@@ -35,16 +35,17 @@ else
     {
         if (firstRender)
         {
+            Debug.WriteLine("User: -> " + await localStorage.GetItemAsync<string>("Email"));
             await GetLocalSession();
             localStorage.Changed += (sender, e) =>
             {
                 Console.WriteLine($"Value for key {e.Key} changed from {e.OldValue} to {e.NewValue}");
             };
-            
-            if (email != null)
-            {
-                gottenData = await Http.GetStringAsync("https://localhost:44325/api/Login/" + email + "S");
-            }
+
+            //if (email != null)
+            //{
+            //    gottenData = await Http.GetStringAsync("https://localhost:44325/api/Login/" + email + "S");
+            //}
             StateHasChanged();
         }
 
@@ -54,5 +55,4 @@ else
     {
         email = await localStorage.GetItemAsync<string>("Email");
     }
-
 }

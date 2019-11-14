@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using BBCollection;
+using BBCollection.BBObjects;
 
 namespace Backend.Controllers
 {
@@ -14,7 +16,7 @@ namespace Backend.Controllers
         public string Name { get; set; }
         public string Amount { get; set; }
         public double Price { get; set; }
-        public int Id { get; set; }
+        public long Id { get; set; }
         public string State { get; set; }
         public string TimeAdded { get; set; }
         public string UniqueId { get; set; }
@@ -23,28 +25,12 @@ namespace Backend.Controllers
         public int AmountOfItem { get; set; }
     }
 
-    public class StorageTestList
-    {
-        List<AddedProduct> StorageTest = new List<AddedProduct>
-        {
-            new AddedProduct{Name = "Kylling", Amount = "200g", Id = 1, State = "Full", TimeAdded = "07/11/2019 10:37:43", Price = 27.00, AmountOfItem = 1 },
-            new AddedProduct{Name = "Oksekød", Amount = "500g", Id = 2, State = "Full", TimeAdded = "06/10/2019 22:00:43", Price = 36.00, AmountOfItem = 4 },
-            new AddedProduct{Name = "Laks", Amount = "280g", Id = 3, State = "Full", TimeAdded = "06/02/2019 07:27:20", Price = 55.00, AmountOfItem = 10 },
-            new AddedProduct{Name = "Lammebov", Amount = "1000g", Id = 4, State = "Full", TimeAdded = "06/11/2019 13:01:52", Price = 270.00, AmountOfItem = 2 }        
-        };
-
-        public List<AddedProduct> GetStuff()
-        {
-            return StorageTest;
-        }
-    }
-
     [Route("api/[controller]")]
     [ApiController]
     public class StorageController : ControllerBase
     {
-        public StorageTestList StorageTest = new StorageTestList();
-        List<AddedProduct> productData;
+        DatabaseConnect dbConnect = new DatabaseConnect("localhost", "biksbudgetDB", "root", "BiksBudget123");
+        List<AddedProduct> resultList = new List<AddedProduct>();
         int i = 0;
         string Email;
 
@@ -52,29 +38,66 @@ namespace Backend.Controllers
         [HttpGet]
         public string Get()
         {
-            productData = StorageTest.GetStuff();
+            List<Product> storageList = dbConnect.GetStorageFromUsername("Test6");
 
-            string jsonRecipes = JsonConvert.SerializeObject(productData);
+            resultList = ConvertBeforeSending(storageList);
+
+            string jsonRecipes = JsonConvert.SerializeObject(resultList);
 
             return jsonRecipes;
         }
 
         // GET: api/Storage/5
         [HttpGet("{id}")]
-        public string Get(int id, string state)
+        public string Get(string id)
         {
-            productData = StorageTest.GetStuff();
+            List<Product> storageList = dbConnect.GetStorageFromUsername(id);
 
-            foreach (var item in productData)
+            List<AddedProduct> resultList = ConvertBeforeSending(storageList);
+
+            string jsonStorage = JsonConvert.SerializeObject(resultList);
+
+            return jsonStorage;
+
+            //productData = StorageTest.GetStuff();
+
+            //foreach (var item in productData)
+            //{
+            //    if (item.Id == id)
+            //    {
+            //        item.State = state;
+            //        break;
+            //    }
+            //}
+
+            //return "value";
+        }
+
+        private List<AddedProduct> ConvertBeforeSending(List<Product> bbList)
+        {
+            List<AddedProduct> result = new List<AddedProduct>();
+            AddedProduct tempProduct = new AddedProduct();
+            int i = 1;
+
+            foreach (var item in bbList)
             {
-                if (item.Id == id)
+                item._id = item._id.Remove(0, 1);
+
+                result.Add(new AddedProduct
                 {
-                    item.State = state;
-                    break;
-                }
+                    Amount = item._amount,
+                    Id = Convert.ToInt64(item._id),
+                    State = item._amountleft.ToString(),
+                    Image = item._image,
+                    Name = item._productName,
+                    Price = item._price,
+                    StoreName = item._storeName,
+                    TimeAdded = item._timeAdded,
+                    AmountOfItem = 2 // IMPLEMENT PLS
+                });
             }
 
-            return "value";
+            return result;
         }
 
         // POST: api/Storage
@@ -83,7 +106,9 @@ namespace Backend.Controllers
         {
             string buffer;
             List<AddedProduct> newItem = new List<AddedProduct>();
-            productData = StorageTest.GetStuff();
+            List<Product> storageList = dbConnect.GetStorageFromUsername("Test6");
+
+            List<AddedProduct> resultList = ConvertBeforeSending(storageList);
             int pNum;
 
             HttpRequest request = HttpContext.Request;
@@ -111,7 +136,7 @@ namespace Backend.Controllers
             if (buffer.Contains("PLS_DELETE"))
             {
                 //Delete the entire list
-                productData.Clear();
+                resultList.Clear();
             }
             else
             {
@@ -120,19 +145,19 @@ namespace Backend.Controllers
                     buffer = "[" + buffer + "]";
 
                     newItem = JsonConvert.DeserializeObject<List<AddedProduct>>(buffer);
-                    productData.Add(newItem[0]);
+                    resultList.Add(newItem[0]);
                     newItem.Clear();
                 }
                 else
                 {
                     newItem = JsonConvert.DeserializeObject<List<AddedProduct>>(buffer);
-                    productData = newItem;
+                    resultList = newItem;
 
                 }
 
-                if (productData.Count != 0)
+                if (resultList.Count != 0)
                 {
-                    productData.Last().Id = productData.Count;
+                    resultList.Last().Id = resultList.Count;
 
                 }
             } 
@@ -144,7 +169,9 @@ namespace Backend.Controllers
         {
             string buffer;
             AddedProduct newItem = new AddedProduct();
-            productData = StorageTest.GetStuff();
+            List<Product> storageList = dbConnect.GetStorageFromUsername("Test6");
+
+            List<AddedProduct> resultList = ConvertBeforeSending(storageList);
             int pNum;
 
             HttpRequest request = HttpContext.Request;
@@ -172,7 +199,7 @@ namespace Backend.Controllers
 
             newItem = JsonConvert.DeserializeObject<AddedProduct>(buffer);
 
-            productData[id-1] = newItem;
+            resultList[id-1] = newItem;
         }
 
         // DELETE: api/ApiWithActions/5
