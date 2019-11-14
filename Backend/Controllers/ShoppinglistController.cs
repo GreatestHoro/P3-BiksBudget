@@ -45,6 +45,7 @@ namespace Backend.Controllers
     {
         public ShoppinglistTestList test = new ShoppinglistTestList();
         List<AddedProduct> productData;
+        string Email;
 
         // GET: api/Shoppinglist
         [HttpGet]
@@ -98,6 +99,7 @@ namespace Backend.Controllers
             string buffer;
             List<AddedProduct> newItem = new List<AddedProduct>();
             productData = test.GetStuff();
+            int pNum;
 
             HttpRequest request = HttpContext.Request;
             Microsoft.AspNetCore.Http.HttpRequestRewindExtensions.EnableBuffering(request);
@@ -107,25 +109,48 @@ namespace Backend.Controllers
                 buffer = sr.ReadToEnd();
             }
 
-            if (buffer.Substring(0, 1) != "[")
+            int indexNumber = buffer.IndexOf("|");
+            int number = Convert.ToInt32(buffer.Substring(0, indexNumber));
+            if (number >= 10)
             {
-                buffer = "[" + buffer + "]";
-
-                newItem = JsonConvert.DeserializeObject<List<AddedProduct>>(buffer);
-                productData.Add(newItem[0]);
-                newItem.Clear();
+                pNum = 2;
             }
             else
             {
-                newItem = JsonConvert.DeserializeObject<List<AddedProduct>>(buffer);
-                productData = newItem;
+                pNum = 1;
             }
 
-            if (productData.Count != 0)
+            Email = buffer.Substring(indexNumber.ToString().Length + pNum, number);
+            buffer = buffer.Remove(0, indexNumber.ToString().Length + number + pNum);
+
+            if (buffer.Contains("PLS_DELETE"))
             {
-                productData.Last().Id = productData.Count;
-
+                //Delete the entire list
+                productData.Clear();
             }
+            else
+            {
+                if (buffer.Substring(0, 1) != "[")
+                {
+                    buffer = "[" + buffer + "]";
+
+                    newItem = JsonConvert.DeserializeObject<List<AddedProduct>>(buffer);
+                    productData.Add(newItem[0]);
+                    newItem.Clear();
+                }
+                else
+                {
+                    newItem = JsonConvert.DeserializeObject<List<AddedProduct>>(buffer);
+                    productData = newItem;
+                }
+
+                if (productData.Count != 0)
+                {
+                    productData.Last().Id = productData.Count;
+
+                }
+            }
+            
         }
 
         // PUT: api/Shoppinglist/5

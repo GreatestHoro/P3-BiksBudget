@@ -1,0 +1,58 @@
+﻿@page "/Register"
+@using BBCollection.BBObjects;
+@using Newtonsoft.Json;
+@using  System.Text;
+@using FrontEnd2.Data;
+@using System.Diagnostics;
+@inject HttpClient Http
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject AuthenticationFunctionallity uf
+
+@if (email != null)
+{
+    <h1>@email (@gottenData)</h1>
+}
+else
+{
+    <p>Loading...</p>
+}
+
+@code {
+    private string _headingText;
+    private string email;
+    private string gottenData;
+
+    ////protected async override Task OnInitializedAsync()
+    //protected async void doStuff()
+    //{
+    //    if (email != null)
+    //    {
+    //        gottenData = await Http.GetStringAsync("https://localhost:44325/api/Login/" + email);
+    //    }
+    //}
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await GetLocalSession();
+            localStorage.Changed += (sender, e) =>
+            {
+                Console.WriteLine($"Value for key {e.Key} changed from {e.OldValue} to {e.NewValue}");
+            };
+            
+            if (email != null)
+            {
+                gottenData = await Http.GetStringAsync("https://localhost:44325/api/Login/" + email + "S");
+            }
+            StateHasChanged();
+        }
+
+    }
+
+    async Task GetLocalSession()
+    {
+        email = await localStorage.GetItemAsync<string>("Email");
+    }
+
+}

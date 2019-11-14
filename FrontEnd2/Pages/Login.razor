@@ -1,5 +1,107 @@
-﻿@page "/login"
+﻿@page "/Login"
+@using BBCollection.BBObjects;
+@using Newtonsoft.Json;
+@using  System.Text;
+@using FrontEnd2.Data;
+@using System.Diagnostics;
+@inject HttpClient Http
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject AuthenticationFunctionallity uf
 
-<h1>login</h1>
-<textarea class="align-text-bottom"></textarea>
-<button class="btn-group-toggle" >test</button>
+
+
+
+<h1>Login</h1>
+<input placeholder="Email" @bind="@email" />
+<input type="password" placeholder="Password" @bind="@password" />
+<button @onclick="AutorizeLogin">Login</button>
+
+
+@code{
+    string email;
+    string password;
+    string userString;
+
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    protected async void AutorizeLogin()
+    {
+        var response = new HttpResponseMessage();
+
+        User user = new User(email, password);
+
+        userString = JsonConvert.SerializeObject(user);
+
+        var content = new StringContent(userString, Encoding.UTF8, "application/json");
+
+        response = await Http.PostAsync("Https://localhost:44325/api/Login", content);
+
+        if (response.IsSuccessStatusCode)
+        {
+            await localStorage.SetItemAsync("Email", email);
+            /*
+            await uf.GetAuthenticationStateAsync(email);
+            await LogUsername();
+            */
+        } else
+        {
+            Debug.WriteLine("Testing Remove");
+            await localStorage.RemoveItemAsync("Email");
+            /*
+                        await uf.GetAuthenticationStateAsync("Not Authorized");
+            */
+        }
+    }
+
+    /*private async Task LogUsername()
+    {
+
+        var username = await localStorage.GetItemAsync<string>("Email");
+        Debug.WriteLine(username + " <--- This is the user" );
+        if (username != null)
+        {
+            var authState = await uf.GetAuthenticationStateAsync(username);
+            var user = authState.User;
+
+            if (user.Identity.IsAuthenticated)
+            {
+                Debug.WriteLine("Authorized");
+            }
+            else
+            {
+                Debug.WriteLine("The user is NOT authenticated.");
+            }
+        }
+    }*/
+
+
+    /*async Task LoginUser()
+    {
+
+        await localStorage.SetItemAsync("UserSession", "PIOQJWDPOIQJWD");
+        await GetLocalSession();
+    }*/
+
+
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await GetLocalSession();
+            localStorage.Changed += (sender, e) =>
+            {
+                Console.WriteLine($"Value for key {e.Key} changed from {e.OldValue} to {e.NewValue}");
+            };
+
+            StateHasChanged();
+        }
+    }
+
+    async Task GetLocalSession()
+    {
+        email = await localStorage.GetItemAsync<string>("Email");
+    }
+}

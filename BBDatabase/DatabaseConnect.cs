@@ -55,6 +55,11 @@ namespace BBCollection
             new InitializeDB().CreateUserDB(dbInfo.GetConnect());
         }
 
+        public void InitializeStorageDatabase()
+        {
+            new InitializeDB().CreateStorageDB(dbInfo.GetConnect());
+        }
+
         /* In this section the user functions will get handled. */
 
         public void AddUser(string username, string password, string email)
@@ -77,12 +82,31 @@ namespace BBCollection
 
         public void AddSallingProduct(SallingProduct sallingProduct)
         {
-            new ProductHandling().insertSalling(sallingProduct, dbInfo.GetConnect());
+            Product convert = new Product("B" + sallingProduct._id, sallingProduct._title, sallingProduct._description, sallingProduct._price, sallingProduct._img, "Bilka");
+
+            new ProductHandling().Insert(convert, dbInfo.GetConnect());
         }
 
         public List<SallingProduct> GetSallingProduct(string nameToSearch)
         {
             return new ProductHandling().ListOfSallingProductsFromName(nameToSearch, dbInfo.GetConnect());
         }
+
+        /* Storagehandling */
+        public void AddListToStorage(string username, List<Product> storage)
+        {
+            new ProductHandling().AddToStorageFromUsername(username, storage, dbInfo.GetConnect());
+        }
+
+        public void AddOneToStorage(string username, Product product)
+        {
+            new ProductHandling().AddSingleProductToStorage(username, product, dbInfo.GetConnect());
+        }
+
+        public List<Product> GetStorageFromUsername(string username)
+        {
+            return new ProductHandling().ProductsInStorageFromUsername(username, dbInfo.GetConnect());
+        }
+
     }
 }

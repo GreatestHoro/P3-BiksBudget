@@ -17,6 +17,7 @@ namespace BBCollection.DBHandling
 
         public bool VerifyUser(string username, string password, DatabaseInformation dbInformation)
         {
+
             return CheckHashedPassword(password, GetHashedPWFromUsername(username, dbInformation));
         }
 
@@ -34,6 +35,7 @@ namespace BBCollection.DBHandling
 
         private string GetHashedPWFromUsername(string username, DatabaseInformation dbInformation)
         {
+            string password = null;
             string getPasswordQuery =
                 "SELECT password FROM users WHERE username = @Username ;";
 
@@ -42,9 +44,11 @@ namespace BBCollection.DBHandling
 
             DataSet ds = new SQLConnect().DynamicSimpleListSQL(msc, dbInformation);
 
-            string test = (string) ds.Tables[0].Rows[0]["password"];
-
-            return test;
+            if(ds.Tables[0].Rows.Count != 0) { 
+               password = (string) ds.Tables[0].Rows[0]["password"];
+            }
+            
+            return password;
         }
 
         private bool CheckHashedPassword(string password, string hashedPassword)

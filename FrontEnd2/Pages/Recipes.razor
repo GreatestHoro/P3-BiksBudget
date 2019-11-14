@@ -100,7 +100,7 @@
 
         foreach (var item in ingredients)
         {
-            responseMessage = await ShopList.AddProductToList(item._IngredientName, item._Amount.ToString() + item._unit, 0.00);
+            responseMessage = await ShopList.AddProductString(item._IngredientName, item._Amount.ToString() + item._unit, 0.00, "Test");
         }
     }
 
