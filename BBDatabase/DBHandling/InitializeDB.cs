@@ -65,18 +65,19 @@ namespace BBCollection.DBHandling
 
             string ingredientTable =
                 "CREATE TABLE IF NOT EXISTS `Ingredients` (" +
+                "`id` INT AUTO_INCREMENT UNIQUE, " +
                 "`ingredientName` VARCHAR(255) UNIQUE," +
-                "PRIMARY KEY(ingredientName));";
+                "PRIMARY KEY(id));";
 
             string ingredientInRecipeTable =
                 "CREATE TABLE IF NOT EXISTS `IngredientsInRecipe` (`id` INT AUTO_INCREMENT," +
                 "`recipeID` INT," +
-                "`ingredientName` varchar(255)," +
+                "`indgredient_id` int," +
                 "`amount` INT," +
                 "`unit` varchar(255)," +
                 "PRIMARY KEY(ID)," +
                 "FOREIGN KEY(recipeID) REFERENCES RECIPES(id)," +
-                "FOREIGN KEY(ingredientName) REFERENCES INGREDIENTS(ingredientName)); ";
+                "FOREIGN KEY(id) REFERENCES INGREDIENTS(id)); ";
 
             new SQLConnect().NonQueryString(recipeTable, dbInformation);
             new SQLConnect().NonQueryString(ingredientTable, dbInformation);
