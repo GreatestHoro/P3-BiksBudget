@@ -32,7 +32,7 @@ namespace BBCollection
             return new RetrieveFromDatabase().GetIngredientsFromRecipeID(recipeID, dbInfo.GetConnect());
         }
 
-        /* In this section the Product functions will be handled*/ 
+        /* In this section the Product functions will be handled*/
 
         public void AddProduct(Product product)
         {
@@ -42,7 +42,7 @@ namespace BBCollection
         public List<Product> GetProducts(string productName)
         {
             return new ProductHandling().ListOfProductsFromName(productName, dbInfo.GetConnect());
-        } 
+        }
 
         /* In this section the initalization of the database will be handled */
 

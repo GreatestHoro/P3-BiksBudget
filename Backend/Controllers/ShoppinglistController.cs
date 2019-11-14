@@ -20,7 +20,7 @@ namespace Backend.Controllers
     //        new AddedProduct{ Name = "Kylling", Amount = "200g", Id = 1, State = "Full", TimeAdded = "07/11/2019 10:37:43", Price = 27.00, AmountOfItem = 1, StoreName = "Fakta" },
     //        new AddedProduct{ Name = "Oksekød", Amount = "500g", Id = 2, State = "Full", TimeAdded = "06/10/2019 22:00:43", Price = 36.00, AmountOfItem = 1, StoreName = "Fakta" },
     //        new AddedProduct{ Name = "Laks", Amount = "280g", Id = 3, State = "Full", TimeAdded = "06/02/2019 07:27:20", Price = 55.00, AmountOfItem = 1, StoreName = "DagliBrugsen" },
-    //        new AddedProduct{ Name = "Lammebov", Amount = "1000g", Id = 4, State = "Full", TimeAdded = "06/11/2019 13:01:52", Price = 270.00, AmountOfItem = 1, StoreName = "Føtex" }        
+    //        new AddedProduct{ Name = "Lammebov", Amount = "1000g", Id = 4, State = "Full", TimeAdded = "06/11/2019 13:01:52", Price = 270.00, AmountOfItem = 1, StoreName = "Føtex" }
     //    };
 
     //    public List<AddedProduct> GetStuff()
@@ -48,7 +48,7 @@ namespace Backend.Controllers
         DatabaseConnect dbConnect = new DatabaseConnect("localhost", "biksbudgetDB", "root", "BiksBudget123");
         List<Product> resultList = new List<Product>();
         string Email;
-
+        DatabaseConnect dbConnect = new DatabaseConnect("localhost", "biksbudgetDB", "root", "BiksBudget123");
         // GET: api/Shoppinglist
         [HttpGet]
         public void Get()
@@ -125,7 +125,7 @@ namespace Backend.Controllers
                     //productData = newItem; // This means add a whole list to shoppinlist
                 }
             }
-            
+
         }
 
         // PUT: api/Shoppinglist/5
@@ -151,7 +151,7 @@ namespace Backend.Controllers
             //    if (item.Id == id)
             //    {
             //        item.Amount = newItem.Amount;
-                    
+
             //        break;
             //    }
             //}
