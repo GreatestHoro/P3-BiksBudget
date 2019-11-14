@@ -11,6 +11,7 @@
 
         public int _amountleft;
         public string _timeAdded;
+        public string _state;
 
         public Product(string id, string productName, string amount, double price, string image, string storeName)
         {
@@ -24,7 +25,7 @@
 
         public Product(string id, string productName, string amount, 
                        double price, string image, string storename, 
-                       int amountleft, string timeAdded)
+                       int amountleft, string timeAdded, string state)
         {
             _id = id;
             _productName = productName;
@@ -34,12 +35,14 @@
             _storeName = storename;
             _amountleft = amountleft;
             _timeAdded = timeAdded;
+            _state = state;
         }
 
-        public Product(string id, int amountleft)
+        public Product(string id, int amountleft, string state)
         {
             _id = id;
             _amountleft = amountleft;
+            _state = state;
         }
         /*public string _ean;
         public string _name;
@@ -55,5 +58,8 @@
             _price = price;
             _productHierarchyID = productHierachyID;
         }*/
+
+        public Product() { }
+
     }
 }
