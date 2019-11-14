@@ -52,7 +52,7 @@ namespace BBGatherer.Webcrawler
                             if (!ind.InnerText.Contains(':'))
                             {
                                 Ingredient ingredient = CreateIngriedient(ind.InnerText, out fatalError, dbConnect);
-                                if (!ingredient._IngredientName.Equals("none")) 
+                                if (!ingredient._ingredientName.Equals("none")) 
                                 {
                                     IngriedisensList.Add(ingredient);
                                 }

@@ -54,10 +54,10 @@ namespace BBCollection.HandleRecipe
             string ingredientExist = "SELECT * FROM `id` WHERE `id` = @Id;";
             MySqlCommand msc = new MySqlCommand(ingredientExist);
 
-            msc.Parameters.AddWithValue("@Ingredient", ingredient._id);
+            msc.Parameters.AddWithValue("@Id", ingredient._id);
 
             
-            if (new SQLConnect().DynamicSimpleListSQL(msc, dbInformation).Tables[0].Rows.Count == 1)
+            if (new SQLConnect().CheckRecordExist(msc, dbInformation))
             {
                 return true;
             } else
