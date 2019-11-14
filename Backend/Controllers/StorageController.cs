@@ -36,15 +36,15 @@ namespace Backend.Controllers
 
         // GET: api/Storage
         [HttpGet]
-        public string Get()
+        public void Get()
         {
-            List<Product> storageList = dbConnect.GetStorageFromUsername("Test6");
+            //List<Product> storageList = dbConnect.GetStorageFromUsername("Test6");
 
-            resultList = ConvertBeforeSending(storageList);
+            //resultList = ConvertBeforeSending(storageList);
 
-            string jsonRecipes = JsonConvert.SerializeObject(resultList);
+            //string jsonRecipes = JsonConvert.SerializeObject(resultList);
 
-            return jsonRecipes;
+            //return jsonRecipes;
         }
 
         // GET: api/Storage/5
@@ -106,6 +106,7 @@ namespace Backend.Controllers
         {
             string buffer;
             List<AddedProduct> newItem = new List<AddedProduct>();
+            List<Product> DumbList = new List<Product>();
             List<Product> storageList = new List<Product>(); /*dbConnect.GetStorageFromUsername("Test6");*/
 
             List<AddedProduct> resultList = ConvertBeforeSending(storageList);
@@ -145,13 +146,16 @@ namespace Backend.Controllers
                     buffer = "[" + buffer + "]";
 
                     newItem = JsonConvert.DeserializeObject<List<AddedProduct>>(buffer);
-                    resultList.Add(newItem[0]);
+                    DumbList = ConverBackwards(newItem);
+                    //resultList.Add(DumbList[0]);
                     newItem.Clear();
                 }
                 else
                 {
                     newItem = JsonConvert.DeserializeObject<List<AddedProduct>>(buffer);
                     resultList = newItem;
+
+                    //dbConnect.UpdateStorage(Email, );
 
                 }
 
@@ -161,6 +165,30 @@ namespace Backend.Controllers
 
                 }
             } 
+        }
+
+        public List<Product> ConverBackwards(List<AddedProduct> addedProductList)
+        {
+            List<Product> resultList = new List<Product>();
+
+            foreach (var item in addedProductList)
+            {
+                resultList.Add(new Product
+                {
+                    _amount = item.Amount,
+                    _state = item.State,
+                    _id = item.Id.ToString(),
+                    _image = item.Image,
+                    _price = item.Price,
+                    _productName = item.Name,
+                    _storeName = item.StoreName,
+                    _timeAdded = item.TimeAdded,
+                    _amountleft = 0
+
+                });
+            }
+
+            return resultList;
         }
 
         // PUT: api/Storage/5

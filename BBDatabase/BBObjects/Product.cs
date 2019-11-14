@@ -58,5 +58,8 @@
             _price = price;
             _productHierarchyID = productHierachyID;
         }*/
+
+        public Product() { }
+
     }
 }

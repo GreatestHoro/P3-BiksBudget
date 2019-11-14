@@ -15,7 +15,7 @@
     @if (ListFunc.itemList == null)
     {
         <p>
-            <em>Loading...</em>
+            <em>Your Shoppinglist is Empty</em>
         </p>
     }
     else
@@ -127,11 +127,11 @@ else
         }
     }
 
-    protected async override Task OnInitializedAsync()
-    {
-        userId = email;
-        responseMessage = await ListFunc.GetProductsOnStart(userId);
-    }
+    //protected async override Task OnInitializedAsync()
+    //{
+    //    userId = email;
+    //    responseMessage = await ListFunc.GetProductsOnStart(email);
+    //}
 
     //protected async void FillStorage()
     //{
@@ -216,6 +216,9 @@ else
             //{
             //    gottenData = await Http.GetStringAsync("https://localhost:44325/api/Login/" + email + "S");
             //}
+            userId = email;
+            responseMessage = await ListFunc.GetProductsOnStart(email);
+
             StateHasChanged();
         }
 

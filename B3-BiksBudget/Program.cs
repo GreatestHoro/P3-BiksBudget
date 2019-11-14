@@ -13,7 +13,7 @@ namespace BBGatherer
         {
             DataHandling dh = new DataHandling();
             dh.GenerateDatabase();
-            //dh.GenerateData();
+            dh.GenerateData();
             dh.TestCollection();
         }
     }
