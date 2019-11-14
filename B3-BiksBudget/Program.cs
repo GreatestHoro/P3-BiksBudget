@@ -13,7 +13,7 @@ namespace BBGatherer
         {
             DataHandling dh = new DataHandling();
             dh.GenerateDatabase();
-            //dh.GenerateData();
+            dh.GenerateData();
             dh.TestCollection();
         }
     }
@@ -24,7 +24,7 @@ namespace BBGatherer
         public void GenerateDatabase()
         {
             dbConnect.InitializeDatabase();
-            dbConnect.GenerateSallingDB();
+            //dbConnect.GenerateSallingDB();
             dbConnect.InitializeUserDatabase();
             dbConnect.InitializeStorageDatabase();
         }
@@ -51,15 +51,15 @@ namespace BBGatherer
             {
                 count++;
                 Console.WriteLine(count);
-                dbConnect.AddProduct(new Product("B" + c.Ean, c.Navn, c.Navn2, c.Pris, "", "Brugsen"));
+                dbConnect.AddProduct(new Product("B" + c.Ean, c.Navn, c.Navn2, c.Pris, "", "SuperBrugsen"));
             }
 
 
-            RecipeCrawl WebRunner = new RecipeCrawl();
+            /*RecipeCrawl WebRunner = new RecipeCrawl();
             _ = WebRunner.GetRecipes(620, 1200, dbConnect);
 
             Console.WriteLine("web runner begins... fear its power");
-            Console.ReadLine();
+            Console.ReadLine();*/
         }
 
         public void TestCollection()
@@ -73,9 +73,9 @@ namespace BBGatherer
 
             List<Product> testList = new List<Product>();
 
-            Product tProd1 = new Product("B2000020000002", 5);
-            Product tProd2 = new Product("B2000110000004", 3);
-            Product tProd3 = new Product("B2000060000000", 5);
+            Product tProd1 = new Product("B2000020000002", 5, "Full");
+            Product tProd2 = new Product("B2000110000004", 5, "Full");
+            Product tProd3 = new Product("B2000060000000", 5, "Full");
 
             testList.Add(tProd1);
             testList.Add(tProd2);

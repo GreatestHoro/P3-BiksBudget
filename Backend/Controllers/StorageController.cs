@@ -11,40 +11,40 @@ using BBCollection.BBObjects;
 
 namespace Backend.Controllers
 {
-    public class AddedProduct
-    {
-        public string Name { get; set; }
-        public string Amount { get; set; }
-        public double Price { get; set; }
-        public long Id { get; set; }
-        public string State { get; set; }
-        public string TimeAdded { get; set; }
-        public string UniqueId { get; set; }
-        public string Image { get; set; }
-        public string StoreName { get; set; }
-        public int AmountOfItem { get; set; }
-    }
+    //public class AddedProduct
+    //{
+    //    public string Name { get; set; }
+    //    public string Amount { get; set; }
+    //    public double Price { get; set; }
+    //    public long Id { get; set; }
+    //    public string State { get; set; }
+    //    public string TimeAdded { get; set; }
+    //    public string UniqueId { get; set; }
+    //    public string Image { get; set; }
+    //    public string StoreName { get; set; }
+    //    public int AmountOfItem { get; set; }
+    //}
 
     [Route("api/[controller]")]
     [ApiController]
     public class StorageController : ControllerBase
     {
         DatabaseConnect dbConnect = new DatabaseConnect("localhost", "biksbudgetDB", "root", "BiksBudget123");
-        List<AddedProduct> resultList = new List<AddedProduct>();
+        List<Product> resultList = new List<Product>();
         int i = 0;
         string Email;
 
         // GET: api/Storage
         [HttpGet]
-        public string Get()
+        public void Get()
         {
-            List<Product> storageList = dbConnect.GetStorageFromUsername("Test6");
+            //List<Product> storageList = dbConnect.GetStorageFromUsername("Test6");
 
-            resultList = ConvertBeforeSending(storageList);
+            //resultList = ConvertBeforeSending(storageList);
 
-            string jsonRecipes = JsonConvert.SerializeObject(resultList);
+            //string jsonRecipes = JsonConvert.SerializeObject(resultList);
 
-            return jsonRecipes;
+            //return jsonRecipes;
         }
 
         // GET: api/Storage/5
@@ -53,51 +53,14 @@ namespace Backend.Controllers
         {
             List<Product> storageList = dbConnect.GetStorageFromUsername(id);
 
-            List<AddedProduct> resultList = ConvertBeforeSending(storageList);
-
-            string jsonStorage = JsonConvert.SerializeObject(resultList);
-
-            return jsonStorage;
-
-            //productData = StorageTest.GetStuff();
-
-            //foreach (var item in productData)
-            //{
-            //    if (item.Id == id)
-            //    {
-            //        item.State = state;
-            //        break;
-            //    }
-            //}
-
-            //return "value";
-        }
-
-        private List<AddedProduct> ConvertBeforeSending(List<Product> bbList)
-        {
-            List<AddedProduct> result = new List<AddedProduct>();
-            AddedProduct tempProduct = new AddedProduct();
-            int i = 1;
-
-            foreach (var item in bbList)
+            foreach (var item in storageList)
             {
-                item._id = item._id.Remove(0, 1);
 
-                result.Add(new AddedProduct
-                {
-                    Amount = item._amount,
-                    Id = Convert.ToInt64(item._id),
-                    State = item._amountleft.ToString(),
-                    Image = item._image,
-                    Name = item._productName,
-                    Price = item._price,
-                    StoreName = item._storeName,
-                    TimeAdded = item._timeAdded,
-                    AmountOfItem = 2 // IMPLEMENT PLS
-                });
             }
 
-            return result;
+            string jsonStorage = JsonConvert.SerializeObject(storageList);
+
+            return jsonStorage;
         }
 
         // POST: api/Storage
@@ -105,10 +68,11 @@ namespace Backend.Controllers
         public void Post(string value)
         {
             string buffer;
-            List<AddedProduct> newItem = new List<AddedProduct>();
-            List<Product> storageList = dbConnect.GetStorageFromUsername("Test6");
+            List<Product> newItem = new List<Product>();
+            //List<Product> DumbList = new List<Product>();
+            List<Product> storageList = new List<Product>(); /*dbConnect.GetStorageFromUsername("Test6");*/
 
-            List<AddedProduct> resultList = ConvertBeforeSending(storageList);
+            //List<Product> resultList = ConvertBeforeSending(storageList);
             int pNum;
 
             HttpRequest request = HttpContext.Request;
@@ -144,20 +108,15 @@ namespace Backend.Controllers
                 {
                     buffer = "[" + buffer + "]";
 
-                    newItem = JsonConvert.DeserializeObject<List<AddedProduct>>(buffer);
-                    resultList.Add(newItem[0]);
+                    newItem = JsonConvert.DeserializeObject<List<Product>>(buffer);
                     newItem.Clear();
                 }
                 else
                 {
-                    newItem = JsonConvert.DeserializeObject<List<AddedProduct>>(buffer);
+                    newItem = JsonConvert.DeserializeObject<List<Product>>(buffer);
                     resultList = newItem;
 
-                }
-
-                if (resultList.Count != 0)
-                {
-                    resultList.Last().Id = resultList.Count;
+                    //dbConnect.UpdateStorage(Email, );
 
                 }
             } 
@@ -168,10 +127,10 @@ namespace Backend.Controllers
         public void Put(int id, string value)
         {
             string buffer;
-            AddedProduct newItem = new AddedProduct();
+            Product newItem = new Product();
             List<Product> storageList = dbConnect.GetStorageFromUsername("Test6");
 
-            List<AddedProduct> resultList = ConvertBeforeSending(storageList);
+            //List<AddedProduct> resultList = ConvertBeforeSending(storageList);
             int pNum;
 
             HttpRequest request = HttpContext.Request;
@@ -197,7 +156,7 @@ namespace Backend.Controllers
             buffer = buffer.Remove(0, indexNumber.ToString().Length + number + pNum);
 
 
-            newItem = JsonConvert.DeserializeObject<AddedProduct>(buffer);
+            newItem = JsonConvert.DeserializeObject<Product>(buffer);
 
             resultList[id-1] = newItem;
         }
