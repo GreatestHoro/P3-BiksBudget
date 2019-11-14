@@ -72,7 +72,7 @@ namespace FrontEnd2.Data
 
             foreach (var item in itemList)
             {
-                result += item.Price * item.AmountOfItem;
+                result += item._price * item._amountleft;
             }
             return result;
         }
@@ -105,15 +105,15 @@ namespace FrontEnd2.Data
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
 
-        public async Task<HttpResponseMessage> AddProductAsItem(AddedProduct newItem, string email)
+        public async Task<HttpResponseMessage> AddProductAsItem(Product newItem, string email)
         {
             var response = new HttpResponseMessage();
 
-            int userIdLength = userId.Length;
+            int userIdLength = email.Length;
 
             productString = JsonConvert.SerializeObject(newItem);
 
-            productString = userIdLength.ToString() + "|" + userId + productString;
+            productString = userIdLength.ToString() + "|" + email + productString;
 
             ////await SendToApi(productString);
 
@@ -127,15 +127,15 @@ namespace FrontEnd2.Data
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
 
-        public async Task<HttpResponseMessage> AddProductAsItem(AddedProduct newItem, string email, string newDest)
+        public async Task<HttpResponseMessage> AddProductAsItem(Product newItem, string email, string newDest)
         {
             var response = new HttpResponseMessage();
 
-            int userIdLength = userId.Length;
+            int userIdLength = email.Length;
 
             productString = JsonConvert.SerializeObject(newItem);
 
-            productString = userIdLength.ToString() + "|" + userId + productString;
+            productString = userIdLength.ToString() + "|" + email + productString;
 
             ////await SendToApi(productString, newDest);
 
@@ -153,11 +153,11 @@ namespace FrontEnd2.Data
         {
             var response = new HttpResponseMessage();
 
-            int userIdLength = userId.Length;
+            int userIdLength = email.Length;
 
             productString = JsonConvert.SerializeObject(itemList);
 
-            productString = userIdLength.ToString() + "|" + userId + productString;
+            productString = userIdLength.ToString() + "|" + email + productString;
 
             await SendToApi(productString);
         }
@@ -184,14 +184,14 @@ namespace FrontEnd2.Data
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
 
-        public async void AddItemToStorage(string id, string newDest, string userId)
+        public async void AddItemToStorage(string id, string newDest, string email)
         {
             foreach (var item in itemList)
             {
                 if (item._id == id)
                 {
-                    item.TimeAdded = DateTime.Now.ToString();
-                    item.State = "Full";
+                    item._timeAdded = DateTime.Now.ToString();
+                    item._state = "Full";
                     response = await AddProductAsItem(item, newDest, email);
 
                     break;
@@ -208,11 +208,11 @@ namespace FrontEnd2.Data
                 item._state = "Full" ;
             }
 
-            int userIdLength = userId.Length;
+            int userIdLength = email.Length;
 
             productString = JsonConvert.SerializeObject(itemList);
 
-            productString = userIdLength.ToString() + "|" + userId + productString;
+            productString = userIdLength.ToString() + "|" + email + productString;
 
             ////await SendToApi(productString, dest);
         }
@@ -221,8 +221,8 @@ namespace FrontEnd2.Data
         {
             var response = new HttpResponseMessage();
 
-            int userIdLength = userId.Length;
-            string productString = userIdLength.ToString() + "|" + userId + "[PLS_DELETE]";
+            int userIdLength = email.Length;
+            string productString = userIdLength.ToString() + "|" + email + "[PLS_DELETE]";
 
             ////await SendToApi(productString);
         }

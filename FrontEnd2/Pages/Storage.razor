@@ -200,7 +200,7 @@ else
 
     private void SaveList()
     {
-        ListFunc.AddList(userId);
+        ListFunc.AddFuncList(userId);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -227,6 +227,6 @@ else
 
     async Task GetLocalSession()
     {
-        ListFunc.AddFuncList(email);
+        email = await localStorage.GetItemAsync<string>("Email");
     }
 }
