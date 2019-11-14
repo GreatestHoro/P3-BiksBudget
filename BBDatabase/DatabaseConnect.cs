@@ -32,12 +32,17 @@ namespace BBCollection
             new InitializeDB().CreateStorageDB(databaseInformation.GetConnect());
         }
 
-        public void InitializeShoppinglistDatabase()
+        /* In this section the Product functions will be handled*/
+
+        public void AddProduct(Product product)
         {
             new InitializeDB().CreateSLTables(databaseInformation.GetConnect());
         }
 
-        /* In this section the Recipe functions will be handled*/
+        public List<Product> GetProducts(string productName)
+        {
+            return new ProductHandling().ListOfProductsFromName(productName, dbInfo.GetConnect());
+        }
 
         public void AddRecipe(Recipe recipe)
         {
@@ -54,7 +59,7 @@ namespace BBCollection
             return new RetrieveFromDatabase().GetIngredientsFromRecipeID(recipeID, databaseInformation.GetConnect());
         }
 
-        /* In this section the Product functions will be handled*/ 
+        /* In this section the Product functions will be handled*/
 
         public void AddProduct(Product product)
         {
@@ -64,7 +69,7 @@ namespace BBCollection
         public List<Product> GetProducts(string productName)
         {
             return new ProductHandling().ListOfProductsFromName(productName, databaseInformation.GetConnect());
-        } 
+        }
 
         /* In this section the user functions will get handled. */
 
