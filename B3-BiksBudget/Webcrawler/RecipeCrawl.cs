@@ -52,7 +52,7 @@ namespace BBGatherer.Webcrawler
                             if (!ind.InnerText.Contains(':'))
                             {
                                 Ingredient ingredient = CreateIngriedient(ind.InnerText, out fatalError, dbConnect);
-                                if (!ingredient._IngredientName.Equals("none")) 
+                                if (!ingredient._ingredientName.Equals("none")) 
                                 {
                                     IngriedisensList.Add(ingredient);
                                 }
@@ -222,7 +222,7 @@ namespace BBGatherer.Webcrawler
             catch (System.Net.WebException)
             {
                Console.WriteLine("Exception found is being handled");
-               System.Threading.Thread.Sleep(30000);
+               //System.Threading.Thread.Sleep(30000);
                Console.WriteLine("Exception resolved");
                 return false;
             }
