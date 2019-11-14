@@ -64,7 +64,7 @@ namespace BBCollection.DBHandling
             List<Product> productList = new List<Product>();
 
             string storageQuery =
-                "SELECT userstorage.prodid, products.productname , products.amount, products.price, products.image, products.store, userstorage.amountStored, userstorage.timeadded FROM userstorage INNER JOIN products ON userstorage.prodid = products.id WHERE userstorage.username = @Username";
+                "SELECT userstorage.prodid, products.productname , products.amount, products.price, products.image, products.store, userstorage.amountStored, userstorage.timeadded,  FROM userstorage INNER JOIN products ON userstorage.prodid = products.id WHERE userstorage.username = @Username";
 
             MySqlCommand msc = new MySqlCommand(storageQuery);
             msc.Parameters.AddWithValue("@Username", username);
@@ -74,7 +74,7 @@ namespace BBCollection.DBHandling
             {
                 foreach (DataRow r in ds.Tables[0].Rows)
                 {
-                    Product product = new Product((string)r[0], (string)r[1], (string)r[2], Convert.ToDouble(r[3]), (string)r[4], (string)r[5], (int)r[6], Convert.ToString(r[7]));
+                    Product product = new Product((string)r[0], (string)r[1], (string)r[2], Convert.ToDouble(r[3]), (string)r[4], (string)r[5], (int)r[6], Convert.ToString(r[7]), (string)r[8]);
                     productList.Add(product);
                 }
             }
@@ -86,7 +86,7 @@ namespace BBCollection.DBHandling
         {
             foreach(Product p in storage)
             {
-                string productQuery = "INSERT INTO `userstorage`(`username`,`prodid`,`amountstored`) VALUES(@Username,@ProductID,@AmountStored);";
+                string productQuery = "INSERT INTO `userstorage`(`username`,`prodid`,`amountstored`) VALUES(@Username,@ProductID,@AmountStored,@State);";
                 string checkExist = "SELECT COUNT(*) FROM userstorage WHERE prodid = @ProductID";
 
                 MySqlCommand exist = new MySqlCommand(checkExist);
@@ -101,6 +101,7 @@ namespace BBCollection.DBHandling
                     msc.Parameters.AddWithValue("@Username", username);
                     msc.Parameters.AddWithValue("@ProductID", p._id);
                     msc.Parameters.AddWithValue("@AmountStored", p._amountleft);
+                    msc.Parameters.AddWithValue("@State", p._state);
 
                     new SQLConnect().NonQueryMSC(msc, dbInforamtion);
                 }
@@ -131,27 +132,17 @@ namespace BBCollection.DBHandling
             }
         }
 
-        public List<SallingProduct> ListOfSallingProductsFromName(string productName, DatabaseInformation dbInformation)
+        
+
+        public void RemoveStorageFromUsername(string username, DatabaseInformation databaseInformation)
         {
-            List<SallingProduct> productList = new List<SallingProduct>();
+            string removeQuery = "REMOVE FROM `userstorage` WHERE `username` = @Username";
 
-            string productQuery = "SELECT * FROM sallingproducts WHERE title LIKE @ProductName";
+            MySqlCommand msc = new MySqlCommand(removeQuery);
 
-            MySqlCommand msc = new MySqlCommand(productQuery);
-            msc.Parameters.AddWithValue("@ProductName", "%" + productName + "%");
+            msc.Parameters.AddWithValue("@Username", username);
 
-
-
-            foreach (DataRow r in new SQLConnect().DynamicSimpleListSQL(msc, dbInformation).Tables[0].Rows)
-            {
-                SallingProduct sallingProduct = new SallingProduct((string)r[0], (string)r[1], (string)r[2], Convert.ToDouble(r[3]),
-                                              (string)r[4], (string)r[5], (string)r[6]);
-                productList.Add(sallingProduct);
-            }
-
-            return productList;
+            new SQLConnect().NonQueryMSC(msc, databaseInformation):
         }
-
-
     }
 }

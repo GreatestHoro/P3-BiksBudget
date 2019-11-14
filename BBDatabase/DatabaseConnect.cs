@@ -9,6 +9,7 @@ namespace BBCollection
     public class DatabaseConnect
     {
         DatabaseInformation dbInfo = null;
+
         public DatabaseConnect(string sName, string dBName, string dBUser, string dBPw)
         {
             dbInfo = new DatabaseInformation(sName, dBName, dBUser, dBPw);
@@ -108,5 +109,10 @@ namespace BBCollection
             return new ProductHandling().ProductsInStorageFromUsername(username, dbInfo.GetConnect());
         }
 
+        public void UpdateStorage(string username, List<Product> storage)
+        {
+            new ProductHandling().RemoveStorageFromUsername(username, dbInfo.GetConnect());
+            new ProductHandling().AddToStorageFromUsername(username, storage, dbInfo.GetConnect());
+        }
     }
 }
