@@ -53,11 +53,6 @@ namespace Backend.Controllers
         {
             List<Product> storageList = dbConnect.GetStorageFromUsername(id);
 
-            foreach (var item in storageList)
-            {
-
-            }
-
             string jsonStorage = JsonConvert.SerializeObject(storageList);
 
             return jsonStorage;
@@ -69,10 +64,6 @@ namespace Backend.Controllers
         {
             string buffer;
             List<Product> newItem = new List<Product>();
-            //List<Product> DumbList = new List<Product>();
-            List<Product> storageList = new List<Product>(); /*dbConnect.GetStorageFromUsername("Test6");*/
-
-            //List<Product> resultList = ConvertBeforeSending(storageList);
             int pNum;
 
             HttpRequest request = HttpContext.Request;
@@ -100,7 +91,6 @@ namespace Backend.Controllers
             if (buffer.Contains("PLS_DELETE"))
             {
                 //Delete the entire list
-                resultList.Clear();
             }
             else
             {
@@ -109,14 +99,14 @@ namespace Backend.Controllers
                     buffer = "[" + buffer + "]";
 
                     newItem = JsonConvert.DeserializeObject<List<Product>>(buffer);
-                    newItem.Clear();
+                    dbConnect.UpdateStorage(Email, newItem);
                 }
                 else
                 {
                     newItem = JsonConvert.DeserializeObject<List<Product>>(buffer);
                     resultList = newItem;
 
-                    //dbConnect.UpdateStorage(Email, );
+                    dbConnect.UpdateStorage(Email, newItem);
 
                 }
             } 
