@@ -8,17 +8,20 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MySqlX.XDevAPI.Common;
 using Newtonsoft.Json;
+using BBCollection;
+using BBCollection.BBObjects;
 
 namespace Backend.Controllers
 {
     public class ShoppinglistTestList
+
     {
         List<AddedProduct> StorageTest = new List<AddedProduct>
         {
             new AddedProduct{ Name = "Kylling", Amount = "200g", Id = 1, State = "Full", TimeAdded = "07/11/2019 10:37:43", Price = 27.00, AmountOfItem = 1, StoreName = "Fakta" },
             new AddedProduct{ Name = "Oksekød", Amount = "500g", Id = 2, State = "Full", TimeAdded = "06/10/2019 22:00:43", Price = 36.00, AmountOfItem = 1, StoreName = "Fakta" },
             new AddedProduct{ Name = "Laks", Amount = "280g", Id = 3, State = "Full", TimeAdded = "06/02/2019 07:27:20", Price = 55.00, AmountOfItem = 1, StoreName = "DagliBrugsen" },
-            new AddedProduct{ Name = "Lammebov", Amount = "1000g", Id = 4, State = "Full", TimeAdded = "06/11/2019 13:01:52", Price = 270.00, AmountOfItem = 1, StoreName = "Føtex" }        
+            new AddedProduct{ Name = "Lammebov", Amount = "1000g", Id = 4, State = "Full", TimeAdded = "06/11/2019 13:01:52", Price = 270.00, AmountOfItem = 1, StoreName = "Føtex" }
         };
 
         public List<AddedProduct> GetStuff()
@@ -46,7 +49,7 @@ namespace Backend.Controllers
         public ShoppinglistTestList test = new ShoppinglistTestList();
         List<AddedProduct> productData;
         string Email;
-
+        DatabaseConnect dbConnect = new DatabaseConnect("localhost", "biksbudgetDB", "root", "BiksBudget123");
         // GET: api/Shoppinglist
         [HttpGet]
         public string Get()
@@ -59,19 +62,44 @@ namespace Backend.Controllers
         }
 
         // GET: api/Shoppinglist/5
-        //[Route("api/Shoppinglist/{value}")]
-        //[HttpGet]
-        //public HttpResponseMessage Get(string value)
-        //{
-        //    var stuff = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
+        [HttpGet]
+        public string Get(string value)
+        {
+            List<Product> storageList = dbConnect.GetStorageFromUsername(value);
 
-        //    List<CoopProduct> newItem = JsonConvert.DeserializeObject<List<CoopProduct>>(value);
+            List<AddedProduct> resultList = ConvertBeforeSending(storageList);
 
-        //    productData.Add(newItem[0]);
+            string jsonStorage = JsonConvert.SerializeObject(resultList);
 
-        //    return stuff;
-        //}
+            return jsonStorage;
+        }
 
+        private List<AddedProduct> ConvertBeforeSending(List<Product> bbList)
+        {
+            List<AddedProduct> result = new List<AddedProduct>();
+            AddedProduct tempProduct = new AddedProduct();
+            int i = 1;
+
+            foreach (var item in bbList)
+            {
+                item._id = item._id.Remove(0, 1);
+
+                result.Add(new AddedProduct
+                {
+                    Amount = item._amount,
+                    Id = Convert.ToInt64(item._id),
+                    State = item._amountleft.ToString(),
+                    Image = item._image,
+                    Name = item._productName,
+                    Price = item._price,
+                    StoreName = item._storeName,
+                    TimeAdded = item._timeAdded,
+                    AmountOfItem = 2 // IMPLEMENT PLS
+                });
+            }
+
+            return result;
+        }
         //// GET: api/Shoppinglist/5
         //[Route("api/Shoppinglist/{id}")]
         //[HttpGet]

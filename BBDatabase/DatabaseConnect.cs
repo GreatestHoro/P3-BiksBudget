@@ -108,5 +108,10 @@ namespace BBCollection
             return new ProductHandling().ProductsInStorageFromUsername(username, dbInfo.GetConnect());
         }
 
+        /*public List<Product> GetShoppingFromUsername(string name) 
+        {
+            //be made pls
+        }*/
+
     }
 }
