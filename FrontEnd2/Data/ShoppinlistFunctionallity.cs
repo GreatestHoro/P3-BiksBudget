@@ -50,7 +50,7 @@ namespace FrontEnd2.Data
 
             foreach (var item in itemList)
             {
-                result += item._price; //* item._amountofitem; // IMPLEMENT AMOUNT OF ITEM PLS
+                result += item._price * item._amountleft;
             }
             return result;
         }
@@ -197,7 +197,7 @@ namespace FrontEnd2.Data
             foreach (var item in itemList)
             {
                 item._timeAdded = DateTime.Now.ToString();
-                //item._amountleft = "Full" ; // Bjarke pls, this is string pls
+                item._state = "Full" ;
             }
 
             int userIdLength = userId.Length;

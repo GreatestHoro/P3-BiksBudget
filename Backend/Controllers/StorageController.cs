@@ -104,7 +104,7 @@ namespace Backend.Controllers
                 else
                 {
                     newItem = JsonConvert.DeserializeObject<List<Product>>(buffer);
-                    resultList = newItem;
+                    //resultList = newItem;
 
                     dbConnect.UpdateStorage(Email, newItem);
 
