@@ -12,8 +12,8 @@ namespace BBGatherer
         static void Main(string[] args)
         {
             DataHandling dh = new DataHandling();
-            dh.GenerateDatabase();
-            dh.GenerateData();
+            //dh.GenerateDatabase();
+            //dh.GenerateData();
             dh.TestCollection();
         }
     }
@@ -71,16 +71,16 @@ namespace BBGatherer
             dbConnect.AddUser("Test6", "Test", "email");
             //Console.WriteLine(dbConnect.CheckUser("Test", "Test"));
 
-            List<Product> testList = new List<Product>();
+            //List<Product> testList = new List<Product>();
 
-            Product tProd1 = new Product("B2000020000002", 5, "Full");
-            Product tProd2 = new Product("B2000110000004", 5, "Full");
-            Product tProd3 = new Product("B2000060000000", 5, "Full");
+            //Product tProd1 = new Product("B2000020000002", 5, "Full");
+            //Product tProd2 = new Product("B2000110000004", 5, "Full");
+            //Product tProd3 = new Product("B2000060000000", 5, "Full");
 
-            testList.Add(tProd1);
-            testList.Add(tProd2);
-            testList.Add(tProd3);
-            dbConnect.AddListToStorage("Test6", testList);
+            //testList.Add(tProd1);
+            //testList.Add(tProd2);
+            //testList.Add(tProd3);
+            //dbConnect.AddListToStorage("Test6", testList);
             
 
             //List<Product> testList = new List<Product>();

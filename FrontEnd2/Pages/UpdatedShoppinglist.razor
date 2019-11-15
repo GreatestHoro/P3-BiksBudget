@@ -1,89 +1,83 @@
-﻿@page "/ijjhybiuhnoi"
+﻿@page "/shoppinglist"
+
 @using Newtonsoft.Json;
-@inject HttpClient Http
+@using BBCollection.BBObjects;
 @using FrontEnd2.Data;
+
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject AuthenticationFunctionallity uf
-@using BBCollection.BBObjects;
+@inject HttpClient Http
 
 
 
-<h1>Shopping List</h1>
+@inject HttpClient Http
 
-@if (ListFunc.itemList == null)
+@if (email == null)
 {
-    <p>
-        <em>Loading...</em>
-    </p>
+    <p> You need to be logged in to wieved in shoppinglist</p>
 }
 else
 {
-    <div class="container">
-        <div class="row col-md-12">
-            <table class="ShoppinglistTable table-bordered">
-                <colgroup>
-                    <col style="width: 100px" />
-                    <col style="width: 180px" />
-                    <col style="width: 100px" />
-                    <col style="width: 80px" />
-                    <col style="width: 80px" />
-                    <col style="width: 80px" />
-                </colgroup>
+
+    @if (ListFunc.itemList == null)
+    {
+        <p><em> Loaging list .. </em></p>
+    }
+    else
+    {
+        <div class="container">
+            <table id="cart" class="table table-hover table-condensed">
                 <thead>
-                    <tr class="text-center">
-                        <th>Name</th>
-                        <th>Amount</th>
-                        <th>Price For Each</th>
-                        <th>Ammount</th>
-                        <th>Combined price</th>
-                        <th>Remove / To Storage</th>
+                    <tr>
+                        <th style="width:50%">Product</th>
+                        <th style="width:10%">Price</th>
+                        <th style="width:8%">Quantity</th>
+                        <th style="width:22%" class="text-center">Subtotal</th>
+                        <th style="width:10%"></th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var items in ListFunc.itemList)
+                    @foreach (var item in ListFunc.itemList)
                     {
-                        <tr class="text-center">
-                            <td>@items._id - @items._productName</td>
-                            <td>@items._amount</td>
-                            <td>@items._storeName - @items._price.ToString() kr</td>
-                            <td>
-                                <div class="text-center">
-                                    <button @onclick="(() => DecrementAmount(items._id))"><i class="oi oi-minus"></i></button>
-                                    @items._amountleft
-                                    <button @onclick="(() => IncrementAmount(items._id))"><i class="oi oi-plus"></i></button>
+
+                        <tr>
+                            <td data-th="Product">
+                                <div class="row">
+                                    <div class="col-sm-2 hidden-xs"><img src="@item._image" class="img-responsive" /></div>
+                                    <div class="col-sm-10">
+                                        <h4 class="nomargin">@item._productName</h4>
+                                        <p> Description</p>
+                                    </div>
                                 </div>
                             </td>
-                            <td>@(items._price * items._amountleft)</td>
-                            <td>
-                                <div class="text-center">
-                                    <button @onclick="(() => AddProductToStorage(items._id))"><i class="oi oi-basket"></i></button>
-                                    <button @onclick="(() => DeleteProduct(items._id))"><i class="oi oi-trash"></i></button>
-                                </div>
+                            <td data-th="Price">@item._price</td>
+                            <td data-th="Quantity">
+                                <input type="number" class="form-control text-center" value="">
+                            </td>
+                            <td data-th="Subtotal" class="text-center">subtotal</td>
+                            <td class="actions" data-th="">
+                                <button class="btn btn-info btn-sm"><i class="oi oi-reload"></i></button>
+                                <button class="btn btn-danger btn-sm"><i class="oi oi-trash"></i></button>
                             </td>
                         </tr>
                     }
-
                 </tbody>
+                <tfoot>
+                    <tr class="visible-xs">
+                        <td class="text-center"><strong>Total 1.99</strong></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="hidden-xs"></td>
+                        <td class="hidden-xs text-center"><strong>Total $1.99</strong></td>
+                        <td><a href="#" class="btn btn-success btn-block">Save Shopping list </a></td>
+                    </tr>
+                </tfoot>
             </table>
-            @if (ListFunc.itemList != null)
-            {
-                <input placeholder="A new Product" @bind="@newProduct" />
-                <button @onclick="AddProduct">Create</button>
-            }
         </div>
-        <div class="buttom-list">
-            <button @onclick="AddAlltoStorage"><i class="oi oi-basket">Add All To Storage</i></button>
-            <i>(@ListFunc.CompletePrice() kr)</i>
-        </div>
-        <div>
-            <button @onclick="DeleteAll"><i class="oi oi-trash">Empty Shoppinglist</i></button>
-            <button @onclick="SaveList"><i class="oi oi-transfer">Save Shoppinglist</i></button>
-        </div>
-    </div>
+    }
 }
 
-
-@code{
+@code {
     string productString;
     string newProduct;
     ShoppinlistFunctionality ListFunc = new ShoppinlistFunctionality("api/Shoppinglist");
@@ -204,4 +198,5 @@ else
     {
         email = await localStorage.GetItemAsync<string>("Email");
     }
+
 }
