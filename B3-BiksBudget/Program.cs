@@ -24,9 +24,9 @@ namespace BBGatherer
         public void GenerateDatabase()
         {
             dbConnect.InitializeDatabase();
-            //dbConnect.GenerateSallingDB();
             dbConnect.InitializeUserDatabase();
             dbConnect.InitializeStorageDatabase();
+            dbConnect.InitializeShoppinglistDatabase();
         }
 
         public void GenerateData()
@@ -64,10 +64,47 @@ namespace BBGatherer
 
         public void TestCollection()
         {
+            //dbConnect.AddUser("Test", "Test", "BB");
+            
+            List <Recipe> recipes = new List<Recipe>();
 
+            Ingredient ing1 = new Ingredient("TestIng1", "Kg", 50);
+            Ingredient ing2 = new Ingredient("TestIng2", "g", 200);
+            Ingredient ing3 = new Ingredient("TestIng3", "Tsk", 2);
+
+            List<Ingredient> ingredients = new List<Ingredient>();
+
+            ingredients.Add(ing1);
+            ingredients.Add(ing2);
+            ingredients.Add(ing3);
+
+            Recipe rec1 = new Recipe(1, "Flødeagurker", "Something", ingredients, 2);
+            Recipe rec2 = new Recipe(2, "Solbærsaft", "Something", ingredients, 2);
+
+            dbConnect.AddRecipe(rec1);
+            dbConnect.AddRecipe(rec2);
+
+            
+            //List<Recipe> res = dbConnect.GetRecipes("Test6");
+            
+
+
+            //List<Shoppinglist> shoppinglists = dbConnect.GetShoppinglists("TestUser");
+
+
+            //Console.WriteLine(res[0]._ingredientList[0]._IngredientName);
+
+            /*foreach (Shoppinglist sl in shoppinglists)
+            {
+                foreach (Product p in sl._products)
+                {
+                    Console.WriteLine(p._productName + sl._name);
+
+                }
+            }*/
 
             //Console.WriteLine(dbConnect.checkIfSomethingExist("users", "username", "Test"));
-
+            /*
             dbConnect.AddUser("Test6", "Test", "email");
             //Console.WriteLine(dbConnect.CheckUser("Test", "Test"));
 
@@ -81,7 +118,7 @@ namespace BBGatherer
             testList.Add(tProd2);
             testList.Add(tProd3);
             dbConnect.AddListToStorage("Test6", testList);
-            
+            */
 
             //List<Product> testList = new List<Product>();
 
