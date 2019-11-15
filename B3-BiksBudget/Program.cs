@@ -14,7 +14,7 @@ namespace BBGatherer
             DataHandling dh = new DataHandling();
             dh.GenerateDatabase();
             dh.GenerateData();
-            dh.TestCollection();
+            //dh.TestCollection();
         }
     }
 
@@ -32,7 +32,7 @@ namespace BBGatherer
         public void GenerateData()
         {
 
-            CoopDoStuff tryCoop = new CoopDoStuff("d0b9a5266a2749cda99d4468319b6d9f");
+            /*CoopDoStuff tryCoop = new CoopDoStuff("d0b9a5266a2749cda99d4468319b6d9f");
 
             List<CoopProduct> coopProducts = tryCoop.CoopFindEverythingInStore("24073");
 
@@ -52,14 +52,14 @@ namespace BBGatherer
                 count++;
                 Console.WriteLine(count);
                 dbConnect.AddProduct(new Product("B" + c.Ean, c.Navn, c.Navn2, c.Pris, "", "SuperBrugsen"));
-            }
+            }*/
 
 
-            /*RecipeCrawl WebRunner = new RecipeCrawl();
-            _ = WebRunner.GetRecipes(620, 1200, dbConnect);
+            RecipeCrawl WebRunner = new RecipeCrawl();
+            _ = WebRunner.GetRecipes(100, 1200, dbConnect);
 
             Console.WriteLine("web runner begins... fear its power");
-            Console.ReadLine();*/
+            Console.ReadLine();
         }
 
         public void TestCollection()

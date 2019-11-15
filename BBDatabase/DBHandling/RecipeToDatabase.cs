@@ -66,10 +66,12 @@ namespace BBCollection.HandleRecipe
             {
                 string addIngredientReferance = "INSERT INTO `IngredientsInRecipe` (`recipeID`,`ingredientID`,`amount`,`unit`)" +
                                                 "VALUES(@RecipeID," +
-                                                "(SELECT id FROM ingredients WHERE ingredientName = @Ingredient)" +
+                                                "@IngredientID" +
                                                 ",@Amount,@Unit)";
 
                 MySqlCommand msc = new MySqlCommand(addIngredientReferance);
+
+                Console.WriteLine(getIngredientFromName(ingredient._IngredientName, dbInformation) + " THIS IS INSIDE THE INGREDIENT!");
 
                 msc.Parameters.AddWithValue("@RecipeID", recipe._recipeID);
                 msc.Parameters.AddWithValue("@IngredientID", getIngredientFromName(ingredient._IngredientName, dbInformation));
@@ -80,10 +82,9 @@ namespace BBCollection.HandleRecipe
             }
         }
 
-        private Ingredient getIngredientFromName(string ingredientName, DatabaseInformation databaseInformation)
+        private int getIngredientFromName(string ingredientName, DatabaseInformation databaseInformation)
         {
-            int ingredientID;
-            Ingredient ingredient = null;
+            int ingredientID = -1;
 
             string getIngredient =
                 "SELECT id FROM ingredients WHERE ingredientname = @IngredientName";
@@ -105,7 +106,7 @@ namespace BBCollection.HandleRecipe
                 Console.WriteLine("NullException: " + nullReferenceException);
             }
 
-            return ingredient;
+            return ingredientID;
         }
     }
 }
