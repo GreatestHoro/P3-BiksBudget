@@ -128,8 +128,15 @@ namespace FrontEnd2
             _httpWebRequest.CookieContainer = cookies;
 
             // write the "Authorization" header
-            //_httpWebRequest.Headers.Add("Authorization", "Bearer " + _accessToken);
-            _httpWebRequest.Headers.Add("Ocp-Apim-Subscription-Key", _accessToken);
+            if (_accessToken.Contains("-"))
+            {
+                _httpWebRequest.Headers.Add("Authorization", "Bearer " + _accessToken);
+            }
+            else
+            {
+                _httpWebRequest.Headers.Add("Ocp-Apim-Subscription-Key", _accessToken);
+
+            }
 
             _httpWebRequest.Method = "GET";
 
