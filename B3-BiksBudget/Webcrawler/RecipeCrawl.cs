@@ -200,7 +200,7 @@ namespace BBGatherer.Webcrawler
         private bool CheckIngredientsInApi(string Searchterm, DatabaseConnect dbConnect) 
         {
             System.Threading.Thread.Sleep(4000);
-            BearerAccessToken bearerAccessToken = new BearerAccessToken("5c9040ad-6229-477f-8123-64d281c76768");
+            BearerAccessToken bearerAccessToken = new BearerAccessToken("fc5aefca-c70f-4e59-aaaa-1c4603607df8");
 
 
             SallingAPILink linkMaker = new SallingAPILink();
