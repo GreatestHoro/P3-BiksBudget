@@ -59,7 +59,7 @@
         WeightedRecipies[] returnRecipies = new WeightedRecipies[recipes.Count()];
         foreach(Recipe r in recipes)
         {
-            returnRecipies.Add(new WeightedRecipies(r));
+            //returnRecipies.Add(new WeightedRecipies(r));
             foreach (AddedProduct p in storageInventory)
             {
                 foreach (Ingredient i in r._ingredientList) 
@@ -72,7 +72,7 @@
 
             }
         }
-        return null
+        return null;
     }
 
     private bool compareIngrdientAndProduct(Ingredient ingrdient, AddedProduct product)
