@@ -13,33 +13,36 @@
 @code {
     ShoppinlistFunctionality ListFunc = new ShoppinlistFunctionality("api/Storage");
     HttpResponseMessage responseMessage = new HttpResponseMessage();
+    List<WeightedRecipies> recpies = new List<WeightedRecipies>();
     String email;
     String userId;
-
+    private delegate bool compareWR(WeightedRecipies r1, WeightedRecipies r2);
+    //public delegate int PerformCalculation(int x, int y);
 
     protected async override Task OnInitializedAsync()
     {
         userId = email;
         responseMessage = await ListFunc.GetProductsOnStart(userId);
-        //ListFunc.itemList;
+
+        FindValidRecipies(ListFunc.itemList);
     }
 
-    private List<Recipe> FindValidRecipies(List<AddedProduct> storageInventory)
+    private List<WeightedRecipies> FindValidRecipies(List<Product> storageInventory)
     {
         List<Recipe> Recepies = GetRecipes();
-        List<Recipe> returnRecepies = new List<Recipe>();
+        List<Recipe> ValidRecipies = new List<Recipe>();
         bool breakFlag;
 
         foreach (Recipe r in Recepies)
         {
             breakFlag = false;
-            foreach (AddedProduct p in storageInventory)
+            foreach (Product p in storageInventory)
             {
                 foreach (Ingredient i in r._ingredientList)
                 {
                     if (compareIngrdientAndProduct(i,p))//kan godt være man bliver nødtil at lave en eller anden form for kryds referance
                     {
-                        returnRecepies.Add(r);
+                        ValidRecipies.Add(r);
                         breakFlag = true;
                         break;
                     }
@@ -51,22 +54,28 @@
             }
 
         }
-        return returnRecepies;
+
+        return GenerateWeightedRecepies(ValidRecipies, storageInventory);;
     }
 
-    private List<WeightedRecipies> WeightFoundRecepies(List<Recipe> recipes,List<AddedProduct> storageInventory)
+    private List<WeightedRecipies> GenerateWeightedRecepies(List<Recipe> recipes,List<Product> storageInventory)
     {
-        WeightedRecipies[] returnRecipies = new WeightedRecipies[recipes.Count()];
-        foreach(Recipe r in recipes)
+        //WeightedRecipies[] returnRecipies = new WeightedRecipies[recipes.Count()];
+        List<WeightedRecipies> returnRecipies = new List<WeightedRecipies>();
+        foreach (Recipe r in recipes)
         {
-            //returnRecipies.Add(new WeightedRecipies(r));
-            foreach (AddedProduct p in storageInventory)
+            returnRecipies.Add(new WeightedRecipies(r));
+        }
+
+        foreach(WeightedRecipies w in returnRecipies)
+        {
+            foreach (Product p in storageInventory)
             {
-                foreach (Ingredient i in r._ingredientList) 
+                foreach (Ingredient i in w._recipie._ingredientList)
                 {
                     if (compareIngrdientAndProduct(i,p))
                     {
-
+                        w.MatchFound(i);
                     }
                 }
 
@@ -75,9 +84,9 @@
         return null;
     }
 
-    private bool compareIngrdientAndProduct(Ingredient ingrdient, AddedProduct product)
+    private bool compareIngrdientAndProduct(Ingredient ingrdient, Product product)
     {
-        return ingrdient._IngredientName == product.Name ? true : false;
+        return ingrdient._IngredientName == product._productName ? true : false;
     }
 
     private List<Recipe> GetRecipes()
@@ -112,7 +121,7 @@
 
     public class WeightedRecipies
     {
-        private Recipe _recipie{get;}
+        public Recipe _recipie{get;}
         private int complexity{get;}
         private int matchingIngrdientsNum { get; set; }
         private List<Ingredient> matchingIngrdient{get;}
@@ -129,4 +138,35 @@
             matchingIngrdientsNum = matchingIngrdient.Count();
         }
     }
+
+    /*public static List<WeightedRecipies> Sort(List<WeightedRecipies> recipies,compareWR CompareWR)
+    {
+        WeightedRecipies[] arr = recipies.ToArray();
+
+        int i, j,
+        WeightedRecipies temp = new WeightedRecipies()½;
+        bool swapped; 
+        for (i = 0; i < arr.Length - 1; i++)  
+        { 
+            swapped = false; 
+            for (j = 0; j < arr.Length - i - 1; j++)  
+            { 
+                if (CompareWR(arr[j], arr[j + 1]) arr[j] > arr[j + 1])  
+                {
+            swap arr[j] and arr[j + 1]
+            temp = arr[j];
+            arr[j] = arr[j + 1];
+            arr[j + 1] = temp;
+            swapped = true;
+        }
+    }
+
+    // IF no two elements were  
+    // swapped by inner loop, then break 
+    //if (swapped == false) 
+    //break; *
+        } 
+
+        return null;
+    }*/
 }
