@@ -24,9 +24,9 @@ namespace BBGatherer
         public void GenerateDatabase()
         {
             dbConnect.InitializeDatabase();
-            //dbConnect.GenerateSallingDB();
             dbConnect.InitializeUserDatabase();
             dbConnect.InitializeStorageDatabase();
+            dbConnect.InitializeShoppinglistDatabase();
         }
 
         public void GenerateData(bool coop, bool salling)
@@ -61,7 +61,7 @@ namespace BBGatherer
 
                 Console.WriteLine("web runner begins... fear its power");
                 Console.ReadLine();
-            
+
 
             /*public void TestCollection()
             {

@@ -17,7 +17,7 @@ namespace BBCollection.BBObjects
             _amount = amount;
         }
 
-        public Ingredient(string ingredientName, string unit, float amount) 
+        public Ingredient(string ingredientName, string unit, float amount)
         {
             _ingredientName = ingredientName;
             _unit = unit;

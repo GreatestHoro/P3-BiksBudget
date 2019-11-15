@@ -6,21 +6,21 @@ namespace BBCollection.DBHandling
 {
     class InitializeDB
     {
-        public void start(DatabaseInformation dbInformation)
+        public void start(DatabaseInformation databaseInformation)
         {
-            CreateDB(dbInformation);
-            GenerateWebcrawelerDatabaseTables(dbInformation);
-            GenerateAPIDatabaseTables(dbInformation);
+            CreateDB(databaseInformation);
+            GenerateWebcrawelerDatabaseTables(databaseInformation);
+            GenerateAPIDatabaseTables(databaseInformation);
         }
 
-        public void CreateUserDB(DatabaseInformation dbInfo)
+        public void CreateUserDB(DatabaseInformation databaseInformation)
         {
-            GenerateUserDatabaseTables(dbInfo);
+            GenerateUserDatabaseTables(databaseInformation);
         }
 
-        public void CreateSallingProduct(DatabaseInformation dbInfo)
+        public void CreateSallingProduct(DatabaseInformation databaseInformation)
         {
-            GenerateSallingProductDB(dbInfo);
+            GenerateSallingProductDB(databaseInformation);
         }
 
         public void CreateStorageDB(DatabaseInformation dbInformation)
@@ -28,18 +28,23 @@ namespace BBCollection.DBHandling
             GenerateStorageTables(dbInformation);
         }
 
+        public void CreateSLTables(DatabaseInformation databaseInformation)
+        {
+            GenerateShoppingListTables(databaseInformation);
+        }
+
         /*
          Check if database exist, if it don't it will create it
         */
-        private void CreateDB(DatabaseInformation dbInformation)
+        private void CreateDB(DatabaseInformation databaseInformation)
         {
             MySqlConnection connection = null;
             try
             {
-                connection = new MySqlConnection(dbInformation.ConnectionString(false));
+                connection = new MySqlConnection(databaseInformation.ConnectionString(false));
                 connection.Open();
 
-                string databaseExist = "CREATE DATABASE IF NOT EXISTS `" + dbInformation.DatabaseName + "`;";
+                string databaseExist = "CREATE DATABASE IF NOT EXISTS `" + databaseInformation.DatabaseName + "`;";
 
                 MySqlCommand msc = new MySqlCommand(databaseExist, connection);
 
@@ -58,7 +63,7 @@ namespace BBCollection.DBHandling
             }
         }
 
-        private void GenerateWebcrawelerDatabaseTables(DatabaseInformation dbInformation)
+        private void GenerateWebcrawelerDatabaseTables(DatabaseInformation databaseInformation)
         {
             string recipeTable =
                 "CREATE TABLE IF NOT EXISTS `Recipes` (" +
@@ -70,26 +75,26 @@ namespace BBCollection.DBHandling
 
             string ingredientTable =
                 "CREATE TABLE IF NOT EXISTS `Ingredients` (" +
-                "`id` INT AUTO_INCREMENT UNIQUE, " +
+                "`id` int auto_increment unique," +
                 "`ingredientName` VARCHAR(255) UNIQUE," +
                 "PRIMARY KEY(id));";
 
             string ingredientInRecipeTable =
                 "CREATE TABLE IF NOT EXISTS `IngredientsInRecipe` (`id` INT AUTO_INCREMENT," +
                 "`recipeID` INT," +
-                "`indgredient_id` int," +
+                "`ingredientID` int," +
                 "`amount` INT," +
                 "`unit` varchar(255)," +
                 "PRIMARY KEY(ID)," +
                 "FOREIGN KEY(recipeID) REFERENCES RECIPES(id)," +
-                "FOREIGN KEY(id) REFERENCES INGREDIENTS(id)); ";
+                "FOREIGN KEY(ingredientID) REFERENCES INGREDIENTS(id)); ";
 
-            new SQLConnect().NonQueryString(recipeTable, dbInformation);
-            new SQLConnect().NonQueryString(ingredientTable, dbInformation);
-            new SQLConnect().NonQueryString(ingredientInRecipeTable, dbInformation);
+            new SQLConnect().NonQueryString(recipeTable, databaseInformation);
+            new SQLConnect().NonQueryString(ingredientTable, databaseInformation);
+            new SQLConnect().NonQueryString(ingredientInRecipeTable, databaseInformation);
         }
 
-        private void GenerateAPIDatabaseTables(DatabaseInformation dbInformation)
+        private void GenerateAPIDatabaseTables(DatabaseInformation databaseInformation)
         {
             string productTable =
                 "CREATE TABLE IF NOT EXISTS `products` (" +
@@ -100,19 +105,7 @@ namespace BBCollection.DBHandling
                 "`image` varchar(255), " +
                 "`store` varchar(255), " +
                 "PRIMARY KEY(id)); ";
-
-
-            /*msc.Parameters.AddWithValue("@Id", product._id);
-            msc.Parameters.AddWithValue("@ProductName", product._productName);
-            msc.Parameters.AddWithValue("@Description", product._description);
-            msc.Parameters.AddWithValue("@Amount", product._amount);
-            msc.Parameters.AddWithValue("@AmountLeft", product._amountleft);
-            msc.Parameters.AddWithValue("@TimeAdded", product._timeAdded);
-            msc.Parameters.AddWithValue("@Price", product._price);
-            msc.Parameters.AddWithValue("@Image", product._image);
-            msc.Parameters.AddWithValue("@Store", product._storeName);*/
-
-            new SQLConnect().NonQueryString(productTable, dbInformation);
+            new SQLConnect().NonQueryString(productTable, databaseInformation);
         }
 
         private void GenerateUserDatabaseTables(DatabaseInformation databaseInformation)
@@ -146,25 +139,31 @@ namespace BBCollection.DBHandling
         {
             string storageTable =
                 "CREATE TABLE IF NOT EXISTS `userstorage` (" +
-                "`id` int AUTO_INCREMENT UNIQUE, " +
                 "`username` VARCHAR(255), " +
                 "`prodid` VARCHAR(255), " +
                 "`amountStored` int, " +
                 "`timeadded` DATETIME DEFAULT CURRENT_TIMESTAMP, " +
                 "`state` varchar(255), " +
-                "primary key(id), " +
                 "foreign key(username) REFERENCES users(username), " +
                 "foreign key(prodid) REFERENCES products(id));";
 
             new SQLConnect().NonQueryString(storageTable, databaseInformation);
         }
+
+        private void GenerateShoppingListTables(DatabaseInformation databaseInformation)
+        {
+            string shoppingListTables =
+                "CREATE TABLE IF NOT EXISTS `shoppinglists`( " +
+                "`id` int auto_increment unique, " +
+                "`username` varchar(255), " +
+                "`shoppinglist_name` varchar(255), " +
+                "`product_id` varchar(255), " +
+                "`amount` int, " +
+                "primary key(id), " +
+                "foreign key(username) references users(username)," +
+                "foreign key(product_id) references products(id));";
+
+            new SQLConnect().NonQueryString(shoppingListTables, databaseInformation);
+        }
     }
 }
-
-/*use biksbudgetdb;
-
-
-
-SELECT*
-FROM userstorage
-INNER JOIN userstorage ON userstorage.prodid = products.id WHERE username = ;*/
