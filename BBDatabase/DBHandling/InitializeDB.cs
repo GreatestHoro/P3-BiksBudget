@@ -151,6 +151,7 @@ namespace BBCollection.DBHandling
                 "`prodid` VARCHAR(255), " +
                 "`amountStored` int, " +
                 "`timeadded` DATETIME DEFAULT CURRENT_TIMESTAMP, " +
+                "`state` varchar(255), " +
                 "primary key(id), " +
                 "foreign key(username) REFERENCES users(username), " +
                 "foreign key(prodid) REFERENCES products(id));";

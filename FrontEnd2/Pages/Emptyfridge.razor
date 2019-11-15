@@ -1,41 +1,45 @@
-﻿@page "/Register"
-@using BBCollection.BBObjects;
+﻿@page "/Emptyfridge"
 @using Newtonsoft.Json;
-@using  System.Text;
-@using FrontEnd2.Data;
-@using System.Diagnostics;
 @inject HttpClient Http
+@using FrontEnd2.Data;
+@using System.Text;
+@using System.Globalization;
+@using BBCollection.BBObjects;
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject AuthenticationFunctionallity uf
 
-@if (email != null)
-{
-    <h1>@email (@gottenData)</h1>
-}
-else
-{
-    <p>Loading...</p>
-}
+<h3>Emptyfridge</h3>
 
 @code {
-    private string _headingText;
-    private string email;
-    private string gottenData;
+    ShoppinlistFunctionality ListFunc = new ShoppinlistFunctionality("api/Storage");
+    HttpResponseMessage responseMessage = new HttpResponseMessage();
+    String email;
+    String userId;
 
-    ////protected async override Task OnInitializedAsync()
-    //protected async void doStuff()
-    //{
-    //    if (email != null)
-    //    {
-    //        gottenData = await Http.GetStringAsync("https://localhost:44325/api/Login/" + email);
-    //    }
-    //}
+
+    protected async override Task OnInitializedAsync()
+    {
+        userId = email;
+        responseMessage = await ListFunc.GetProductsOnStart(userId);
+        //ListFunc.itemList;
+        }
+
+    List<Recipe> FindValidRecipies(List<AddedProduct> storageInventory)
+    {
+
+        return null;
+    }
+
+    public List<Recipe> GetRecipes()
+    {
+        //return new List<Recipe>() { new Recipe(1,"yeet","yoot",); }
+        return null;
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            Debug.WriteLine("User: -> " + await localStorage.GetItemAsync<string>("Email"));
             await GetLocalSession();
             localStorage.Changed += (sender, e) =>
             {

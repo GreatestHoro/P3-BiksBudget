@@ -4,78 +4,91 @@
 @using FrontEnd2.Data;
 @using System.Text;
 @using System.Globalization;
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject AuthenticationFunctionallity uf
+@using BBCollection.BBObjects;
 
 <h1>Storage</h1>
 
-@if (ListFunc.itemList == null)
+@if (email != null)
 {
-    <p>
-        <em>Loading...</em>
-    </p>
+    //FillStorage();
+    @if (ListFunc.itemList == null)
+    {
+        <p>
+            <em>Your Shoppinglist is Empty</em>
+        </p>
+    }
+    else
+    {
+        <div class="container">
+            <div class="row col-md-12">
+                <table class="ShoppinglistTable table-bordered">
+                    <colgroup>
+                        <col style="width: 150px" />
+                        <col style="width: 130px" />
+                        <col style="width: 80px" />
+                        <col style="width: 120px" />
+                        <col style="width: 75px" />
+                    </colgroup>
+                    <thead>
+                        <tr class="text-center">
+                            <th>Name</th>
+                            <th>Full Amount</th>
+                            <th>Amount Remaining</th>
+                            <th>Added Date</th>
+                            <th>Item is Empty</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var items in ListFunc.itemList)
+                        {
+                            <tr class="text-center">
+                                <td>@items._id - @items._productName</td>
+                                <td>@items._amountleft * @items._amount</td>
+                                <td>
+                                    <p class="lead"></p>
+                                    <div class="btn-group show-on-hover">
+                                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                                            @items._state <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu" role="menu">
+                                            @foreach (var State in ItemState)
+                                            {
+                                                <li><button class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(() => ChangeState(items._id, State))">@State</button></li>
+                                            }
+                                        </ul>
+                                    </div>
+                                </td>
+                                <td>@items._timeAdded</td>
+                                <td>
+                                    <div class="text-center">
+                                        <button @onclick="(() => DeleteProduct(items._id))"><i class="oi oi-trash"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                @if (ListFunc.itemList != null)
+                {
+                    <input placeholder="A new Product" @bind="@newProduct" />
+                    <button @onclick="AddProduct">Create</button>
+                }
+            </div>
+            <div>
+                <button @onclick="DeleteAll"><i class="oi oi-trash">Empty Shoppinglist</i></button>
+                <button @onclick="SaveList"><i class="oi oi-transfer">Save Shoppinglist</i></button>
+            </div>
+        </div>
+    }
+
 }
 else
 {
-<div class="container">
-    <div class="row col-md-12">
-        <table class="ShoppinglistTable table-bordered">
-            <colgroup>
-                <col style="width: 150px" />
-                <col style="width: 130px" />
-                <col style="width: 80px" />
-                <col style="width: 120px" />
-                <col style="width: 75px" />
-            </colgroup>
-            <thead>
-                <tr class="text-center">
-                    <th>Name</th>
-                    <th>Full Amount</th>
-                    <th>Amount Remaining</th>
-                    <th>Added Date</th>
-                    <th>Item is Empty</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var items in ListFunc.itemList)
-                {
-                    <tr class="text-center">
-                        <td>@items.Id - @items.Name</td>
-                        <td>@items.AmountOfItem * @items.Amount</td>
-                        <td>
-                            <p class="lead"></p>
-                            <div class="btn-group show-on-hover">
-                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                                    @items.State <span class="caret"></span>
-                                </button>
-                                <ul class="dropdown-menu" role="menu">
-                                    @foreach (var State in ItemState)
-                                    {
-                                        <li><button class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(() => ChangeState(items.Id, State))">@State</button></li>
-                                    }
-                                </ul>
-                            </div>
-                        </td>
-                        <td>@items.TimeAdded</td>
-                        <td>
-                            <div class="text-center">
-                                <button @onclick="(() => DeleteProduct(items.Id))"><i class="oi oi-trash"></i></button>
-                            </div>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-        @if (ListFunc.itemList != null)
-        {
-            <input placeholder="A new Product" @bind="@newProduct" />
-            <button @onclick="AddProduct">Create</button>
-        }
-    </div>
-    <div>
-        <button @onclick="DeleteAll"><i class="oi oi-trash">Empty Shoppinglist</i></button>
-        <button @onclick="SaveList"><i class="oi oi-transfer">Save Shoppinglist</i></button>
-    </div>
-</div>
+    <p>You Need To Be Logged In To See Your Storage</p>
 }
+
 
 
 @code{
@@ -83,74 +96,85 @@ else
     string newProduct;
     ShoppinlistFunctionality ListFunc = new ShoppinlistFunctionality("api/Storage");
     HttpResponseMessage responseMessage = new HttpResponseMessage();
-    string email = "Test";
+
+    string _headingText;
+    string email;
+    string userId;
+
     List<string> ItemState = new List<string>() { "Full", "Almost Full", "Half Full", "Almost Empty" };
 
     private void DeleteAll()
     {
         ListFunc.itemList.Clear();
-        //ListFunc.DeleteList(email);
+        //ListFunc.DeleteList(userId);
     }
 
-    protected async void ChangeState(int id, string state)
+    protected async void ChangeState(string id, string state)
     {
         //ListFunc.itemList[ListFunc.itemList.Find(x => x.Id.Equals(id))].State = state;
         AddedProduct ChangedItem = new AddedProduct();
 
         foreach (var item in ListFunc.itemList)
         {
-            if (item.Id == id)
+            if (item._id == id)
             {
-                item.State = state;
-                productString = JsonConvert.SerializeObject(item);
+                item._state = state;
+                //productString = JsonConvert.SerializeObject(item);
 
-                //await ListFunc.ChangeItem(item.Id, productString, email);
+                //await ListFunc.ChangeItem(item.Id, productString, userId);
 
                 break;
             }
         }
     }
 
-    protected async override Task OnInitializedAsync()
-    {
-        responseMessage = await ListFunc.GetProductsOnStart();
-    }
+    //protected async override Task OnInitializedAsync()
+    //{
+    //    userId = email;
+    //    responseMessage = await ListFunc.GetProductsOnStart(email);
+    //}
+
+    //protected async void FillStorage()
+    //{
+    //    userId = email;
+    //    responseMessage = await ListFunc.GetProductsOnStart(userId);
+    //}
 
 
     private async void AddProduct()
     {
         if (newProduct != null)
         {
-            AddedProduct newItem = new AddedProduct()
+            Product newItem = new Product()
             {
-                Name = newProduct,
-                Amount = "",
-                State = "Full",
-                Id = ListFunc.itemList.Count + 1,
-                AmountOfItem = 1,
-                TimeAdded = DateTime.Now.ToString()
+                _productName = newProduct,
+                _amount = "",
+                _state = "Full",
+                _id = "2000000000045000",
+                _amountleft = 1,
+                _timeAdded = DateTime.Now.ToString()
             };
 
             newProduct = string.Empty;
 
             ListFunc.itemList.Add(newItem);
-            //responseMessage = await ListFunc.AddProductItem(newItem, email);
+            //responseMessage = await ListFunc.AddProductItem(newItem, userId);
         }
 
     }
 
-    private async void DeleteProduct(int id)
+    private async void DeleteProduct(string id)
     {
         bool isFound = false;
         foreach (var item in ListFunc.itemList)
         {
-            if (item.Id == id && item.AmountOfItem > 1)
+            if (item._id == id && item._amountleft != 1)
             {
-                item.AmountOfItem--;
+                item._amountleft--;
 
-                productString = JsonConvert.SerializeObject(item);
+                //productString = JsonConvert.SerializeObject(item);
 
-                //await ListFunc.ChangeItem(item.Id, productString, email);
+                //await ListFunc.ChangeItem(item.Id, productString, userId);
 
                 isFound = true;
 
@@ -160,22 +184,49 @@ else
 
         if (isFound == false)
         {
-            //responseMessage = await ListFunc.DeleteItem(id, email);
-            ListFunc.itemList.Remove(ListFunc.itemList.First(x => x.Id == id));
+            //responseMessage = await ListFunc.DeleteItem(id, userId);
+            ListFunc.itemList.Remove(ListFunc.itemList.First(x => x._id == id));
 
-            int i = 1;
-            foreach (var product in ListFunc.itemList)
-            {
+            //int i = 1;
+            //foreach (var product in ListFunc.itemList)
+            //{
 
-                product.Id = i;
-                i++;
-            }
-
+            //    product.Id = i;
+            //    i++;
+            //}
         }
     }
 
+
     private void SaveList()
     {
-        ListFunc.AddList(email);
+        ListFunc.AddList(userId);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await GetLocalSession();
+            localStorage.Changed += (sender, e) =>
+            {
+                Console.WriteLine($"Value for key {e.Key} changed from {e.OldValue} to {e.NewValue}");
+            };
+
+            //if (email != null)
+            //{
+            //    gottenData = await Http.GetStringAsync("https://localhost:44325/api/Login/" + email + "S");
+            //}
+            userId = email;
+            responseMessage = await ListFunc.GetProductsOnStart(email);
+
+            StateHasChanged();
+        }
+
+    }
+
+    async Task GetLocalSession()
+    {
+        email = await localStorage.GetItemAsync<string>("Email");
     }
 }

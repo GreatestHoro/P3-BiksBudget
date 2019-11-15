@@ -39,6 +39,7 @@
 
         if (response.IsSuccessStatusCode)
         {
+            
             await localStorage.SetItemAsync("Email", email);
             /*
             await uf.GetAuthenticationStateAsync(email);
@@ -90,6 +91,7 @@
     {
         if (firstRender)
         {
+            Debug.WriteLine("User: -> " + await localStorage.GetItemAsync<string>("Email"));
             await GetLocalSession();
             localStorage.Changed += (sender, e) =>
             {
