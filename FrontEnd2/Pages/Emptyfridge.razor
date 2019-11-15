@@ -1,0 +1,132 @@
+﻿@page "/Emptyfridge"
+@using Newtonsoft.Json;
+@inject HttpClient Http
+@using FrontEnd2.Data;
+@using System.Text;
+@using System.Globalization;
+@using BBCollection.BBObjects;
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject AuthenticationFunctionallity uf
+
+<h3>Emptyfridge</h3>
+
+@code {
+    ShoppinlistFunctionality ListFunc = new ShoppinlistFunctionality("api/Storage");
+    HttpResponseMessage responseMessage = new HttpResponseMessage();
+    String email;
+    String userId;
+
+
+    protected async override Task OnInitializedAsync()
+    {
+        userId = email;
+        responseMessage = await ListFunc.GetProductsOnStart(userId);
+        //ListFunc.itemList;
+    }
+
+    private List<Recipe> FindValidRecipies(List<AddedProduct> storageInventory)
+    {
+        List<Recipe> Recepies = GetRecipes();
+        List<Recipe> returnRecepies = new List<Recipe>();
+        bool breakFlag;
+
+        foreach (Recipe r in Recepies)
+        {
+            breakFlag = false;
+            foreach (AddedProduct p in storageInventory)
+            {
+                foreach (Ingredient i in r._ingredientList)
+                {
+                    if (compareIngrdientAndProduct(i,p))//kan godt være man bliver nødtil at lave en eller anden form for kryds referance
+                    {
+                        returnRecepies.Add(r);
+                        breakFlag = true;
+                        break;
+                    }
+                }
+                if (breakFlag)
+                {
+                    break;
+                }
+            }
+
+        }
+        return returnRecepies;
+    }
+
+    private List<WeightedRecipies> WeightFoundRecepies(List<Recipe> recipes,List<AddedProduct> storageInventory)
+    {
+        WeightedRecipies[] returnRecipies = new WeightedRecipies[recipes.Count()];
+        foreach(Recipe r in recipes)
+        {
+            returnRecipies.Add(new WeightedRecipies(r));
+            foreach (AddedProduct p in storageInventory)
+            {
+                foreach (Ingredient i in r._ingredientList) 
+                {
+                    if (compareIngrdientAndProduct(i,p))
+                    {
+
+                    }
+                }
+
+            }
+        }
+        return null
+    }
+
+    private bool compareIngrdientAndProduct(Ingredient ingrdient, AddedProduct product)
+    {
+        return ingrdient._IngredientName == product.Name ? true : false;
+    }
+
+    private List<Recipe> GetRecipes()
+    {
+        //return new List<Recipe>() { new Recipe(1,"yeet","yoot",); }
+        return null;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await GetLocalSession();
+            localStorage.Changed += (sender, e) =>
+            {
+                Console.WriteLine($"Value for key {e.Key} changed from {e.OldValue} to {e.NewValue}");
+            };
+
+            //if (email != null)
+            //{
+            //    gottenData = await Http.GetStringAsync("https://localhost:44325/api/Login/" + email + "S");
+            //}
+            StateHasChanged();
+        }
+
+    }
+
+    async Task GetLocalSession()
+    {
+        email = await localStorage.GetItemAsync<string>("Email");
+    }
+
+    public class WeightedRecipies
+    {
+        private Recipe _recipie{get;}
+        private int complexity{get;}
+        private int matchingIngrdientsNum { get; set; }
+        private List<Ingredient> matchingIngrdient{get;}
+
+        public WeightedRecipies(Recipe _recipie)
+        {
+            this._recipie = _recipie;
+            complexity = _recipie._ingredientList.Count();
+        }
+
+        public void MatchFound(Ingredient ingrdient)
+        {
+            matchingIngrdient.Add(ingrdient);
+            matchingIngrdientsNum = matchingIngrdient.Count();
+        }
+    }
+}

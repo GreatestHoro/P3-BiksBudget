@@ -1,6 +1,6 @@
 ﻿namespace FrontEnd2
 {
-    class CoopLocationData
+    public class CoopLocationData
     {
         public string type { get; set; }
         public int[] coordinate { get; set; }

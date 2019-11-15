@@ -105,7 +105,7 @@
 
     async void AddToShoppinglist(SallingAPIProduct item)
     {
-        response = await func.AddProductToList(item.title, item.description, item.price);
+        response = await func.AddProductAsString(item.title, item.description, item.price, "Test");
     }
 
 

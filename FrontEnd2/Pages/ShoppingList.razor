@@ -2,6 +2,9 @@
 @using Newtonsoft.Json;
 @inject HttpClient Http
 @using FrontEnd2.Data;
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject AuthenticationFunctionallity uf
+@using BBCollection.BBObjects;
 
 
 
@@ -40,21 +43,21 @@ else
                     @foreach (var items in ListFunc.itemList)
                     {
                         <tr class="text-center">
-                            <td>@items.Name</td>
-                            <td>@items.Amount</td>
-                            <td>@items.StoreName - @items.Price.ToString() kr</td>
+                            <td>@items._id - @items._productName</td>
+                            <td>@items._amount</td>
+                            <td>@items._storeName - @items._price.ToString() kr</td>
                             <td>
                                 <div class="text-center">
-                                    <button @onclick="(() => DecrementAmount(items.Id))"><i class="oi oi-minus"></i></button>
-                                    @items.AmountOfItem
-                                    <button @onclick="(() => IncrementAmount(items.Id))"><i class="oi oi-plus"></i></button>
+                                    <button @onclick="(() => DecrementAmount(items._id))"><i class="oi oi-minus"></i></button>
+                                    @items._amountleft
+                                    <button @onclick="(() => IncrementAmount(items._id))"><i class="oi oi-plus"></i></button>
                                 </div>
                             </td>
-                            <td>@(items.Price*items.AmountOfItem)</td>
+                            <td>@(items._price * items._amountleft)</td>
                             <td>
                                 <div class="text-center">
-                                    <button @onclick="(() => AddProductToStorage(items.Id))"><i class="oi oi-basket"></i></button>
-                                    <button @onclick="(() => DeleteProduct(items.Id))"><i class="oi oi-trash"></i></button>
+                                    <button @onclick="(() => AddProductToStorage(items._id))"><i class="oi oi-basket"></i></button>
+                                    <button @onclick="(() => DeleteProduct(items._id))"><i class="oi oi-trash"></i></button>
                                 </div>
                             </td>
                         </tr>
@@ -74,6 +77,7 @@ else
         </div>
         <div>
             <button @onclick="DeleteAll"><i class="oi oi-trash">Empty Shoppinglist</i></button>
+            <button @onclick="SaveList"><i class="oi oi-transfer">Save Shoppinglist</i></button>
         </div>
     </div>
 }
@@ -85,83 +89,119 @@ else
     ShoppinlistFunctionality ListFunc = new ShoppinlistFunctionality("api/Shoppinglist");
     HttpResponseMessage responseMessage = new HttpResponseMessage();
     int ammount;
+    string email = "Test";
 
-    protected void IncrementAmount(int id)
+    protected void IncrementAmount(string id)
     {
         foreach (var item in ListFunc.itemList)
         {
-            if (item.Id == id)
+            if (item._id == id)
             {
-                item.AmountOfItem++;
+                item._amountleft++;
             }
         }
     }
 
-    protected void DecrementAmount(int id)
+    protected void DecrementAmount(string id)
     {
         foreach (var item in ListFunc.itemList)
         {
-           
-            if (item.Id == id && item.AmountOfItem > 0)
+
+            if (item._id == id && item._amountleft > 1)
             {
-                item.AmountOfItem--;
+                item._amountleft--;
             }
         }
     }
 
-    protected async override Task OnInitializedAsync()
-    {
-        responseMessage = await ListFunc.GetProductsOnStart();
-    }
+    //protected async override Task OnInitializedAsync()
+    //{
+    //    responseMessage = await ListFunc.GetProductsOnStart(email);
+    //}
 
     private void AddAlltoStorage()
     {
-        foreach (var item in ListFunc.itemList)
-        {
-            ListFunc.AddProductToStorage(item.Id, "api/Storage");
-        }
+        ListFunc.AddShoppinlistToStorage("api/Storage", email);
         ListFunc.itemList.Clear();
     }
 
     private void DeleteAll()
     {
-        //This needs to go to backend
+        //ListFunc.DeleteList("Test");
         ListFunc.itemList.Clear();
     }
 
     private async void AddProduct()
     {
-        CoopProduct newItem = new CoopProduct() { Navn = newProduct, Navn2 = "", Pris = 0.00 };
+        if (newProduct != null)
+        {
+            //CoopProduct newItem = new CoopProduct() { Navn = newProduct, Navn2 = "", Pris = 0.00 };
+            Product newItem = new Product()
+            {
+                _productName = newProduct,
+                _amount = "",
+                _price = 0.00,
+                _id = "11123828382392",
+                _amountleft = 1
+            };
 
-        newProduct = string.Empty;
+            newProduct = string.Empty;
 
-        responseMessage = await ListFunc.AddProductToList(newItem.Navn, newItem.Navn2, newItem.Pris);
+            ListFunc.itemList.Add(newItem);
+            //responseMessage = await ListFunc.AddProductItem(newItem, email);
+        }
+
+
     }
 
-    private async void DeleteProduct(int id)
+    private async void DeleteProduct(string id)
     {
-        responseMessage = await ListFunc.DeleteProduct(id);
+        ListFunc.itemList.Remove(ListFunc.itemList.First(x => x._id == id));
+
+        //int i = 1;
+        //foreach (var product in ListFunc.itemList)
+        //{
+        //    product._id = i;
+        //    i++;
+        //}
+
+        //responseMessage = await ListFunc.DeleteItem(id, "Test");
     }
 
-    private async void AddProductToStorage(int id)
+    private async void AddProductToStorage(string id)
     {
-        ListFunc.AddProductToStorage(id, "api/Storage");
-        responseMessage = await ListFunc.DeleteProduct(id);
-
-        //ListFunc.itemList.Remove(ListFunc.itemList.First(x => x.Id == id));
+        ListFunc.AddItemToStorage(id, "api/Storage", email);
+        responseMessage = await ListFunc.DeleteItem(id, email);
     }
 
-    private async void SaveList()
+    private void SaveList()
     {
-        productString = JsonConvert.SerializeObject(ListFunc.itemList);
+        ListFunc.AddShoppinlistToStorage("api/Storage", email);
+    }
 
-        string stuff = await Http.GetStringAsync("https://localhost:44325/api/Shoppinglist/5/" + productString);
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await GetLocalSession();
+            localStorage.Changed += (sender, e) =>
+            {
+                Console.WriteLine($"Value for key {e.Key} changed from {e.OldValue} to {e.NewValue}");
+            };
 
+            //if (email != null)
+            //{
+            //    gottenData = await Http.GetStringAsync("https://localhost:44325/api/Login/" + email + "S");
+            //}
+            responseMessage = await ListFunc.GetProductsOnStart(email);
 
-        //await Http.PostAsync("https://localhost:44325/api/Shoppinglist/save" + productString, new StringContent(productString));
+            StateHasChanged();
+        }
 
-        //var stringContent = new StringContent(productString);
+    }
 
-        //HttpResponseMessage result = await Http.PostAsync("https://localhost:44325/api/Save", stringContent);
+    async Task GetLocalSession()
+    {
+        email = await localStorage.GetItemAsync<string>("Email");
     }
 }

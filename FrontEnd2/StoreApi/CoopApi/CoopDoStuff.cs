@@ -11,25 +11,34 @@ namespace FrontEnd2
             fakta = 24073
         }
 
-        public string _token { get; set; }
-
+        public string token { get; set; }
+        GeoCoordinate geo;
+        int radius;
         CoopAPILinks linkMaker = new CoopAPILinks();
 
 
-        public CoopDoStuff(string token)
+        public CoopDoStuff(string _token)
         {
-            _token = token;
+            token = _token;
         }
 
-        public object CoopCloseStore()
+        public CoopDoStuff(string _token, GeoCoordinate _geo, int _radius)
+        {
+            token = _token;
+            geo = _geo;
+            radius = _radius;
+
+        }
+
+        public CoopStoreApi CoopCloseStore()
         {
             //BearerAccessToken bearerAccessToken = new BearerAccessToken("f0cabde6bb8d4bd78c28270ee203253f"); /* Code #1 */
             //BearerAccessToken bearerAccessToken = new BearerAccessToken("d0b9a5266a2749cda99d4468319b6d9f"); /* Code #2 */
 
-            BearerAccessToken bearerAccessToken = new BearerAccessToken(_token);
+            BearerAccessToken bearerAccessToken = new BearerAccessToken(token);
 
             // Create link to a store with radius as input
-            string url = linkMaker.GetRadiusLink(10000);
+            string url = linkMaker.GetRadiusLink(radius, geo);
 
             // Open the link using the url and token
             OpenHttp<CoopStoreApi> openHttp = new OpenHttp<CoopStoreApi>(url, bearerAccessToken.GetBearerToken());
@@ -41,10 +50,10 @@ namespace FrontEnd2
             List<int> storId = new List<int>();
 
             // Fill the StoreId list with Kardex (storeid) for the different stores
-            foreach (var product in stuff.Data)
-            {
-                storId.Add(product.Kardex);
-            }
+            //foreach (var product in stuff.Data)
+            //{
+            //    storId.Add(product.Kardex);
+            //}
 
             //foreach (var store in stuff.Data)
             //{
@@ -56,7 +65,7 @@ namespace FrontEnd2
 
         public List<CoopProduct> CoopFindEverythingInStore(string storeId)
         {
-            BearerAccessToken bearerAccessToken = new BearerAccessToken(_token);
+            BearerAccessToken bearerAccessToken = new BearerAccessToken(token);
             OpenHttp<CoopProduct> openHttpStore = new OpenHttp<CoopProduct>(bearerAccessToken.GetBearerToken());
 
             string url = linkMaker.GetProductLinke(storeId);

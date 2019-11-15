@@ -2,7 +2,7 @@
 
 namespace FrontEnd2
 {
-    class CoopStoreApi
+    public class CoopStoreApi
     {
         public int CurrentPage { get; set; }
         public int NextPage { get; set; }

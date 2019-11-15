@@ -11,13 +11,26 @@ namespace BBGatherer
     {
         static void Main(string[] args)
         {
-            DatabaseConnect dbConnect = new DatabaseConnect("localhost", "biksbudgetyeet", "root", "BiksBudget123");
+            DataHandling dh = new DataHandling();
+            dh.GenerateDatabase();
+            dh.GenerateData();
+            dh.TestCollection();
+        }
+    }
 
-            //dbConnect.AddUser("Test3", "Test", "Test");
-
+    public class DataHandling
+    {
+        public DatabaseConnect dbConnect = new DatabaseConnect("localhost", "biksbudgetDB", "root", "BiksBudget123");
+        public void GenerateDatabase()
+        {
             dbConnect.InitializeDatabase();
-            dbConnect.GenerateSallingDB();
-            //dbConnect.InitializeUserDatabase();
+            //dbConnect.GenerateSallingDB();
+            dbConnect.InitializeUserDatabase();
+            dbConnect.InitializeStorageDatabase();
+        }
+
+        public void GenerateData()
+        {
 
             CoopDoStuff tryCoop = new CoopDoStuff("d0b9a5266a2749cda99d4468319b6d9f");
 
@@ -28,15 +41,56 @@ namespace BBGatherer
             {
                 count++;
                 Console.WriteLine(count);
-                dbConnect.AddProduct(new Product(c.Ean, c.Navn, c.Navn2, c.Pris, c.VareHierakiId));
+                dbConnect.AddProduct(new Product("F" + c.Ean, c.Navn, c.Navn2, c.Pris, "", "Fakta"));
+            }
+
+            coopProducts = tryCoop.CoopFindEverythingInStore("2096");
+
+            count = 0;
+            foreach (CoopProduct c in coopProducts)
+            {
+                count++;
+                Console.WriteLine(count);
+                dbConnect.AddProduct(new Product("B" + c.Ean, c.Navn, c.Navn2, c.Pris, "", "SuperBrugsen"));
             }
 
 
-            RecipeCrawl WebRunner = new RecipeCrawl();
+            /*RecipeCrawl WebRunner = new RecipeCrawl();
             _ = WebRunner.GetRecipes(620, 1200, dbConnect);
 
             Console.WriteLine("web runner begins... fear its power");
-            Console.ReadLine();
+            Console.ReadLine();*/
+        }
+
+        public void TestCollection()
+        {
+
+
+            //Console.WriteLine(dbConnect.checkIfSomethingExist("users", "username", "Test"));
+
+            dbConnect.AddUser("Test6", "Test", "email");
+            //Console.WriteLine(dbConnect.CheckUser("Test", "Test"));
+
+            List<Product> testList = new List<Product>();
+
+            Product tProd1 = new Product("B2000020000002", 5, "Full");
+            Product tProd2 = new Product("B2000110000004", 5, "Full");
+            Product tProd3 = new Product("B2000060000000", 5, "Full");
+
+            testList.Add(tProd1);
+            testList.Add(tProd2);
+            testList.Add(tProd3);
+            dbConnect.AddListToStorage("Test6", testList);
+            
+
+            //List<Product> testList = new List<Product>();
+
+            //testList = dbConnect.GetStorageFromUsername("Test3");
+
+            //foreach (Product p in testList)
+            //{
+            //    Console.WriteLine(p._timeAdded);
+            //}
         }
     }
 }

@@ -167,9 +167,9 @@ namespace BBGatherer.Webcrawler
             return   CheckIngredientInDatabase(Searchterm, dbConnect) || CheckIngredientsInApi(Searchterm.Trim(),dbConnect);
         }
 
-        private bool CheckIngredientInDatabase(String Searchterm, DatabaseConnect dbConnect) 
+        private bool CheckIngredientInDatabase(String Searchterm, DatabaseConnect dbConnect)
         {
-            return CheckCOOPProductsInDatabase(Searchterm, dbConnect) || CheckSallingProductsInDatabase(Searchterm,dbConnect);
+            return CheckCOOPProductsInDatabase(Searchterm, dbConnect);// || CheckSallingProductsInDatabase(Searchterm, dbConnect);
         }
 
         private bool CheckCOOPProductsInDatabase(String Searchterm, DatabaseConnect dbConnect) 
@@ -179,11 +179,11 @@ namespace BBGatherer.Webcrawler
             return Products.Count != 0 ? true : false;
         }
 
-        private bool CheckSallingProductsInDatabase(String Searchterm, DatabaseConnect dbConnect) 
-        {
-            List<SallingProduct> sallingP = dbConnect.GetSallingProduct(Searchterm);
-            return sallingP.Count != 0 ? true : false;
-        }
+        //private bool CheckSallingProductsInDatabase(String Searchterm, DatabaseConnect dbConnect)
+        //{
+        //    List<SallingProduct> sallingP = dbConnect.GetSallingProduct(Searchterm);
+        //    return sallingP.Count != 0 ? true : false;
+        //}
 
         private bool CheckIngredientsInApi(string Searchterm, DatabaseConnect dbConnect) 
         {

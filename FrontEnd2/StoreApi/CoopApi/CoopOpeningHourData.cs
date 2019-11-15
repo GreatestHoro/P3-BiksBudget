@@ -1,6 +1,6 @@
 ﻿namespace FrontEnd2
 {
-    class CoopOpeningHourData
+    public class CoopOpeningHourData
     {
         public string Text { get; set; }
         public string Day { get; set; }

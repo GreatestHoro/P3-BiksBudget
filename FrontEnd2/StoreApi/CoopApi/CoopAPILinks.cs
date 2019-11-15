@@ -17,14 +17,14 @@
             _latitudeUrl = "?latitude=";
             //_geoPosition = new GeoCoordinate(12.3688172, 55.7290673); // Copenhagen
             //_geoPosition = new GeoCoordinate(10.2039, 56.1629); // Aarhus
-            _geoPosition = new GeoCoordinate(9.9217, 57.0488); // Aalborg
+            //_geoPosition = new GeoCoordinate(9.9217, 57.0488); // Aalborg
             _longtitudeUrl = "&longitude=";
             _productUrl = "productapi/v1/product/";
         }
 
-        public string GetRadiusLink(int inputRadius)
+        public string GetRadiusLink(int inputRadius, GeoCoordinate geo)
         {
-            string _url = _baseUrl + _radiusUrl + inputRadius + _latitudeUrl + _geoPosition._latitude + _longtitudeUrl + _geoPosition._longitude;
+            string _url = _baseUrl + _radiusUrl + inputRadius + _latitudeUrl + geo._latitude + _longtitudeUrl + geo._longitude;
 
             return _url;
         }
