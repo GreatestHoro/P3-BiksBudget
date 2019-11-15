@@ -56,11 +56,16 @@ namespace BBGatherer
                 }
 
             }
+
+            if (salling) 
+            {
                 RecipeCrawl WebRunner = new RecipeCrawl();
-                _ = WebRunner.GetRecipes(44, 1200, dbConnect);
+                _ = WebRunner.GetRecipes(45, 1200, dbConnect);
 
                 Console.WriteLine("web runner begins... fear its power");
                 Console.ReadLine();
+            }
+
 
 
             /*public void TestCollection()

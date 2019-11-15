@@ -71,11 +71,11 @@ namespace BBCollection.HandleRecipe
 
                 MySqlCommand msc = new MySqlCommand(addIngredientReferance);
 
-                Console.WriteLine(getIngredientFromName(ingredient._IngredientName, dbInformation) + " THIS IS INSIDE THE INGREDIENT!");
+                Console.WriteLine(getIngredientFromName(ingredient._ingredientName, dbInformation) + " THIS IS INSIDE THE INGREDIENT!");
 
                 msc.Parameters.AddWithValue("@RecipeID", recipe._recipeID);
-                msc.Parameters.AddWithValue("@IngredientID", getIngredientFromName(ingredient._IngredientName, dbInformation));
-                msc.Parameters.AddWithValue("@Amount", ingredient._Amount);
+                msc.Parameters.AddWithValue("@IngredientID", getIngredientFromName(ingredient._ingredientName, dbInformation));
+                msc.Parameters.AddWithValue("@Amount", ingredient._amount);
                 msc.Parameters.AddWithValue("@Unit", ingredient._unit);
 
                 new SQLConnect().NonQueryMSC(msc, dbInformation);
