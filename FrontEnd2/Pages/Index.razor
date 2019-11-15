@@ -1,13 +1,46 @@
 ﻿@page "/"
 @using BBCollection.BBObjects;
 @using Newtonsoft.Json;
+@using FrontEnd2.Data;
 
 @inject HttpClient  Http
 
 
 <p> YEET</p>
 
-<p>@printRecipe</p>
+<p>You are in:</p>
+<p>
+    Continent: @ipItem.continent_name <br />
+    Country: @ipItem.country_name <br />
+    Region: @ipItem.region_name <br />
+    City: @ipItem.city <br />
+    Zip: @ipItem.zip <br />
+    Longtitude: @ipItem.longitude <br />
+    Lantitude: @ipItem.latitude <br />
+</p>
+
+<p>The Following Stores Are in a Distance of : @radius</p>
+@if (coopStore.Data != null)
+{
+
+    @foreach (var item in coopStore.Data)
+    {
+        <p>
+            Retail Group Name: @item.RetailGroupName, Zipcode: @item.Zipcode, Adress: @item.Address, Manager: @item.Manager <br />
+        </p>
+    }
+
+}
+else
+{
+    <p>There are no stores</p>
+}
+
+@if (coopStore.Data != null)
+{
+    <input placeholder="A new Product" @bind="@newRadius" />
+    <button @onclick="UpdateRadius">Create</button>
+}
 
 @foreach (var recipe in recipeData)
 {
@@ -17,14 +50,37 @@
 @code{
     string printRecipe = "hej hej";
     List<Recipe> recipeData = new List<Recipe>();
+    GetIP getIP = new GetIP();
+    IpItem ipItem = new IpItem();
+    FindCloseStores closeStore;
+    CoopStoreApi coopStore = new CoopStoreApi();
+
+    public int radius = 1000;
+    public string url;
+    public int newRadius;
+
+    public void UpdateRadius()
+    {
+        radius = newRadius;
+        FindStoreFunc();
+    }
 
 
-    protected override async Task OnInitializedAsync() {
-
+    protected override async Task OnInitializedAsync()
+    {
         printRecipe = await Http.GetStringAsync("https://localhost:44325/api/recipe");
 
-        recipeData = JsonConvert.DeserializeObject<List<Recipe>>(printRecipe);
-
+        ipItem = getIP.GetIpData();
+        newRadius = radius;
+        FindStoreFunc();
     }
     //https://localhost:44325/api/recipe
+    //https://api.cl.coop.dk/storeapi/v1/stores/find/radius/{radius}?latitude={latitude}&longitude={longitude}
+
+
+    public void FindStoreFunc()
+    {
+        closeStore = new FindCloseStores(ipItem, radius);
+        coopStore = closeStore.GetStore();
+    }
 }

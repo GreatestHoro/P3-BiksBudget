@@ -107,7 +107,7 @@
 
         foreach (var item in ingredients)
         {
-            responseMessage = await ShopList.AddProductToList(item._IngredientName, item._Amount.ToString() + item._unit, 0.00);
+            responseMessage = await ShopList.AddProductAsString(item._IngredientName, item._Amount.ToString() + item._unit, 0.00, "Test");
         }
     }
 
@@ -183,7 +183,7 @@
     }
 
     private async void OnKeyPress(KeyboardEventArgs args)
-        {
+    {
         if (args.Key == "Enter")
         {
             await Search();

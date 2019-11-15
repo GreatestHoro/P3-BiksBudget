@@ -23,6 +23,11 @@ namespace BBCollection.DBHandling
             GenerateSallingProductDB(dbInfo);
         }
 
+        public void CreateStorageDB(DatabaseInformation dbInformation)
+        {
+            GenerateStorageTables(dbInformation);
+        }
+
         /*
          Check if database exist, if it don't it will create it
         */
@@ -87,13 +92,24 @@ namespace BBCollection.DBHandling
         {
             string productTable =
                 "CREATE TABLE IF NOT EXISTS `products` (" +
-                "`id` INT AUTO_INCREMENT UNIQUE," +
-                "`ean` VARCHAR(255)," +
-                "`productName` VARCHAR(255)," +
-                "`productName2` VARCHAR(255)," +
-                "`price` DECIMAL(6,2)," +
-                "`productHierarchyID` INT," +
-                "PRIMARY KEY(id));";
+                "`id` VARCHAR(255) UNIQUE, " +
+                "`productname` VARCHAR(255), " +
+                "`amount` VARCHAR(255), " +
+                "`price` DECIMAL(6,2), " +
+                "`image` varchar(255), " +
+                "`store` varchar(255), " +
+                "PRIMARY KEY(id)); ";
+
+
+            /*msc.Parameters.AddWithValue("@Id", product._id);
+            msc.Parameters.AddWithValue("@ProductName", product._productName);
+            msc.Parameters.AddWithValue("@Description", product._description);
+            msc.Parameters.AddWithValue("@Amount", product._amount);
+            msc.Parameters.AddWithValue("@AmountLeft", product._amountleft);
+            msc.Parameters.AddWithValue("@TimeAdded", product._timeAdded);
+            msc.Parameters.AddWithValue("@Price", product._price);
+            msc.Parameters.AddWithValue("@Image", product._image);
+            msc.Parameters.AddWithValue("@Store", product._storeName);*/
 
             new SQLConnect().NonQueryString(productTable, dbInformation);
         }
@@ -102,10 +118,9 @@ namespace BBCollection.DBHandling
         {
             string userTable =
                 "CREATE TABLE IF NOT EXISTS `users` (" +
-                "`id` INT AUTO_INCREMENT UNIQUE, " +
                 "`username` VARCHAR(255) UNIQUE, " +
                 "`password` VARCHAR(255), " +
-                "PRIMARY KEY(id));";
+                "PRIMARY KEY(username));";
 
             new SQLConnect().NonQueryString(userTable, databaseInformation);
         }
@@ -114,9 +129,9 @@ namespace BBCollection.DBHandling
         {
             string sallingTable =
                 "CREATE TABLE IF NOT EXISTS `sallingproducts` (" +
-                "`title` VARCHAR(255), " +
-                "`id` VARCHAR(255), " +
-                "`prodid` VARCHAR(255) UNIQUE, " +
+                "`title` VARCHAR(255), " + // productname
+                "`id` VARCHAR(255), " + // id
+                "`prodid` VARCHAR(255) UNIQUE, " + //
                 "`price` DECIMAL(6,2), " +
                 "`description` VARCHAR(255), " +
                 "`link` VARCHAR(255), " +
@@ -125,5 +140,30 @@ namespace BBCollection.DBHandling
 
             new SQLConnect().NonQueryString(sallingTable, databaseInformation);
         }
+
+        private void GenerateStorageTables(DatabaseInformation databaseInformation)
+        {
+            string storageTable =
+                "CREATE TABLE IF NOT EXISTS `userstorage` (" +
+                "`id` int AUTO_INCREMENT UNIQUE, " +
+                "`username` VARCHAR(255), " +
+                "`prodid` VARCHAR(255), " +
+                "`amountStored` int, " +
+                "`timeadded` DATETIME DEFAULT CURRENT_TIMESTAMP, " +
+                "`state` varchar(255), " +
+                "primary key(id), " +
+                "foreign key(username) REFERENCES users(username), " +
+                "foreign key(prodid) REFERENCES products(id));";
+
+            new SQLConnect().NonQueryString(storageTable, databaseInformation);
+        }
     }
 }
+
+/*use biksbudgetdb;
+
+
+
+SELECT*
+FROM userstorage
+INNER JOIN userstorage ON userstorage.prodid = products.id WHERE username = ;*/

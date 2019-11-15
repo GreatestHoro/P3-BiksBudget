@@ -6,7 +6,7 @@
 <div class="form-row">
     <div class="form-group col-md-6">
         <label for="search">Søg Efter En Råvare!</label>
-        <input type="text" id="search" class="form-control" placeholder="Råvare.." @bind="@searchBox" />
+        <input type="text" id="search" class="form-control" placeholder="Råvare.." @onkeyup="@((e) => KeyPressed(e))" @bind="searchBox"/>
     </div>
     <div class="form-group" col-md-6>
         <label for="minPriceB">Minimum Price</label>
@@ -20,7 +20,7 @@
 
 </div>
 
-    @if (print == true)
+    @if (_viewProducts == true)
     {
 <div class="container-fluid">
     <p>hej 2: @counter</p>
@@ -70,6 +70,7 @@
     HttpResponseMessage response = new HttpResponseMessage();
 
     string searchBox;
+    string written;
     double minPrice;
     double maxPrice;
     double MaxPrice {
@@ -94,7 +95,7 @@
     }
     BearerAccessToken bearerAccessToken = new BearerAccessToken("fc5aefca-c70f-4e59-aaaa-1c4603607df8");
     SallingAPILink linkMaker = new SallingAPILink();
-    bool print = false;
+    bool _viewProducts = false;
     int counter = 0;
     string save;
 
@@ -104,31 +105,43 @@
 
     async void AddToShoppinglist(SallingAPIProduct item)
     {
-        response = await func.AddProductToList(item.title, item.description, item.price);
+        response = await func.AddProductAsString(item.title, item.description, item.price, "Test");
+    }
+
+
+    private void KeyPressed(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            SearchForProducts();
+        }
+    }
+
+    private void SaveInput(string input) {
+        searchBox = input;
     }
 
 
     private void SearchForProducts()
     {
-
         save = searchBox;
-        string apiLink = linkMaker.GetProductAPILink(searchBox);
 
-        OpenHttp<SallingAPIProductSuggestions> openHttp = new OpenHttp<SallingAPIProductSuggestions>(apiLink, bearerAccessToken.GetBearerToken());
-
-        productSuggestions = openHttp.ReadAndParseAPISingle();
-
-        productSuggestions.Suggestions.Sort((a, b) => a.price.CompareTo(b.price));
-
-        resultProductQuery = productFilter.GetFiltered(productSuggestions.Suggestions, p => p.price > minPrice & p.price < MaxPrice);
-
-        foreach (var product in productSuggestions.Suggestions)
+        if (searchBox != "")
         {
-            Console.WriteLine(product.title);
+            string apiLink = linkMaker.GetProductAPILink(searchBox);
+
+            OpenHttp<SallingAPIProductSuggestions> openHttp = new OpenHttp<SallingAPIProductSuggestions>(apiLink, bearerAccessToken.GetBearerToken());
+
+            productSuggestions = openHttp.ReadAndParseAPISingle();
+
+            productSuggestions.Suggestions.Sort((a, b) => a.price.CompareTo(b.price));
+
+            resultProductQuery = productFilter.GetFiltered(productSuggestions.Suggestions, p => p.price > minPrice & p.price < MaxPrice);
+
+            _viewProducts = true;
+            Console.WriteLine(counter);
+            counter++;
         }
-        print = true;
-        Console.WriteLine(counter);
-        counter++;
     }
 
 }

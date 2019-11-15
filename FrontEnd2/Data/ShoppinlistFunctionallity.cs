@@ -7,31 +7,42 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Globalization;
+using BBCollection.BBObjects;
 
 namespace FrontEnd2.Data
 {
     class ShoppinlistFunctionality
     {
-        public ShoppinlistFunctionality(string _get)
+        public ShoppinlistFunctionality(string _dest)
         {
-            get = _get;
+            dest = _dest;
         }
 
         public string productString;
         string newProduct;
         HttpClient Http = new HttpClient();
-        string get;
-        public List<AddedProduct> itemList = new List<AddedProduct>();
+        string dest;
+        public List<Product> itemList = new List<Product>();
         HttpResponseMessage response = new HttpResponseMessage();
 
         public async Task<HttpResponseMessage> GetProductsOnStart()
         {
-            productString = await Http.GetStringAsync("https://localhost:44325/" + get);
+            productString = await Http.GetStringAsync("https://localhost:44325/" + dest);
 
-            itemList = JsonConvert.DeserializeObject<List<AddedProduct>>(productString);
+            itemList = JsonConvert.DeserializeObject<List<Product>>(productString);
 
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
+
+        public async Task<HttpResponseMessage> GetProductsOnStart(string userId)
+        {
+            productString = await Http.GetStringAsync("https://localhost:44325/" + dest + "/" + userId);
+
+            itemList = JsonConvert.DeserializeObject<List<Product>>(productString);
+
+            return new HttpResponseMessage(HttpStatusCode.OK);
+        }
+
 
         public double CompletePrice()
         {
@@ -39,42 +50,120 @@ namespace FrontEnd2.Data
 
             foreach (var item in itemList)
             {
-                result += item.Price * item.AmountOfItem;
+                result += item._price * item._amountleft;
             }
             return result;
         }
 
-        public async Task<HttpResponseMessage> AddProductToList(string name, string amount, double price)
+        // NEW AND IMPROVED CODE BELOW
+
+        public async Task<HttpResponseMessage> OnStart()
         {
-            // *Insert search method here*
-            var response = new HttpResponseMessage();
+            productString = await Http.GetStringAsync("https://localhost:44325/" + dest);
 
-            AddedProduct newItem = new AddedProduct()
-            {
-                Name = name,
-                Amount = amount,
-                Price = price,
-                Id = itemList.Count()
-            };
-
-            itemList.Add(newItem);
-
-            productString = JsonConvert.SerializeObject(itemList[itemList.Count - 1]);
-            var content = new StringContent(productString, Encoding.UTF8, "application/json");
-            response = await Http.PostAsync("https://localhost:44325/" + get, content);
-
-            string result = response.Content.ReadAsStringAsync().Result;
-
-            newProduct = string.Empty;
+            itemList = JsonConvert.DeserializeObject<List<Product>>(productString);
 
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
 
-        public async Task<HttpResponseMessage> AddProductToList(AddedProduct newItem, string dest)
+        public double CalculatePrice()
+        {
+            double result = 0;
+
+            foreach (var item in itemList)
+            {
+                result += item._price * item._amountleft;
+            }
+            return result;
+        }
+
+        public async Task<HttpResponseMessage> AddProductAsString(string name, string amount, double price, string email)
         {
             var response = new HttpResponseMessage();
 
+            Product newItem = new Product()
+            {
+                _productName = name,
+                _amount = amount,
+                _price = price,
+                _id = itemList.Count() + 1.ToString()
+            };
+
+            //itemList.Add(newItem);
+            await AddProductAsItem(newItem, email);
+
+
+
+            //productString = JsonConvert.SerializeObject(itemList[itemList.Count - 1]);
+            //var content = new StringContent(productString, Encoding.UTF8, "application/json");
+            //response = await Http.PostAsync("https://localhost:44325/" + dest, content);
+
+            //string result = response.Content.ReadAsStringAsync().Result;
+
+            //newProduct = string.Empty;
+
+            return new HttpResponseMessage(HttpStatusCode.OK);
+        }
+
+        public async Task<HttpResponseMessage> AddProductAsItem(Product newItem, string email)
+        {
+            var response = new HttpResponseMessage();
+
+            int userIdLength = email.Length;
+
             productString = JsonConvert.SerializeObject(newItem);
+
+            productString = userIdLength.ToString() + "|" + email + productString;
+
+            ////await SendToApi(productString);
+
+            //var content = new StringContent(productString, Encoding.UTF8, "application/json");
+            //response = await Http.PostAsync("https://localhost:44325/" + dest, content);
+
+            //string result = response.Content.ReadAsStringAsync().Result;
+
+            //newProduct = string.Empty;
+
+            return new HttpResponseMessage(HttpStatusCode.OK);
+        }
+
+        public async Task<HttpResponseMessage> AddProductAsItem(Product newItem, string email, string newDest)
+        {
+            var response = new HttpResponseMessage();
+
+            int userIdLength = email.Length;
+
+            productString = JsonConvert.SerializeObject(newItem);
+
+            productString = userIdLength.ToString() + "|" + email + productString;
+
+            ////await SendToApi(productString, newDest);
+
+            //var content = new StringContent(productString, Encoding.UTF8, "application/json");
+            //response = await Http.PostAsync("https://localhost:44325/" + dest, content);
+
+            //string result = response.Content.ReadAsStringAsync().Result;
+
+            //newProduct = string.Empty;
+
+            return new HttpResponseMessage(HttpStatusCode.OK);
+        }
+
+        public async void AddFuncList(string email)
+        {
+            var response = new HttpResponseMessage();
+
+            int userIdLength = email.Length;
+
+            productString = JsonConvert.SerializeObject(itemList);
+
+            productString = userIdLength.ToString() + "|" + email + productString;
+
+            await SendToApi(productString);
+        }
+
+        async Task<HttpResponseMessage> SendToApi(string productString)
+        {
             var content = new StringContent(productString, Encoding.UTF8, "application/json");
             response = await Http.PostAsync("https://localhost:44325/" + dest, content);
 
@@ -85,41 +174,94 @@ namespace FrontEnd2.Data
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
 
-        public async Task<HttpResponseMessage> DeleteProduct(int id)
+        async Task<HttpResponseMessage> SendToApi(string productString, string newDest)
         {
-            var response = new HttpResponseMessage();
-            itemList.Remove(itemList.First(x => x.Id == id));
-
-            int i = 1;
-            foreach (var product in itemList)
-            {
-                product.Id = i;
-                i++;
-            }
-
-            productString = JsonConvert.SerializeObject(itemList);
             var content = new StringContent(productString, Encoding.UTF8, "application/json");
-            response = await Http.PostAsync("https://localhost:44325/" + get, content);
+            response = await Http.PostAsync("https://localhost:44325/" + newDest, content);
+
+            string result = response.Content.ReadAsStringAsync().Result;
 
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
 
-        public async void AddProductToStorage(int id, string dest)
+        public async void AddItemToStorage(string id, string newDest, string email)
         {
             foreach (var item in itemList)
             {
-                if (item.Id == id)
+                if (item._id == id)
                 {
-                    item.TimeAdded = DateTime.Now.ToString();
-                    item.State = "Full";
-                    response = await AddProductToList(item, dest);
-                    //response = await DeleteProduct(id);
-                    
+                    item._timeAdded = DateTime.Now.ToString();
+                    item._state = "Full";
+                    response = await AddProductAsItem(item, newDest, email);
+
                     break;
                 }
             }
 
-            //itemList.Remove(itemList.First(x => x.Id == id));
+        }
+
+        public async void AddShoppinlistToStorage(string dest, string email)
+        {
+            foreach (var item in itemList)
+            {
+                item._timeAdded = DateTime.Now.ToString();
+                item._state = "Full" ;
+            }
+
+            int userIdLength = email.Length;
+
+            productString = JsonConvert.SerializeObject(itemList);
+
+            productString = userIdLength.ToString() + "|" + email + productString;
+
+            ////await SendToApi(productString, dest);
+        }
+
+        public async void DeleteFuncList(string email)
+        {
+            var response = new HttpResponseMessage();
+
+            int userIdLength = email.Length;
+            string productString = userIdLength.ToString() + "|" + email + "[PLS_DELETE]";
+
+            ////await SendToApi(productString);
+        }
+
+        public async Task<HttpResponseMessage> DeleteItem(string id, string userId)
+        {
+            var response = new HttpResponseMessage();
+            itemList.Remove(itemList.First(x => x._id == id));
+
+            //int i = 1;
+            //foreach (var product in itemList)
+            //{
+            //    product.Id = i;
+            //    i++;
+            //}
+
+            int userIdLength = userId.Length;
+            productString = JsonConvert.SerializeObject(itemList);
+
+            productString = userIdLength.ToString() + "|" + userId + productString;
+
+            ////await SendToApi(productString);
+
+            //var content = new StringContent(productString, Encoding.UTF8, "application/json");
+            //response = await Http.PostAsync("https://localhost:44325/" + dest, content);
+
+            return new HttpResponseMessage(HttpStatusCode.OK);
+        }
+
+        public async Task<HttpResponseMessage> ChangeItem(string id, string itemString, string userId)
+        {
+            int userIdLength = userId.Length;
+
+            itemString = userIdLength.ToString() + "|" + userId + itemString;
+
+            var content = new StringContent(itemString, Encoding.UTF8, "application/json");
+            ////HttpResponseMessage responce = await Http.PutAsync("https://localhost:44325/api/Storage/" + id, content);
+
+            return new HttpResponseMessage(HttpStatusCode.OK);
         }
     }
 }
