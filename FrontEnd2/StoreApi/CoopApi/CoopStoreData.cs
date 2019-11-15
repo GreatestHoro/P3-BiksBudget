@@ -2,7 +2,7 @@
 
 namespace FrontEnd2
 {
-    class CoopStoreData
+    public class CoopStoreData
     {
         public int Kardex { get; set; }
         public string RetailGroupName { get; set; }
