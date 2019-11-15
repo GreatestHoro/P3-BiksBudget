@@ -7,14 +7,14 @@
 @inject HttpClient Http
 
 <div class="container-fluid">
-    <div class="row no-gutters">
-        <div class="col-sm-4">
+    <div class="row">
+        <div class="col-sm stackComponents">
             <input class="form-check-input" placeholder="Search..." @bind="searchTerm" @onkeyup="OnKeyPress" />
         </div>
-        <div class="col-sm-4">
+        <div class="col-sm stackComponents">
             <button type="button" class="btn-success" @onclick="(() => Search())"> Find Recipe </button>
         </div>
-        <div class="col-sm-4">
+        <div class="col-sm stackComponents">
             <span class="text-muted">
                 Showing @recipeData.Count out of 255
             </span>
@@ -75,7 +75,7 @@
 <div class="container-fluid">
     <div class="row no-gutters">
         <div class="col-sm-2 offset-sm-5">
-            <p>THIS IS RIGHT BELOW TABLE</p>
+            <p>YEET YOOT</p>
         </div>
     </div>
 </div>
