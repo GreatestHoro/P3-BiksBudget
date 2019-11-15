@@ -19,6 +19,29 @@
     Lantitude: @ipItem.latitude <br />
 </p>
 
+<p>The Following Stores Are in a Distance of : @radius</p>
+@if (coopStore.Data != null)
+{
+
+    @foreach (var item in coopStore.Data)
+    {
+        <p>
+            Retail Group Name: @item.RetailGroupName, Zipcode: @item.Zipcode, Adress: @item.Address, Manager: @item.Manager <br />
+        </p>
+    }
+
+}
+else
+{
+    <p>There are no stores</p>
+}
+
+@if (coopStore.Data != null)
+{
+    <input placeholder="A new Product" @bind="@newRadius" />
+    <button @onclick="UpdateRadius">Create</button>
+}
+
 @foreach (var recipe in recipeData)
 {
     <p>recipe: @recipe._Name</p>
@@ -29,17 +52,35 @@
     List<Recipe> recipeData = new List<Recipe>();
     GetIP getIP = new GetIP();
     IpItem ipItem = new IpItem();
-    
-    
+    FindCloseStores closeStore;
+    CoopStoreApi coopStore = new CoopStoreApi();
+
+    public int radius = 1000;
+    public string url;
+    public int newRadius;
+
+    public void UpdateRadius()
+    {
+        radius = newRadius;
+        FindStoreFunc();
+    }
 
 
-    protected override async Task OnInitializedAsync() {
-
+    protected override async Task OnInitializedAsync()
+    {
         printRecipe = await Http.GetStringAsync("https://localhost:44325/api/recipe");
 
-        //recipeData = JsonConvert.DeserializeObject<List<Recipe>>(printRecipe);
-
         ipItem = getIP.GetIpData();
+        newRadius = radius;
+        FindStoreFunc();
     }
     //https://localhost:44325/api/recipe
+    //https://api.cl.coop.dk/storeapi/v1/stores/find/radius/{radius}?latitude={latitude}&longitude={longitude}
+
+
+    public void FindStoreFunc()
+    {
+        closeStore = new FindCloseStores(ipItem, radius);
+        coopStore = closeStore.GetStore();
+    }
 }

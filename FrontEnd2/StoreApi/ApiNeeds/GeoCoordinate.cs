@@ -1,6 +1,6 @@
 ﻿namespace FrontEnd2
 {
-    class GeoCoordinate
+    public class GeoCoordinate
     {
         public double _longitude { get; set; }
         public double _latitude { get; set; }
