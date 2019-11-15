@@ -287,9 +287,6 @@ namespace BBGatherer.Webcrawler
                 name = RemoveSubstring(name, s);
             }
 
-            
-            
-     
             name = name.ToLower();
 
             return name.Trim();
