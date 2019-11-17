@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using BBCollection.BBObjects;
 using Newtonsoft.Json;
 using BBCollection;
+using System.IO;
+using Microsoft.AspNetCore.Http;
+using System;
+using BBGatherer.Queries;
 
 namespace Backend.Controllers
 {
@@ -75,6 +79,10 @@ namespace Backend.Controllers
                     break;
             }
 
+            //RecipeQuery recipeQuery = new RecipeQuery();
+
+            //recipeQuery.CheapestCRecipes(recipeTitle);
+
             List<Recipe> recipeData = demodata.GetRecipes();
 
             string jsonRecipes = JsonConvert.SerializeObject(recipeData);
@@ -96,9 +104,29 @@ namespace Backend.Controllers
         }
 
         // POST: api/recipe
+        //[Route("api/recipe")]
         [HttpPost]
-        public void Post([FromBody] string value)
+        public void Post()
         {
+            string buffer, buffer2;
+
+            HttpRequest request = HttpContext.Request;
+            Microsoft.AspNetCore.Http.HttpRequestRewindExtensions.EnableBuffering(request);
+
+            using (var sr = new StreamReader(request.Body))
+            {
+                buffer = sr.ReadToEnd();
+
+                ////reset
+                //Request.Body.Seek(0, SeekOrigin.Begin);
+
+                ////ready to read again
+                //buffer2 = sr.ReadToEnd();
+
+            }
+
+            List<Recipe> recipeDataList = JsonConvert.DeserializeObject<List<Recipe>>(buffer);
+
         }
 
         // PUT: api/recipe/5

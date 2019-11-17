@@ -1,12 +1,13 @@
 ﻿@using System.Globalization
 @using FrontEnd2.StoreApi.ApiNeeds
 @using FrontEnd2.Data
+@inject IJSRuntime JsRuntime;
 
 <h3>Search A Product</h3>
 <div class="form-row">
     <div class="form-group col-md-6">
         <label for="search">Søg Efter En Råvare!</label>
-        <input type="text" id="search" class="form-control" placeholder="Råvare.." @onkeyup="@((e) => KeyPressed(e))" @bind="searchBox"/>
+        <input type="text" id="search" class="form-control" placeholder="Råvare.." @onkeyup="@((e) => KeyPressed(e))" @bind="searchBox" />
     </div>
     <div class="form-group" col-md-6>
         <label for="minPriceB">Minimum Price</label>
@@ -15,65 +16,61 @@
     <div class="form-group" col-md-6>
         <label for="maxPriceB">Maximum Price</label>
         <input type="number" class="form-control" placeholder="Max Price" @bind="maxPrice" />
+
     </div>
     <button type="button" class="btn btn-success" @onclick="@(() => SearchForProducts())">Find Mig En Spise!</button>
-
+    <button type="button" class="btn btn-warning" @onclick="GetUserLocation">What Is My Location?</button>
+    <span>Your Location is: </span>
+    <p id="demo"></p>
 </div>
+<!-- GEO LOCATION MAP - Google iframe -->
 
-    @if (_viewProducts == true)
-    {
-<div class="container-fluid">
-    <p>hej 2: @counter</p>
-    <p>you want: @searchBox</p>
-    @for (int i = 0; i <= resultProductQuery.Count-4; i+=4)
-    {
-        @if (i >= resultProductQuery.Count)
-        {
-            break;
-        }
-        else
-        {
+@if (viewMap == true)
+{
+    <div class="mapouter">
+        <div class="gmap_canvas"><iframe width="400" height="300" id="gmap_canvas" src="@GoogleMapsIframeUserLocation()" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"></iframe></div>
+    </div>
+}
 
+
+@if (_viewProducts == true)
+{
+    <div class="container has-max-width-limit">
+        <p>you want: @searchBox</p>
         <div class="row">
-            <div class="col-sm-3 card-body">
-                <img src="@resultProductQuery[i].img" class="card-img-top" style="width: 30px" >
-                <h4 class="card-title" style="font-weight:bold">@resultProductQuery[i].title</h4>
-                <p class="card-text">@resultProductQuery[i].price DKK</p>
-                <button @onclick="(()=>AddToShoppinglist(resultProductQuery[i]))" class="btn btn-success">Læg Til Shoppinglisten</button>
-            </div>
-            <div class="col-sm-3 card-body">
-                <img src="@resultProductQuery[i+1].img" class="card-img-top" style="width: 30px">
-                <h4 class="card-title">@resultProductQuery[i+1].title</h4>
-                <p class="card-text">@resultProductQuery[i+1].price DKK</p>
-                <button @onclick="(()=>AddToShoppinglist(resultProductQuery[i+1]))" class="btn btn-success">Læg Til Shoppinglisten</button>
-            </div>
-            <div class="col-sm-3 card-body">
-                <img src="@resultProductQuery[i+2].img" class="card-img-top" style="width: 30px">
-                <h4 class="card-title" style="font-weight:bold">@resultProductQuery[i+2].title</h4>
-                <p class="card-text">@resultProductQuery[i+2].price DKK</p>
-                <button @onclick="(()=>AddToShoppinglist(resultProductQuery[i+2]))" class="btn btn-success">Læg Til Shoppinglisten</button>
-            </div>
-            <div class="col-sm-3 card-body">
-                <img src="@resultProductQuery[i+3].img" class="card-img-top" style="width: 30px">
-                <h4 class="card-title" style="font-weight:bold">@resultProductQuery[i+3].title</h4>
-                <p class="card-text">@resultProductQuery[i+3].price DKK</p>
-                <button @onclick="(()=>AddToShoppinglist(resultProductQuery[i+3]))" class="btn btn-success">Læg Til Shoppinglisten</button>
-            </div>
+            @foreach (var product in resultProductQuery)
+            {
+                <div class="col-22 col-sm-6 col-md-4 col-lg-3 col-ll-20pct col-xl-2 mt-3 d-flex flex-column">
+                    <div class="product-card flex-grow-1 d-flex flex-column">
+                        <div class="product-card-top col-6 col-sm-12 flex-0-auto">
+                            <div class="product-card-image position-relative">
+                                <img class="img-fluid" src="@ProductImage(product.prod_id)" style="width: 30px">
+                            </div>
+                        </div>
+                        <div class="col-6 col-sm-12 flex-grow-1 d-flex flex-column flex-0-auto">
+                            <div class="product-card-body flex-grow-1 d-flex flex-column">
+                                <h5 class="product-card-title" style="font-weight:bold">@product.title</h5>
+                                <p class="product-card-price">@product.price DKK</p>
+                                <button class="btn btn-success">Læg Til Shoppinglisten</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
         </div>
-        }
-    }
-</div>
-    }
+    </div>
+}
 
 @code {
-    ShoppinlistFunctionality func = new ShoppinlistFunctionality("api/Shoppinglist");
     HttpResponseMessage response = new HttpResponseMessage();
 
+    static bool viewMap = false;
     string searchBox;
     string written;
     double minPrice;
     double maxPrice;
-    double MaxPrice {
+    double MaxPrice
+    {
         get
         {
             if (maxPrice <= 0)
@@ -87,7 +84,8 @@
             if (value <= 0)
             {
                 maxPrice = double.MaxValue;
-            } else
+            }
+            else
             {
                 maxPrice = value;
             }
@@ -102,6 +100,16 @@
     SallingAPIProductSuggestions productSuggestions = new SallingAPIProductSuggestions();
     List<SallingAPIProduct> resultProductQuery = new List<SallingAPIProduct>();
     Filter<SallingAPIProduct> productFilter = new Filter<SallingAPIProduct>();
+    static GeoCoordinate userGeoLocation = new GeoCoordinate(0, 0);
+    ShoppinlistFunctionality func = new ShoppinlistFunctionality("api/Shoppinglist");
+
+
+    private void SaveInput(string input)
+    {
+        searchBox = input;
+    }
+
+
 
     async void AddToShoppinglist(SallingAPIProduct item)
     {
@@ -117,9 +125,6 @@
         }
     }
 
-    private void SaveInput(string input) {
-        searchBox = input;
-    }
 
 
     private void SearchForProducts()
@@ -142,6 +147,30 @@
             Console.WriteLine(counter);
             counter++;
         }
+    }
+
+    private string ProductImage(string prod_id)
+    {
+        return "https://image.prod.iposeninfra.com/bilkaimg.php?pid=" + prod_id + "&imgType=jpeg&imgSize=1080x1080";
+    }
+
+    async Task GetUserLocation()
+    {
+        await JsRuntime.InvokeVoidAsync(identifier: "getCoordinates");
+    }
+
+    [JSInvokable]
+    public static void UpdateUserLocation(double latitude, double longitude)
+    {
+        viewMap = true;
+        userGeoLocation._latitude = latitude;
+        userGeoLocation._longitude = longitude;
+    }
+
+    // Not Needed
+    private string GoogleMapsIframeUserLocation()
+    {
+        return "https://maps.google.com/maps?q=" + userGeoLocation._latitude + "," + userGeoLocation._longitude + "&t=&z=15&ie=UTF8&iwloc=&output=embed";
     }
 
 }

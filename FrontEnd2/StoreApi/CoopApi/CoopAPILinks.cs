@@ -1,4 +1,6 @@
-﻿namespace FrontEnd2
+﻿using System.Globalization;
+
+namespace FrontEnd2
 {
     public class CoopAPILinks
     {
@@ -24,7 +26,10 @@
 
         public string GetRadiusLink(int inputRadius, GeoCoordinate geo)
         {
-            string _url = _baseUrl + _radiusUrl + inputRadius + _latitudeUrl + geo._latitude + _longtitudeUrl + geo._longitude;
+            string lat = geo._latitude.ToString("N", CultureInfo.GetCultureInfo("en-US"));
+            string lot = geo._longitude.ToString("N", CultureInfo.GetCultureInfo("en-US"));
+
+            string _url = _baseUrl + _radiusUrl + inputRadius + _latitudeUrl + lat + _longtitudeUrl + lot;
 
             return _url;
         }
@@ -34,6 +39,17 @@
             string _url = _baseUrl + _productUrl + storeNumber;
 
             return _url;
+        }
+
+        public string ReplaceComma(string latlot)
+        {
+            string result = latlot;
+
+            int i = latlot.IndexOf(',');
+
+
+
+            return latlot;
         }
     }
 }
