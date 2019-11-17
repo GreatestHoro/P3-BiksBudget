@@ -156,16 +156,16 @@
 
     async Task GetUserLocation()
     {
-        await JsRuntime.InvokeVoidAsync(identifier: "getCoordinates");
+        //await JsRuntime.InvokeVoidAsync(identifier: "getCoordinates");
     }
 
-    [JSInvokable]
-    public static void UpdateUserLocation(double latitude, double longitude)
-    {
-        viewMap = true;
-        userGeoLocation._latitude = latitude;
-        userGeoLocation._longitude = longitude;
-    }
+    //[JSInvokable]
+    //public static void UpdateUserLocation(double latitude, double longitude)
+    //{
+    //    viewMap = true;
+    //    userGeoLocation._latitude = latitude;
+    //    userGeoLocation._longitude = longitude;
+    //}
 
     // Not Needed
     private string GoogleMapsIframeUserLocation()

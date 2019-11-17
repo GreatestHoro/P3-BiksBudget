@@ -18,10 +18,10 @@ namespace FrontEnd2.Data
 {
     public class FindCloseStores
     {
-        public FindCloseStores(IpItem _ipItem, int _radius)
+        public FindCloseStores(GeoCoordinate geo, int _radius)
         {
-            latitude = _ipItem.latitude;
-            longitude = _ipItem.longitude;
+            latitude = geo._latitude;
+            longitude = geo._longitude;
             radius = _radius;
         }
 
