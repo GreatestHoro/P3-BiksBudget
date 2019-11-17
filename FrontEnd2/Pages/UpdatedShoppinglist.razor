@@ -21,68 +21,71 @@ else
 
     @if (ListFunc.itemList == null)
     {
-        <p><em> Loaging list .. </em></p>
+        <p><em> Loading list .. </em></p>
     }
     else
     {
         <div class="container">
-            <table id="cart" class="table table-hover table-condensed">
-                <thead>
-                    <tr>
-                        <th style="width:50%">Product</th>
-                        <th style="width:10%">Price</th>
-                        <th style="width:8%">Quantity</th>
-                        <th style="width:22%" class="text-center">Subtotal</th>
-                        <th style="width:10%"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in ListFunc.itemList)
-                    {
-
-                        <tr>
-                            <td data-th="Product">
-                                <div class="row">
-                                    <div class="col-sm-2 hidden-xs"><img src="@item._image" class="img-responsive" /></div>
-                                    <div class="col-sm-10">
-                                        <h4 class="nomargin">@item._productName</h4>
-                                        <p> Description: @item._amount</p>
-                                    </div>
-                                </div>
-                            </td>
-                            <td data-th="Price">@item._price</td>
-                            <td data-th="Quantity">
-                                @*<input type="number" placeholder="@item._amountleft" class="form-control text-center" value="">*@
-                                <div class="text-center">
-                                    <button @onclick="(() => DecrementAmount(item._id))"><i class="oi oi-minus"></i></button>
-                                    @item._amountleft
-                                    <button @onclick="(() => IncrementAmount(item._id))"><i class="oi oi-plus"></i></button>
-                                </div>
-                            </td>
-                            <td data-th="Subtotal" class="text-center">subtotal @ListFunc.FindSubtotal(item)</td>
-                            <td class="actions" data-th="">
-                                <button class="btn btn-info btn-sm" @onclick="(() => ListFunc.AddItemToStorage(item, email))"><i class="oi oi-reload"></i></button>
-                                <button class="btn btn-danger btn-sm"@onclick="(() => ListFunc.DeleteItem(item._id, email))"><i class="oi oi-trash"></i></button>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-                <tfoot>
-                    <tr class="visible-xs">
-                        <td class="text-center"><strong>Total @ListFunc.CompletePrice()</strong></td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" class="hidden-xs"></td>
-                        <td class="hidden-xs text-center"><strong>Total @ListFunc.CompletePrice()</strong></td>
-                        @*<td><a href="#" class="btn btn-success btn-block">Save Shopping list </a></td>*@
-                        <td class="actions" data-th="">
-                            <button class="btn btn-success btn-block" @onclick="(() =>ListFunc.AddShoppinlistToStorage(dest, email))"><i>Add To Strorage</i></button>
-                            <button class="btn btn-success btn-block" @onclick="(() =>ListFunc.AddFuncList(email))"><i>Save Shoppinlist</i></button>
-                            <button class="btn btn-success btn-block" @onclick="(() =>ListFunc.DeleteFuncList(email))"><i>Delete Shoppinglist</i></button>
-                        </td>
-                    </tr>
-                </tfoot>
-            </table>
+            <div class="row">
+                <div class="col-sm-12">
+                    <table id="cart" class="table table-hover table-condensed">
+                        <thead>
+                            <tr>
+                                <th style="width:50%">Product</th>
+                                <th style="width:10%">Price</th>
+                                <th style="width:20%">Quantity</th>
+                                <th style="width:10%" class="text-center">Subtotal</th>
+                                <th style="width:10%"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in ListFunc.itemList)
+                            {
+                                <tr>
+                                    <td data-th="Product">
+                                        <div class="row">
+                                            <div class="col-sm-2 hidden-xs"><img src="@item._image" class="img-responsive" /></div>
+                                            <div class="col-sm-10">
+                                                <h4 class="nomargin">@item._productName</h4>
+                                                <p>@item._amount</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td data-th="Price">@item._price</td>
+                                    <td data-th="Quantity">
+                                        <div class="valueClass text-center">
+                                            <div class="value-button" id="increase" @onclick="(() => IncrementAmount(item._id))" value="Increase @value"> + </div>
+                                            <input type="number" id="number" value="@item._amountleft" />
+                                            <div class="value-button" id="decrease" @onclick="(() => DecrementAmount(item._id))" value="Decrease @value"> - </div>
+                                        </div>
+                                    </td>
+                                    <td data-th="Subtotal" class="text-center">@ListFunc.FindSubtotal(item)</td>
+                                    <td class="actions" data-th="">
+                                        <button class="btn btn-info btn-sm" @onclick="(() => ListFunc.AddItemToStorage(item, email))"><i class="oi oi-reload"></i></button>
+                                        <button class="btn btn-danger btn-sm" @onclick="(() => ListFunc.DeleteItem(item._id, email))"><i class="oi oi-trash"></i></button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr class="visible-xs">
+                                <td class="text-center"><strong>Total @ListFunc.CompletePrice()</strong></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>ListFunc.AddShoppinlistToStorage(dest, email))">Add To Strorage</button>
+                </div>
+                <div class="col-sm-4">
+                    <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>ListFunc.AddFuncList(email))">Save Shoppinlist</button>
+                </div>
+                <div class="col-sm-4">
+                    <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>ListFunc.DeleteFuncList(email))">Delete Shoppinglist</button>
+                </div>
+            </div>
         </div>
     }
 }
@@ -93,16 +96,40 @@ else
     string dest = "api/Storage";
     ShoppinlistFunctionality ListFunc = new ShoppinlistFunctionality("api/Shoppinglist");
     HttpResponseMessage responseMessage = new HttpResponseMessage();
-    int ammount;
+    int value = 1;
+    int amount;
+    int currentValue;
     string email;
+
+    //void increaseAndDecrease(string id)
+    //{
+    //    int x = 1;
+    //    foreach (var item in ListFunc.itemList)
+    //    {
+    //        if (item._id == id)
+    //        {
+    //            if (x > currentValue)
+    //            {
+    //                currentValue++;
+    //                item._amountleft++;
+    //            }
+    //            else if (x < currentValue)
+    //            {
+    //                currentValue--;
+    //                item._amountleft--;
+    //            }
+    //        }
+    //    }
+    //}
 
     protected void IncrementAmount(string id)
     {
         foreach (var item in ListFunc.itemList)
         {
-            if (item._id == id)
+            if (item._id == id && item._amountleft != 0)
             {
                 item._amountleft++;
+                value++;
             }
         }
     }
@@ -115,6 +142,7 @@ else
             if (item._id == id && item._amountleft > 1)
             {
                 item._amountleft--;
+                value--;
             }
         }
     }

@@ -5,16 +5,54 @@
 </div>
 
 <div class="main">
-    <div class="top-nav">
-        <input type="text" placeholder="Search..">
-            <LoginDisplay />
+    <div class="top-nav container-fluid">
+        <div class="row">
+            <div class="col-sm-3">
+                <input type="text" placeholder="Search..">
+            </div>
+            <div class="col-sm-3 offset-6">
+                <LoginDisplay />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-2 offset-10">
+                <button @onclick="(() => changeBasketState())"><i class="oi oi-cart"></i> </button>
+            </div>
+        </div>
     </div>
-  <!--  <div class="top-row px-4">
-        <LoginDisplay />
-        <a href="https://docs.microsoft.com/en-eu/aspnet/" target="_blank">About</a>
+
+    @if (openMiniBasket == true)
+    {
+    <div class="miniBasket container">
+        <div class="miniBasketTopHeader row">
+            <div class="col-12">
+                <button class="close float-left" @onclick="(() => closeMiniBasket())"><i class="oi oi-x"></i> </button>
+            </div>
+        </div>
+        <div class="miniBasketHeader row">
+            <div class="col-sm-12">
+                <NavLink class="nav-link" href="shoppinglist">
+                <button type="button" class="btn btn-block btn-dark recipeDivDisplay rounded-0" @onclick="(() => closeMiniBasket())">Go to shoppinglist</button>
+                </NavLink>
+            </div>
+        </div>
     </div>
--->
+    }
     <div class="content px-4">
         @Body
     </div>
 </div>
+
+@code{
+    bool openMiniBasket = false;
+
+    void changeBasketState()
+    {
+        openMiniBasket = true;
+    }
+
+    void closeMiniBasket()
+    {
+        openMiniBasket = false; 
+    }
+}

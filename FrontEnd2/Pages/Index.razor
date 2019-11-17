@@ -6,7 +6,7 @@
 @inject HttpClient  Http
 
 
-<p> YEET</p>
+@*<p> YEET</p>
 
 <p>You are in:</p>
 <p>
@@ -45,7 +45,7 @@ else
 @foreach (var recipe in recipeData)
 {
     <p>recipe: @recipe._Name</p>
-}
+}*@
 
 @code{
     string printRecipe = "hej hej";
@@ -66,16 +66,16 @@ else
     }
 
 
-    protected override async Task OnInitializedAsync()
-    {
-        printRecipe = await Http.GetStringAsync("https://localhost:44325/api/recipe");
+    //protected override async Task OnInitializedAsync()
+    //{
+    //    printRecipe = await Http.GetStringAsync("https://localhost:44325/api/recipe");
 
-        ipItem = getIP.GetIpData();
-        newRadius = radius;
-        FindStoreFunc();
-    }
-    //https://localhost:44325/api/recipe
-    //https://api.cl.coop.dk/storeapi/v1/stores/find/radius/{radius}?latitude={latitude}&longitude={longitude}
+    //    ipItem = getIP.GetIpData();
+    //    newRadius = radius;
+    //    FindStoreFunc();
+    //}
+    ////https://localhost:44325/api/recipe
+    ////https://api.cl.coop.dk/storeapi/v1/stores/find/radius/{radius}?latitude={latitude}&longitude={longitude}
 
 
     public void FindStoreFunc()
