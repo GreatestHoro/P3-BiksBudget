@@ -46,30 +46,40 @@ else
                                     <div class="col-sm-2 hidden-xs"><img src="@item._image" class="img-responsive" /></div>
                                     <div class="col-sm-10">
                                         <h4 class="nomargin">@item._productName</h4>
-                                        <p> Description</p>
+                                        <p> Description: @item._amount</p>
                                     </div>
                                 </div>
                             </td>
                             <td data-th="Price">@item._price</td>
                             <td data-th="Quantity">
-                                <input type="number" class="form-control text-center" value="">
+                                @*<input type="number" placeholder="@item._amountleft" class="form-control text-center" value="">*@
+                                <div class="text-center">
+                                    <button @onclick="(() => DecrementAmount(item._id))"><i class="oi oi-minus"></i></button>
+                                    @item._amountleft
+                                    <button @onclick="(() => IncrementAmount(item._id))"><i class="oi oi-plus"></i></button>
+                                </div>
                             </td>
-                            <td data-th="Subtotal" class="text-center">subtotal</td>
+                            <td data-th="Subtotal" class="text-center">subtotal @ListFunc.FindSubtotal(item)</td>
                             <td class="actions" data-th="">
-                                <button class="btn btn-info btn-sm"><i class="oi oi-reload"></i></button>
-                                <button class="btn btn-danger btn-sm"><i class="oi oi-trash"></i></button>
+                                <button class="btn btn-info btn-sm" @onclick="(() => ListFunc.AddItemToStorage(item, email))"><i class="oi oi-reload"></i></button>
+                                <button class="btn btn-danger btn-sm"@onclick="(() => ListFunc.DeleteItem(item._id, email))"><i class="oi oi-trash"></i></button>
                             </td>
                         </tr>
                     }
                 </tbody>
                 <tfoot>
                     <tr class="visible-xs">
-                        <td class="text-center"><strong>Total 1.99</strong></td>
+                        <td class="text-center"><strong>Total @ListFunc.CompletePrice()</strong></td>
                     </tr>
                     <tr>
                         <td colspan="2" class="hidden-xs"></td>
-                        <td class="hidden-xs text-center"><strong>Total $1.99</strong></td>
-                        <td><a href="#" class="btn btn-success btn-block">Save Shopping list </a></td>
+                        <td class="hidden-xs text-center"><strong>Total @ListFunc.CompletePrice()</strong></td>
+                        @*<td><a href="#" class="btn btn-success btn-block">Save Shopping list </a></td>*@
+                        <td class="actions" data-th="">
+                            <button class="btn btn-success btn-block" @onclick="(() =>ListFunc.AddShoppinlistToStorage(dest, email))"><i>Add To Strorage</i></button>
+                            <button class="btn btn-success btn-block" @onclick="(() =>ListFunc.AddFuncList(email))"><i>Save Shoppinlist</i></button>
+                            <button class="btn btn-success btn-block" @onclick="(() =>ListFunc.DeleteFuncList(email))"><i>Delete Shoppinglist</i></button>
+                        </td>
                     </tr>
                 </tfoot>
             </table>
@@ -80,10 +90,11 @@ else
 @code {
     string productString;
     string newProduct;
+    string dest = "api/Storage";
     ShoppinlistFunctionality ListFunc = new ShoppinlistFunctionality("api/Shoppinglist");
     HttpResponseMessage responseMessage = new HttpResponseMessage();
     int ammount;
-    string email = "Test";
+    string email;
 
     protected void IncrementAmount(string id)
     {
@@ -108,71 +119,6 @@ else
         }
     }
 
-    //protected async override Task OnInitializedAsync()
-    //{
-    //    responseMessage = await ListFunc.GetProductsOnStart(email);
-    //}
-
-    private void AddAlltoStorage()
-    {
-        ListFunc.AddShoppinlistToStorage("api/Storage", email);
-        ListFunc.itemList.Clear();
-    }
-
-    private void DeleteAll()
-    {
-        //ListFunc.DeleteList("Test");
-        ListFunc.itemList.Clear();
-    }
-
-    private async void AddProduct()
-    {
-        if (newProduct != null)
-        {
-            //CoopProduct newItem = new CoopProduct() { Navn = newProduct, Navn2 = "", Pris = 0.00 };
-            Product newItem = new Product()
-            {
-                _productName = newProduct,
-                _amount = "",
-                _price = 0.00,
-                _id = "11123828382392",
-                _amountleft = 1
-            };
-
-            newProduct = string.Empty;
-
-            ListFunc.itemList.Add(newItem);
-            //responseMessage = await ListFunc.AddProductItem(newItem, email);
-        }
-
-
-    }
-
-    private async void DeleteProduct(string id)
-    {
-        ListFunc.itemList.Remove(ListFunc.itemList.First(x => x._id == id));
-
-        //int i = 1;
-        //foreach (var product in ListFunc.itemList)
-        //{
-        //    product._id = i;
-        //    i++;
-        //}
-
-        //responseMessage = await ListFunc.DeleteItem(id, "Test");
-    }
-
-    private async void AddProductToStorage(string id)
-    {
-        ListFunc.AddItemToStorage(id, "api/Storage", email);
-        responseMessage = await ListFunc.DeleteItem(id, email);
-    }
-
-    private void SaveList()
-    {
-        ListFunc.AddShoppinlistToStorage("api/Storage", email);
-    }
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -183,10 +129,6 @@ else
                 Console.WriteLine($"Value for key {e.Key} changed from {e.OldValue} to {e.NewValue}");
             };
 
-            //if (email != null)
-            //{
-            //    gottenData = await Http.GetStringAsync("https://localhost:44325/api/Login/" + email + "S");
-            //}
             responseMessage = await ListFunc.GetProductsOnStart(email);
 
             StateHasChanged();

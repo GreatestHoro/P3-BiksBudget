@@ -1,4 +1,4 @@
-﻿@page "/ijjhybiuhnoi"
+﻿@*@page "/oldsh"
 @using Newtonsoft.Json;
 @inject HttpClient Http
 @using FrontEnd2.Data;
@@ -57,7 +57,7 @@ else
                             <td>
                                 <div class="text-center">
                                     <button @onclick="(() => AddProductToStorage(items._id))"><i class="oi oi-basket"></i></button>
-                                    <button @onclick="(() => DeleteProduct(items._id))"><i class="oi oi-trash"></i></button>
+                                    <button @onclick="(() => ListFunc.DeleteItem(items._id, email))"><i class="oi oi-trash"></i></button>
                                 </div>
                             </td>
                         </tr>
@@ -204,4 +204,4 @@ else
     {
         email = await localStorage.GetItemAsync<string>("Email");
     }
-}
+}*@

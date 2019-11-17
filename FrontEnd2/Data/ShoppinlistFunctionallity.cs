@@ -24,6 +24,7 @@ namespace FrontEnd2.Data
         string dest;
         public List<Product> itemList = new List<Product>();
         HttpResponseMessage response = new HttpResponseMessage();
+        List<Product> TempStorageList = new List<Product>();
 
         public async Task<HttpResponseMessage> GetProductsOnStart()
         {
@@ -43,6 +44,16 @@ namespace FrontEnd2.Data
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
 
+        public double FindSubtotal(Product item)
+        {
+            double result;
+
+            result = item._price * item._amountleft;
+            result = Math.Round(result, 3);
+
+            return result;
+        }
+
 
         public double CompletePrice()
         {
@@ -52,6 +63,7 @@ namespace FrontEnd2.Data
             {
                 result += item._price * item._amountleft;
             }
+            result = Math.Round(result, 3);
             return result;
         }
 
@@ -77,7 +89,7 @@ namespace FrontEnd2.Data
             return result;
         }
 
-        public async Task<HttpResponseMessage> AddProductAsString(string name, string amount, double price, string email)
+        public async Task<HttpResponseMessage> AddProductAsString(string name, string amount, double price, string id, string email)
         {
             var response = new HttpResponseMessage();
 
@@ -86,7 +98,7 @@ namespace FrontEnd2.Data
                 _productName = name,
                 _amount = amount,
                 _price = price,
-                _id = itemList.Count() + 1.ToString()
+                _id = id
             };
 
             //itemList.Add(newItem);
@@ -184,24 +196,19 @@ namespace FrontEnd2.Data
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
 
-        public async void AddItemToStorage(string id, string newDest, string email)
+        public async void AddItemToStorage(Product AddedItem, string email)
         {
-            foreach (var item in itemList)
-            {
-                if (item._id == id)
-                {
-                    item._timeAdded = DateTime.Now.ToString();
-                    item._state = "Full";
-                    response = await AddProductAsItem(item, newDest, email);
-
-                    break;
-                }
-            }
-
+            TempStorageList.Add(AddedItem);
+            DeleteItem(AddedItem._id, email);
         }
 
         public async void AddShoppinlistToStorage(string dest, string email)
         {
+            foreach (var item in TempStorageList)
+            {
+                itemList.Add(item);
+            }
+
             foreach (var item in itemList)
             {
                 item._timeAdded = DateTime.Now.ToString();
@@ -214,11 +221,14 @@ namespace FrontEnd2.Data
 
             productString = userIdLength.ToString() + "|" + email + productString;
 
-            ////await SendToApi(productString, dest);
+            itemList.Clear();
+
+            await SendToApi(productString, dest);
         }
 
         public async void DeleteFuncList(string email)
         {
+            itemList.Clear();
             var response = new HttpResponseMessage();
 
             int userIdLength = email.Length;
@@ -232,22 +242,12 @@ namespace FrontEnd2.Data
             var response = new HttpResponseMessage();
             itemList.Remove(itemList.First(x => x._id == id));
 
-            //int i = 1;
-            //foreach (var product in itemList)
-            //{
-            //    product.Id = i;
-            //    i++;
-            //}
-
             int userIdLength = userId.Length;
             productString = JsonConvert.SerializeObject(itemList);
 
             productString = userIdLength.ToString() + "|" + userId + productString;
 
             ////await SendToApi(productString);
-
-            //var content = new StringContent(productString, Encoding.UTF8, "application/json");
-            //response = await Http.PostAsync("https://localhost:44325/" + dest, content);
 
             return new HttpResponseMessage(HttpStatusCode.OK);
         }

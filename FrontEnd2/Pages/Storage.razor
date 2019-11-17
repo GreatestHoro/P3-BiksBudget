@@ -12,7 +12,6 @@
 
 @if (email != null)
 {
-    //FillStorage();
     @if (ListFunc.itemList == null)
     {
         <p>
@@ -77,8 +76,8 @@
                 }
             </div>
             <div>
-                <button @onclick="DeleteAll"><i class="oi oi-trash">Empty Shoppinglist</i></button>
-                <button @onclick="SaveList"><i class="oi oi-transfer">Save Shoppinglist</i></button>
+                <button @onclick="(() => ListFunc.DeleteFuncList(email))"><i class="oi oi-trash">Empty Shoppinglist</i></button>
+                <button @onclick="(() => ListFunc.AddFuncList(email))"><i class="oi oi-transfer">Save Shoppinglist</i></button>
             </div>
         </div>
     }
@@ -128,19 +127,6 @@ else
         }
     }
 
-    //protected async override Task OnInitializedAsync()
-    //{
-    //    userId = email;
-    //    responseMessage = await ListFunc.GetProductsOnStart(email);
-    //}
-
-    //protected async void FillStorage()
-    //{
-    //    userId = email;
-    //    responseMessage = await ListFunc.GetProductsOnStart(userId);
-    //}
-
-
     private async void AddProduct()
     {
         if (newProduct != null)
@@ -172,10 +158,6 @@ else
             {
                 item._amountleft--;
 
-                //productString = JsonConvert.SerializeObject(item);
-
-                //await ListFunc.ChangeItem(item.Id, productString, userId);
-
                 isFound = true;
 
                 break;
@@ -184,23 +166,8 @@ else
 
         if (isFound == false)
         {
-            //responseMessage = await ListFunc.DeleteItem(id, userId);
-            ListFunc.itemList.Remove(ListFunc.itemList.First(x => x._id == id));
-
-            //int i = 1;
-            //foreach (var product in ListFunc.itemList)
-            //{
-
-            //    product.Id = i;
-            //    i++;
-            //}
+            ListFunc.DeleteItem(id, email);
         }
-    }
-
-
-    private void SaveList()
-    {
-        ListFunc.AddFuncList(userId);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
