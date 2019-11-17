@@ -116,14 +116,18 @@ namespace BBGatherer.Webcrawler
         {
             fatalError = false;
             String[] str = name.Split(" ");
-            List<String> AllMacthes = new List<string>();
-            AllMacthes.Add("");
-            String IndgrdientName;
-            bool IngredientFlag = false;
-            int CombinationSize = 1;
-            int Start = 0;
+            List<String> Combinations = new List<string>();
+
+            Combinations = GetAllCombinations(name,dbConnect);
             
-            while (CombinationSize <= str.Length)
+            //if(CheckCOOPProductsInDatabase())
+            //AllMacthes.Add("");
+            //String IndgrdientName;
+            /*bool IngredientFlag = false;
+            int CombinationSize = 1;
+            int Start = 0;*/
+
+            /*while (CombinationSize <= str.Length)
             {
                 while (Start <= str.Length - CombinationSize)
                 {
@@ -137,13 +141,31 @@ namespace BBGatherer.Webcrawler
                 }
                 Start = 0;
                 CombinationSize++;
-            }
-            if (AllMacthes.Count() == 0)
+            }*/
+            if (Combinations.Count() == 0)
             {
                 fatalError = true;
             }
-            
-            return AllMacthes[AllMacthes.Count - 1];
+
+            return Combinations[Combinations.Count - 1];
+        }
+        private List<String> GetAllCombinations(string name, DatabaseConnect dbConnect) 
+        {
+            String[] str = name.Split(" ");
+            int CombinationSize = 1;
+            int Start = 0;
+            List<String> Combinations = new List<string>();
+
+            while (CombinationSize <= str.Length)
+            {
+                while (Start <= str.Length - CombinationSize)
+                {
+                    Combinations.Add(GetCombination(str, CombinationSize, Start++));
+                }
+                Start = 0;
+                CombinationSize++;
+            }
+            return Combinations;
         }
         private string GetCombination(string[] str, int size, int i)
         {
