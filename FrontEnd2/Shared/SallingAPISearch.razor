@@ -1,11 +1,13 @@
 ﻿@using System.Globalization
 @using FrontEnd2.StoreApi.ApiNeeds
+@using FrontEnd2.Data
+@inject IJSRuntime JsRuntime;
 
 <h3>Search A Product</h3>
 <div class="form-row">
     <div class="form-group col-md-6">
         <label for="search">Søg Efter En Råvare!</label>
-        <input type="text" id="search" class="form-control" placeholder="Råvare.." @bind="@searchBox" />
+        <input type="text" id="search" class="form-control" placeholder="Råvare.." @onkeyup="@((e) => KeyPressed(e))" @bind="searchBox" />
     </div>
     <div class="form-group" col-md-6>
         <label for="minPriceB">Minimum Price</label>
@@ -14,35 +16,61 @@
     <div class="form-group" col-md-6>
         <label for="maxPriceB">Maximum Price</label>
         <input type="number" class="form-control" placeholder="Max Price" @bind="maxPrice" />
+
     </div>
     <button type="button" class="btn btn-success" @onclick="@(() => SearchForProducts())">Find Mig En Spise!</button>
-
+    <button type="button" class="btn btn-warning" @onclick="GetUserLocation">What Is My Location?</button>
+    <span>Your Location is: </span>
+    <p id="demo"></p>
 </div>
+<!-- GEO LOCATION MAP - Google iframe -->
 
-    @if (print == true)
-    {
-        <p>hej 2: @counter</p>
+@if (viewMap == true)
+{
+    <div class="mapouter">
+        <div class="gmap_canvas"><iframe width="400" height="300" id="gmap_canvas" src="@GoogleMapsIframeUserLocation()" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"></iframe></div>
+    </div>
+}
+
+
+@if (_viewProducts == true)
+{
+    <div class="container has-max-width-limit">
         <p>you want: @searchBox</p>
-        foreach (var product in resultProductQuery)
-        {
-            <div class="flex-sm-row">
-                <img src="@product.img" class="img-thumbnail" alt="billede af @product.title">
-                <div class="card-body">
-                    <h5 class="card-title" style="font-weight:bold">@product.title</h5>
-                    <h3 class="card-subtitle" style="font-weight:bold">@product.description</h3>
-                    <p class="btn btn-warning">@product.price DKK</p>
-                    <button href="#" class="btn btn-success">Læg Til Shoppinglisten</button>
+        <div class="row">
+            @foreach (var product in resultProductQuery)
+            {
+                <div class="col-22 col-sm-6 col-md-4 col-lg-3 col-ll-20pct col-xl-2 mt-3 d-flex flex-column">
+                    <div class="product-card flex-grow-1 d-flex flex-column">
+                        <div class="product-card-top col-6 col-sm-12 flex-0-auto">
+                            <div class="product-card-image position-relative">
+                                <img class="img-fluid" src="@ProductImage(product.prod_id)" style="width: 30px">
+                            </div>
+                        </div>
+                        <div class="col-6 col-sm-12 flex-grow-1 d-flex flex-column flex-0-auto">
+                            <div class="product-card-body flex-grow-1 d-flex flex-column">
+                                <h5 class="product-card-title" style="font-weight:bold">@product.title</h5>
+                                <p class="product-card-price">@product.price DKK</p>
+                                <button class="btn btn-success">Læg Til Shoppinglisten</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        }
-    }
+            }
+        </div>
+    </div>
+}
 
 @code {
+    HttpResponseMessage response = new HttpResponseMessage();
 
+    static bool viewMap = false;
     string searchBox;
+    string written;
     double minPrice;
     double maxPrice;
-    double MaxPrice {
+    double MaxPrice
+    {
         get
         {
             if (maxPrice <= 0)
@@ -56,42 +84,85 @@
             if (value <= 0)
             {
                 maxPrice = double.MaxValue;
-            } else
+            }
+            else
             {
                 maxPrice = value;
             }
         }
     }
-    BearerAccessToken bearerAccessToken = new BearerAccessToken("a6f4495c-ace4-4c39-805c-46071dd536db");
+    BearerAccessToken bearerAccessToken = new BearerAccessToken("fc5aefca-c70f-4e59-aaaa-1c4603607df8");
     SallingAPILink linkMaker = new SallingAPILink();
-    bool print = false;
+    bool _viewProducts = false;
     int counter = 0;
     string save;
 
     SallingAPIProductSuggestions productSuggestions = new SallingAPIProductSuggestions();
     List<SallingAPIProduct> resultProductQuery = new List<SallingAPIProduct>();
     Filter<SallingAPIProduct> productFilter = new Filter<SallingAPIProduct>();
+    static GeoCoordinate userGeoLocation = new GeoCoordinate(0, 0);
+
+
+
+    private void KeyPressed(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            SearchForProducts();
+        }
+    }
+
+    private void SaveInput(string input)
+    {
+        searchBox = input;
+    }
+
+
 
     private void SearchForProducts()
     {
         save = searchBox;
-        string apiLink = linkMaker.GetProductAPILink(searchBox);
 
-        OpenHttp<SallingAPIProductSuggestions> openHttp = new OpenHttp<SallingAPIProductSuggestions>(apiLink, bearerAccessToken.GetBearerToken());
-
-        productSuggestions = openHttp.ReadAndParseAPISingle();
-
-        productSuggestions.Suggestions.Sort((a, b) => a.price.CompareTo(b.price));
-
-        resultProductQuery = productFilter.GetFiltered(productSuggestions.Suggestions, p => p.price > minPrice & p.price < MaxPrice);
-
-        foreach (var product in productSuggestions.Suggestions)
+        if (searchBox != "")
         {
-            Console.WriteLine(product.title);
+            string apiLink = linkMaker.GetProductAPILink(searchBox);
+
+            OpenHttp<SallingAPIProductSuggestions> openHttp = new OpenHttp<SallingAPIProductSuggestions>(apiLink, bearerAccessToken.GetBearerToken());
+
+            productSuggestions = openHttp.ReadAndParseAPISingle();
+
+            productSuggestions.Suggestions.Sort((a, b) => a.price.CompareTo(b.price));
+
+            resultProductQuery = productFilter.GetFiltered(productSuggestions.Suggestions, p => p.price > minPrice & p.price < MaxPrice);
+
+            _viewProducts = true;
+            Console.WriteLine(counter);
+            counter++;
         }
-        print = true;
-        Console.WriteLine(counter);
-        counter++;
+    }
+
+    private string ProductImage(string prod_id)
+    {
+        return "https://image.prod.iposeninfra.com/bilkaimg.php?pid=" + prod_id + "&imgType=jpeg&imgSize=1080x1080";
+    }
+
+    async Task GetUserLocation()
+    {
+        await JsRuntime.InvokeVoidAsync(identifier: "getCoordinates");
+    }
+
+    [JSInvokable]
+    public static void UpdateUserLocation(double latitude, double longitude)
+    {
+        viewMap = true;
+        userGeoLocation._latitude = latitude;
+        userGeoLocation._longitude = longitude;
+    }
+
+    // Not Needed
+    private string GoogleMapsIframeUserLocation()
+    {
+        return "https://maps.google.com/maps?q=" + userGeoLocation._latitude + "," + userGeoLocation._longitude + "&t=&z=15&ie=UTF8&iwloc=&output=embed";
     }
 
 }
