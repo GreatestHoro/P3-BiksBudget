@@ -101,16 +101,8 @@
     List<SallingAPIProduct> resultProductQuery = new List<SallingAPIProduct>();
     Filter<SallingAPIProduct> productFilter = new Filter<SallingAPIProduct>();
     static GeoCoordinate userGeoLocation = new GeoCoordinate(0, 0);
+    ShoppinlistFunctionality func = new ShoppinlistFunctionality("api/Shoppinglist");
 
-
-
-    private void KeyPressed(KeyboardEventArgs e)
-    {
-        if (e.Key == "Enter")
-        {
-            SearchForProducts();
-        }
-    }
 
     private void SaveInput(string input)
     {
@@ -133,9 +125,6 @@
         }
     }
 
-    private void SaveInput(string input) {
-        searchBox = input;
-    }
 
 
     private void SearchForProducts()
