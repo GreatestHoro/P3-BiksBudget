@@ -115,33 +115,20 @@ namespace BBGatherer.Webcrawler
         private String CheckForValidIndgredients(String name, DatabaseConnect dbConnect, out bool fatalError)
         {
             fatalError = false;
-            String[] str = name.Split(" ");
-            List<String> Combinations = new List<string>();
+            List<String> Combinations = GetAllCombinations(name,dbConnect);
 
-            Combinations = GetAllCombinations(name,dbConnect);
-            
-            //if(CheckCOOPProductsInDatabase())
-            //AllMacthes.Add("");
-            //String IndgrdientName;
-            /*bool IngredientFlag = false;
-            int CombinationSize = 1;
-            int Start = 0;*/
-
-            /*while (CombinationSize <= str.Length)
+            List<string> matches = CheckIngredientInDatabase(Combinations,dbConnect);
+            if (matches.Count == 0) 
             {
-                while (Start <= str.Length - CombinationSize)
+                foreach (string Searchterm in Combinations) 
                 {
-                    IndgrdientName = GetCombination(str, CombinationSize, Start++);
-                    IngredientFlag = CheckIngredient(IndgrdientName,dbConnect);
-
-                    if (IngredientFlag)
+                    if (CheckIngredientsInApi(Searchterm, dbConnect)) 
                     {
-                        AllMacthes.Add(IndgrdientName);
+                        matches.Add(Searchterm);
                     }
                 }
-                Start = 0;
-                CombinationSize++;
-            }*/
+            }
+
             if (Combinations.Count() == 0)
             {
                 fatalError = true;
@@ -197,14 +184,23 @@ namespace BBGatherer.Webcrawler
 
             }
         }
-        private bool CheckIngredient(String Searchterm, DatabaseConnect dbConnect)
+        /*private bool CheckIngredient(String Searchterm, DatabaseConnect dbConnect)
         {
             return   CheckIngredientInDatabase(Searchterm, dbConnect) || CheckIngredientsInApi(Searchterm.Trim(),dbConnect);
-        }
+        }*/
 
-        private bool CheckIngredientInDatabase(String Searchterm, DatabaseConnect dbConnect)
+        private List<string> CheckIngredientInDatabase(List<string> Searchterms, DatabaseConnect dbConnect)
         {
-            return CheckCOOPProductsInDatabase(Searchterm, dbConnect);// || CheckSallingProductsInDatabase(Searchterm, dbConnect);
+            List<string> results = new List<string>();
+            foreach (string Searchterm in Searchterms) 
+            {
+                if (CheckCOOPProductsInDatabase(Searchterm, dbConnect)) 
+                {
+                    results.Add(Searchterm);
+                }
+            }
+
+            return results;
         }
 
         private bool CheckCOOPProductsInDatabase(String Searchterm, DatabaseConnect dbConnect) 
@@ -213,12 +209,6 @@ namespace BBGatherer.Webcrawler
 
             return Products.Count != 0 ? true : false;
         }
-
-        //private bool CheckSallingProductsInDatabase(String Searchterm, DatabaseConnect dbConnect)
-        //{
-        //    List<SallingProduct> sallingP = dbConnect.GetSallingProduct(Searchterm);
-        //    return sallingP.Count != 0 ? true : false;
-        //}
 
         private bool CheckIngredientsInApi(string Searchterm, DatabaseConnect dbConnect) 
         {
