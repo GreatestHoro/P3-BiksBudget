@@ -95,6 +95,7 @@ namespace FrontEnd2
         #region Public Functions
         public string GetProductAPILink(string searchWord)
         {
+
             string encodedSearchWord = HttpUtility.UrlEncode(searchWord.ToLower());
 
             return _productSuggestionsBaseLink + encodedSearchWord;

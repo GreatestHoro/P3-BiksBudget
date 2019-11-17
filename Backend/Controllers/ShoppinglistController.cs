@@ -13,33 +13,6 @@ using BBCollection.BBObjects;
 
 namespace Backend.Controllers
 {
-    //public class ShoppinglistTestList
-    //{
-    //    List<AddedProduct> StorageTest = new List<AddedProduct>
-    //    {
-    //        new AddedProduct{ Name = "Kylling", Amount = "200g", Id = 1, State = "Full", TimeAdded = "07/11/2019 10:37:43", Price = 27.00, AmountOfItem = 1, StoreName = "Fakta" },
-    //        new AddedProduct{ Name = "Oksekød", Amount = "500g", Id = 2, State = "Full", TimeAdded = "06/10/2019 22:00:43", Price = 36.00, AmountOfItem = 1, StoreName = "Fakta" },
-    //        new AddedProduct{ Name = "Laks", Amount = "280g", Id = 3, State = "Full", TimeAdded = "06/02/2019 07:27:20", Price = 55.00, AmountOfItem = 1, StoreName = "DagliBrugsen" },
-    //        new AddedProduct{ Name = "Lammebov", Amount = "1000g", Id = 4, State = "Full", TimeAdded = "06/11/2019 13:01:52", Price = 270.00, AmountOfItem = 1, StoreName = "Føtex" }
-    //    };
-
-    //    public List<AddedProduct> GetStuff()
-    //    {
-    //        return StorageTest;
-    //    }
-    //}
-
-    //public class CoopProduct
-    //{
-    //    public string Ean { get; set; }
-    //    public string Navn { get; set; }
-    //    public string Navn2 { get; set; }
-    //    public double Pris { get; set; }
-    //    public int VareHierakiId { get; set; }
-    //    public int Id { get; set; }
-    //    public string State { get; set; }
-    //    public string TimeAdded { get; set; }
-    //}
 
     [Route("api/[controller]")]
     [ApiController]
@@ -53,11 +26,6 @@ namespace Backend.Controllers
         [HttpGet]
         public void Get()
         {
-            //productData = test.GetStuff();
-
-            //string jsonRecipes = JsonConvert.SerializeObject(productData);
-
-            //return jsonRecipes;
         }
 
         // GET: api/Storage/5
@@ -79,7 +47,6 @@ namespace Backend.Controllers
         {
             string buffer;
             List<Product> newItem = new List<Product>();
-            //productData = test.GetStuff();
             int pNum;
 
             HttpRequest request = HttpContext.Request;
@@ -145,16 +112,6 @@ namespace Backend.Controllers
             }
 
             newItem = JsonConvert.DeserializeObject<Product>(buffer);
-
-            //foreach (var item in productData) // This should go though shoppinlist and change one item on match
-            //{
-            //    if (item.Id == id)
-            //    {
-            //        item.Amount = newItem.Amount;
-
-            //        break;
-            //    }
-            //}
         }
 
         //// DELETE: api/ApiWithActions/5

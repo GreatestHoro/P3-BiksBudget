@@ -2,22 +2,25 @@
 @using BBCollection.BBObjects;
 @using Newtonsoft.Json;
 @using FrontEnd2.Data;
+@inject IJSRuntime JsRuntime;
 
 @inject HttpClient  Http
 
-
-@*<p> YEET</p>
-
-<p>You are in:</p>
+<p>Location:</p>
 <p>
-    Continent: @ipItem.continent_name <br />
-    Country: @ipItem.country_name <br />
-    Region: @ipItem.region_name <br />
-    City: @ipItem.city <br />
-    Zip: @ipItem.zip <br />
-    Longtitude: @ipItem.longitude <br />
-    Lantitude: @ipItem.latitude <br />
+    Latitude: @userGeoLocation._latitude <br />
+    Longitude: @userGeoLocation._longitude <br />
 </p>
+
+<input placeholder="A new Product" @bind="@newRadius" />
+<button type="button" class="btn btn-warning" @onclick="ApplyFilters">Apply Filters</button>
+
+@if (viewMap == true)
+{
+    <div class="mapouter">
+        <div class="gmap_canvas"><iframe width="400" height="300" id="gmap_canvas" src="@GoogleMapsIframeUserLocation()" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"></iframe></div>
+    </div>
+}
 
 <p>The Following Stores Are in a Distance of : @radius</p>
 @if (coopStore.Data != null)
@@ -26,61 +29,74 @@
     @foreach (var item in coopStore.Data)
     {
         <p>
-            Retail Group Name: @item.RetailGroupName, Zipcode: @item.Zipcode, Adress: @item.Address, Manager: @item.Manager <br />
+            Retail Group Name: @item.RetailGroupName <br />
+            Zipcode: @item.Zipcode <br />
+            Adress: @item.Address <br />
         </p>
     }
 
 }
 else
 {
-    <p>There are no stores</p>
+    <p>There are no stores with the current filters.</p>
 }
 
-@if (coopStore.Data != null)
-{
-    <input placeholder="A new Product" @bind="@newRadius" />
-    <button @onclick="UpdateRadius">Create</button>
-}
 
-@foreach (var recipe in recipeData)
-{
-    <p>recipe: @recipe._Name</p>
-}*@
 
 @code{
-    string printRecipe = "hej hej";
-    List<Recipe> recipeData = new List<Recipe>();
     GetIP getIP = new GetIP();
     IpItem ipItem = new IpItem();
     FindCloseStores closeStore;
     CoopStoreApi coopStore = new CoopStoreApi();
+    static GeoCoordinate userGeoLocation = new GeoCoordinate(0, 0);
 
     public int radius = 1000;
     public string url;
     public int newRadius;
+    static bool viewMap = false;
 
     public void UpdateRadius()
     {
         radius = newRadius;
+    }
+
+    public async void ApplyFilters()
+    {
+        await GetUserLocation();
+
+        radius = newRadius;
+
         FindStoreFunc();
     }
 
 
-    //protected override async Task OnInitializedAsync()
-    //{
-    //    printRecipe = await Http.GetStringAsync("https://localhost:44325/api/recipe");
-
-    //    ipItem = getIP.GetIpData();
-    //    newRadius = radius;
-    //    FindStoreFunc();
-    //}
-    ////https://localhost:44325/api/recipe
-    ////https://api.cl.coop.dk/storeapi/v1/stores/find/radius/{radius}?latitude={latitude}&longitude={longitude}
-
+    protected override async Task OnInitializedAsync()
+    {
+        ipItem = getIP.GetIpData();
+        newRadius = radius;
+    }
 
     public void FindStoreFunc()
     {
-        closeStore = new FindCloseStores(ipItem, radius);
+        closeStore = new FindCloseStores(userGeoLocation, radius);
         coopStore = closeStore.GetStore();
+    }
+
+    async Task GetUserLocation()
+    {
+        await JsRuntime.InvokeVoidAsync(identifier: "getCoordinates");
+    }
+
+    [JSInvokable]
+    public static void UpdateUserLocation(double latitude, double longitude)
+    {
+        viewMap = true;
+        userGeoLocation._latitude = latitude;
+        userGeoLocation._longitude = longitude;
+    }
+
+    private string GoogleMapsIframeUserLocation()
+    {
+        return "https://maps.google.com/maps?q=" + userGeoLocation._latitude + "," + userGeoLocation._longitude + "&t=&z=15&ie=UTF8&iwloc=&output=embed";
     }
 }
