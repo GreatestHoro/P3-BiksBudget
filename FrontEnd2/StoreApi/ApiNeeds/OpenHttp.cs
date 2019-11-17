@@ -115,6 +115,7 @@ namespace FrontEnd2
         {
 
             _httpWebRequest = (HttpWebRequest)WebRequest.Create(_apiLink);
+            
 
             IWebProxy theProxy = _httpWebRequest.Proxy;
             if (theProxy != null)
