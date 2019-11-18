@@ -8,15 +8,19 @@
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject AuthenticationFunctionallity uf
 
+<div class="col-sm stackComponents">
+    <button type="button" class="btn-success" @onclick="(() => Search())"> Find Recipe </button>
+</div>
 <h3>@testvalue</h3>
 
 @code {
-        string testvalue;
-        ShoppinlistFunctionality ListFunc = new ShoppinlistFunctionality("api/Storage");
-        HttpResponseMessage responseMessage = new HttpResponseMessage();
-        List<WeightedRecipies> recpies = new List<WeightedRecipies>();
-        String email;
-        String userId;
+    string testvalue;
+    ShoppinlistFunctionality ListFunc = new ShoppinlistFunctionality("api/Storage");
+    HttpResponseMessage responseMessage = new HttpResponseMessage();
+    List<WeightedRecipies> recpies = new List<WeightedRecipies>();
+    List<Recipe> _recpies = new List<Recipe>();
+    String email;
+    String userId;
     private delegate bool compareWR(WeightedRecipies r1, WeightedRecipies r2);
     //public delegate int PerformCalculation(int x, int y);
 
@@ -25,26 +29,19 @@
         userId = email;
         responseMessage = await ListFunc.GetProductsOnStart(userId);
 
-        compareWR test1 = new compareWR(CompareComplexity);
-        compareWR test2 = new compareWR(CompareMatches);
 
-        recpies = Sort(FindValidRecipies(ListFunc.itemList),test1);
-        foreach (WeightedRecipies wr in recpies)
-        {
-            testvalue = wr._recipie._Name+"";
-        }
 
         ;
     }
 
-    private List<WeightedRecipies> FindValidRecipies(List<Product> storageInventory)
+    private async Task<List<WeightedRecipies>> FindValidRecipies(List<Product> storageInventory)
     {
-        List<Recipe> Recepies = Search().Result;
+        //await Search();
         List<Recipe> ValidRecipies = new List<Recipe>();
         bool breakFlag;
-        List<Product> tester = new List<Product>() { new Product("1","bacon","full",1d,"image","lidl") };
+        List<Product> tester = new List<Product>() { new Product("1", "bacon", "full", 1d, "image", "lidl") };
         //string id, string productName, string amount, double price, string image, string storeName
-        foreach (Recipe r in Recepies)
+        foreach (Recipe r in _recpies)
         {
             breakFlag = false;
             //foreach (Product p in storageInventory)
@@ -52,7 +49,7 @@
             {
                 foreach (Ingredient i in r._ingredientList)
                 {
-                    if (compareIngrdientAndProduct(i,p))//kan godt være man bliver nødtil at lave en eller anden form for kryds referance
+                    if (compareIngrdientAndProduct(i, p))//kan godt være man bliver nødtil at lave en eller anden form for kryds referance
                     {
                         ValidRecipies.Add(r);
                         breakFlag = true;
@@ -67,24 +64,26 @@
 
         }
 
-        return GenerateWeightedRecepies(ValidRecipies, storageInventory);;
+        return GenerateWeightedRecepies(ValidRecipies, storageInventory); ;
     }
 
-    private List<WeightedRecipies> GenerateWeightedRecepies(List<Recipe> recipes,List<Product> storageInventory)
+    private List<WeightedRecipies> GenerateWeightedRecepies(List<Recipe> recipes, List<Product> storageInventory)
     {
+        List<Product> tester = new List<Product>() { new Product("1", "bacon", "full", 1d, "image", "lidl") };
         List<WeightedRecipies> returnRecipies = new List<WeightedRecipies>();
         foreach (Recipe r in recipes)
         {
             returnRecipies.Add(new WeightedRecipies(r));
         }
 
-        foreach(WeightedRecipies w in returnRecipies)
+        foreach (WeightedRecipies w in returnRecipies)
         {
-            foreach (Product p in storageInventory)
+            //foreach (Product p in storageInventory)
+            foreach (Product p in tester)
             {
                 foreach (Ingredient i in w._recipie._ingredientList)
                 {
-                    if (compareIngrdientAndProduct(i,p))
+                    if (compareIngrdientAndProduct(i, p))
                     {
                         w.MatchFound(i);
                     }
@@ -92,7 +91,7 @@
 
             }
         }
-        return null;
+        return returnRecipies;
     }
 
     private bool compareIngrdientAndProduct(Ingredient ingrdient, Product product)
@@ -100,12 +99,22 @@
         return product._productName.Contains(ingrdient._IngredientName);
     }
 
-    protected async Task<List<Recipe>> Search()
+    protected async Task Search()
     {
         string printRecipe;
 
-        printRecipe = await Http.GetStringAsync("https://localhost:44325/api/recipe?recipeTitle=" + "");
-        return JsonConvert.DeserializeObject<List<Recipe>>(printRecipe);
+        printRecipe = await Http.GetStringAsync("https://localhost:44325/api/recipe?recipeTitle=" + " ");
+        _recpies = JsonConvert.DeserializeObject<List<Recipe>>(printRecipe);
+
+        compareWR test1 = new compareWR(CompareComplexity);
+        compareWR test2 = new compareWR(CompareMatches);
+
+        //recpies = Sort(FindValidRecipies(ListFunc.itemList).Result, test1);
+        recpies = FindValidRecipies(ListFunc.itemList).Result;
+        foreach (WeightedRecipies wr in recpies)
+        {
+            testvalue = wr._recipie._Name + "";
+        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -134,10 +143,10 @@
 
     public class WeightedRecipies
     {
-        public Recipe _recipie{get;}
-        public int complexity{get;}
+        public Recipe _recipie { get; set; }
+        public int complexity { get; set; }
         public int matchingIngrdientsNum { get; set; }
-        private List<Ingredient> matchingIngrdient{get;}
+        public List<Ingredient> matchingIngrdient = new List<Ingredient>();
 
         public WeightedRecipies(Recipe _recipie)
         {
@@ -148,6 +157,7 @@
         public void MatchFound(Ingredient ingrdient)
         {
             matchingIngrdient.Add(ingrdient);
+            Console.WriteLine("yeet");
             matchingIngrdientsNum = matchingIngrdient.Count();
         }
     }
@@ -162,7 +172,7 @@
         return r1.matchingIngrdientsNum > r2.matchingIngrdientsNum;
     }
 
-    private static List<WeightedRecipies> Sort(List<WeightedRecipies> recipies,compareWR CompareWR)
+    private static List<WeightedRecipies> Sort(List<WeightedRecipies> recipies, compareWR CompareWR)
     {
         WeightedRecipies[] arr = recipies.ToArray();
 
