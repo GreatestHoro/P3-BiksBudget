@@ -13,9 +13,6 @@ namespace BBCollection.DBHandling
         {
             RemoveStorageFromUsername(username, databaseInformation);
 
-            Console.WriteLine(products.Count);
-            
-
             AddToStorageFromUsername(username, products, databaseInformation);
         }
 
@@ -122,9 +119,6 @@ namespace BBCollection.DBHandling
             MySqlCommand exist = new MySqlCommand(checkExist);
             exist.Parameters.AddWithValue("@ProductID", product._id);
 
-
-            Console.WriteLine(new SQLConnect().CheckRecordExist(exist, databaseInformation));
-
             if (!new SQLConnect().CheckRecordExist(exist, databaseInformation))
             {
                 MySqlCommand msc = new MySqlCommand(productQuery);
@@ -155,18 +149,22 @@ namespace BBCollection.DBHandling
                 "INSERT INTO `shoppinglists`(`username`, `shoppinglist_name`,`product_id`,`amount`) " +
                 "VALUES(@Username,@ShoppinglistName,@ProductID,@Amount)";
 
-            MySqlCommand msc = new MySqlCommand(addQuery);
-
             foreach (Shoppinglist sl in shoppinglists)
             {
                 foreach (Product p in sl._products)
                 {
+                    MySqlCommand msc = new MySqlCommand(addQuery);
+                    Console.WriteLine("INSERT INTO `shoppinglists`(`username`, `shoppinglist_name`,`product_id`,`amount`)VALUES(\'" + username + "\',\'" + sl._name + "\',\'" + p._id + "\'," + p._amountleft + ")");
                     msc.Parameters.AddWithValue("@Username", username);
-                    msc.Parameters.AddWithValue("@ShoppingListName", sl._name);
+                    msc.Parameters.AddWithValue("@ShoppinglistName", sl._name);
                     msc.Parameters.AddWithValue("@ProductID", p._id);
-                    msc.Parameters.AddWithValue("@Amount", p._amount);
+                    msc.Parameters.AddWithValue("@Amount", p._amountleft);
+
+                    new SQLConnect().NonQueryMSC(msc, databaseInformation);
                 }
             }
+
+            
         }
 
         public List<Shoppinglist> GetShoppinglistsFromUsername(string username, DatabaseInformation databaseInformation)
@@ -182,33 +180,46 @@ namespace BBCollection.DBHandling
             msc.Parameters.AddWithValue("@Username", username);
             DataSet ds = new SQLConnect().DynamicSimpleListSQL(msc, databaseInformation);
 
-
-            Console.WriteLine("Amount of tables: " + ds.Tables.Count);
-
             if (ds.Tables.Count != 0)
             {
-                List<Product> products = new List<Product>();
-                string SLName = (string)ds.Tables[0].Rows[0][0];
-                foreach (DataRow r in ds.Tables[0].Rows)
+                if (ds.Tables[0].Rows.Count != 0)
                 {
-                    Console.WriteLine("Not in here?");
-                    Product product = new Product((string)r[1], (string)r[2], (string)r[3], Convert.ToDouble(r[4]), (string)r[5], (string)r[6]);
+                    List<Product> products = new List<Product>();
+                    string SLName = (string)ds.Tables[0].Rows[0][0];
+                    foreach (DataRow r in ds.Tables[0].Rows)
+                    {
+                        Product product = new Product((string)r[1], (string)r[2], (string)r[3], Convert.ToDouble(r[4]), (string)r[5], (string)r[6]);
 
-                    if (SLName == (string)r[0])
-                    {
-                        products.Add(product);
+                        if (SLName == (string)r[0])
+                        {
+                            products.Add(product);
+                        }
+                        else
+                        {
+                            ShoppingLists.Add(new Shoppinglist(SLName, products));
+                            products = new List<Product>();
+                            products.Add(product);
+                        }
+                        SLName = (string)r[0];
                     }
-                    else
-                    {
-                        ShoppingLists.Add(new Shoppinglist(SLName, products));
-                        products = new List<Product>();
-                        products.Add(product);
-                    }
-                    SLName = (string)r[0];
+                    ShoppingLists.Add(new Shoppinglist(SLName, products));
                 }
-                ShoppingLists.Add(new Shoppinglist(SLName, products));
             }
             return ShoppingLists;
+        }
+
+        public void DeleteShoppingListFromName(string slName, string username, DatabaseInformation databaseInformation)
+        {
+            string sLQuery =
+                "DELETE FROM `shoppinglists` WHERE `shoppinglist_name` = @SLName AND username = @Username";
+
+            MySqlCommand msc = new MySqlCommand(sLQuery);
+
+            msc.Parameters.AddWithValue("@SLName", slName);
+
+            msc.Parameters.AddWithValue("@Username", username);
+
+            new SQLConnect().NonQueryMSC(msc, databaseInformation);
         }
     }
 }
