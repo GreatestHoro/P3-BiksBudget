@@ -131,9 +131,9 @@ namespace BBCollection
             new ProductHandling().AddShoppingListsToDB(username, shoppingLists, databaseInformation.GetConnect());
         }
 
-        public void AddOneShoppingListToDatabase()
+        public void DeleteShoppingListFromName(string shoppingListName, string username)
         {
-
+            new ProductHandling().DeleteShoppingListFromName(shoppingListName, username, databaseInformation.GetConnect());
         }
     }
 }
