@@ -13,7 +13,7 @@ namespace BBGatherer
         {
             DataHandling dh = new DataHandling();
             //dh.GenerateDatabase();
-            //dh.GenerateData();
+            dh.GenerateData();
             dh.TestCollection();
         }
     }
@@ -69,6 +69,7 @@ namespace BBGatherer
             List<Product> testList = new List<Product>();
 
             Product tProd1 = new Product("F2141400000004", 5, "Full");
+
             Product tProd2 = new Product("F2141640000000", 5, "Full");
             Product tProd3 = new Product("F4001724019831", 5, "Full");
 
