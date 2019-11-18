@@ -128,7 +128,7 @@ namespace BBGatherer.Webcrawler
                     }
                 }
             }
-
+            //lav en metode til at gemme det afviste svar
             if (Combinations.Count() == 0)
             {
                 fatalError = true;
