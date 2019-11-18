@@ -16,7 +16,7 @@
         </div>
         <div class="col-sm stackComponents">
             <span class="text-muted">
-                Showing @recipeData.Count out of 255
+                Showing @recipeData.Count out of 1814
             </span>
         </div>
     </div>
@@ -61,6 +61,9 @@
                         <tr> 
                             <td colspan="2" class="text-sm-center"> <button class="buttonPadding" @onclick="incrementRecipeAmount"> <i class="oi oi-plus"></i> </button>
                             @recipePerPerson <button class="buttonPadding" @onclick="decrementRecipeAmount"> <i class="oi oi-minus"></i></button> </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"> <button type="button" class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => AddToShoppinglist())"> Add to Shopping List </button></td>
                         </tr>
                     </tbody>
                 </table>
