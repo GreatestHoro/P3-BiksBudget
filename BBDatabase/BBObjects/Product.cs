@@ -9,7 +9,7 @@
         public string _image;
         public string _storeName;
 
-        public int _amountleft;
+        public int _amountleft; //Kan navngives anderledes
         public string _timeAdded;
         public string _state;
 
@@ -23,8 +23,8 @@
             _storeName = storeName;
         }
 
-        public Product(string id, string productName, string amount, 
-                       double price, string image, string storename, 
+        public Product(string id, string productName, string amount,
+                       double price, string image, string storename,
                        int amountleft, string timeAdded, string state)
         {
             _id = id;

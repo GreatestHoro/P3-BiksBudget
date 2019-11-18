@@ -52,6 +52,7 @@ namespace BBGatherer.Webcrawler
                             //Console.WriteLine(ind.InnerText);
                             if (!ind.InnerText.Contains(':'))
                             {
+                                
                                 Ingredient ingredient = CreateIngriedient(ind.InnerText, out fatalError, dbConnect);
                                     IngriedisensList.Add(ingredient);
                             }

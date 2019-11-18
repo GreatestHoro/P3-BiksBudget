@@ -44,19 +44,21 @@ namespace BBCollection.DBHandling
 
             DataSet ds = new SQLConnect().DynamicSimpleListSQL(msc, dbInformation);
 
-            if(ds.Tables[0].Rows.Count != 0) { 
-               password = (string) ds.Tables[0].Rows[0]["password"];
+            if (ds.Tables[0].Rows.Count != 0)
+            {
+                password = (string)ds.Tables[0].Rows[0]["password"];
             }
-            
+
             return password;
         }
 
         private bool CheckHashedPassword(string password, string hashedPassword)
         {
-            if(new PasswordHasher().VerifyHashedPassword(hashedPassword, password) == PasswordVerificationResult.Success)
+            if (new PasswordHasher().VerifyHashedPassword(hashedPassword, password) == PasswordVerificationResult.Success)
             {
                 return true;
-            } else
+            }
+            else
             {
                 return false;
             }

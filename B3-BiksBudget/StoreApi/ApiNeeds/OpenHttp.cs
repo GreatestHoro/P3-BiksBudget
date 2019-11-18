@@ -143,7 +143,6 @@ namespace BBGatherer.StoreApi
             else
             {
                 _httpWebRequest.Headers.Add("Ocp-Apim-Subscription-Key", _accessToken);
-
             }
             _httpWebRequest.Method = "GET";
 
