@@ -11,12 +11,12 @@
 <h3>@testvalue</h3>
 
 @code {
-    string testvalue;
-    ShoppinlistFunctionality ListFunc = new ShoppinlistFunctionality("api/Storage");
-    HttpResponseMessage responseMessage = new HttpResponseMessage();
-    List<WeightedRecipies> recpies = new List<WeightedRecipies>();
-    String email;
-    String userId;
+        string testvalue;
+        ShoppinlistFunctionality ListFunc = new ShoppinlistFunctionality("api/Storage");
+        HttpResponseMessage responseMessage = new HttpResponseMessage();
+        List<WeightedRecipies> recpies = new List<WeightedRecipies>();
+        String email;
+        String userId;
     private delegate bool compareWR(WeightedRecipies r1, WeightedRecipies r2);
     //public delegate int PerformCalculation(int x, int y);
 
@@ -29,7 +29,7 @@
         compareWR test2 = new compareWR(CompareMatches);
 
         recpies = Sort(FindValidRecipies(ListFunc.itemList),test1);
-        foreach (WeightedRecipies wr in recpies) 
+        foreach (WeightedRecipies wr in recpies)
         {
             testvalue = wr._recipie._Name+"";
         }
@@ -42,11 +42,13 @@
         List<Recipe> Recepies = Search().Result;
         List<Recipe> ValidRecipies = new List<Recipe>();
         bool breakFlag;
-
+        List<Product> tester = new List<Product>() { new Product("1","bacon","full",1d,"image","lidl") };
+        //string id, string productName, string amount, double price, string image, string storeName
         foreach (Recipe r in Recepies)
         {
             breakFlag = false;
-            foreach (Product p in storageInventory)
+            //foreach (Product p in storageInventory)
+            foreach (Product p in tester)
             {
                 foreach (Ingredient i in r._ingredientList)
                 {
@@ -95,7 +97,7 @@
 
     private bool compareIngrdientAndProduct(Ingredient ingrdient, Product product)
     {
-        return ingrdient._IngredientName == product._productName ? true : false;
+        return product._productName.Contains(ingrdient._IngredientName);
     }
 
     protected async Task<List<Recipe>> Search()
