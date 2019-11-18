@@ -8,9 +8,10 @@
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject AuthenticationFunctionallity uf
 
-<h3>Emptyfridge</h3>
+<h3>@testvalue</h3>
 
 @code {
+    string testvalue;
     ShoppinlistFunctionality ListFunc = new ShoppinlistFunctionality("api/Storage");
     HttpResponseMessage responseMessage = new HttpResponseMessage();
     List<WeightedRecipies> recpies = new List<WeightedRecipies>();
@@ -24,12 +25,21 @@
         userId = email;
         responseMessage = await ListFunc.GetProductsOnStart(userId);
 
-        FindValidRecipies(ListFunc.itemList);
+        compareWR test1 = new compareWR(CompareComplexity);
+        compareWR test2 = new compareWR(CompareMatches);
+
+        recpies = Sort(FindValidRecipies(ListFunc.itemList),test1);
+        foreach (WeightedRecipies wr in recpies) 
+        {
+            testvalue = wr._recipie._Name+"";
+        }
+
+        ;
     }
 
     private List<WeightedRecipies> FindValidRecipies(List<Product> storageInventory)
     {
-        List<Recipe> Recepies = GetRecipes();
+        List<Recipe> Recepies = Search().Result;
         List<Recipe> ValidRecipies = new List<Recipe>();
         bool breakFlag;
 
@@ -60,7 +70,6 @@
 
     private List<WeightedRecipies> GenerateWeightedRecepies(List<Recipe> recipes,List<Product> storageInventory)
     {
-        //WeightedRecipies[] returnRecipies = new WeightedRecipies[recipes.Count()];
         List<WeightedRecipies> returnRecipies = new List<WeightedRecipies>();
         foreach (Recipe r in recipes)
         {
@@ -89,10 +98,12 @@
         return ingrdient._IngredientName == product._productName ? true : false;
     }
 
-    private List<Recipe> GetRecipes()
+    protected async Task<List<Recipe>> Search()
     {
-        //return new List<Recipe>() { new Recipe(1,"yeet","yoot",); }
-        return null;
+        string printRecipe;
+
+        printRecipe = await Http.GetStringAsync("https://localhost:44325/api/recipe?recipeTitle=" + "");
+        return JsonConvert.DeserializeObject<List<Recipe>>(printRecipe);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -122,8 +133,8 @@
     public class WeightedRecipies
     {
         public Recipe _recipie{get;}
-        private int complexity{get;}
-        private int matchingIngrdientsNum { get; set; }
+        public int complexity{get;}
+        public int matchingIngrdientsNum { get; set; }
         private List<Ingredient> matchingIngrdient{get;}
 
         public WeightedRecipies(Recipe _recipie)
@@ -139,34 +150,41 @@
         }
     }
 
-    /*public static List<WeightedRecipies> Sort(List<WeightedRecipies> recipies,compareWR CompareWR)
+    private static bool CompareComplexity(WeightedRecipies r1, WeightedRecipies r2)
+    {
+        return r1.complexity > r2.complexity;
+    }
+
+    private static bool CompareMatches(WeightedRecipies r1, WeightedRecipies r2)
+    {
+        return r1.matchingIngrdientsNum > r2.matchingIngrdientsNum;
+    }
+
+    private static List<WeightedRecipies> Sort(List<WeightedRecipies> recipies,compareWR CompareWR)
     {
         WeightedRecipies[] arr = recipies.ToArray();
 
-        int i, j,
-        WeightedRecipies temp = new WeightedRecipies()½;
-        bool swapped; 
-        for (i = 0; i < arr.Length - 1; i++)  
-        { 
-            swapped = false; 
-            for (j = 0; j < arr.Length - i - 1; j++)  
-            { 
-                if (CompareWR(arr[j], arr[j + 1]) arr[j] > arr[j + 1])  
+        int i, j;
+        WeightedRecipies temp;
+        bool swapped;
+        for (i = 0; i < arr.Length - 1; i++)
+        {
+            swapped = false;
+            for (j = 0; j < arr.Length - i - 1; j++)
+            {
+                if (CompareWR(arr[j], arr[j + 1]))
                 {
-            swap arr[j] and arr[j + 1]
-            temp = arr[j];
-            arr[j] = arr[j + 1];
-            arr[j + 1] = temp;
-            swapped = true;
+                    temp = arr[j];
+                    arr[j] = arr[j + 1];
+                    arr[j + 1] = temp;
+                    swapped = true;
+                }
+            }
+
+            if (swapped == false)
+                break;
         }
+
+        return arr.ToList();
     }
-
-    // IF no two elements were  
-    // swapped by inner loop, then break 
-    //if (swapped == false) 
-    //break; *
-        } 
-
-        return null;
-    }*/
 }
