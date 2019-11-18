@@ -30,8 +30,8 @@ namespace FrontEnd2.Data
         public double latitude;
         public double longitude;
         public string url;
-        //public string token = "d0b9a5266a2749cda99d4468319b6d9f";
-        public string token = "f0cabde6bb8d4bd78c28270ee203253f";
+        public string token = "d0b9a5266a2749cda99d4468319b6d9f";
+        //public string token = "f0cabde6bb8d4bd78c28270ee203253f";
 
         public CoopStoreApi GetStore()
         {

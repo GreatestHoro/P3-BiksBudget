@@ -50,12 +50,13 @@ h1 {
 }
 
 .miniBasketHeader{
-    background-color:aliceblue;
 }
 
 .miniBasket-btn {
+    font-family: "MetricLight","Helvetica","Arial",sans-serif;
     width: 100%;
-    min-width: 0;
+    text-decoration: none;
+    text-shadow: none;
     display: block;
     font-weight: 500;
     font-size: 18px;
@@ -65,8 +66,7 @@ h1 {
     border: none;
     box-sizing: border-box;
     cursor: pointer;
-    background-color: #57634b;
-    position: relative;
+    position: center;
     text-align: center;
 }
 

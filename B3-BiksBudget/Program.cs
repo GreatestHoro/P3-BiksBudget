@@ -64,8 +64,26 @@ namespace BBGatherer
 
         public void TestCollection()
         {
-            List<Recipe> res = dbConnect.GetRecipes("Test");
+            dbConnect.AddUser("Test6", "Test", "BB");
 
+            List<Product> testList = new List<Product>();
+
+            Product tProd1 = new Product("F2141400000004", 5, "Full");
+            Product tProd2 = new Product("F2141640000000", 5, "Full");
+            Product tProd3 = new Product("F4001724019831", 5, "Full");
+
+            testList.Add(tProd1);
+            testList.Add(tProd2);
+            testList.Add(tProd3);
+
+            dbConnect.AddListToStorage("Test6", testList);
+
+            testList.Remove(tProd2);
+
+            dbConnect.UpdateStorage("Test6", testList);
+
+            /*
+            List <Recipe> recipes = new List<Recipe>();
             Console.WriteLine("?????");
 
             foreach(Recipe r in res)

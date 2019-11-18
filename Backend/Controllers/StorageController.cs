@@ -91,6 +91,7 @@ namespace Backend.Controllers
             if (buffer.Contains("PLS_DELETE"))
             {
                 //Delete the entire list
+                dbConnect.RemoveFromStorage(Email, newItem);
             }
             else
             {
@@ -99,14 +100,13 @@ namespace Backend.Controllers
                     buffer = "[" + buffer + "]";
 
                     newItem = JsonConvert.DeserializeObject<List<Product>>(buffer);
-                    dbConnect.RemoveFromStorage(Email, newItem);
+                    dbConnect.UpdateStorage(Email, newItem);
                 }
                 else
                 {
                     newItem = JsonConvert.DeserializeObject<List<Product>>(buffer);
-                    //resultList = newItem;
 
-                    dbConnect.RemoveFromStorage(Email, newItem);
+                    dbConnect.UpdateStorage(Email, newItem);
 
                 }
             } 

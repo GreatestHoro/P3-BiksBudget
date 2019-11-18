@@ -8,45 +8,43 @@
 @inject AuthenticationFunctionallity uf
 @using BBCollection.BBObjects;
 
-<h1>Storage</h1>
+<h1>My Fridge</h1>
 
 @if (email != null)
 {
     @if (ListFunc.itemList == null)
     {
         <p>
-            <em>Your Shoppinglist is Empty</em>
+            <em>Your Fridge is Empty</em>
         </p>
     }
     else
     {
-        <div class="container">
-            <div class="row col-md-12">
-                <table class="ShoppinglistTable table-bordered">
-                    <colgroup>
-                        <col style="width: 150px" />
-                        <col style="width: 130px" />
-                        <col style="width: 80px" />
-                        <col style="width: 120px" />
-                        <col style="width: 75px" />
-                    </colgroup>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-12">
+                <table class="table table-hover">
                     <thead>
-                        <tr class="text-center">
-                            <th>Name</th>
-                            <th>Full Amount</th>
-                            <th>Amount Remaining</th>
-                            <th>Added Date</th>
-                            <th>Item is Empty</th>
+                        <tr>
+                            <th style="width:10%">ID</th>
+                            <th style="width:30%">Product</th>
+                            <th style="width:20%">Amount</th>
+                            <th style="width:20%">Amount Remaining</th>
+                            <th style="width:10%">Date Added</th>
+                            <th style="width:10%">Delete</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var items in ListFunc.itemList)
                         {
-                            <tr class="text-center">
-                                <td>@items._id - @items._productName</td>
-                                <td>@items._amountleft * @items._amount</td>
-                                <td>
-                                    <p class="lead"></p>
+                            <tr>
+                                <td data-th="ID">@items._id</td>
+                                <td data-th="Product">@items._productName</td>
+                                <td data-th="Amount">
+                                    <input type="number" id="number" value="@items._amountleft" />
+                                    @items._amount
+                                </td>
+                                <td data-th="Amount Remaining">
                                     <div class="btn-group show-on-hover">
                                         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
                                             @items._state <span class="caret"></span>
@@ -59,29 +57,28 @@
                                         </ul>
                                     </div>
                                 </td>
-                                <td>@items._timeAdded</td>
-                                <td>
-                                    <div class="text-center">
-                                        <button @onclick="(() => DeleteProduct(items._id))"><i class="oi oi-trash"></i></button>
+                                <td data-th="Date added">@items._timeAdded</td>
+                                <td data-th="Delete">
+                                    <div>
+                                        <button class="btn btn-danger btn-sm" @onclick="(() => DeleteProduct(items._id))"><i class="oi oi-trash"></i></button>
                                     </div>
                                 </td>
                             </tr>
                         }
                     </tbody>
                 </table>
-                @if (ListFunc.itemList != null)
-                {
-                    <input placeholder="A new Product" @bind="@newProduct" />
-                    <button @onclick="AddProduct">Create</button>
-                }
-            </div>
-            <div>
-                <button @onclick="(() => ListFunc.DeleteFuncList(email))"><i class="oi oi-trash">Empty Shoppinglist</i></button>
-                <button @onclick="(() => ListFunc.AddFuncList(email))"><i class="oi oi-transfer">Save Shoppinglist</i></button>
             </div>
         </div>
+        <div class="row">
+            <div class="col-sm-4 of">
+                <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>ListFunc.AddFuncList(email))">Save Storage</button>
+            </div>
+            <div class="col-sm-4">
+                <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>ListFunc.DeleteFuncList(email))">Delete Storage</button>
+            </div>
+        </div>
+    </div>
     }
-
 }
 else
 {
