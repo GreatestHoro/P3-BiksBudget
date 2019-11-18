@@ -10,13 +10,15 @@ namespace BBCollection.BBObjects
         public string _userName;
         public string _password;
         public List<Product> _storage;
+        public List<string> _filters;
         
 
-        public User(string userName, string passWord, List<Product> storage)
+        public User(string userName, string passWord, List<Product> storage, List<string> filters)
         {
             _userName = userName;
             _password = passWord;
             _storage = storage;
+            _filters = filters;
         }
 
         public User(string userName, string password)

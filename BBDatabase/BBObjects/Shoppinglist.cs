@@ -8,7 +8,6 @@ namespace BBCollection.BBObjects
     {
         public string _name;
         public List<Product> _products;
-        public int amountOfProducts;
         public double _totalPrice;
 
         public Shoppinglist(string name, List<Product> products)
