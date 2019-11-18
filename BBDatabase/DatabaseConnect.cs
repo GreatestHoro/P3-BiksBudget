@@ -42,7 +42,7 @@ namespace BBCollection
 
         public void AddProduct(Product product)
         {
-            new InitializeDB().CreateSLTables(databaseInformation.GetConnect());
+            new ProductHandling().Insert(product, databaseInformation.GetConnect());
         }
 
         public List<Product> GetProducts(string productName)

@@ -32,7 +32,7 @@ namespace BBGatherer
         public void GenerateData()
         {
 
-            /*CoopDoStuff tryCoop = new CoopDoStuff("d0b9a5266a2749cda99d4468319b6d9f");
+            CoopDoStuff tryCoop = new CoopDoStuff("d0b9a5266a2749cda99d4468319b6d9f");
 
             List<CoopProduct> coopProducts = tryCoop.CoopFindEverythingInStore("24073");
 
@@ -52,58 +52,26 @@ namespace BBGatherer
                 count++;
                 Console.WriteLine(count);
                 dbConnect.AddProduct(new Product("B" + c.Ean, c.Navn, c.Navn2, c.Pris, "", "SuperBrugsen"));
-            }*/
+            }
 
 
-            RecipeCrawl WebRunner = new RecipeCrawl();
+            /*RecipeCrawl WebRunner = new RecipeCrawl();
             _ = WebRunner.GetRecipes(100, 1200, dbConnect);
 
             Console.WriteLine("web runner begins... fear its power");
-            Console.ReadLine();
+            Console.ReadLine();*/
         }
 
         public void TestCollection()
         {
-            //dbConnect.AddUser("Test", "Test", "BB");
+            List<Recipe> res = dbConnect.GetRecipes("Test");
 
-            List<Product> testList = new List<Product>();
+            Console.WriteLine("?????");
 
-            Product tProd1 = new Product("F2141400000004", 5, "Full");
-            Product tProd2 = new Product("F2141640000000", 5, "Full");
-            Product tProd3 = new Product("F4001724019831", 5, "Full");
-
-            testList.Add(tProd1);
-            testList.Add(tProd2);
-            testList.Add(tProd3);
-
-            dbConnect.AddListToStorage("Test", testList);
-
-            testList.Remove(tProd2);
-
-            dbConnect.UpdateStorage("Test", testList);
-
-            /*
-            List <Recipe> recipes = new List<Recipe>();
-
-            Ingredient ing1 = new Ingredient("TestIng1", "Kg", 50);
-            Ingredient ing2 = new Ingredient("TestIng2", "g", 200);
-            Ingredient ing3 = new Ingredient("TestIng3", "Tsk", 2);
-
-            List<Ingredient> ingredients = new List<Ingredient>();
-
-            ingredients.Add(ing1);
-            ingredients.Add(ing2);
-            ingredients.Add(ing3);
-
-            Recipe rec1 = new Recipe(1, "Flødeagurker", "Something", ingredients, 2);
-            Recipe rec2 = new Recipe(2, "Solbærsaft", "Something", ingredients, 2);
-
-            dbConnect.AddRecipe(rec1);
-            dbConnect.AddRecipe(rec2);*/
-
-
-            //List<Recipe> res = dbConnect.GetRecipes("Test6");
-
+            foreach(Recipe r in res)
+            {
+                Console.WriteLine(r._Name + " AND " + r._ingredientList.Count);
+            }
 
 
             //List<Shoppinglist> shoppinglists = dbConnect.GetShoppinglists("TestUser");
@@ -121,8 +89,7 @@ namespace BBGatherer
             }*/
 
             //Console.WriteLine(dbConnect.checkIfSomethingExist("users", "username", "Test"));
-            /*
-            dbConnect.AddUser("Test6", "Test", "email");
+            //dbConnect.AddUser("Test6", "Test", "email");
             //Console.WriteLine(dbConnect.CheckUser("Test", "Test"));
 
             //List<Product> testList = new List<Product>();
@@ -135,7 +102,7 @@ namespace BBGatherer
             //testList.Add(tProd2);
             //testList.Add(tProd3);
             //dbConnect.AddListToStorage("Test6", testList);
-            
+
 
             //List<Product> testList = new List<Product>();
 
