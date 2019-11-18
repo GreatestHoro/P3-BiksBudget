@@ -12,9 +12,9 @@ namespace BBGatherer
         static void Main(string[] args)
         {
             DataHandling dh = new DataHandling();
-            dh.GenerateDatabase();
-            dh.GenerateData();
-            //dh.TestCollection();
+            //dh.GenerateDatabase();
+            //dh.GenerateData();
+            dh.TestCollection();
         }
     }
 
@@ -65,7 +65,24 @@ namespace BBGatherer
         public void TestCollection()
         {
             //dbConnect.AddUser("Test", "Test", "BB");
-            
+
+            List<Product> testList = new List<Product>();
+
+            Product tProd1 = new Product("F2141400000004", 5, "Full");
+            Product tProd2 = new Product("F2141640000000", 5, "Full");
+            Product tProd3 = new Product("F4001724019831", 5, "Full");
+
+            testList.Add(tProd1);
+            testList.Add(tProd2);
+            testList.Add(tProd3);
+
+            dbConnect.AddListToStorage("Test", testList);
+
+            testList.Remove(tProd2);
+
+            dbConnect.UpdateStorage("Test", testList);
+
+            /*
             List <Recipe> recipes = new List<Recipe>();
 
             Ingredient ing1 = new Ingredient("TestIng1", "Kg", 50);
@@ -82,11 +99,11 @@ namespace BBGatherer
             Recipe rec2 = new Recipe(2, "Solbærsaft", "Something", ingredients, 2);
 
             dbConnect.AddRecipe(rec1);
-            dbConnect.AddRecipe(rec2);
+            dbConnect.AddRecipe(rec2);*/
 
-            
+
             //List<Recipe> res = dbConnect.GetRecipes("Test6");
-            
+
 
 
             //List<Shoppinglist> shoppinglists = dbConnect.GetShoppinglists("TestUser");

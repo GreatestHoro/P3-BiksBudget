@@ -9,6 +9,16 @@ namespace BBCollection.DBHandling
 {
     public class ProductHandling
     {
+        public void UpdateStorage(string username, List<Product> products, DatabaseInformation databaseInformation)
+        {
+            RemoveStorageFromUsername(username, databaseInformation);
+
+            Console.WriteLine(products.Count);
+            
+
+            AddToStorageFromUsername(username, products, databaseInformation);
+        }
+
         public void Insert(Product product, DatabaseInformation dbInformation)
         {
             string addProductQuery = "INSERT INTO `products`(`id`,`productname`,`amount`,`price`,`image`, `store`)" +
@@ -130,7 +140,7 @@ namespace BBCollection.DBHandling
 
         public void RemoveStorageFromUsername(string username, DatabaseInformation databaseInformation)
         {
-            string removeQuery = "REMOVE FROM `userstorage` WHERE `username` = @Username";
+            string removeQuery = "DELETE FROM `userstorage` WHERE `username` = @Username";
 
             MySqlCommand msc = new MySqlCommand(removeQuery);
 

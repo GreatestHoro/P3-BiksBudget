@@ -2,6 +2,7 @@
 using BBCollection.DBConncetion;
 using BBCollection.DBHandling;
 using BBCollection.HandleRecipe;
+using System;
 using System.Collections.Generic;
 
 namespace BBCollection
@@ -109,10 +110,14 @@ namespace BBCollection
             return new ProductHandling().ProductsInStorageFromUsername(username, databaseInformation.GetConnect());
         }
 
-        public void UpdateStorage(string username, List<Product> storage)
+        public void RemoveFromStorage(string username, List<Product> storage)
         {
             new ProductHandling().RemoveStorageFromUsername(username, databaseInformation.GetConnect());
-            new ProductHandling().AddToStorageFromUsername(username, storage, databaseInformation.GetConnect());
+        }
+
+        public void UpdateStorage(string username, List<Product> storage)
+        {
+            new ProductHandling().UpdateStorage(username, storage, databaseInformation.GetConnect());
         }
 
         /* Shoppinglist handling */
