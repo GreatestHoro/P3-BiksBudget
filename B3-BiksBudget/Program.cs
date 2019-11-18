@@ -64,7 +64,7 @@ namespace BBGatherer
 
         public void TestCollection()
         {
-            //dbConnect.AddUser("Test", "Test", "BB");
+            dbConnect.AddUser("Test6", "Test", "BB");
 
             List<Product> testList = new List<Product>();
 
@@ -76,11 +76,11 @@ namespace BBGatherer
             testList.Add(tProd2);
             testList.Add(tProd3);
 
-            dbConnect.AddListToStorage("Test", testList);
+            dbConnect.AddListToStorage("Test6", testList);
 
             testList.Remove(tProd2);
 
-            dbConnect.UpdateStorage("Test", testList);
+            dbConnect.UpdateStorage("Test6", testList);
 
             /*
             List <Recipe> recipes = new List<Recipe>();
@@ -121,8 +121,7 @@ namespace BBGatherer
             }*/
 
             //Console.WriteLine(dbConnect.checkIfSomethingExist("users", "username", "Test"));
-            /*
-            dbConnect.AddUser("Test6", "Test", "email");
+            //dbConnect.AddUser("Test6", "Test", "email");
             //Console.WriteLine(dbConnect.CheckUser("Test", "Test"));
 
             //List<Product> testList = new List<Product>();
