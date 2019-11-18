@@ -99,14 +99,14 @@ namespace Backend.Controllers
                     buffer = "[" + buffer + "]";
 
                     newItem = JsonConvert.DeserializeObject<List<Product>>(buffer);
-                    dbConnect.UpdateStorage(Email, newItem);
+                    dbConnect.RemoveFromStorage(Email, newItem);
                 }
                 else
                 {
                     newItem = JsonConvert.DeserializeObject<List<Product>>(buffer);
                     //resultList = newItem;
 
-                    dbConnect.UpdateStorage(Email, newItem);
+                    dbConnect.RemoveFromStorage(Email, newItem);
 
                 }
             } 

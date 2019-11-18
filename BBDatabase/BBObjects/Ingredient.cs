@@ -9,6 +9,7 @@ namespace BBCollection.BBObjects
         public float _Amount;
         public string _unit;
         public string _IngredientName;
+       
 
         public Ingredient(String IngredientName, string unit, float Amount)
         {
