@@ -1,4 +1,12 @@
-﻿@inherits LayoutComponentBase
+﻿
+@using Newtonsoft.Json;
+@using BBCollection.BBObjects;
+@using FrontEnd2.Data;
+
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject AuthenticationFunctionallity uf
+@inject HttpClient Http
+@inherits LayoutComponentBase
 
 <div class="sidebar">
     <NavMenu />
@@ -29,21 +37,44 @@
                 <button class="close float-left" @onclick="(() => closeMiniBasket())"><i class="oi oi-x"></i> </button>
             </div>
         </div>
-        <div class="miniBasketHeader row">
+        <div class="miniBasketHeader row no-gutters">
             <div class="col-sm-12">
-                <NavLink class="nav-link" href="shoppinglist">
-                <button type="button" class="btn btn-block btn-dark recipeDivDisplay rounded-0" @onclick="(() => closeMiniBasket())">Go to shoppinglist</button>
+                <NavLink href="shoppinglist">
+                    <button type="button" class="miniBasket-btn btn-outline-dark btn-link" @onclick="(() => closeMiniBasket())">Go to shoppinglist</button>
                 </NavLink>
             </div>
         </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <table class="table table-hover table-condensed">
+                    <colgroup>
+                        <col style="width:50%" />
+                        <col style="width:20%" />
+                        <col style="width:30%" />
+                    </colgroup>
+                    <tbody>
+                        @foreach (var item in shopFunc.itemList)
+                        {
+                            <tr>
+                                <td>@item._productName</td>
+                                <td>@item._amountleft</td>
+                                <td>@item._price</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
-    }
+     }
     <div class="content px-4">
         @Body
     </div>
 </div>
 
 @code{
+    ShoppinlistFunctionality shopFunc = new ShoppinlistFunctionality("api/Shoppinglist");
+
     bool openMiniBasket = false;
 
     void changeBasketState()
@@ -53,6 +84,7 @@
 
     void closeMiniBasket()
     {
-        openMiniBasket = false; 
+        openMiniBasket = false;
     }
+
 }
