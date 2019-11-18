@@ -13,7 +13,7 @@ namespace BBGatherer
         {
             DataHandling dh = new DataHandling();
             //dh.GenerateDatabase();
-            //dh.GenerateData();
+            dh.GenerateData();
             dh.TestCollection();
         }
     }
@@ -32,7 +32,7 @@ namespace BBGatherer
         public void GenerateData()
         {
 
-            CoopDoStuff tryCoop = new CoopDoStuff("d0b9a5266a2749cda99d4468319b6d9f");
+            /*CoopDoStuff tryCoop = new CoopDoStuff("d0b9a5266a2749cda99d4468319b6d9f");
 
             List<CoopProduct> coopProducts = tryCoop.CoopFindEverythingInStore("24073");
 
@@ -66,28 +66,29 @@ namespace BBGatherer
         {
             dbConnect.AddUser("Test6", "Test", "BB");
 
-            /*List<Product> testList = new List<Product>();
+            List<Product> testList = new List<Product>();
 
-            Product tProd1 = new Product("F2141400000004", 5, "Full");
-            Product tProd2 = new Product("F2141640000000", 5, "Full");
-            Product tProd3 = new Product("F4001724019831", 5, "Full");
+            Product tProd1 = new Product("B2000700000001", 5, "Full");
+
+            //Product tProd2 = new Product("F2141640000000", 5, "Full");
+            //Product tProd3 = new Product("F4001724019831", 5, "Full");
 
             testList.Add(tProd1);
-            testList.Add(tProd2);
-            testList.Add(tProd3);
+            //testList.Add(tProd2);
+            //testList.Add(tProd3);
 
             dbConnect.AddListToStorage("Test6", testList);
 
-            testList.Remove(tProd2);
+            //testList.Remove(tProd2);
 
-            dbConnect.UpdateStorage("Test6", testList);*/
+            //dbConnect.UpdateStorage("Test6", testList);
 
-            List<Recipe> res = dbConnect.GetRecipes("Lam");
+            //List<Recipe> res = dbConnect.GetRecipes("Lam");
 
-            foreach(Recipe r in res)
-            {
-                Console.WriteLine(r._ingredientList.Count);
-            }
+            //foreach(Recipe r in res)
+            //{
+            //    Console.WriteLine(r._ingredientList.Count);
+            //}
 
             /*
             List <Recipe> recipes = new List<Recipe>();
