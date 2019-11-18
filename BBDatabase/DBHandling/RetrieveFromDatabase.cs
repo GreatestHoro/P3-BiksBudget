@@ -19,6 +19,7 @@ namespace BBCollection.HandleRecipe
 
             foreach (DataRow r in new SQLConnect().DynamicSimpleListSQL(msc, dbInformation).Tables[0].Rows)
             {
+
                 Recipe recipe = new Recipe((int)r[0], (string)r[1], (string)r[3], GetIngredientsFromRecipeID((int)r[0], dbInformation), Convert.ToSingle(r[2]));
 
                 recipeList.Add(recipe);
@@ -31,10 +32,13 @@ namespace BBCollection.HandleRecipe
         {
             List<Ingredient> ingredients = new List<Ingredient>();
             string ingredientsToRecipeQuery = "SELECT ingredients.ingredientName, ingredientsinrecipe.unit, ingredientsinrecipe.amount " +
-                                              "FROM ingredientsinrecipe INNER JOIN ingredients ON ingredientsinrecipe.ingredientID = ingredients.id;";
+                                              "FROM ingredientsinrecipe INNER JOIN ingredients ON ingredientsinrecipe.ingredientID = ingredients.id " +
+                                              "WHERE ingredientsinrecipe.recipeID = @RecipeID;";
 
             MySqlCommand msc = new MySqlCommand(ingredientsToRecipeQuery);
             msc.Parameters.AddWithValue("@RecipeID", recipeID);
+
+            Console.WriteLine("RECIPE ID: " + recipeID);
 
             foreach (DataRow r in new SQLConnect().DynamicSimpleListSQL(msc, dbInformation).Tables[0].Rows)
             {

@@ -13,7 +13,7 @@ namespace BBGatherer
         {
             DataHandling dh = new DataHandling();
             //dh.GenerateDatabase();
-            //dh.GenerateData();
+            dh.GenerateData();
             dh.TestCollection();
         }
     }
@@ -66,9 +66,10 @@ namespace BBGatherer
         {
             dbConnect.AddUser("Test6", "Test", "BB");
 
-            List<Product> testList = new List<Product>();
+            /*List<Product> testList = new List<Product>();
 
             Product tProd1 = new Product("F2141400000004", 5, "Full");
+
             Product tProd2 = new Product("F2141640000000", 5, "Full");
             Product tProd3 = new Product("F4001724019831", 5, "Full");
 
@@ -80,7 +81,14 @@ namespace BBGatherer
 
             testList.Remove(tProd2);
 
-            dbConnect.UpdateStorage("Test6", testList);
+            dbConnect.UpdateStorage("Test6", testList);*/
+
+            List<Recipe> res = dbConnect.GetRecipes("Lam");
+
+            foreach(Recipe r in res)
+            {
+                Console.WriteLine(r._ingredientList.Count);
+            }
 
             /*
             List <Recipe> recipes = new List<Recipe>();
