@@ -71,10 +71,10 @@
         </div>
         <div class="row">
             <div class="col-sm-4 of">
-                <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>ListFunc.AddFuncList(email))">Save Storage</button>
+                <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>ListFunc.AddFuncList())">Save Storage</button>
             </div>
             <div class="col-sm-4">
-                <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>ListFunc.DeleteFuncList(email))">Delete Storage</button>
+                <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>ListFunc.DeleteFuncList())">Delete Storage</button>
             </div>
         </div>
     </div>
@@ -163,7 +163,7 @@ else
 
         if (isFound == false)
         {
-            ListFunc.DeleteItem(id, email);
+            ListFunc.DeleteItem(id);
         }
     }
 
@@ -182,7 +182,7 @@ else
             //    gottenData = await Http.GetStringAsync("https://localhost:44325/api/Login/" + email + "S");
             //}
             userId = email;
-            responseMessage = await ListFunc.GetProductsOnStart(email);
+            responseMessage = await ListFunc.GetStorageOnStart(email);
 
             StateHasChanged();
         }

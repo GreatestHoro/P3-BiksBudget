@@ -61,8 +61,8 @@ else
                                     </td>
                                     <td data-th="Subtotal" class="text-center">@ListFunc.FindSubtotal(item)</td>
                                     <td class="actions" data-th="">
-                                        <button class="btn btn-info btn-sm" @onclick="(() => ListFunc.AddItemToStorage(item, email))"><i class="oi oi-reload"></i></button>
-                                        <button class="btn btn-danger btn-sm" @onclick="(() => ListFunc.DeleteItem(item._id, email))"><i class="oi oi-trash"></i></button>
+                                        <button class="btn btn-info btn-sm" @onclick="(() => ListFunc.AddItemToStorage(item))"><i class="oi oi-reload"></i></button>
+                                        <button class="btn btn-danger btn-sm" @onclick="(() => ListFunc.DeleteItem(item._id))"><i class="oi oi-trash"></i></button>
                                     </td>
                                 </tr>
                             }
@@ -77,13 +77,13 @@ else
             </div>
             <div class="row">
                 <div class="col-sm-4">
-                    <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>ListFunc.AddShoppinlistToStorage(dest, email))">Add To Strorage</button>
+                    <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>ListFunc.AddShoppinlistToStorage(dest))">Add To Strorage</button>
                 </div>
                 <div class="col-sm-4">
-                    <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>ListFunc.AddFuncList(email))">Save Shoppinlist</button>
+                    <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>ListFunc.AddFuncList())">Save Shoppinlist</button>
                 </div>
                 <div class="col-sm-4">
-                    <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>ListFunc.DeleteFuncList(email))">Delete Shoppinglist</button>
+                    <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>ListFunc.DeleteFuncList())">Delete Shoppinglist</button>
                 </div>
             </div>
         </div>
@@ -136,7 +136,8 @@ else
                 Console.WriteLine($"Value for key {e.Key} changed from {e.OldValue} to {e.NewValue}");
             };
 
-            responseMessage = await ListFunc.GetProductsOnStart(email);
+            responseMessage = await ListFunc.GetStorageOnStart(email);
+
 
             StateHasChanged();
         }

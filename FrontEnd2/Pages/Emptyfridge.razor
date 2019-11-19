@@ -22,7 +22,7 @@
     protected async override Task OnInitializedAsync()
     {
         userId = email;
-        responseMessage = await ListFunc.GetProductsOnStart(userId);
+        responseMessage = await ListFunc.GetStorageOnStart(userId);
 
         FindValidRecipies(ListFunc.itemList);
     }
