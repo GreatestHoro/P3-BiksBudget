@@ -182,7 +182,8 @@ namespace BBCollection.DBHandling
 
             if (ds.Tables.Count != 0)
             {
-                if (ds.Tables[0].Rows.Count != 0)
+                if (ds.Tables[0].Rows.Count != 0) 
+
                 {
                     List<Product> products = new List<Product>();
                     string SLName = (string)ds.Tables[0].Rows[0][0];
