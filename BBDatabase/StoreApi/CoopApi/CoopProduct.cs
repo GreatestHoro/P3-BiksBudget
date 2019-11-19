@@ -1,6 +1,6 @@
-﻿namespace BBGatherer.StoreApi.CoopApi
+﻿namespace BBCollection.StoreApi.CoopApi
 {
-    class CoopProduct
+    public class CoopProduct
     {
         public string Ean { get; set; }
         public string Navn { get; set; }

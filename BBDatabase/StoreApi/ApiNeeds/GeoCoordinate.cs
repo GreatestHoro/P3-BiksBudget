@@ -1,4 +1,4 @@
-﻿namespace BBGatherer.StoreApi
+﻿namespace BBCollection.StoreApi
 {
     public class GeoCoordinate
     {

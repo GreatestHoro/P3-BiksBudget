@@ -1,6 +1,6 @@
-﻿namespace BBGatherer.StoreApi
+﻿namespace BBCollection.StoreApi
 {
-    class BearerAccessToken : IBearerToken
+    public class BearerAccessToken : IBearerToken
     {
         string _bearerToken { get; set; }
 

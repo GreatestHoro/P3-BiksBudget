@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace BBGatherer.StoreApi.SallingApi
+namespace BBCollection.StoreApi.SallingApi
 {
     class SallingAPIStore
     {

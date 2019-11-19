@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Web;
 
-namespace BBGatherer.StoreApi.SallingApi
+namespace BBCollection.StoreApi.SallingApi
 {
     public enum Brand { bilka, foetex, netto, salling, br, carlsjr, starbucks };
 
-    class SallingAPILink : APILink
+    public class SallingAPILink : APILink
     {
         #region Properties
         string _productSuggestionsBaseLink { get; set; }

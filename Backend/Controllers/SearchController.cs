@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using BBCollection.BBObjects;
-using BBGatherer.StoreApi;
+using BBCollection.StoreApi;
 using Newtonsoft.Json;
 
 namespace Backend.Controllers
@@ -15,9 +15,9 @@ namespace Backend.Controllers
     [ApiController]
     public class SearchController : ControllerBase
     {
-        // GET: api/Search/5
-        [HttpGet("{searchterm}")]
-        public string Get(string searchterm,string _keywordFilter,string _storeFilter)
+        // GET: api/Search?searchterm=øl&_keywordFilter=00&_storeFilter=111111111
+        [HttpGet]
+        public string GetProducts(string searchterm = "øl",string _keywordFilter = "00",string _storeFilter="100000000")
         {
             bool[] keywordFilter = GetFilters(_keywordFilter);
             bool[] storeFilter = GetFilters(_storeFilter);
@@ -28,11 +28,6 @@ namespace Backend.Controllers
             return JsonConvert.SerializeObject(filters.UseTogglefilters(searchterm));
         }
 
-        
-        private List<Product> CheckDatabases() { return null;  }
-        private List<Product> CheckSallingAPI() { return null; }
-
-
         public bool[] GetFilters(string filters)
         {
             char[] chars = filters.ToCharArray();
@@ -40,7 +35,7 @@ namespace Backend.Controllers
             int i = 0;
             foreach (char c in chars)
             {
-                if (c.Equals("1"))
+                if (c.Equals('1'))
                 {
                     results[i++] = true;
                 }

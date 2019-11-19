@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using BBCollection;
-using BBGatherer.StoreApi;
+using BBCollection.StoreApi;
+using BBCollection.StoreApi.ApiNeeds;
+using BBCollection.StoreApi.SallingApi;
 
 namespace BBCollection.BBObjects
 {
@@ -36,49 +38,58 @@ namespace BBCollection.BBObjects
             List<Product> FilteredList = new List<Product>();
             bool SallingFlag = false;
             bool flag = false;
+            int i = 0;
             List<Product> searchedProducts = dbConnect.GetProducts(searchterm);
             AppliedFiltersList keyWordFilters = new AppliedFiltersList(ToggleWordFilters, KeyWords);
             AppliedFiltersList storeNameFilters = new AppliedFiltersList(ToggleStoreFILters, StoreNames);
 
             do
             {
-
+                if (flag) 
+                {
+                    FilteredList = SearchForProducts(searchterm);
+                    flag = false;
+                }
                 FilteredList = StoreFilter(searchedProducts, storeNameFilters);
-
-
 
                 if (keyWordFilters.AppliedFilters.Count != 0)
                 {
                     FilteredList = keyWorkFilters(FilteredList, keyWordFilters);
                 }
-
-
-            } while (CheckList(FilteredList,out flag) || !SallingFlag || flag);
+                if (CheckList(FilteredList, out flag)) 
+                {
+                    break;
+                }
+            } while (i++ <=2);
 
             return FilteredList;
         }
-        private void SearchForProducts()
+        private List<Product> SearchForProducts(String searchterm)
         {
             BearerAccessToken bearerAccessToken = new BearerAccessToken("fc5aefca-c70f-4e59-aaaa-1c4603607df8");
-
-
             SallingAPILink linkMaker = new SallingAPILink();
             SallingAPIProductSuggestions productSuggestions = new SallingAPIProductSuggestions();
-            string apiLink = linkMaker.GetProductAPILink(Searchterm);
+            string apiLink = linkMaker.GetProductAPILink(searchterm);
             OpenHttp<SallingAPIProductSuggestions> openHttp;
-
+            List<Product> returnList = new List<Product>();
 
             openHttp = new OpenHttp<SallingAPIProductSuggestions>(apiLink, bearerAccessToken.GetBearerToken());
             productSuggestions = openHttp.ReadAndParseAPISingle();
 
+            foreach (SallingAPIProduct products in productSuggestions.Suggestions)
+            {
+                returnList.Add(new Product(products.id,products.title,products.description,products.price,products.img,"Bilka"));
+            }
+            return returnList;
         }
         private bool CheckList(List<Product> products, out bool flag) 
         {
             flag = true;
-            return products.Count == 0 ? true : false;
+            return products.Count != 0 ? true : false;
         }
         private List<Product> StoreFilter(List<Product> products, AppliedFiltersList stores)
         {
+            int i = 0;
             List<Product> returnProducts = new List<Product>();
             foreach (Product p in products)
             {
@@ -87,8 +98,12 @@ namespace BBCollection.BBObjects
                     if (p._storeName.Equals(a.name))
                     {
                         returnProducts.Add(p);
+                        break;
                     }
                 }
+
+                //stores.AppliedFilters[i].name.Equals((products.ToArray())[i]._productName);
+
 
             }
 
@@ -105,6 +120,7 @@ namespace BBCollection.BBObjects
                     if (p._productName.Contains(a.name) || p._amount.Contains(a.name))
                     {
                         returnProducts.Add(p);
+                        break;
                     }
                 }
 
