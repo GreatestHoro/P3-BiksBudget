@@ -187,26 +187,28 @@ namespace BBCollection.DBHandling
 
             if (ds.Tables.Count != 0)
             {
-                List<Product> products = new List<Product>();
-                string SLName = (string)ds.Tables[0].Rows[0][0];
-                foreach (DataRow r in ds.Tables[0].Rows)
+                if (ds.Tables[0].Rows.Count != 0) 
                 {
-                    Console.WriteLine("Not in here?");
-                    Product product = new Product((string)r[1], (string)r[2], (string)r[3], Convert.ToDouble(r[4]), (string)r[5], (string)r[6]);
+                    string SLName = (string)ds.Tables[0].Rows[0][0];
+                    List<Product> products = new List<Product>();
 
-                    if (SLName == (string)r[0])
+                    foreach (DataRow r in ds.Tables[0].Rows)
                     {
-                        products.Add(product);
+                        Product product = new Product((string)r[1], (string)r[2], (string)r[3], Convert.ToDouble(r[4]), (string)r[5], (string)r[6]);
+                        if (SLName == (string)r[0])
+                        {
+                            products.Add(product);
+                        }
+                        else
+                        {
+                            ShoppingLists.Add(new Shoppinglist(SLName, products));
+                            products = new List<Product>();
+                            products.Add(product);
+                        }
+                        SLName = (string)r[0];
                     }
-                    else
-                    {
-                        ShoppingLists.Add(new Shoppinglist(SLName, products));
-                        products = new List<Product>();
-                        products.Add(product);
-                    }
-                    SLName = (string)r[0];
+                    ShoppingLists.Add(new Shoppinglist(SLName, products));
                 }
-                ShoppingLists.Add(new Shoppinglist(SLName, products));
             }
             return ShoppingLists;
         }

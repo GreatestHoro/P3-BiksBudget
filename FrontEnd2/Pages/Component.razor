@@ -16,7 +16,7 @@
         </div>
         <div class="col-sm stackComponents">
             <span class="text-muted">
-                Showing @recipeData.Count out of 255
+                Showing @recipeData.Count out of 1814
             </span>
         </div>
     </div>
@@ -55,12 +55,15 @@
                         {
                             <tr>
                                 <td>@recipeAmount[i] @ingredients[i]._unit</td>
-                                <td>@ingredients[i]._IngredientName</td>
+                                <td>@ingredients[i]._ingredientName</td>
                             </tr>
                         }
                         <tr> 
                             <td colspan="2" class="text-sm-center"> <button class="buttonPadding" @onclick="incrementRecipeAmount"> <i class="oi oi-plus"></i> </button>
                             @recipePerPerson <button class="buttonPadding" @onclick="decrementRecipeAmount"> <i class="oi oi-minus"></i></button> </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"> <button type="button" class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => AddToShoppinglist())"> Add to Shopping List </button></td>
                         </tr>
                     </tbody>
                 </table>
@@ -107,7 +110,7 @@
 
         foreach (var item in ingredients)
         {
-            responseMessage = await ShopList.AddProductAsString(item._IngredientName, item._Amount.ToString() + item._unit, 0.00, "UNKOWN", "Test");
+            responseMessage = await ShopList.AddProductAsString(item._ingredientName, item._amount.ToString() + item._unit, 0.00, "UNKOWN");
         }
     }
 
@@ -159,7 +162,7 @@
             foreach (var item in show._ingredientList)
             {
                 ingredients.Add(item);
-                recipeAmount.Add(item._Amount);
+                recipeAmount.Add(item._amount);
             }
         }
         else
@@ -168,7 +171,7 @@
             foreach (var item in show._ingredientList)
             {
                 ingredients.Add(item);
-                recipeAmount.Add(item._Amount);
+                recipeAmount.Add(item._amount);
             }
         }
         viewIngredients = true;

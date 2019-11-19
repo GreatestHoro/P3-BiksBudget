@@ -29,6 +29,8 @@ namespace BBCollection.HandleRecipe
             new SQLConnect().NonQueryMSC(msc, dbInformation);
         }
 
+
+
         private void AddIngredientsToDatabase(List<Ingredient> ingredients, DatabaseInformation dbInformation)
         {
             foreach (Ingredient ingredient in ingredients)
@@ -45,17 +47,17 @@ namespace BBCollection.HandleRecipe
             string IngredientToDatabase = "INSERT INTO `Ingredients` (`ingredientName`) VALUES (@Ingredient);";
             MySqlCommand msc = new MySqlCommand(IngredientToDatabase);
 
-            msc.Parameters.AddWithValue("@Ingredient", ingredient._IngredientName);
+            msc.Parameters.AddWithValue("@Ingredient", ingredient._ingredientName);
 
             new SQLConnect().NonQueryMSC(msc, dbInformation);
         }
 
         private bool IngredientExist(Ingredient ingredient, DatabaseInformation dbInformation)
         {
-            string ingredientExist = "SELECT * FROM `Ingredients` WHERE `ingredientName` = @Ingredient;";
+            string ingredientExist = "SELECT * FROM `id` WHERE `id` = @Id;";
             MySqlCommand msc = new MySqlCommand(ingredientExist);
 
-            msc.Parameters.AddWithValue("@Ingredient", ingredient._IngredientName);
+            msc.Parameters.AddWithValue("@Id", ingredient._id);
 
             return new SQLConnect().CheckRecordExist(msc, dbInformation);
         }
@@ -71,11 +73,11 @@ namespace BBCollection.HandleRecipe
 
                 MySqlCommand msc = new MySqlCommand(addIngredientReferance);
 
-                Console.WriteLine(getIngredientFromName(ingredient._IngredientName, dbInformation) + " THIS IS INSIDE THE INGREDIENT!");
+                Console.WriteLine(getIngredientFromName(ingredient._ingredientName, dbInformation) + " THIS IS INSIDE THE INGREDIENT!");
 
                 msc.Parameters.AddWithValue("@RecipeID", recipe._recipeID);
-                msc.Parameters.AddWithValue("@IngredientID", getIngredientFromName(ingredient._IngredientName, dbInformation));
-                msc.Parameters.AddWithValue("@Amount", ingredient._Amount);
+                msc.Parameters.AddWithValue("@IngredientID", getIngredientFromName(ingredient._ingredientName, dbInformation));
+                msc.Parameters.AddWithValue("@Amount", ingredient._amount);
                 msc.Parameters.AddWithValue("@Unit", ingredient._unit);
 
                 new SQLConnect().NonQueryMSC(msc, dbInformation);

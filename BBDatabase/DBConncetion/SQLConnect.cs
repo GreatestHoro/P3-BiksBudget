@@ -19,7 +19,7 @@ namespace BBCollection.DBConncetion
             }
             catch (MySqlException e)
             {
-                Console.WriteLine(e);
+                //Console.WriteLine(e);
             }
             finally
             {
@@ -46,7 +46,7 @@ namespace BBCollection.DBConncetion
             }
             catch (MySqlException e)
             {
-                Console.Write(e);
+                //Console.Write(e);
             }
             finally
             {
@@ -86,7 +86,7 @@ namespace BBCollection.DBConncetion
             }
             catch(MySqlException e)
             {
-                Console.WriteLine(e);
+                //Console.WriteLine(e);
             }
             finally
             {
