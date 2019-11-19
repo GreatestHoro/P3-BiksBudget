@@ -52,7 +52,7 @@ namespace BBCollection.DBHandling
             }
             catch (MySqlException e)
             {
-                Console.WriteLine(e);
+                //Console.WriteLine(e);
             }
             finally
             {
@@ -77,7 +77,7 @@ namespace BBCollection.DBHandling
                 "CREATE TABLE IF NOT EXISTS `Ingredients` (" +
                 "`id` int auto_increment unique," +
                 "`ingredientName` VARCHAR(255) UNIQUE," +
-                "PRIMARY KEY(ingredientName));";
+                "PRIMARY KEY(id));";
 
             string ingredientInRecipeTable =
                 "CREATE TABLE IF NOT EXISTS `IngredientsInRecipe` (`id` INT AUTO_INCREMENT," +

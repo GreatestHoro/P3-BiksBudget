@@ -29,7 +29,7 @@ namespace BBGatherer
             dbConnect.InitializeShoppinglistDatabase();
         }
 
-        public void GenerateData()
+        public void GenerateData(bool coop, bool salling)
         {
 
             CoopDoStuff tryCoop = new CoopDoStuff("d0b9a5266a2749cda99d4468319b6d9f");
@@ -39,10 +39,7 @@ namespace BBGatherer
             int count = 0;
             foreach (CoopProduct c in coopProducts)
             {
-                count++;
-                Console.WriteLine(count);
-                dbConnect.AddProduct(new Product("F" + c.Ean, c.Navn, c.Navn2, c.Pris, "", "Fakta"));
-            }
+                CoopDoStuff tryCoop = new CoopDoStuff("d0b9a5266a2749cda99d4468319b6d9f");
 
             coopProducts = tryCoop.CoopFindEverythingInStore("2096");
 
@@ -100,19 +97,15 @@ namespace BBGatherer
             }
 
 
-            //List<Shoppinglist> shoppinglists = dbConnect.GetShoppinglists("TestUser");
 
-
-            //Console.WriteLine(res[0]._ingredientList[0]._IngredientName);
-
-            /*foreach (Shoppinglist sl in shoppinglists)
+            /*public void TestCollection()
             {
-                foreach (Product p in sl._products)
-                {
-                    Console.WriteLine(p._productName + sl._name);
 
-                }
-            }*/
+
+                //Console.WriteLine(dbConnect.checkIfSomethingExist("users", "username", "Test"));
+
+                dbConnect.AddUser("Test6", "Test", "email");
+                //Console.WriteLine(dbConnect.CheckUser("Test", "Test"));
 
             //Console.WriteLine(dbConnect.checkIfSomethingExist("users", "username", "Test"));
             //dbConnect.AddUser("Test6", "Test", "email");
@@ -130,14 +123,15 @@ namespace BBGatherer
             //dbConnect.AddListToStorage("Test6", testList);
 
 
-            //List<Product> testList = new List<Product>();
+                //List<Product> testList = new List<Product>();
 
-            //testList = dbConnect.GetStorageFromUsername("Test3");
+                //testList = dbConnect.GetStorageFromUsername("Test3");
 
-            //foreach (Product p in testList)
-            //{
-            //    Console.WriteLine(p._timeAdded);
-            //}
+                //foreach (Product p in testList)
+                //{
+                //    Console.WriteLine(p._timeAdded);
+                //}
+            }*/
         }
     }
 }

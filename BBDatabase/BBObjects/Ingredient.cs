@@ -6,16 +6,24 @@ namespace BBCollection.BBObjects
 {
     public class Ingredient
     {
-        public float _Amount;
+        public int _id;
+        public float _amount;
         public string _unit;
-        public string _IngredientName;
-       
+        public string _ingredientName;
 
-        public Ingredient(String IngredientName, string unit, float Amount)
+        public Ingredient(int id, string ingredientName, string unit, float amount)
         {
-            _IngredientName = IngredientName;
+            _id = id;
+            _ingredientName = ingredientName;
             _unit = unit;
-            _Amount = Amount;
+            _amount = amount;
+        }
+
+        public Ingredient(string ingredientName, string unit, float amount)
+        {
+            _ingredientName = ingredientName;
+            _unit = unit;
+            _amount = amount;
         }
     }
 }
