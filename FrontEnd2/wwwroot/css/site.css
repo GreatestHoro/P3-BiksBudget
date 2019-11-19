@@ -82,11 +82,18 @@ h1 {
     font-family: Arial;
     font-size: 15px;
     font-weight: bold;
-    padding: 6px 24px;
+    padding: 0px 0px 0px 0px;
     text-decoration: none;
     text-shadow: 0px 1px 0px #ffee66;
-    margin-right: 10px;
+    margin-left: 0px;
     margin-top: 2px;
+    max-width: 130px;
+    min-width: 100px;
+    max-height: 30px;
+    min-height: 20px;
+    /*position: center;*/
+    text-align: center;
+    float: right;
 }
 .LogIn:hover {
     background: linear-gradient(to bottom, #ffab23 5%, #ffec64 100%);
@@ -441,6 +448,9 @@ app {
     padding-left: 10px;
     /*text-align: center;*/
 }
+/*.logDesign {
+    height: 50%;
+}*/
 
 @media (max-width: 767.98px) {
     .main .top-row {
