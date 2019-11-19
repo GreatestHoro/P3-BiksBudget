@@ -23,6 +23,7 @@ namespace FrontEnd2.Data
         HttpClient Http = new HttpClient();
         string dest;
         public List<Product> itemList = new List<Product>();
+        List<Shoppinglist> shoppinglists = new List<Shoppinglist>();
         HttpResponseMessage response = new HttpResponseMessage();
         List<Product> TempStorageList = new List<Product>();
 
@@ -40,6 +41,17 @@ namespace FrontEnd2.Data
             productString = await Http.GetStringAsync("https://localhost:44325/" + dest + "/" + userId);
 
             itemList = JsonConvert.DeserializeObject<List<Product>>(productString);
+
+            return new HttpResponseMessage(HttpStatusCode.OK);
+        }
+
+        public async Task<HttpResponseMessage> GetShoppinglistOnStart(string userId)
+        {
+            productString = await Http.GetStringAsync("https://localhost:44325/" + dest + "/" + userId);
+
+            shoppinglists = JsonConvert.DeserializeObject<List<Shoppinglist>>(productString);
+
+            itemList = shoppinglists[0]._products;
 
             return new HttpResponseMessage(HttpStatusCode.OK);
         }

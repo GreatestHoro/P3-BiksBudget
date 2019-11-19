@@ -19,6 +19,7 @@ namespace Backend.Controllers
     public class ShoppinglistController : ControllerBase
     {
         DatabaseConnect dbConnect = new DatabaseConnect("localhost", "biksbudgetDB", "root", "BiksBudget123");
+        List<Shoppinglist> shoppinglists = new List<Shoppinglist>();
         List<Product> resultList = new List<Product>();
         string Email;
         //DatabaseConnect dbConnect = new DatabaseConnect("localhost", "biksbudgetDB", "root", "BiksBudget123");
@@ -32,11 +33,12 @@ namespace Backend.Controllers
         [HttpGet("{id}")]
         public string Get(string id)
         {
-            List<Product> storageList = dbConnect.GetStorageFromUsername(id);
+            //List<Product> storageList = dbConnect.GetStorageFromUsername(id);
+            shoppinglists = dbConnect.GetShoppinglists(id);
 
             //List<Product> resultList = ConvertBeforeSending(storageList);
 
-            string jsonStorage = JsonConvert.SerializeObject(storageList);
+            string jsonStorage = JsonConvert.SerializeObject(shoppinglists);
 
             return jsonStorage;
         }
@@ -82,13 +84,14 @@ namespace Backend.Controllers
                 {
                     buffer = "[" + buffer + "]";
 
-                    newItem = JsonConvert.DeserializeObject<List<Product>>(buffer);
+                    shoppinglists = JsonConvert.DeserializeObject<List<Shoppinglist>>(buffer);
+                    dbConnect.AddShoppingListsToDatabase(Email, shoppinglists);
                     //productData.Add(newItem[0]); // This means add one item to shoppinlist
-                    newItem.Clear();
                 }
                 else
                 {
-                    newItem = JsonConvert.DeserializeObject<List<Product>>(buffer);
+                    shoppinglists = JsonConvert.DeserializeObject<List<Shoppinglist>>(buffer);
+                    dbConnect.AddShoppingListsToDatabase(Email, shoppinglists);
                     //productData = newItem; // This means add a whole list to shoppinlist
                 }
             }
