@@ -13,15 +13,15 @@ namespace BBCollection.BBObjects
         bool[] ToggleWordFilters;
         String[] KeyWords = new string[] { "ØKO", "GLUTENFRI" };
         string[] StoreNames = new string[] {
-        "SuperBrugsen",
-        "Irma",
-        "Kvicly",
-        "DagligBrugsen",
-        "Bilka",
-        "Netto",
-        "Føtex",
-        "Saling",
-        "Fakta"
+            "SuperBrugsen",
+            "Irma",
+            "Kvicly",
+            "DagligBrugsen",
+            "Bilka",
+            "Netto",
+            "Føtex",
+            "Saling",
+            "Fakta"
         };
         bool[] ToggleStoreFILters;
         string[] blacklist;
@@ -143,6 +143,7 @@ namespace BBCollection.BBObjects
                     if (b)
                     {
                         AppliedFilters.Add(new AppliedFilters(s));
+                        break;
                     }
                 }
             }
