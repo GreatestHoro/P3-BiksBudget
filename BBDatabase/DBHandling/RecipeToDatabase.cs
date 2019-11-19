@@ -29,6 +29,8 @@ namespace BBCollection.HandleRecipe
             new SQLConnect().NonQueryMSC(msc, dbInformation);
         }
 
+
+
         private void AddIngredientsToDatabase(List<Ingredient> ingredients, DatabaseInformation dbInformation)
         {
             foreach (Ingredient ingredient in ingredients)
