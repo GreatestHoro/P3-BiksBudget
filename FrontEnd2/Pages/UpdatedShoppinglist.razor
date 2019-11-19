@@ -14,7 +14,7 @@
 
 @if (email == null)
 {
-    <p> You need to be logged in to wieved in shoppinglist</p>
+    <p> You need to be logged in to see shoppinglist</p>
 }
 else
 {
@@ -77,13 +77,13 @@ else
             </div>
             <div class="row">
                 <div class="col-sm-4">
-                    <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>ListFunc.AddShoppinlistToStorage(dest))">Add To Strorage</button>
+                    <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>ListFunc.AddShoppinlistToStorage(dest))">Add to strorage</button>
                 </div>
                 <div class="col-sm-4">
-                    <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>ListFunc.AddFuncList())">Save Shoppinlist</button>
+                    <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>ListFunc.AddFuncList())">Save shoppinlist</button>
                 </div>
                 <div class="col-sm-4">
-                    <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>ListFunc.DeleteFuncList())">Delete Shoppinglist</button>
+                    <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>ListFunc.DeleteFuncList())">Delete shoppinglist</button>
                 </div>
             </div>
         </div>
