@@ -8,13 +8,13 @@
 
 <div class="container-fluid">
     <div class="row">
-        <div class="col-sm stackComponents">
+        <div class="col-sm-6 stackComponents">
             <input class="form-check-input" placeholder="Search..." @bind="searchTerm" @onkeyup="OnKeyPress" />
         </div>
-        <div class="col-sm stackComponents">
+        <div class="col-sm-3 stackComponents">
             <button type="button" class="btn-success" @onclick="(() => Search())"> Find Recipe </button>
         </div>
-        <div class="col-sm stackComponents">
+        <div class="col-sm-3 stackComponents">
             <span class="text-muted">
                 Showing @recipeData.Count out of 1814
             </span>
