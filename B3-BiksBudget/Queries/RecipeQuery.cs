@@ -75,7 +75,7 @@ namespace BBGatherer.Queries
             {
                 //procject List of Ingredient objects to a list of their name
                 //Add that range ^^ to resIngredients 
-                resIngredients.AddRange(recipe._ingredientList.Select((ingredient) => ingredient._IngredientName));
+                resIngredients.AddRange(recipe._ingredientList.Select((ingredient) => ingredient._ingredientName));
             }
 
             // return distinct ingredients
