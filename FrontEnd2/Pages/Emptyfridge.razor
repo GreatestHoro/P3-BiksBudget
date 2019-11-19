@@ -39,7 +39,7 @@
         //await Search();
         List<Recipe> ValidRecipies = new List<Recipe>();
         bool breakFlag;
-        List<Product> tester = new List<Product>() { new Product("1", "bacon", "full", 1d, "image", "lidl") };
+        List<Product> tester = new List<Product>() { new Product("1", "rødvin", "full", 1d, "image", "lidl"),new Product("1", "bacon", "full", 1d, "image", "lidl") };
         //string id, string productName, string amount, double price, string image, string storeName
         foreach (Recipe r in _recpies)
         {
@@ -69,7 +69,7 @@
 
     private List<WeightedRecipies> GenerateWeightedRecepies(List<Recipe> recipes, List<Product> storageInventory)
     {
-        List<Product> tester = new List<Product>() { new Product("1", "bacon", "full", 1d, "image", "lidl") };
+        List<Product> tester = new List<Product>() { new Product("1", "rødvin", "full", 1d, "image", "lidl"),new Product("1", "bacon", "full", 1d, "image", "lidl")  };
         List<WeightedRecipies> returnRecipies = new List<WeightedRecipies>();
         foreach (Recipe r in recipes)
         {
@@ -96,7 +96,8 @@
 
     private bool compareIngrdientAndProduct(Ingredient ingrdient, Product product)
     {
-        return product._productName.Contains(ingrdient._IngredientName);
+        //return product._productName.Contains(ingrdient._IngredientName);
+        return ingrdient._IngredientName.Contains(product._productName);
     }
 
     protected async Task Search()
@@ -113,7 +114,11 @@
         recpies = FindValidRecipies(ListFunc.itemList).Result;
         foreach (WeightedRecipies wr in recpies)
         {
-            testvalue =testvalue + wr._recipie._Name + " ? ";
+            if (wr.matchingIngrdientsNum > 1) 
+            {
+                testvalue =testvalue + wr._recipie._Name + " ? ";
+            }
+            
         }
     }
 
