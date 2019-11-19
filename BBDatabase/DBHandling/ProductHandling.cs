@@ -187,9 +187,7 @@ namespace BBCollection.DBHandling
 
             if (ds.Tables.Count != 0)
             {
-                List<Product> products = new List<Product>();
-                string SLName = (string)ds.Tables[0].Rows[0][0];
-                foreach (DataRow r in ds.Tables[0].Rows)
+                if (ds.Tables[0].Rows.Count != 0) 
                 {
                     Console.WriteLine("Not in here?");
                     Product product = new Product((string)r[1], (string)r[2], (string)r[3], Convert.ToDouble(r[4]), (string)r[5], (string)r[6]);
