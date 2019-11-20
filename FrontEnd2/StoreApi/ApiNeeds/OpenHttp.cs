@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
+using System;
 
 namespace FrontEnd2
 {
@@ -45,12 +46,23 @@ namespace FrontEnd2
             List<T> resList = new List<T>();
 
             var serializer = new JsonSerializer();
-            while (reader.Read())
+            try
             {
-                if (reader.TokenType == JsonToken.StartObject)
+                while (reader.Read())
                 {
-                    resList.Add(serializer.Deserialize<T>(reader));
+                    if (reader.TokenType == JsonToken.StartObject)
+                    {
+                        resList.Add(serializer.Deserialize<T>(reader));
+                    }
                 }
+            }
+            catch (Newtonsoft.Json.JsonReaderException e)
+            {
+                throw new ArgumentNullException(e.Message);
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
             }
 
             return resList;

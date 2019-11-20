@@ -10,7 +10,7 @@ h1 {
 .mapouter {
     position: relative;
     text-align: right;
-    height: 300px;
+    height: 400px;
     width: 400px;
     margin: 2em;
 }
@@ -20,7 +20,7 @@ h1 {
     background: none !important;
     height: auto;   
     width: auto;
-    border-color: lightgrey;
+    border-color: salmon;
     border-width: 10px;
     border-style: solid;
     border-radius: 5em;
@@ -129,6 +129,15 @@ h1 {
     min-width: 140px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1;
+}
+
+card-store-img {
+    width: 100px !important;
+    height: 66px !important;
+    object-fit: cover;
+    position: relative;
+    border-top-left-radius: calc(.25rem - 1px);
+    border-top-right-radius: calc(.25rem - 1px);
 }
 
 .top-nav {
