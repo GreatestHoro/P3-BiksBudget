@@ -12,9 +12,12 @@ namespace BBGatherer
         static void Main(string[] args)
         {
             DataHandling dh = new DataHandling();
-            //dh.GenerateDatabase();
-            dh.GenerateData(true, true);
+            dh.GenerateDatabase();
+            dh.GenerateData(false, true);
             dh.TestCollection();
+            //ProductSearchLinkConstructer yeet = new ProductSearchLinkConstructer(" øl ", "00", "111111111");
+            //Console.WriteLine(yeet.GetURL());
+            //Console.ReadLine();
         }
     }
 

@@ -1,0 +1,108 @@
+﻿@page "/yoot"
+@using BBCollection.BBObjects;
+@using System.Globalization
+@using FrontEnd2.StoreApi.ApiNeeds
+@using FrontEnd2.Data
+@inject IJSRuntime JsRuntime
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject AuthenticationFunctionallity uf
+
+<h3>Search A Product</h3>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-6">
+            <label for="search">Søg Efter En Råvare!</label>
+            <input type="text" id="search" class="form-control" placeholder="Råvare.." @onkeyup="@((e) => KeyPressed(e))" @bind="searchBox" />
+        </div>
+        <div class="col-sm-3">
+            <button type="button" class="btn btn-success" @onclick="@(() => SearchForProducts())">Search</button>
+            <button type="button" class="btn btn-warning" @onclick="GetUserLocation">What Is My Location?</button>
+        </div>
+    </div>
+    <div class="row top-margin">
+        @for (int i = 0; i < 100; i++)
+        {
+            <div class="col-sm-1">
+                <p>Please select your gender:</p>
+
+                <input type="radio" name="gender" value="YEET">@email <br>
+            </div>
+        }
+    </div>
+    @*<div class="form-group" col-md-6>
+            <label for="minPriceB">Minimum Price</label>
+            <input type="number" class="form-control" placeholder="Min Price" @bind="minPrice" />
+        </div>*@
+    @*<div class="form-group" col-md-6>
+            <label for="maxPriceB">Maximum Price</label>
+            <input type="number" class="form-control" placeholder="Max Price" @bind="maxPrice" />
+
+
+        </div>*@
+
+
+</div>
+
+<span>Your Location is: </span>
+<p id="demo"></p>
+
+
+@code {
+    static GeoCoordinate userGeoLocation = new GeoCoordinate(0, 0);
+    String searchBox;
+    String email;
+    private void KeyPressed(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            SearchForProducts();
+        }
+    }
+
+    private void SearchForProducts()
+    {
+        //save = searchBox;
+
+        if (searchBox != "")
+        {
+
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await GetLocalSession();
+            localStorage.Changed += (sender, e) =>
+            {
+                Console.WriteLine($"Value for key {e.Key} changed from {e.OldValue} to {e.NewValue}");
+            };
+
+            //responseMessage = await ListFunc.GetStorageOnStart(email);
+
+
+            StateHasChanged();
+        }
+
+    }
+
+    async Task GetLocalSession()
+    {
+        email = await localStorage.GetItemAsync<string>("Email");
+    }
+
+    async Task GetUserLocation()
+    {
+        await JsRuntime.InvokeVoidAsync(identifier: "getCoordinates");
+    }
+
+    [JSInvokable]
+    public static void UpdateUserLocation(double latitude, double longitude)
+    {
+        userGeoLocation._latitude = latitude;
+        userGeoLocation._longitude = longitude;
+    }
+
+
+}

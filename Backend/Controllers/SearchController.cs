@@ -17,7 +17,7 @@ namespace Backend.Controllers
     {
         // GET: api/Search?searchterm=øl&_keywordFilter=00&_storeFilter=111111111
         [HttpGet]
-        public string GetProducts(string searchterm = "øl",string _keywordFilter = "00",string _storeFilter="100000000")
+        public string GetProducts(string searchterm = "carlsberg",string _keywordFilter = "00",string _storeFilter="111111111")
         {
             bool[] keywordFilter = GetFilters(_keywordFilter);
             bool[] storeFilter = GetFilters(_storeFilter);
