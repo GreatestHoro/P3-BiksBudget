@@ -8,14 +8,14 @@
 @inject AuthenticationFunctionallity uf
 @using BBCollection.BBObjects;
 
-<h1>My Fridge</h1>
+<h1>My fridge</h1>
 
 @if (email != null)
 {
     @if (ListFunc.itemList == null)
     {
         <p>
-            <em>Your Fridge is Empty</em>
+            <em>Your fridge is empty</em>
         </p>
     }
     else
@@ -71,10 +71,10 @@
         </div>
         <div class="row">
             <div class="col-sm-4 of">
-                <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>ListFunc.AddFuncList())">Save Storage</button>
+                <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>ListFunc.AddFuncList())">Save storage</button>
             </div>
             <div class="col-sm-4">
-                <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>ListFunc.DeleteFuncList())">Delete Storage</button>
+                <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>ListFunc.DeleteFuncList())">Delete storage</button>
             </div>
         </div>
     </div>
@@ -82,7 +82,7 @@
 }
 else
 {
-    <p>You Need To Be Logged In To See Your Storage</p>
+    <p>You need to be logged in to see your storage</p>
 }
 
 

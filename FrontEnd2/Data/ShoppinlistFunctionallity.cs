@@ -77,17 +77,6 @@ namespace FrontEnd2.Data
 
         // NEW AND IMPROVED CODE BELOW
 
-        public double CalculatePrice()
-        {
-            double result = 0;
-
-            foreach (var item in itemList)
-            {
-                result += item._price * item._amountleft;
-            }
-            return result;
-        }
-
         public async Task<HttpResponseMessage> AddProductAsString(string name, string amount, double price, string id)
         {
             var response = new HttpResponseMessage();
@@ -198,7 +187,7 @@ namespace FrontEnd2.Data
         public async void AddItemToStorage(Product AddedItem)
         {
             TempStorageList.Add(AddedItem);
-            DeleteItem(AddedItem._id);
+            await DeleteItem(AddedItem._id);
         }
 
         public async void AddShoppinlistToStorage(string dest)
