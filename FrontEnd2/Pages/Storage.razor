@@ -123,33 +123,30 @@
                         </tr>
                     </thead>
                     <tbody>
-
                         @foreach (WeightedRecipies rep in recpies)
                         {
                             @if (found == true)
                             {
+                                @foreach (Product match in rep.products)
                                 {
-                                    @foreach (Product match in rep.products)
+                                    @for (int i = 0; i < ingredients.Count; i++)
                                     {
-                                        @foreach (Ingredient ing in ingredients)
-                                        {
-                                            matchFound();
-                                            <tr>
-                                                <td>
-                                                    @ing._amount @ing._unit
-                                                </td>
+                                        matchFound();
+                                        <tr>
+                                            <td>
+                                                @recipeAmount[i] @ingredients[i]._unit
+                                            </td>
 
-                                                @if (ing._ingredientName.Contains(match._productName))
-                                                {
-                                                    <td style="background-color:green">@ing._ingredientName</td>
-                                                }
+                                            @if (ingredients[i]._ingredientName.Contains(match._productName))
+                                            {
+                                                <td style="background-color:green">@ingredients[i]._ingredientName</td>
+                                            }
 
-                                                else
-                                                {
-                                                    <td style="background-color:red"> @ing._ingredientName</td>
-                                                }
-                                            </tr>
-                                        }
+                                            else
+                                            {
+                                                <td style="background-color:red"> @ingredients[i]._ingredientName</td>
+                                            }
+                                        </tr>
                                     }
                                 }
                             }

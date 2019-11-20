@@ -21,6 +21,8 @@ namespace BBCollection.BBObjects
 
         }
 
+        public Shoppinglist() { }
+
         public void RemoveProduct(Product product)
         {
             _totalPrice = _totalPrice - product._price;
