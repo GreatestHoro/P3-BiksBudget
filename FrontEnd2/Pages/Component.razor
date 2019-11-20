@@ -75,6 +75,7 @@
         </div>
     </div>
 </div>
+<<<<<<< Updated upstream
 <div class="container-fluid">
     <div class="row no-gutters">
         <div class="col-sm-2 offset-sm-5">
@@ -82,8 +83,12 @@
         </div>
     </div>
 </div>
+=======
+>>>>>>> Stashed changes
 
 @code{
+
+
     string recipeDescription = " ";
     string recipeName = " ";
     string printRecipe = " ";
@@ -178,7 +183,7 @@
         //viewAddToshoppinglist = true;
     }
 
-    protected async Task Search()
+    public async Task Search()
     {
         printRecipe = await Http.GetStringAsync("https://localhost:44325/api/recipe?recipeTitle=" + searchTerm);
         recipeData = JsonConvert.DeserializeObject<List<Recipe>>(printRecipe);
