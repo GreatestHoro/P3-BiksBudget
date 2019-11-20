@@ -79,9 +79,6 @@
                 <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>ListFunc.AddFuncList())">Save storage</button>
             </div>
             <div class="col-sm-4">
-                <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>ListFunc.AddFuncList(email))">Save Storage</button>
-            </div>
-            <div class="col-sm-4">
                 <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>ListFunc.DeleteFuncList())">Delete storage</button>
             </div>
             <div class="col-sm-4">
@@ -139,17 +136,17 @@
                                             matchFound();
                                             <tr>
                                                 <td>
-                                                    @ing._Amount @ing._unit
+                                                    @ing._amount @ing._unit
                                                 </td>
 
-                                                @if (match._IngredientName.Contains(ing._IngredientName))
+                                                @if (match._ingredientName.Contains(ing._ingredientName))
                                                 {
-                                                    <td style="background-color:green">@ing._IngredientName</td>
+                                                    <td style="background-color:green">@ing._ingredientName</td>
                                                 }
 
                                                 else
                                                 {
-                                                    <td style="background-color:red"> @ing._IngredientName</td>
+                                                    <td style="background-color:red"> @ing._ingredientName</td>
                                                 }
                                             </tr>
                                         }
@@ -315,7 +312,7 @@
     protected async override Task OnInitializedAsync()
     {
         userId = email;
-        responseMessage = await ListFunc.GetProductsOnStart(userId);
+        responseMessage = await ListFunc.GetStorageOnStart(userId);
     }
     #endregion
 
@@ -355,7 +352,7 @@
             foreach (var item in show._ingredientList)
             {
                 ingredients.Add(item);
-                recipeAmount.Add(item._Amount);
+                recipeAmount.Add(item._amount);
             }
         }
         else
@@ -365,7 +362,7 @@
             {
                 x++;
                 ingredients.Add(item);
-                recipeAmount.Add(item._Amount);
+                recipeAmount.Add(item._amount);
             }
         }
         viewIngredients = true;
@@ -467,7 +464,7 @@
 
     private bool compareIngrdientAndProduct(Ingredient ingrdient, Product product)
     {
-        return ingrdient._IngredientName.Contains(product._productName);
+        return ingrdient._ingredientName.Contains(product._productName);
     }
 
     protected async Task Search()
