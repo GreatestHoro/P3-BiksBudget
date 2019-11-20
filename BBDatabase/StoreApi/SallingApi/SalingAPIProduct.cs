@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace BBGatherer.StoreApi.SallingApi
+namespace BBCollection.StoreApi.SallingApi
 {
-    class SallingAPIProduct
+    public class SallingAPIProduct
     {
         public string title { get; set; }
         public string id { get; set; }

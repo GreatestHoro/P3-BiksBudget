@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace BBGatherer.StoreApi.CoopApi
+namespace BBCollection.StoreApi.CoopApi
 {
     class CoopStoreData
     {

@@ -12,6 +12,7 @@ namespace FrontEnd2.Data
         public int complexity { get; set; }
         public int matchingIngrdientsNum { get; set; }
         public List<Ingredient> matchingIngrdient = new List<Ingredient>();
+        public List<Product> products = new List<Product>();
 
         public WeightedRecipies(Recipe _recipie)
         {
@@ -19,9 +20,10 @@ namespace FrontEnd2.Data
             complexity = _recipie._ingredientList.Count();
         }
 
-        public void MatchFound(Ingredient ingrdient)
+        public void MatchFound(Ingredient ingrdient, Product product)
         {
             matchingIngrdient.Add(ingrdient);
+            this.products.Add(product);
             matchingIngrdientsNum = matchingIngrdient.Count();
         }
     }

@@ -1,13 +1,14 @@
 ﻿using BBCollection;
 using BBCollection.BBObjects;
-using BBGatherer.StoreApi;
-using BBGatherer.StoreApi.SallingApi;
 using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using BBCollection.StoreApi;
+using BBCollection.StoreApi.ApiNeeds;
+using BBCollection.StoreApi.SallingApi;
 
 
 namespace BBGatherer.Webcrawler

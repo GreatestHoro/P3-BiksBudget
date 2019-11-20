@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 using System.Collections;
-using BBGatherer.StoreApi.SallingApi;
-using BBGatherer.StoreApi;
-using BBGatherer.StoreApi.ApiNeeds;
+using BBCollection.StoreApi.SallingApi;
+using BBCollection.StoreApi;
+using BBCollection.StoreApi.ApiNeeds;
 using BBCollection;
 using System.Threading.Tasks;
 

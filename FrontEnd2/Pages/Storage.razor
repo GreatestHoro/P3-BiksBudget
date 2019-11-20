@@ -129,7 +129,7 @@
                             @if (found == true)
                             {
                                 {
-                                    @foreach (Ingredient match in rep.matchingIngrdient)
+                                    @foreach (Product match in rep.products)
                                     {
                                         @foreach (Ingredient ing in ingredients)
                                         {
@@ -139,7 +139,7 @@
                                                     @ing._amount @ing._unit
                                                 </td>
 
-                                                @if (match._ingredientName.Contains(ing._ingredientName))
+                                                @if (ing._ingredientName.Contains(match._productName))
                                                 {
                                                     <td style="background-color:green">@ing._ingredientName</td>
                                                 }
@@ -457,7 +457,7 @@
                 {
                     if (compareIngrdientAndProduct(i, p))
                     {
-                        w.MatchFound(i);
+                        w.MatchFound(i,p);
                     }
                 }
 

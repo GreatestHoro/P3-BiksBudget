@@ -1,0 +1,247 @@
+﻿@page "/yoot"
+@using BBCollection.BBObjects;
+@using FrontEnd2.Data
+@using Newtonsoft.Json
+@inject HttpClient Http
+@inject IJSRuntime JsRuntime
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject AuthenticationFunctionallity uf
+
+<h3>Search A Product</h3>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-6">
+            <label for="search">Søg Efter En Råvare!</label>
+            <input type="text" id="search" class="form-control" placeholder="Råvare.." @onkeyup="@KeyPressed" @bind="searchBox" />
+        </div>
+        <div class="col-sm-3">
+            <button type="button" class="btn btn-success" @onclick="@(() => SearchForProducts())">Search</button>
+            <button type="button" class="btn btn-warning" @onclick="GetUserLocation">What Is My Location?</button>
+        </div>
+    </div>
+    <div class="row top-margin">
+        <div class="btn-group show-on-hover">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                Select Stores <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                @foreach (FilterItem item in storeList)
+                {
+                    if (item.IsEnabled == true)
+                    {
+                        <li><button style="color:green" class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(() => ChangeState(item.FilterName, storeList))">@item.FilterName</button></li>
+                        //AddEnableStores(true,item.FilterName,EnabledStores);
+                    }
+                    else
+                    {
+                        <li><button style="color:red" class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(() => ChangeState(item.FilterName, storeList))">@item.FilterName</button></li>
+                        //AddEnableStores(false,item.FilterName,EnabledStores);
+                    }
+                }
+                <li><button class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(()=>SelectAll(storeList))">@storelistAllSelected</button></li>
+            </ul>
+        </div>
+
+        <div class="btn-group show-on-hover">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                Select Stores <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                @foreach (var item in wordList)
+                {
+                    if (item.IsEnabled == true)
+                    {
+                        <li><button style="color:green" class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(() => ChangeState(item.FilterName, wordList))">@item.FilterName</button></li>
+                        //AddEnableStores(true,item.FilterName,EnabledStores);
+                    }
+                    else
+                    {
+                        <li><button style="color:red" class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(() => ChangeState(item.FilterName, wordList))">@item.FilterName</button></li>
+
+                        //AddEnableStores(false,item.FilterName,EnabledStores);
+                    }
+                }
+                <li><button class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(()=>SelectAll(wordList))">@wordlistAllSelected</button></li>
+            </ul>
+        </div>
+        <input type="range" name="Yeet" min="0" max="10000" @bind="radius" />
+        <p>@radius</p>
+
+        @*<input id="ex7" type="text" data-slider-min="0" data-slider-max="20" data-slider-step="1" data-slider-value="5" data-slider-enabled="false" />
+            <input id="ex7-enabled" type="checkbox" /> Enabled*@
+
+    </div>
+
+    @*<div class="form-group" col-md-6>
+            <label for="minPriceB">Minimum Price</label>
+            <input type="number" class="form-control" placeholder="Min Price" @bind="minPrice" />
+        </div>*@
+    @*<div class="form-group" col-md-6>
+            <label for="maxPriceB">Maximum Price</label>
+            <input type="number" class="form-control" placeholder="Max Price" @bind="maxPrice" />
+
+
+        </div>*@
+    @foreach (var item in itemList)
+    {
+        <p>@item._productName</p>
+        <p>@item._storeName</p>
+        //<p>@item._productName</p>
+    }
+
+</div>
+
+
+@code {
+    StoreFilterList storeFilters = new StoreFilterList();
+    WordFilterList wordFIlters = new WordFilterList();
+    static GeoCoordinate userGeoLocation = new GeoCoordinate(0, 0);
+    String searchBox;
+    String email;
+    string storelistAllSelected = "Select All";
+    string wordlistAllSelected = "Select All";
+    bool storeBoolSetTo = true;
+    bool wordBoolSetTo = true;
+    int radius;
+    bool[] EnabledStores;
+    bool[] EnabledKeywords;
+    String productString;
+    List<Product> itemList = new List<Product>();
+
+    List<FilterItem> storeList = new List<FilterItem>();
+    List<FilterItem> wordList = new List<FilterItem>();
+    static TaskCompletionSource<GeoCoordinate> tcsUserLocation = new TaskCompletionSource<GeoCoordinate>();
+
+
+    public void ChangeState(string name, List<FilterItem> list)
+    {
+        foreach (var item in list)
+        {
+            if (item.FilterName == name)
+            {
+                item.IsEnabled = !item.IsEnabled;
+
+                break;
+            }
+        }
+
+    }
+
+    public void SelectAll(List<FilterItem> list)
+    {
+        foreach (var item in list)
+        {
+            item.IsEnabled = true;
+        }
+    }
+
+    private async Task KeyPressed(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await SearchForProducts();
+            StateHasChanged();
+        }
+    }
+
+    private async Task SearchForProducts()
+    {
+        //save = searchBox;
+
+        //if (searchBox == "")
+        {
+            updateFilters();
+            ProductSearchLinkConstructer link = new ProductSearchLinkConstructer(searchBox,ConvertBoolArrToStr(EnabledKeywords),ConvertBoolArrToStr(EnabledStores));
+            
+            productString = await Http.GetStringAsync(link.GetURL());
+
+            itemList = JsonConvert.DeserializeObject<List<Product>>(productString);
+
+        }
+    }
+    public void updateFilters()
+    {
+        for (int i = 0; i < storeFilters.GetStoreArray().Length; i++)
+        {
+            EnabledStores[i] = storeFilters.GetStoreArray()[i].IsEnabled;
+        }
+        for (int i = 0; i < wordFIlters.GetWordArray().Length; i++)
+        {
+            EnabledKeywords[i] = wordFIlters.GetWordArray()[i].IsEnabled;
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await GetLocalSession();
+            localStorage.Changed += (sender, e) =>
+            {
+                Console.WriteLine($"Value for key {e.Key} changed from {e.OldValue} to {e.NewValue}");
+            };
+
+            //responseMessage = await ListFunc.GetStorageOnStart(email);
+            storeList = storeFilters.GetStoreList();
+            wordList = wordFIlters.GetStoreList();
+            InitializeBoolArrays(storeList.Count, wordList.Count);
+
+            if (userGeoLocation._latitude == 0 && userGeoLocation._longitude == 0)
+            {
+                await GetUserLocation();
+                await tcsUserLocation.Task;
+            }
+
+            this.StateHasChanged();
+        }
+
+    }
+    public void InitializeBoolArrays(int stores,int words)
+    {
+        EnabledStores = new bool[stores];
+        EnabledKeywords = new bool[words];
+
+        EnabledStores = SetAllFilters(EnabledStores, true);
+        EnabledKeywords = SetAllFilters(EnabledKeywords, false);
+    }
+
+    public bool[] SetAllFilters(bool[] arr, bool setTo)
+    {
+        for (int i = 0; i < arr.Length; i++)
+        {
+            arr[i] = setTo;
+        }
+        return arr;
+    }
+
+    public string ConvertBoolArrToStr(bool[] arr)
+    {
+        char[] returnChar = new char[arr.Length];
+        for (int i = 0; i < arr.Length; i++)
+        {
+            returnChar[i] = arr[i] ? '1' : '0';
+        }
+        return new string(returnChar);
+    }
+
+    async Task GetLocalSession()
+    {
+        email = await localStorage.GetItemAsync<string>("Email");
+    }
+
+    async Task GetUserLocation()
+    {
+        await JsRuntime.InvokeVoidAsync(identifier: "getCoordinates");
+    }
+
+    [JSInvokable]
+    public static void UpdateUserLocation(double latitude, double longitude)
+    {
+        userGeoLocation._latitude = latitude;
+        userGeoLocation._longitude = longitude;
+        if (!tcsUserLocation.Task.IsCompleted)
+        {
+            tcsUserLocation.SetResult(userGeoLocation);
+        }
+    }
+}

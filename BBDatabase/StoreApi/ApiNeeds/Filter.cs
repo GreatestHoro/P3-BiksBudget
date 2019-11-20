@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BBGatherer.StoreApi.ApiNeeds
+namespace BBCollection.StoreApi.ApiNeeds
 {
     public class Filter<T>
     {
