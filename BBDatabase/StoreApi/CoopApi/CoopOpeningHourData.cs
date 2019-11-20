@@ -1,4 +1,4 @@
-﻿namespace BBGatherer.StoreApi.CoopApi
+﻿namespace BBCollection.StoreApi.CoopApi
 {
     class CoopOpeningHourData
     {

@@ -1,4 +1,4 @@
-﻿namespace BBGatherer.StoreApi.SallingApi
+﻿namespace BBCollection.StoreApi.SallingApi
 {
     class SallingAPIStoreAdress
     {

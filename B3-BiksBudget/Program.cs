@@ -1,4 +1,4 @@
-﻿using BBGatherer.StoreApi.CoopApi;
+﻿using BBCollection.StoreApi.CoopApi;
 using BBGatherer.Webcrawler;
 using BBCollection;
 using BBCollection.BBObjects;
@@ -12,9 +12,12 @@ namespace BBGatherer
         static void Main(string[] args)
         {
             DataHandling dh = new DataHandling();
-            //dh.GenerateDatabase();
-            //dh.GenerateData(true, true);
+            dh.GenerateDatabase();
+            dh.GenerateData(false, true);
             dh.TestCollection();
+            //ProductSearchLinkConstructer yeet = new ProductSearchLinkConstructer(" øl ", "00", "111111111");
+            //Console.WriteLine(yeet.GetURL());
+            //Console.ReadLine();
         }
     }
 
@@ -50,11 +53,11 @@ namespace BBGatherer
                 }
 
 
-                /*RecipeCrawl WebRunner = new RecipeCrawl();
+                RecipeCrawl WebRunner = new RecipeCrawl();
                 _ = WebRunner.GetRecipes(100, 1200, dbConnect);
 
                 Console.WriteLine("web runner begins... fear its power");
-                Console.ReadLine();*/
+                Console.ReadLine();
         }
 
         public void TestCollection()
@@ -133,4 +136,3 @@ namespace BBGatherer
     }
         }
     }
-

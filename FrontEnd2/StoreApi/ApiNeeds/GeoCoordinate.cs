@@ -11,6 +11,12 @@
             _latitude = lat;
         }
 
+        public GeoCoordinate(string lon, string lat)
+        {
+            _longitude = double.Parse(lon);
+            _latitude = double.Parse(lat);
+        }
+
         public override string ToString()
         {
             return _longitude.ToString() + "," + _latitude.ToString();

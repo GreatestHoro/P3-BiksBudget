@@ -5,9 +5,9 @@ using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace BBGatherer.StoreApi
+namespace BBCollection.StoreApi
 {
-    class OpenHttp<T>
+    public class OpenHttp<T>
     {
         HttpWebRequest _httpWebRequest { get; set; }
         string _apiLink { get; set; }

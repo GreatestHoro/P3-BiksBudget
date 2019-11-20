@@ -1,4 +1,4 @@
-﻿namespace BBGatherer.StoreApi
+﻿namespace BBCollection.StoreApi
 {
     interface IBearerToken
     {
