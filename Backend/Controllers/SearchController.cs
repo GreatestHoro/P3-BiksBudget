@@ -33,15 +33,20 @@ namespace Backend.Controllers
             char[] chars = filters.ToCharArray();
             bool[] results = new bool[filters.Length];
             int i = 0;
+
             foreach (char c in chars)
             {
                 if (c.Equals('1'))
                 {
                     results[i++] = true;
                 }
-                else
+                else if (c.Equals('0'))
                 {
                     results[i++] = false;
+                }
+                else 
+                {
+                    throw new SystemException("Error in generated link(was not 0 or 1)");
                 }
 
             }

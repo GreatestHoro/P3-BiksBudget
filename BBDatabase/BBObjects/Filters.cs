@@ -9,28 +9,21 @@ using BBCollection.StoreApi.SallingApi;
 namespace BBCollection.BBObjects
 {
     public class Filters
-    {
+    {   
+        StoreFilterList stores = new StoreFilterList();
+        WordFilterList keyWords = new WordFilterList();
         bool[] ToggleWordFilters;
-        String[] KeyWords = new string[] { "ØKO", "GLUTENFRI" };
-        string[] StoreNames = new string[] {
-            "SuperBrugsen",
-            "Irma",
-            "Kvicly",
-            "DagligBrugsen",
-            "Bilka",
-            "Netto",
-            "Føtex",
-            "Saling",
-            "Fakta"
-        };
         bool[] ToggleStoreFILters;
-        string[] blacklist;
+        FilterItem[] storeArray;
+        FilterItem[] wordArray;
         private DatabaseConnect dbConnect = new DatabaseConnect("localhost", "biksbudgetDB", "root", "BiksBudget123");
 
         public Filters(bool[] _ToggleWordFilters, bool[] _ToggleStoreFILters)
         {
             ToggleWordFilters = _ToggleWordFilters;
             ToggleStoreFILters = _ToggleStoreFILters;
+            storeArray = stores.GetStoreArray();
+            wordArray = keyWords.GetWordArray();
         }
 
         public List<Product> UseTogglefilters(string searchterm)
@@ -40,8 +33,8 @@ namespace BBCollection.BBObjects
             bool flag = false;
             int i = 0;
             List<Product> searchedProducts = dbConnect.GetProducts(searchterm);
-            AppliedFiltersList keyWordFilters = new AppliedFiltersList(ToggleWordFilters, KeyWords);
-            AppliedFiltersList storeNameFilters = new AppliedFiltersList(ToggleStoreFILters, StoreNames);
+            AppliedFiltersList keyWordFilters = new AppliedFiltersList(ToggleWordFilters, wordArray);
+            AppliedFiltersList storeNameFilters = new AppliedFiltersList(ToggleStoreFILters, storeArray);
 
             do
             {
@@ -134,19 +127,27 @@ namespace BBCollection.BBObjects
     {
         public List<AppliedFilters> AppliedFilters = new List<AppliedFilters>();
 
-        public AppliedFiltersList(bool[] filterApplied, String[] filterName)
+        public AppliedFiltersList(bool[] filterApplied, FilterItem[] filterName)
         {
-            foreach (var s in filterName)
+            if (filterApplied.Length == filterName.Length)
             {
-                foreach (var b in filterApplied)
+                foreach (var s in filterName)
                 {
-                    if (b)
+                    foreach (var b in filterApplied)
                     {
-                        AppliedFilters.Add(new AppliedFilters(s));
-                        break;
+                        if (b)
+                        {
+                            AppliedFilters.Add(new AppliedFilters(s.FilterName));
+                            break;
+                        }
                     }
                 }
             }
+            else 
+            {
+                throw new SystemException("bools and the length of options were not equal");
+            }
+
 
         }
         public AppliedFiltersList(String[] filterName)

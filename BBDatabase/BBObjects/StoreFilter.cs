@@ -11,11 +11,11 @@ using System.Web;
 using Json.Net;
 using System.IO;
 using Newtonsoft.Json.Linq;
-using FrontEnd2.Data;
 
-namespace FrontEnd2.Data
+
+namespace BBCollection.BBObjects
 {
-    class StoreFilterList
+    public class StoreFilterList
     {
         public List<FilterItem> storeList = new List<FilterItem>()
         {
@@ -32,35 +32,31 @@ namespace FrontEnd2.Data
 
         public List<FilterItem> GetStoreList()
         {
-            int i = 0;
-
-            foreach (var item in storeList)
-            {
-                item.Id = i++;
-            }
-
             return storeList;
+        }
+
+        public FilterItem[] GetStoreArray()
+        {
+            return storeList.ToArray();
         }
     }
 
-    class WordFilterList
+    public class WordFilterList
     {
-        public List<FilterItem> worFilterlist = new List<FilterItem>()
+        public List<FilterItem> wordFilterlist = new List<FilterItem>()
         {
-            new FilterItem("Økologisk", true),
-            new FilterItem("Glutenfri", true),
+            new FilterItem("Økologisk", false),
+            new FilterItem("Glutenfri", false),
         };
 
         public List<FilterItem> GetStoreList()
         {
-            int i = 0;
+            return wordFilterlist;
+        }
 
-            foreach (var item in worFilterlist)
-            {
-                item.Id = i++;
-            }
-
-            return worFilterlist;
+        public FilterItem[] GetWordArray()
+        {
+            return wordFilterlist.ToArray();
         }
     }
 
@@ -68,7 +64,6 @@ namespace FrontEnd2.Data
     {
         public string FilterName { get; set; }
         public bool IsEnabled { get; set; }
-        public int Id { get; set; }
 
         public FilterItem(string _filterName, bool _isEnabled)
         {
