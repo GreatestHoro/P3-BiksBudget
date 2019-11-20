@@ -95,9 +95,6 @@ namespace BBCollection.BBObjects
                     }
                 }
 
-                //stores.AppliedFilters[i].name.Equals((products.ToArray())[i]._productName);
-
-
             }
 
             return returnProducts;
