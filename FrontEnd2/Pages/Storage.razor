@@ -1,14 +1,12 @@
 ﻿@page "/storage"
-
-@using BBCollection.BBObjects;
 @using Newtonsoft.Json;
-@using FrontEnd2.Data;
-
-
 @inject HttpClient Http
+@using FrontEnd2.Data;
+@using System.Text;
+@using System.Globalization;
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject AuthenticationFunctionallity uf
-
+@using BBCollection.BBObjects;
 
 <h1>My fridge</h1>
 
@@ -21,7 +19,7 @@
         </p>
     }
     else
-    { @* Storage table *@
+    {
     <div class="container-fluid">
         <div class="row">
             <div class="col-sm-12">
@@ -71,112 +69,16 @@
                 </table>
             </div>
         </div>
-        @* Buttons *@
         <div class="row">
-<<<<<<< Updated upstream
             <div class="col-sm-4 of">
                 <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>ListFunc.AddFuncList())">Save storage</button>
-=======
-            <div class="col-sm-4">
-                <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>ListFunc.AddFuncList(email))">Save Storage</button>
->>>>>>> Stashed changes
             </div>
             <div class="col-sm-4">
                 <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>ListFunc.DeleteFuncList())">Delete storage</button>
             </div>
-            <div class="col-sm-4">
-                <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => Search())">Empty my Fridge</button>
-            </div>
         </div>
     </div>
-
-    @* Recipe display *@
-    <div class="container-fluid top-margin">
-        @if (recpies == null)
-        {
-            <p>Sorry, you dont have enough products</p>
-        }
-    <div class="row">
-        <div class="col-3">
-            @if (viewTitle == true)
-            {
-                <h3> You can make the following </h3>
-                <button class="close float-left" @onclick="(() => closeRecipies())"><i class="oi oi-x"></i> </button>
-                <ul class="recipeListDisplay">
-                    @foreach (var rep in recpies)
-                    {
-                        <li class="no-bullets"> <button type="button" class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => retriveInfo(rep._recipie._recipeID))"> @rep._recipie._Name </button> </li>
-                    }
-                </ul>
-            }
-        </div>
-        @if (viewIngredients == true)
-        {
-            <div class="col-2 offset-2">
-
-                <table class="table-bordered ingredientsTable">
-                    <colgroup>
-                        <col style="width: 100px" />
-                        <col style="width: 150px" />
-                    </colgroup>
-                    <thead>
-                        <tr>
-                            <th> Amount </th>
-                            <th> Name </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-
-                        @foreach (WeightedRecipies rep in recpies)
-
-                            @if (found == true)
-                            {
-                                {
-                                    @foreach (Ingredient match in rep.matchingIngrdient)
-                                    {
-                                        @foreach (Ingredient ing in ingredients)
-                                        {
-                                            matchFound();
-                                            <tr>
-                                                <td>
-                                                    @ing._Amount @ing._unit
-                                                </td>
-
-                                                @if (match._IngredientName.Contains(ing._IngredientName))
-                                                {
-                                                    <td style="background-color:green">@ing._IngredientName</td>
-                                                }
-
-                                                else
-                                                {
-                                                    <td style="background-color:red"> @ing._IngredientName</td>
-                                                }
-                                            </tr>
-                                        }
-                                    }
-                                }
-                             }
-                                <tr>
-                                    <td colspan="2" class="text-sm-center">
-                                        <div class="valueClass text-center">
-                                            <div class="value-button" id="increase" @onclick="(() => decrementRecipeAmount())" value="Increase @value"> - </div>
-                                            <input type="number" id="number" value="@recipePerPerson" />
-                                            <div class="value-button" id="decrease" @onclick="(() => incrementRecipeAmount())" value="Decrease @value"> + </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                </table>
-            </div>
-            <div class="col-4">
-                <h3> @recipeName </h3>
-                <p> @recipeDescription </p>
-            </div>
-            }
-        </div>
-    </div>
-
-}
+    }
 }
 else
 {
@@ -184,34 +86,18 @@ else
 }
 
 
+
 @code{
-    #region Fields
-    string productString, newProduct, _headingText, email, userId, testvalue, recipeDescription, recipeName;
-
-    float recipePerPerson;
-
-    int value;
-    int x;
-
-    bool found = true;
-    bool viewTitle = false;
-    bool viewIngredients = false;
-
+    string productString;
+    string newProduct;
     ShoppinlistFunctionality ListFunc = new ShoppinlistFunctionality("api/Storage");
     HttpResponseMessage responseMessage = new HttpResponseMessage();
 
+    string _headingText;
+    string email;
+    string userId;
 
-    List<float> recipeAmount = new List<float>();
-    List<Ingredient> ingredients = new List<Ingredient>();
-    List<WeightedRecipies> recpies = new List<WeightedRecipies>();
-    List<Recipe> _recpies = new List<Recipe>();
     List<string> ItemState = new List<string>() { "Full", "Almost Full", "Half Full", "Almost Empty" };
-
-    private delegate bool compareWR(WeightedRecipies r1, WeightedRecipies r2);
-    #endregion
-
-    #region Storage_Methods
-    //Storage functionalities
 
     private void DeleteAll()
     {
@@ -280,10 +166,6 @@ else
             ListFunc.DeleteItem(id);
         }
     }
-    #endregion
-
-    #region OnInit_async_Method
-    // On start up
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -302,7 +184,6 @@ else
             userId = email;
             responseMessage = await ListFunc.GetStorageOnStart(email);
 
-
             StateHasChanged();
         }
 
@@ -312,220 +193,4 @@ else
     {
         email = await localStorage.GetItemAsync<string>("Email");
     }
-
-    protected async override Task OnInitializedAsync()
-    {
-        userId = email;
-        responseMessage = await ListFunc.GetProductsOnStart(userId);
-    }
-    #endregion
-
-    #region Recipe_Display_Methods
-    void matchNotFound()
-    {
-        found = true;
-    }
-
-    void matchFound()
-    {
-        found = false;
-    }
-
-    void clear()
-    {
-        ingredients.Clear();
-        recipeAmount.Clear();
-    }
-
-    void closeRecipies()
-    {
-        viewTitle = false;
-        viewIngredients = false;
-    }
-
-    void retriveInfo(int ID)
-    {
-        Recipe show = _recpies.First(x => x._recipeID == ID);
-        recipeDescription = show._description;
-        recipeName = show._Name;
-        recipePerPerson = show._PerPerson;
-
-        found = true; 
-        if (show._ingredientList == null)
-        {
-            foreach (var item in show._ingredientList)
-            {
-                ingredients.Add(item);
-                recipeAmount.Add(item._Amount);
-            }
-        }
-        else
-        {
-            clear();
-            foreach (var item in show._ingredientList)
-            {
-                x++;
-                ingredients.Add(item);
-                recipeAmount.Add(item._Amount);
-            }
-        }
-        viewIngredients = true;
-        //viewAddToshoppinglist = true;
-    }
-
-    void incrementRecipeAmount()
-    {
-        for (int i = 0; i < recipeAmount.Count; i++)
-        {
-            if (recipeAmount[i] != 0)
-            {
-                recipeAmount[i] = (recipeAmount[i] / recipePerPerson) * (recipePerPerson + 1F);
-            }
-        }
-        recipePerPerson += 1;
-    }
-
-
-    void decrementRecipeAmount()
-    {
-        if (recipePerPerson >= 2)
-        {
-            for (int i = 0; i < recipeAmount.Count; i++)
-            {
-                if (recipeAmount[i] != 0)
-                {
-                    recipeAmount[i] = (recipeAmount[i] / recipePerPerson) * (recipePerPerson - 1F);
-
-                }
-            }
-            recipePerPerson -= 1;
-        }
-    }
-    #endregion
-
-    #region EmptyFridge_Methods
-
-
-    private async Task<List<WeightedRecipies>> FindValidRecipies(List<Product> storageInventory)
-    {
-        //await Search();
-        List<Recipe> ValidRecipies = new List<Recipe>();
-        bool breakFlag;
-        List<Product> tester = new List<Product>() { new Product("1", "bacon", "full", 1d, "image", "lidl") };
-        //string id, string productName, string amount, double price, string image, string storeName
-        foreach (Recipe r in _recpies)
-        {
-            breakFlag = false;
-            //foreach (Product p in storageInventory)
-            foreach (Product p in tester)
-            {
-                foreach (Ingredient i in r._ingredientList)
-                {
-                    if (compareIngrdientAndProduct(i, p))//kan godt være man bliver nødtil at lave en eller anden form for kryds referance
-                    {
-                        ValidRecipies.Add(r);
-                        breakFlag = true;
-                        break;
-                    }
-                }
-                if (breakFlag)
-                {
-                    break;
-                }
-            }
-
-        }
-
-        return GenerateWeightedRecepies(ValidRecipies, storageInventory); ;
-    }
-
-    private List<WeightedRecipies> GenerateWeightedRecepies(List<Recipe> recipes, List<Product> storageInventory)
-    {
-        List<Product> tester = new List<Product>() { new Product("1", "bacon", "full", 1d, "image", "lidl") };
-        List<WeightedRecipies> returnRecipies = new List<WeightedRecipies>();
-        foreach (Recipe r in recipes)
-        {
-            returnRecipies.Add(new WeightedRecipies(r));
-        }
-
-        foreach (WeightedRecipies w in returnRecipies)
-        {
-            //foreach (Product p in storageInventory)
-            foreach (Product p in tester)
-            {
-                foreach (Ingredient i in w._recipie._ingredientList)
-                {
-                    if (compareIngrdientAndProduct(i, p))
-                    {
-                        w.MatchFound(i);
-                    }
-                }
-
-            }
-        }
-        return returnRecipies;
-    }
-
-    private bool compareIngrdientAndProduct(Ingredient ingrdient, Product product)
-    {
-        return ingrdient._IngredientName.Contains(product._productName);
-    }
-
-    protected async Task Search()
-    {
-        string printRecipe;
-
-        printRecipe = await Http.GetStringAsync("https://localhost:44325/api/recipe?recipeTitle=" + " ");
-        _recpies = JsonConvert.DeserializeObject<List<Recipe>>(printRecipe);
-
-        compareWR test1 = new compareWR(CompareComplexity);
-        compareWR test2 = new compareWR(CompareMatches);
-
-        //recpies = Sort(FindValidRecipies(ListFunc.itemList).Result, test1);
-        recpies = FindValidRecipies(ListFunc.itemList).Result;
-        foreach (WeightedRecipies wr in recpies)
-        {
-            testvalue = testvalue + wr._recipie._Name + " ? ";
-        }
-        viewTitle = true;
-    }
-
-    private static bool CompareComplexity(WeightedRecipies r1, WeightedRecipies r2)
-    {
-        return r1.complexity > r2.complexity;
-    }
-
-    private static bool CompareMatches(WeightedRecipies r1, WeightedRecipies r2)
-    {
-        return r1.matchingIngrdientsNum > r2.matchingIngrdientsNum;
-    }
-
-    private static List<WeightedRecipies> Sort(List<WeightedRecipies> recipies, compareWR CompareWR)
-    {
-        WeightedRecipies[] arr = recipies.ToArray();
-
-        int i, j;
-        WeightedRecipies temp;
-        bool swapped;
-        for (i = 0; i < arr.Length - 1; i++)
-        {
-            swapped = false;
-            for (j = 0; j < arr.Length - i - 1; j++)
-            {
-                if (CompareWR(arr[j], arr[j + 1]))
-                {
-                    temp = arr[j];
-                    arr[j] = arr[j + 1];
-                    arr[j + 1] = temp;
-                    swapped = true;
-                }
-            }
-
-            if (swapped == false)
-                break;
-        }
-
-        return arr.ToList();
-    }
-    #endregion
 }
