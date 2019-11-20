@@ -333,13 +333,12 @@ ul.fixed {
 
 }
 
-a, .btn-link {
+a {
     /*color: #0366d6;*/
-    color: white;
+    color: black;
     font-size: 20px;
-    text-shadow: -2px 0 black, 0 2px black, 2px 0 black, 0 -2px black;
-    float: right;
-    padding: 20px;
+    font-weight: 300;
+    float: left;
 }
 
 .btn-primary {

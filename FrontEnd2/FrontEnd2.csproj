@@ -16,6 +16,7 @@
     <None Include="wwwroot\Pictures\salling-store-logos\foetex.png" />
     <None Include="wwwroot\Pictures\salling-store-logos\netto.png" />
     <None Include="wwwroot\Pictures\salling-store-logos\salling.png" />
+    <None Include="wwwroot\Pictures\headerpic.png" />
   </ItemGroup>
 
   <ItemGroup>
