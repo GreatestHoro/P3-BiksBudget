@@ -125,7 +125,7 @@
                     <tbody>
 
                         @foreach (WeightedRecipies rep in recpies)
-
+                        {
                             @if (found == true)
                             {
                                 {
@@ -152,7 +152,8 @@
                                         }
                                     }
                                 }
-                             }
+                            }
+                        }
                         <tr>
                             <td colspan="2" class="text-sm-center">
                                 <div class="valueClass text-center">
@@ -373,9 +374,11 @@
     {
         for (int i = 0; i < recipeAmount.Count; i++)
         {
+            found = true;
             if (recipeAmount[i] != 0)
             {
                 recipeAmount[i] = (recipeAmount[i] / recipePerPerson) * (recipePerPerson + 1F);
+                value++;
             }
         }
         recipePerPerson += 1;
@@ -388,10 +391,11 @@
         {
             for (int i = 0; i < recipeAmount.Count; i++)
             {
+                found = true;
                 if (recipeAmount[i] != 0)
                 {
                     recipeAmount[i] = (recipeAmount[i] / recipePerPerson) * (recipePerPerson - 1F);
-
+                    value--;
                 }
             }
             recipePerPerson -= 1;
