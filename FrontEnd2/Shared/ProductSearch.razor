@@ -1,7 +1,5 @@
 ﻿@page "/yoot"
 @using BBCollection.BBObjects;
-@using System.Globalization
-@using FrontEnd2.StoreApi.ApiNeeds
 @using FrontEnd2.Data
 @inject IJSRuntime JsRuntime
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
@@ -20,15 +18,49 @@
         </div>
     </div>
     <div class="row top-margin">
-        @for (int i = 0; i < 100; i++)
-        {
-            <div class="col-sm-1">
-                <p>Please select your gender:</p>
+        <div class="btn-group show-on-hover">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                Select Stores <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                @foreach (var item in storeList)
+                {
+                    if (item.IsEnabled == true)
+                    {
+                        <li><button style="color:green" class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(() => ChangeState(item.FilterName, storeList))">@item.FilterName</button></li>
 
-                <input type="radio" name="gender" value="YEET">@email <br>
-            </div>
-        }
+                    }
+                    else
+                    {
+                        <li><button style="color:red" class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(() => ChangeState(item.FilterName, storeList))">@item.FilterName</button></li>
+
+                    }
+                }
+                <li><button class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(()=>SelectAll(storeList))">@storelistAllSelected</button></li>
+            </ul>
+        </div>
+
+        <div class="btn-group show-on-hover">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                Select Stores <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                @foreach (var item in wordList)
+                {
+                    <li><button class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(() => ChangeState(item.FilterName, wordList))">@item.FilterName</button></li>
+
+                }
+                <li><button class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(()=>SelectAll(wordList))">@storelistAllSelected</button></li>
+            </ul>
+        </div>
+        <input type="range" name="Yeet" min="0" max="10000" @bind="radius" />
+        <p>@radius</p>
+
+        @*<input id="ex7" type="text" data-slider-min="0" data-slider-max="20" data-slider-step="1" data-slider-value="5" data-slider-enabled="false" />
+        <input id="ex7-enabled" type="checkbox" /> Enabled*@
+
     </div>
+      
     @*<div class="form-group" col-md-6>
             <label for="minPriceB">Minimum Price</label>
             <input type="number" class="form-control" placeholder="Min Price" @bind="minPrice" />
@@ -43,14 +75,43 @@
 
 </div>
 
-<span>Your Location is: </span>
-<p id="demo"></p>
-
 
 @code {
+    StoreFilterList storeFilters = new StoreFilterList();
+    WordFilterList wordFIlters = new WordFilterList();
     static GeoCoordinate userGeoLocation = new GeoCoordinate(0, 0);
     String searchBox;
     String email;
+    string storelistAllSelected = "Select All";
+    string wordlistAllSelected = "Select All";
+    bool storeBoolSetTo = true;
+    bool wordBoolSetTo = true;
+    int radius;
+
+    List<FilterItem> storeList = new List<FilterItem>();
+    List<FilterItem> wordList = new List<FilterItem>();
+    static TaskCompletionSource<GeoCoordinate> tcsUserLocation = new TaskCompletionSource<GeoCoordinate>();
+
+    public void ChangeState(string name, List<FilterItem> list)
+    {
+        foreach (var item in list)
+        {
+            if (item.FilterName == name)
+            {
+                item.IsEnabled = !item.IsEnabled;
+                break;
+            }
+        }
+    }
+
+    public void SelectAll(List<FilterItem> list)
+    {
+        foreach (var item in list)
+        {
+            item.IsEnabled = true;
+        }
+    }
+
     private void KeyPressed(KeyboardEventArgs e)
     {
         if (e.Key == "Enter")
@@ -80,9 +141,16 @@
             };
 
             //responseMessage = await ListFunc.GetStorageOnStart(email);
+            storeList = storeFilters.GetStoreList();
+            wordList = wordFIlters.GetStoreList();
 
+            if (userGeoLocation._latitude == 0 && userGeoLocation._longitude == 0)
+            {
+                await GetUserLocation();
+                await tcsUserLocation.Task;
+            }
 
-            StateHasChanged();
+            this.StateHasChanged();
         }
 
     }
@@ -102,7 +170,9 @@
     {
         userGeoLocation._latitude = latitude;
         userGeoLocation._longitude = longitude;
+        if (!tcsUserLocation.Task.IsCompleted)
+        {
+            tcsUserLocation.SetResult(userGeoLocation);
+        }
     }
-
-
 }
