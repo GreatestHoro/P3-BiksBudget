@@ -19,7 +19,7 @@
         </div>
         <div class="col-sm-3 stackComponents">
             <span class="text-muted">
-                Showing @recipeData.Count out of 1814
+                Showing @recipeData.Count out of 15943
             </span>
         </div>
     </div>
@@ -63,9 +63,9 @@
                         }
                         <tr>
                             <td colspan="2" class="text-sm-center">
-                                <button class="buttonPadding" @onclick="incrementRecipeAmount"> <i class="oi oi-plus"></i> </button>
-                                @recipePerPerson <button class="buttonPadding" @onclick="decrementRecipeAmount"> <i class="oi oi-minus"></i></button>
-                            </td>
+                            <div class="value-button" @onclick="incrementRecipeAmount" value="Increase @value"> + </div>
+                            <input type="number" id="number" value="@recipePerPerson" />
+                            <div class="value-button" @onclick="decrementRecipeAmount" value="Decrease @value"> - </div> </td>
                         </tr>
                         <tr>
                             <td colspan="2"> <button type="button" class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => AddToShoppinglist())"> Add to Shopping List </button></td>
@@ -91,6 +91,8 @@
     string email;
 
     float recipePerPerson;
+
+    int value;
 
     bool viewRecipeTitle = false;
     bool viewIngredients = false;
@@ -124,6 +126,7 @@
             if (recipeAmount[i] != 0)
             {
                 recipeAmount[i] = (recipeAmount[i] / recipePerPerson) * (recipePerPerson + 1F);
+                value++;
             }
         }
         recipePerPerson += 1;
@@ -139,6 +142,7 @@
                 if (recipeAmount[i] != 0)
                 {
                     recipeAmount[i] = (recipeAmount[i] / recipePerPerson) * (recipePerPerson - 1F);
+                    value--;
 
                 }
             }

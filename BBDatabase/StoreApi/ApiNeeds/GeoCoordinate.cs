@@ -1,6 +1,6 @@
-﻿namespace BBGatherer.StoreApi
+﻿namespace BBCollection.StoreApi
 {
-    class GeoCoordinate
+    public class GeoCoordinate
     {
         public double _longitude { get; set; }
         public double _latitude { get; set; }
@@ -9,6 +9,11 @@
         {
             _longitude = lon;
             _latitude = lat;
+        }
+        public GeoCoordinate(string lon, string lat)
+        {
+            _longitude = double.Parse(lon);
+            _latitude = double.Parse(lat);
         }
 
         public override string ToString()
