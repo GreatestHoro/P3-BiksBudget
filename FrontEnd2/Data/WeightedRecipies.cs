@@ -22,7 +22,6 @@ namespace FrontEnd2.Data
         public void MatchFound(Ingredient ingrdient)
         {
             matchingIngrdient.Add(ingrdient);
-            Console.WriteLine("yeet");
             matchingIngrdientsNum = matchingIngrdient.Count();
         }
     }

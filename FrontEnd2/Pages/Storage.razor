@@ -21,7 +21,7 @@
         </p>
     }
     else
-    { 
+    {
     @* Storage table *@
     <div class="container-fluid">
         <div class="row">
@@ -77,10 +77,9 @@
 
             <div class="col-sm-4 of">
                 <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>ListFunc.AddFuncList())">Save storage</button>
-
+            </div>
             <div class="col-sm-4">
                 <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>ListFunc.AddFuncList(email))">Save Storage</button>
-
             </div>
             <div class="col-sm-4">
                 <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>ListFunc.DeleteFuncList())">Delete storage</button>
@@ -157,32 +156,31 @@
                                     }
                                 }
                              }
-                                <tr>
-                                    <td colspan="2" class="text-sm-center">
-                                        <div class="valueClass text-center">
-                                            <div class="value-button" id="increase" @onclick="(() => decrementRecipeAmount())" value="Increase @value"> - </div>
-                                            <input type="number" id="number" value="@recipePerPerson" />
-                                            <div class="value-button" id="decrease" @onclick="(() => incrementRecipeAmount())" value="Decrease @value"> + </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
+                        <tr>
+                            <td colspan="2" class="text-sm-center">
+                                <div class="valueClass text-center">
+                                    <div class="value-button" id="increase" @onclick="(() => decrementRecipeAmount())" value="Increase @value"> - </div>
+                                    <input type="number" id="number" value="@recipePerPerson" />
+                                    <div class="value-button" id="decrease" @onclick="(() => incrementRecipeAmount())" value="Decrease @value"> + </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
             <div class="col-4">
                 <h3> @recipeName </h3>
                 <p> @recipeDescription </p>
             </div>
-            }
+          }
         </div>
     </div>
-
-}
-}
-else
-{
-    <p>You need to be logged in to see your storage</p>
-}
+    }
+ }
+    else
+    {
+        <p>You need to be logged in to see your storage</p>
+    }
 
 
 @code{
