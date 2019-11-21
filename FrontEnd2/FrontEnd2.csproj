@@ -6,10 +6,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+
     <None Include="wwwroot\Pictures\logo.png" />
-    <!--<None Include="wwwroot\Pictures\headerpic.png" />-->
-    <None Include="wwwroot\Pictures\header2.PNG" />
-    
+    <None Include="wwwroot\Pictures\headerpic.png" />
+    <None Include="wwwroot\Pictures\coop-store-logos\brugsen.png" />
+    <None Include="wwwroot\Pictures\coop-store-logos\daglibrugsen.png" />
+    <None Include="wwwroot\Pictures\coop-store-logos\fakta.png" />
+    <None Include="wwwroot\Pictures\coop-store-logos\kvickly.png" />
+    <None Include="wwwroot\Pictures\coop-store-logos\superbrugsen.png" />
+    <None Include="wwwroot\Pictures\headerpic.png" />
+    <None Include="wwwroot\Pictures\salling-store-logos\bilka.png" />
+    <None Include="wwwroot\Pictures\salling-store-logos\foetex.png" />
+    <None Include="wwwroot\Pictures\salling-store-logos\netto.png" />
+    <None Include="wwwroot\Pictures\salling-store-logos\salling.png" />
+    <None Include="wwwroot\Pictures\headerpic.png" />
 
   </ItemGroup>
 

@@ -5,7 +5,6 @@
 @inject IJSRuntime JsRuntime;
 
 @inject HttpClient  Http
-
 <p>Location:</p>
 <p>
     Latitude: @userGeoLocation._latitude <br />
@@ -18,85 +17,104 @@
 @if (viewMap == true)
 {
     <div class="mapouter">
-        <div class="gmap_canvas"><iframe width="400" height="300" id="gmap_canvas" src="@GoogleMapsIframeUserLocation()" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"></iframe></div>
+        <div class="gmap_canvas"><iframe width="400" height="400" id="gmap_canvas" src="@GoogleMapsIframeUserLocation()" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"></iframe></div>
     </div>
 }
 
 <p>The Following Stores Are in a Distance of : @radius</p>
-@if (coopStore.Data != null)
+@if (allStoresUnified.Any())
 {
 
-    @foreach (var item in coopStore.Data)
-    {
-        <p>
-            Retail Group Name: @item.RetailGroupName <br />
-            Zipcode: @item.Zipcode <br />
-            Adress: @item.Address <br />
-        </p>
-    }
+    <div class="card-columns">
 
+        @foreach (var store in allStoresUnified)
+        {
+
+            <div class="card" style="width: 18rem;">
+                <img src="@store._logoURL" width="100px" height="60px" class="card-store-img" alt="@store._brand  logo">
+                <div class="card-body">
+                    <h5 class="card-title">@store._brand</h5>
+                    <p class="card-text">@store._address</p>
+                    <button class="btn btn-primary">Choose This Shoppa</button>
+                </div>
+            </div>
+        }
+
+    </div>
 }
 else
 {
-    <p>There are no stores with the current filters.</p>
+<p>There are no stores with the current filters.</p>
 }
 
 
 
-@code{
-    GetIP getIP = new GetIP();
-    IpItem ipItem = new IpItem();
-    FindCloseStores closeStore;
-    CoopStoreApi coopStore = new CoopStoreApi();
-    static GeoCoordinate userGeoLocation = new GeoCoordinate(0, 0);
-
-    public int radius = 1000;
-    public string url;
-    public int newRadius;
-    static bool viewMap = false;
-
-    public void UpdateRadius()
-    {
-        radius = newRadius;
-    }
-
-    public async void ApplyFilters()
-    {
-        await GetUserLocation();
-
-        radius = newRadius;
-
-        FindStoreFunc();
-    }
+        @code{
+            GetIP getIP = new GetIP();
+            IpItem ipItem = new IpItem();
+            FindCloseStores closeStore;
+            List<UnifiedAPIStore> allStoresUnified = new List<UnifiedAPIStore>();
+            static TaskCompletionSource<GeoCoordinate> tcsUserLocation = new TaskCompletionSource<GeoCoordinate>();
+            static GeoCoordinate userGeoLocation = new GeoCoordinate(0, 0);
 
 
-    protected override async Task OnInitializedAsync()
-    {
-        ipItem = getIP.GetIpData();
-        newRadius = radius;
-    }
+            public int radius = 1000;
+            public string url;
+            public int newRadius;
+            static bool viewMap = false;
 
-    public void FindStoreFunc()
-    {
-        closeStore = new FindCloseStores(userGeoLocation, radius);
-        coopStore = closeStore.GetStore();
-    }
+            public void UpdateRadius()
+            {
+                radius = newRadius;
+            }
 
-    async Task GetUserLocation()
-    {
-        await JsRuntime.InvokeVoidAsync(identifier: "getCoordinates");
-    }
+            public async void ApplyFilters()
+            {
+                if (userGeoLocation._latitude == 0 && userGeoLocation._longitude == 0)
+                {
+                    await GetUserLocation();
+                    await tcsUserLocation.Task;
+                }
 
-    [JSInvokable]
-    public static void UpdateUserLocation(double latitude, double longitude)
-    {
-        viewMap = true;
-        userGeoLocation._latitude = latitude;
-        userGeoLocation._longitude = longitude;
-    }
+                radius = newRadius;
 
-    private string GoogleMapsIframeUserLocation()
-    {
-        return "https://maps.google.com/maps?q=" + userGeoLocation._latitude + "," + userGeoLocation._longitude + "&t=&z=15&ie=UTF8&iwloc=&output=embed";
-    }
-}
+                FindStoreFunc();
+
+                this.StateHasChanged();
+            }
+
+
+            protected override async Task OnInitializedAsync()
+            {
+                ipItem = getIP.GetIpData();
+                newRadius = radius;
+            }
+
+            public void FindStoreFunc()
+            {
+                closeStore = new FindCloseStores(userGeoLocation, radius);
+                allStoresUnified = closeStore.GetStore();
+            }
+
+            async Task GetUserLocation()
+            {
+                await JsRuntime.InvokeVoidAsync(identifier: "getCoordinates");
+            }
+
+            //[JSInvokable]
+            //public static void UpdateUserLocation(double latitude, double longitude)
+            //{
+            //    viewMap = true;
+            //    userGeoLocation._latitude = latitude;
+            //    userGeoLocation._longitude = longitude;
+            //    if (!tcsUserLocation.Task.IsCompleted)
+            //    {
+            //        tcsUserLocation.SetResult(userGeoLocation);
+            //    }
+            //}
+
+            private string GoogleMapsIframeUserLocation()
+            {
+                return "https://maps.google.com/maps?q=" + userGeoLocation._latitude + "," + userGeoLocation._longitude + "&t=&z=15&ie=UTF8&iwloc=&output=embed";
+            }
+        }

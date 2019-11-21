@@ -54,9 +54,9 @@ else
                                     <td data-th="Price">@item._price</td>
                                     <td data-th="Quantity">
                                         <div class="valueClass text-center">
-                                            <div class="value-button" id="increase" @onclick="(() => IncrementAmount(item._id))" value="Increase @value"> + </div>
+                                            <div class="value-button" id="increase" @onclick="(() => IncrementAmount(item._id))" value="Increase @value"> - </div>
                                             <input type="number" id="number" value="@item._amountleft" />
-                                            <div class="value-button" id="decrease" @onclick="(() => DecrementAmount(item._id))" value="Decrease @value"> - </div>
+                                            <div class="value-button" id="decrease" @onclick="(() => DecrementAmount(item._id))" value="Decrease @value"> + </div>
                                         </div>
                                     </td>
                                     <td data-th="Subtotal" class="text-center">@ListFunc.FindSubtotal(item)</td>

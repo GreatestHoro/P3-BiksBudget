@@ -3,6 +3,9 @@
 @using BBCollection.BBObjects;
 @using Newtonsoft.Json;
 @using FrontEnd2.Data;
+@using System.Diagnostics;
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject AuthenticationFunctionallity uf
 
 @inject HttpClient Http
 
@@ -16,7 +19,7 @@
         </div>
         <div class="col-sm-3 stackComponents">
             <span class="text-muted">
-                Showing @recipeData.Count out of 1814
+                Showing @recipeData.Count out of 15953
             </span>
         </div>
     </div>
@@ -58,9 +61,11 @@
                                 <td>@ingredients[i]._ingredientName</td>
                             </tr>
                         }
-                        <tr> 
-                            <td colspan="2" class="text-sm-center"> <button class="buttonPadding" @onclick="incrementRecipeAmount"> <i class="oi oi-plus"></i> </button>
-                            @recipePerPerson <button class="buttonPadding" @onclick="decrementRecipeAmount"> <i class="oi oi-minus"></i></button> </td>
+                        <tr>
+                            <td colspan="2" class="text-sm-center">
+                            <div class="value-button" @onclick="incrementRecipeAmount" value="Increase @value"> + </div>
+                            <input type="number" id="number" value="@recipePerPerson" />
+                            <div class="value-button" @onclick="decrementRecipeAmount" value="Decrease @value"> - </div> </td>
                         </tr>
                         <tr>
                             <td colspan="2"> <button type="button" class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => AddToShoppinglist())"> Add to Shopping List </button></td>
@@ -75,21 +80,19 @@
         </div>
     </div>
 </div>
-<div class="container-fluid">
-    <div class="row no-gutters">
-        <div class="col-sm-2 offset-sm-5">
-            @*<p>YEET YOOT</p>*@
-        </div>
-    </div>
-</div>
 
 @code{
+
+
     string recipeDescription = " ";
     string recipeName = " ";
     string printRecipe = " ";
     string searchTerm;
+    string email;
 
     float recipePerPerson;
+
+    int value;
 
     bool viewRecipeTitle = false;
     bool viewIngredients = false;
@@ -102,16 +105,18 @@
     List<Recipe> recipeData = new List<Recipe>();
 
     HttpResponseMessage responseMessage = new HttpResponseMessage();
+    ShoppinlistFunctionality ShopList = new ShoppinlistFunctionality("api/Shoppinglist");
 
     async void AddToShoppinglist()
     {
-        ShoppinlistFunctionality ShopList = new ShoppinlistFunctionality("api/Shoppinglist");
-
+        List<Product> listToSend = new List<Product>();
 
         foreach (var item in ingredients)
         {
-            responseMessage = await ShopList.AddProductAsString(item._ingredientName, item._amount.ToString() + item._unit, 0.00, "UNKOWN");
+            listToSend.Add(new Product() {_id = item._id.ToString(), _amount = item._amount + item._unit, _productName = item._ingredientName });
         }
+
+        //await ShopList.AddListToShoppinglist(listToSend);
     }
 
     void incrementRecipeAmount()
@@ -121,6 +126,7 @@
             if (recipeAmount[i] != 0)
             {
                 recipeAmount[i] = (recipeAmount[i] / recipePerPerson) * (recipePerPerson + 1F);
+                value++;
             }
         }
         recipePerPerson += 1;
@@ -136,6 +142,7 @@
                 if (recipeAmount[i] != 0)
                 {
                     recipeAmount[i] = (recipeAmount[i] / recipePerPerson) * (recipePerPerson - 1F);
+                    value--;
 
                 }
             }
@@ -178,7 +185,7 @@
         //viewAddToshoppinglist = true;
     }
 
-    protected async Task Search()
+    public async Task Search()
     {
         printRecipe = await Http.GetStringAsync("https://localhost:44325/api/recipe?recipeTitle=" + searchTerm);
         recipeData = JsonConvert.DeserializeObject<List<Recipe>>(printRecipe);
@@ -192,5 +199,25 @@
             await Search();
             StateHasChanged();
         }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            Debug.WriteLine("User: -> " + await localStorage.GetItemAsync<string>("Email"));
+            await GetLocalSession();
+            localStorage.Changed += (sender, e) =>
+            {
+                Console.WriteLine($"Value for key {e.Key} changed from {e.OldValue} to {e.NewValue}");
+            };
+            responseMessage = await ShopList.GetStorageOnStart(email);
+            StateHasChanged();
+        }
+    }
+
+    async Task GetLocalSession()
+    {
+        email = await localStorage.GetItemAsync<string>("Email");
     }
 }
