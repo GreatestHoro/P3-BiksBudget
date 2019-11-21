@@ -33,6 +33,7 @@ namespace BBCollection.DBHandling
             GenerateShoppingListTables(databaseInformation);
         }
 
+
         /*
          Check if database exist, if it don't it will create it
         */
@@ -105,7 +106,17 @@ namespace BBCollection.DBHandling
                 "`image` varchar(255), " +
                 "`store` varchar(255), " +
                 "PRIMARY KEY(id)); ";
+
+            string productInIngredientQuery =
+                "CREATE TABLE IF NOT EXISTS `ingredients_matching_product`(" +
+                "`ingredient_id` int, " +
+                "`product_id` varchar(255), " +
+                "foreign key(ingredient_id) references ingredients(id)," +
+                "foreign key(product_id) references products(id))";
+
+
             new SQLConnect().NonQueryString(productTable, databaseInformation);
+            new SQLConnect().NonQueryString(productInIngredientQuery, databaseInformation);
         }
 
         private void GenerateUserDatabaseTables(DatabaseInformation databaseInformation)
@@ -165,6 +176,11 @@ namespace BBCollection.DBHandling
                 "foreign key(product_id) references products(id));";
 
             new SQLConnect().NonQueryString(shoppingListTables, databaseInformation);
+        }
+
+        private void GenerateCombineProductAndIngredient(DatabaseInformation databaseInformation)
+        {
+            
         }
     }
 }
