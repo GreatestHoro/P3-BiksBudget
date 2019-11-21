@@ -263,5 +263,66 @@ namespace BBCollection.DBHandling
 
             new SQLConnect().NonQueryMSC(msc, databaseInformation);
         }
+
+        public void GoThroughIngredientsToFindProducts(DatabaseInformation databaseInformation)
+        {
+            string ingredientsQuery =
+                "SELECT * FROM INGREDIENTS";
+            MySqlCommand mscIng = new MySqlCommand(ingredientsQuery);
+            DataSet ds = new SQLConnect().DynamicSimpleListSQL(mscIng, databaseInformation);
+
+            Console.WriteLine("GOT HERE!");
+
+            if (ds.Tables.Count != 0)
+            {
+                if (ds.Tables[0].Rows.Count != 0)
+                {
+                    foreach(DataRow r in ds.Tables[0].Rows)
+                    {
+                        string productsWithIngredientQuery =
+                        "SELECT id FROM products WHERE productname LIKE @IngredientName";
+
+                        MySqlCommand mscProd = new MySqlCommand(productsWithIngredientQuery);
+
+                        mscProd.Parameters.AddWithValue("@IngredientName", r[1]);
+
+                        DataSet pds = new SQLConnect().DynamicSimpleListSQL(mscProd, databaseInformation);
+
+                        Console.WriteLine("GOT HERE!");
+
+                        if (ds.Tables.Count != 0)
+                        {
+                            if (ds.Tables[0].Rows.Count != 0)
+                            {
+                                foreach(DataRow p in pds.Tables[0].Rows)
+                                {
+                                    string insertCombinationQuery =
+                                    "INSERT INTO `products_matching_ingredients`(`ingredient_id`,`product_id`) VALUES(@IngredientID,@ProductsID)";
+
+                                    MySqlCommand mscCombine = new MySqlCommand(insertCombinationQuery);
+
+                                    mscCombine.Parameters.AddWithValue("@IngredientID", r[0]);
+                                    mscCombine.Parameters.AddWithValue("@ProductsID", p[0]);
+
+                                    new SQLConnect().NonQueryMSC(mscCombine, databaseInformation);
+                                }
+                                
+                            }
+                        }
+                    }
+                    
+
+
+                }
+            }
+
+        }
+
+        public List<Product> ProductsFromIngredientName(string ingredientname, DatabaseInformation databaseInformation)
+        {
+            string productQuery =
+                "";
+            return null;
+        }
     }
 }

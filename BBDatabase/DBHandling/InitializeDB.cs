@@ -108,7 +108,7 @@ namespace BBCollection.DBHandling
                 "PRIMARY KEY(id)); ";
 
             string productInIngredientQuery =
-                "CREATE TABLE IF NOT EXISTS `ingredients_matching_product`(" +
+                "CREATE TABLE IF NOT EXISTS `products_matching_ingredients`(" +
                 "`ingredient_id` int, " +
                 "`product_id` varchar(255), " +
                 "foreign key(ingredient_id) references ingredients(id)," +

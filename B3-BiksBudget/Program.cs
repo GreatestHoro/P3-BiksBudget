@@ -12,7 +12,7 @@ namespace BBGatherer
         static void Main(string[] args)
         {
             DataHandling dh = new DataHandling();
-            dh.GenerateDatabase();
+            //dh.GenerateDatabase();
             //dh.GenerateData(true, false);
             dh.TestCollection();
         }
@@ -20,7 +20,7 @@ namespace BBGatherer
 
     public class DataHandling
     {
-        public DatabaseConnect dbConnect = new DatabaseConnect("localhost", "biksbudgetDB3", "root", "BiksBudget123");
+        public DatabaseConnect dbConnect = new DatabaseConnect("localhost", "biksbudgetDB", "root", "BiksBudget123");
         public void GenerateDatabase()
         {
             dbConnect.InitializeDatabase();
@@ -62,9 +62,13 @@ namespace BBGatherer
 
         public void TestCollection()
         {
+
+
+            //dbConnect.combineProductsAndIngredients();
+
             /*dbConnect.AddUser("Test6", "Test");*/
 
-            List<Product> testList = new List<Product>();
+           /* List<Product> testList = new List<Product>();
 
             Product tProd1 = new Product(null, "TestCust", 5, "Full");
             Product tProd2 = new Product(null, "TestCust2", 5, "Full");
@@ -93,7 +97,7 @@ namespace BBGatherer
                 Console.WriteLine(p._customname);
                 Console.WriteLine(p._id);
                 
-            }
+            }*/
 
             /*Shoppinglist shoppinglist = new Shoppinglist("TestShoppingList",testList);
 
