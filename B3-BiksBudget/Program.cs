@@ -72,7 +72,12 @@ namespace BBGatherer
             testList.Add(tProd2);
             testList.Add(tProd3);
 
-            dbConnect.AddListToStorage("Test6", testList);
+            Shoppinglist shoppinglist = new Shoppinglist("TestShoppingList",testList);
+
+            List<Shoppinglist> ShoppingList2 = new List<Shoppinglist>();
+            ShoppingList2.Add(shoppinglist);
+
+            dbConnect.AddShoppingListsToDatabase("Test6", ShoppingList2);
 
             List<Shoppinglist> shoppinglists = dbConnect.GetShoppinglists("Test6");
 
@@ -90,7 +95,7 @@ namespace BBGatherer
                 }
             }
 
-            dbConnect.
+            dbConnect.DeleteShoppingListFromName("","Test6");
         }
     }
 }
