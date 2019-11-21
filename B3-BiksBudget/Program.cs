@@ -12,8 +12,8 @@ namespace BBGatherer
         static void Main(string[] args)
         {
             DataHandling dh = new DataHandling();
-            //dh.GenerateDatabase();
-            dh.GenerateData();
+            dh.GenerateDatabase();
+            //dh.GenerateData();
             dh.TestCollection();
         }
     }
@@ -32,7 +32,7 @@ namespace BBGatherer
         public void GenerateData()
         {
 
-            /*CoopDoStuff tryCoop = new CoopDoStuff("d0b9a5266a2749cda99d4468319b6d9f");
+            CoopDoStuff tryCoop = new CoopDoStuff("d0b9a5266a2749cda99d4468319b6d9f");
 
             List<CoopProduct> coopProducts = tryCoop.CoopFindEverythingInStore("24073");
 
@@ -60,11 +60,12 @@ namespace BBGatherer
 
             Console.WriteLine("web runner begins... fear its power");
             Console.ReadLine();*/
+
         }
 
         public void TestCollection()
         {
-            dbConnect.AddUser("Test6", "Test", "BB");
+            dbConnect.AddUser("Test6", "Test");
 
             List<Product> testList = new List<Product>();
 
@@ -99,16 +100,11 @@ namespace BBGatherer
             {
                 foreach (Product p in sl._products)
                 {
+                    Console.WriteLine("???");
                     Console.WriteLine(p._productName + sl._name);
 
                 }
             }
-
-            dbConnect.DeleteShoppingListFromName("TestShoppingList", "Test6");
-
-            List<Shoppinglist> shoppinglistsTest  = dbConnect.GetShoppinglists("Test6");
-
-            Console.WriteLine(shoppinglistsTest.Count);
         }
     }
 }

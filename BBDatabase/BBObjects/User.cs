@@ -9,8 +9,13 @@ namespace BBCollection.BBObjects
     {
         public string _userName;
         public string _password;
+        public List<Shoppinglist> _shoppinglists;
         public List<Product> _storage;
-        
+
+        public User(string userName, string password, List<Shoppinglist> shoppinglists)
+        {
+            
+        }
 
         public User(string userName, string passWord, List<Product> storage)
         {
