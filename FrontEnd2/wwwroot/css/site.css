@@ -6,7 +6,9 @@ html, body {
 h1 {
     text-align: center;
 }
-
+.productSearch {
+    margin-top: 30px;
+}
 .mapouter {
     position: relative;
     text-align: right;
@@ -20,7 +22,7 @@ h1 {
     background: none !important;
     height: auto;   
     width: auto;
-    border-color: lightgrey;
+    border-color: green;
     border-width: 10px;
     border-style: solid;
     border-radius: 5em;
@@ -95,10 +97,10 @@ h1 {
     text-align: center;
     float: right;
 }
-.LogIn:hover {
-    background: linear-gradient(to bottom, #ffab23 5%, #ffec64 100%);
-    background-color: #ffab23;
-}
+    .LogIn:hover {
+        background: linear-gradient(to bottom, #ffab23 5%, #ffec64 100%);
+        background-color: ffab23;
+    }
 .LogIn:active {
     position: relative;
     top: 1px;
