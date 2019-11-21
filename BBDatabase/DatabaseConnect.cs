@@ -69,7 +69,7 @@ namespace BBCollection
 
         /* In this section the user functions will get handled. */
 
-        public void AddUser(string username, string password, string email)
+        public void AddUser(string username, string password)
         {
             new UserHandling().InsertUser(username, password, databaseInformation.GetConnect());
         }

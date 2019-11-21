@@ -41,10 +41,6 @@
         {
             
             await localStorage.SetItemAsync("Email", email);
-            /*
-            await uf.GetAuthenticationStateAsync(email);
-            await LogUsername();
-            */
         } else
         {
             Debug.WriteLine("Testing Remove");
@@ -91,7 +87,6 @@
     {
         if (firstRender)
         {
-            Debug.WriteLine("User: -> " + await localStorage.GetItemAsync<string>("Email"));
             await GetLocalSession();
             localStorage.Changed += (sender, e) =>
             {
