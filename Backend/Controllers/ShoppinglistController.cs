@@ -100,10 +100,12 @@ namespace Backend.Controllers
                         toSend[0]._products.Add(item);
 
                     }
+                    
                 }
 
+                dbConnect.DeleteShoppingListFromName("Shoppinglist", Email);
                 dbConnect.AddShoppingListsToDatabase(Email, toSend);
-
+                
             }
 
         }

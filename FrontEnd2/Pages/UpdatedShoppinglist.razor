@@ -19,7 +19,7 @@
 else
 {
 
-    @if (ListFunc.itemList == null)
+    @if (ListFunc.CombinedList == null)
     {
         <p><em> Loading list .. </em></p>
     }
@@ -39,7 +39,7 @@ else
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var item in ListFunc.itemList)
+                            @foreach (var item in ListFunc.CombinedList)
                             {
                                 <tr>
                                     <td data-th="Product">
@@ -79,8 +79,11 @@ else
                 <div class="col-sm-4">
                     <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>ListFunc.AddShoppinlistToStorage(dest))">Add to strorage</button>
                 </div>
-                <div class="col-sm-4">
+                @*<div class="col-sm-4">
                     <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>ListFunc.AddFuncList())">Save shoppinlist</button>
+                </div>*@
+                <div class="col-sm-4">
+                    <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>SaveShoppinglist())">Save shoppinlist</button>
                 </div>
                 <div class="col-sm-4">
                     <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>ListFunc.DeleteFuncList())">Delete shoppinglist</button>
@@ -100,10 +103,13 @@ else
     int amount;
     int currentValue;
     string email;
+    List<Product> ToShoppinglist = new List<Product>();
+    string shopString;
+
 
     protected void IncrementAmount(string id)
     {
-        foreach (var item in ListFunc.itemList)
+        foreach (var item in ListFunc.CombinedList)
         {
             if (item._id == id && item._amountleft != 0)
             {
@@ -115,7 +121,7 @@ else
 
     protected void DecrementAmount(string id)
     {
-        foreach (var item in ListFunc.itemList)
+        foreach (var item in ListFunc.CombinedList)
         {
 
             if (item._id == id && item._amountleft > 1)
@@ -136,7 +142,7 @@ else
                 Console.WriteLine($"Value for key {e.Key} changed from {e.OldValue} to {e.NewValue}");
             };
 
-            responseMessage = await ListFunc.GetStorageOnStart(email);
+            responseMessage = await ListFunc.GetShoppinglistOnStart(email, ToShoppinglist);
 
 
             StateHasChanged();
@@ -147,6 +153,22 @@ else
     async Task GetLocalSession()
     {
         email = await localStorage.GetItemAsync<string>("Email");
+        shopString = await localStorage.GetItemAsync<string>("ProductString");
+
+        if (!String.IsNullOrEmpty(shopString))
+        {
+            ToShoppinglist = JsonConvert.DeserializeObject<List<Product>>(shopString);
+        }
+    }
+
+    public async void SaveShoppinglist()
+    {
+        //shopString = JsonConvert.SerializeObject(ListFunc.CombinedList);
+
+        await localStorage.RemoveItemAsync("ProductString");
+        //await localStorage.SetItemAsync("ProductString", shopString);
+
+        ListFunc.AddFuncList();
     }
 
 }

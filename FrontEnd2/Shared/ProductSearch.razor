@@ -230,6 +230,8 @@
 
     public async void AddProductToSL(Product AddedItem)
     {
+        AddedItem._amountleft = 1;
+
         ToShoppinglist.Add(AddedItem);
 
         //await localStorage.RemoveItemAsync("Shoppinglist");
@@ -237,7 +239,7 @@
         shopString = JsonConvert.SerializeObject(ToShoppinglist);
 
         await localStorage.SetItemAsync("ProductString", shopString);
-        await localStorage.SetItemAsync("Shoppinglist", ToShoppinglist);
+        //await localStorage.SetItemAsync("Shoppinglist", ToShoppinglist);
     }
 
     private async Task KeyPressed(KeyboardEventArgs e)
@@ -336,7 +338,7 @@
             storeList = storeFilters.GetStoreList();
             wordList = wordFIlters.GetStoreList();
             InitializeBoolArrays(storeList.Count, wordList.Count);
-            await SLFunc.GetShoppinglistOnStart(email);
+            await SLFunc.GetShoppinglistOnStart(email, ToShoppinglist);
 
             if (userGeoLocation._latitude == 0 && userGeoLocation._longitude == 0)
             {
@@ -379,14 +381,12 @@
     async Task GetLocalSession()
     {
         email = await localStorage.GetItemAsync<string>("Email");
-        //ToShoppinglist = await localStorage.GetItemAsync<List<Product>>("Shoppinglist");
-        //slArray = await localStorage.GetItemAsync<Product[]>("SLArray");
         shopString = await localStorage.GetItemAsync<string>("ProductString");
 
-        ToShoppinglist = JsonConvert.DeserializeObject<List<Product>>(shopString);
-
-
-        //slArray[1] = new Product("1", "bacon", "full", 1d, "image", "lidl");
+        if (!String.IsNullOrEmpty(shopString))
+        {
+            ToShoppinglist = JsonConvert.DeserializeObject<List<Product>>(shopString);
+        }
     }
 
     async Task GetUserLocation()
