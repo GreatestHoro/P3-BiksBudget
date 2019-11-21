@@ -141,6 +141,7 @@ namespace BBCollection.DBHandling
                 "CREATE TABLE IF NOT EXISTS `userstorage` (" +
                 "`username` VARCHAR(255), " +
                 "`prodid` VARCHAR(255), " +
+                "`custom_name` VARCHAR(255), " +
                 "`amountStored` int, " +
                 "`timeadded` DATETIME DEFAULT CURRENT_TIMESTAMP, " +
                 "`state` varchar(255), " +

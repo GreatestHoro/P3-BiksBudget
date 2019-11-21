@@ -35,6 +35,7 @@ namespace FrontEnd2.Data
         BearerAccessToken bearerAccessToken = new BearerAccessToken("a6f4495c-ace4-4c39-805c-46071dd536db");
         List<UnifiedAPIStore> _unifiedAPIStores = new List<UnifiedAPIStore>();
         public string token = "f0cabde6bb8d4bd78c28270ee203253f";
+        
         public int RadiusInKM {
             get => _radiusInKM;
             set
