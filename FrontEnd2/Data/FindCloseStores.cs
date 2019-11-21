@@ -61,10 +61,14 @@ namespace FrontEnd2.Data
 
             List<UnifiedAPIStore> unifiedCoopStores = UnifiyCoopStores(coopStores);
 
-            List<UnifiedAPIStore> unifiedSallingStores = GetUnifiedSallingStores();
+            if (radius != 0)
+            {
+                List<UnifiedAPIStore> unifiedSallingStores = GetUnifiedSallingStores();
+                _unifiedAPIStores.AddRange(unifiedSallingStores);
+            }
 
             _unifiedAPIStores.AddRange(unifiedCoopStores);
-            _unifiedAPIStores.AddRange(unifiedSallingStores);
+            
 
             return _unifiedAPIStores;
         }
