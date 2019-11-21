@@ -22,7 +22,6 @@ namespace BBCollection.BBObjects
             _userName = userName;
             _password = passWord;
             _storage = storage;
-            _filters = filters;
         }
 
         public User(string userName, string password)

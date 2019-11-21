@@ -13,7 +13,7 @@ namespace BBGatherer
         {
             DataHandling dh = new DataHandling();
             dh.GenerateDatabase();
-            dh.GenerateData(false, true);
+            //dh.GenerateData(false, true);
             dh.TestCollection();
         }
     }
@@ -39,22 +39,22 @@ namespace BBGatherer
             //oopDoStuff tryCoop = new CoopDoStuff("d0b9a5266a2749cda99d4468319b6d9f");
 
             int count = 0;
-                coopProducts = tryCoop.CoopFindEverythingInStore("2096");
+            coopProducts = tryCoop.CoopFindEverythingInStore("2096");
 
-                count = 0;
-                foreach (CoopProduct c in coopProducts)
-                {
-                    count++;
-                    Console.WriteLine(count);
-                    dbConnect.AddProduct(new Product("B" + c.Ean, c.Navn, c.Navn2, c.Pris, "", "SuperBrugsen"));
-                }
+            count = 0;
+            foreach (CoopProduct c in coopProducts)
+            {
+                count++;
+                Console.WriteLine(count);
+                dbConnect.AddProduct(new Product("B" + c.Ean, c.Navn, c.Navn2, c.Pris, "", "SuperBrugsen"));
+            }
 
 
-                RecipeCrawl WebRunner = new RecipeCrawl();
-                _ = WebRunner.GetRecipes(100, 1200, dbConnect);
+            RecipeCrawl WebRunner = new RecipeCrawl();
+            _ = WebRunner.GetRecipes(100, 1200, dbConnect);
 
             Console.WriteLine("web runner begins... fear its power");
-            Console.ReadLine();*/
+            Console.ReadLine();
         }
 
         public void TestCollection()
@@ -74,25 +74,12 @@ namespace BBGatherer
 
             dbConnect.AddListToStorage("Test6", testList);
 
-            //testList.Remove(tProd2);
+            List<Shoppinglist> shoppinglists = dbConnect.GetShoppinglists("Test6");
 
-            //dbConnect.UpdateStorage("Test6", testList);
+            List<Recipe> recipes = new List<Recipe>();
 
-        //    List<Recipe> res = dbConnect.GetRecipes("Lam");
 
-        //foreach (Recipe r in res)
-        //{
-        //    Console.WriteLine(r._ingredientList.Count);
-        //}
 
-        
-        List <Recipe> recipes = new List<Recipe>();
-        Console.WriteLine("?????");
-
-        foreach(Recipe r in res)
-        {
-            Console.WriteLine(r._Name + " AND " + r._ingredientList.Count);
-        }
             foreach (Shoppinglist sl in shoppinglists)
             {
                 foreach (Product p in sl._products)
@@ -102,5 +89,8 @@ namespace BBGatherer
 
                 }
             }
+
+            dbConnect.
         }
     }
+}
