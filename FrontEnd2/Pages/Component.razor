@@ -61,6 +61,20 @@
 
                         @foreach (Ingredient ing in ingredients)
                         {
+                            <li class="no-bullets"> <button type="button" class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => retriveInfo(rep._recipeID))"> @rep._Name </button> </li>
+                        }
+                    </ul>
+                }
+            </div>
+            <div class="col-2 offset-2">
+                @if (viewIngredients == true)
+                {
+                    <table class="table-bordered ingredientsTable">
+                        <colgroup>
+                            <col style="width: 100px" />
+                            <col style="width: 150px" />
+                        </colgroup>
+                        <thead>
                             <tr>
                                 <td>@ing._amount @ing._unit</td>
                                 <td><button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => retriveIngredient(ing))">@ing._ingredientName</button></td>
@@ -127,7 +141,6 @@
             <p> @recipeDescription </p>
         </div>
     </div>
-</div>
 
 
 @code{
@@ -142,9 +155,9 @@
     int i = 0;
     int scalar = 1;
 
-    float recipePerPerson;
+        float recipePerPerson;
 
-    int value;
+        int value;
 
     string tempIngredientName = " ";
 
@@ -153,7 +166,7 @@
     bool isSearching = false;
     bool viewProducts = false;
 
-    //bool viewAddToshoppinglist = false;
+        //bool viewAddToshoppinglist = false;
 
     List<float> recipeAmount = new List<float>();
     List<Ingredient> ingredients = new List<Ingredient>();
@@ -163,9 +176,9 @@
     List<int> sum = new List<int>();
     List<string> values = new List<string>();
 
-    HttpResponseMessage responseMessage = new HttpResponseMessage();
-    ShoppinlistFunctionality ShopList = new ShoppinlistFunctionality("api/Shoppinglist");
-    #endregion
+        HttpResponseMessage responseMessage = new HttpResponseMessage();
+        ShoppinlistFunctionality ShopList = new ShoppinlistFunctionality("api/Shoppinglist");
+        #endregion
 
     #region Recipe_Methods
     void addtoMiniBasket()
@@ -230,9 +243,10 @@
         }
     }
 
-    async void AddToShoppinglist()
-    {
-        List<Product> listToSend = new List<Product>();
+            foreach (var item in ingredients)
+            {
+                listToSend.Add(new Product() { _id = item._id.ToString(), _amount = item._amount + item._unit, _productName = item._ingredientName });
+            }
 
         foreach (var item in ingredients)
         {
@@ -251,14 +265,11 @@
                 ingredients[i]._amount = (ingredients[i]._amount / recipePerPerson) * (recipePerPerson + 1F);
                 value++;
             }
+            recipePerPerson += 1;
         }
-        recipePerPerson += 1;
-    }
 
 
-    void decrementRecipeAmount()
-    {
-        if (recipePerPerson >= 2)
+        void decrementRecipeAmount()
         {
 
             for (int i = 0; i < ingredients.Count; i++)
@@ -268,43 +279,50 @@
                     ingredients[i]._amount = (ingredients[i]._amount / recipePerPerson) * (recipePerPerson - 1F);
                     value--;
                 }
+                recipePerPerson -= 1;
             }
-            recipePerPerson -= 1;
         }
-    }
-
 
     void clear()
     {
         ingredients.Clear();
     }
 
-    void retriveInfo(int ID)
-    {
-        Recipe show = recipeData.First(x => x._recipeID == ID);
-        recipeDescription = show._description;
-        recipeName = show._Name;
-        recipePerPerson = show._PerPerson;
-
-        if (show._ingredientList == null)
+        void clear()
         {
-            foreach (var item in show._ingredientList)
-            {
-                ingredients.Add(item);
-                recipeAmount.Add(item._amount);
-            }
+            ingredients.Clear();
+            recipeAmount.Clear();
         }
-        else
+
+        void retriveInfo(int ID)
         {
-            clear();
-            foreach (var item in show._ingredientList)
+            Recipe show = recipeData.First(x => x._recipeID == ID);
+            recipeDescription = show._description;
+            recipeName = show._Name;
+            recipePerPerson = show._PerPerson;
+
+            if (show._ingredientList == null)
             {
-                ingredients.Add(item);
-                recipeAmount.Add(item._amount);
+                foreach (var item in show._ingredientList)
+                {
+                    ingredients.Add(item);
+                    recipeAmount.Add(item._amount);
+                }
             }
+            else
+            {
+                clear();
+                foreach (var item in show._ingredientList)
+                {
+                    ingredients.Add(item);
+                    recipeAmount.Add(item._amount);
+                }
+            }
+            viewIngredients = true;
+            //viewAddToshoppinglist = true;
         }
         viewIngredients = true;
-        viewProducts = false; 
+        viewProducts = false;
         //viewAddToshoppinglist = true;
     }
 
@@ -321,33 +339,34 @@
         complexRecipes = recipeQuery.CheapestCRecipes(searchTerm);
     }
 
-    private async void OnKeyPress(KeyboardEventArgs args)
-    {
-        if (args.Key == "Enter")
+        private async void OnKeyPress(KeyboardEventArgs args)
         {
-            await Search();
-            StateHasChanged();
-        }
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            Debug.WriteLine("User: -> " + await localStorage.GetItemAsync<string>("Email"));
-            await GetLocalSession();
-            localStorage.Changed += (sender, e) =>
+            if (args.Key == "Enter")
             {
-                Console.WriteLine($"Value for key {e.Key} changed from {e.OldValue} to {e.NewValue}");
-            };
-            responseMessage = await ShopList.GetStorageOnStart(email);
-            StateHasChanged();
+                await Search();
+                StateHasChanged();
+            }
         }
-    }
 
-    async Task GetLocalSession()
-    {
-        email = await localStorage.GetItemAsync<string>("Email");
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (firstRender)
+            {
+                Debug.WriteLine("User: -> " + await localStorage.GetItemAsync<string>("Email"));
+                await GetLocalSession();
+                localStorage.Changed += (sender, e) =>
+                {
+                    Console.WriteLine($"Value for key {e.Key} changed from {e.OldValue} to {e.NewValue}");
+                };
+                responseMessage = await ShopList.GetStorageOnStart(email);
+                StateHasChanged();
+            }
+        }
+
+        async Task GetLocalSession()
+        {
+            email = await localStorage.GetItemAsync<string>("Email");
+        }
     }
     #endregion
 }

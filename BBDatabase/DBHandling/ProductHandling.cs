@@ -213,7 +213,7 @@ namespace BBCollection.DBHandling
             List<Shoppinglist> ShoppingLists = new List<Shoppinglist>();
 
             string getSLQuery =
-                "SELECT shoppinglists.shoppinglist_name, products.* " +
+                "SELECT shoppinglists.shoppinglist_name, products.*, shoppinglists.amount " +
                 "FROM shoppinglists INNER JOIN products ON shoppinglists.product_id = products.id " +
                 "WHERE username = @Username";
 
@@ -230,7 +230,7 @@ namespace BBCollection.DBHandling
                     string SLName = (string)ds.Tables[0].Rows[0][0];
                     foreach (DataRow r in ds.Tables[0].Rows)
                     {
-                        Product product = new Product((string)r[1], (string)r[2], (string)r[3], Convert.ToDouble(r[4]), (string)r[5], (string)r[6]);
+                        Product product = new Product((string)r[1], (string)r[2], (string)r[3], Convert.ToDouble(r[4]), (string)r[5], (string)r[6], (int)r[7]);
 
                         if (SLName == (string)r[0])
                         {
@@ -261,7 +261,11 @@ namespace BBCollection.DBHandling
 
             msc.Parameters.AddWithValue("@Username", username);
 
+            
+
             new SQLConnect().NonQueryMSC(msc, databaseInformation);
+
+            
         }
     }
 }
