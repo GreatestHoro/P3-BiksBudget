@@ -353,7 +353,7 @@ ul.fixed {
 a {
     /*color: #0366d6;*/
     color: black;
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 300;
     float: left;
 }
@@ -435,7 +435,7 @@ logo-header-wrapper {
 }
 
 .logo-header {
-    background-size: 220px auto;
+    background-size: 160px auto;
     background-repeat: no-repeat;
     background-position: center center;
     background-image: url('/Pictures/logo.png');
@@ -443,8 +443,8 @@ logo-header-wrapper {
     /*position: relative;*/
     object-fit: contain;
     margin: 0;
-    width:  220px;
-    height: 140px;
+    width:  160px;
+    height: 100px;
 }
     .nav-item a {
     color: #d7d7d7;
@@ -511,7 +511,7 @@ logo-header-wrapper {
     }
 
     .sidebar {
-        width: 250px;
+        width: 200px;
         height: 100vh;
         position: sticky;
         top: 0;
