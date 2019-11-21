@@ -19,6 +19,11 @@ namespace BBCollection.BBObjects
             _amount = amount;
         }
 
+        public Ingredient()
+        {
+
+        }
+
         public Ingredient(string ingredientName, string unit, float amount)
         {
             _ingredientName = ingredientName;

@@ -84,16 +84,37 @@ namespace Backend.Controllers
                 {
                     buffer = "[" + buffer + "]";
 
-                    shoppinglists = JsonConvert.DeserializeObject<List<Shoppinglist>>(buffer);
-                    dbConnect.AddShoppingListsToDatabase(Email, shoppinglists);
+                    //shoppinglists = JsonConvert.DeserializeObject<List<Shoppinglist>>(buffer);
+                    //dbConnect.AddShoppingListsToDatabase(Email, shoppinglists);
                     //productData.Add(newItem[0]); // This means add one item to shoppinlist
                 }
                 else
                 {
-                    shoppinglists = JsonConvert.DeserializeObject<List<Shoppinglist>>(buffer);
-                    dbConnect.AddShoppingListsToDatabase(Email, shoppinglists);
+                    //shoppinglists = JsonConvert.DeserializeObject<List<Shoppinglist>>(buffer);
+                    //dbConnect.AddShoppingListsToDatabase(Email, shoppinglists);
                     //productData = newItem; // This means add a whole list to shoppinlist
                 }
+
+                newItem = JsonConvert.DeserializeObject<List<Product>>(buffer);
+
+                List<Shoppinglist> toSend = new List<Shoppinglist>();
+                toSend = dbConnect.GetShoppinglists(Email);
+
+                if (toSend.Count == 0)
+                {
+                    toSend.Add(new Shoppinglist("Stuff", newItem));
+                }
+                else
+                {
+                    foreach (var item in newItem)
+                    {
+                        toSend[0]._products.Add(item);
+
+                    }
+                }
+
+                dbConnect.AddShoppingListsToDatabase(Email, toSend);
+
             }
 
         }

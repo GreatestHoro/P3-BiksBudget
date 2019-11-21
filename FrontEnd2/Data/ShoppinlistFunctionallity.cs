@@ -77,17 +77,6 @@ namespace FrontEnd2.Data
 
         // NEW AND IMPROVED CODE BELOW
 
-        public double CalculatePrice()
-        {
-            double result = 0;
-
-            foreach (var item in itemList)
-            {
-                result += item._price * item._amountleft;
-            }
-            return result;
-        }
-
         public async Task<HttpResponseMessage> AddProductAsString(string name, string amount, double price, string id)
         {
             var response = new HttpResponseMessage();
@@ -134,6 +123,27 @@ namespace FrontEnd2.Data
             //string result = response.Content.ReadAsStringAsync().Result;
 
             //newProduct = string.Empty;
+
+            return new HttpResponseMessage(HttpStatusCode.OK);
+        }
+
+        public async Task<HttpResponseMessage> AddListToShoppinglist(List<Product> sentList)
+        {
+            foreach (var item in sentList)
+            {
+                item._timeAdded = DateTime.Now.ToString();
+                item._state = "Full";
+            }
+
+            int userIdLength = Email.Length;
+
+            productString = JsonConvert.SerializeObject(sentList);
+
+            productString = userIdLength.ToString() + "|" + Email + productString;
+
+            sentList.Clear();
+
+            await SendToApi(productString, dest);
 
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
@@ -190,7 +200,7 @@ namespace FrontEnd2.Data
             var content = new StringContent(productString, Encoding.UTF8, "application/json");
             response = await Http.PostAsync("https://localhost:44325/" + newDest, content);
 
-            string result = response.Content.ReadAsStringAsync().Result;
+            //string result = response.Content.ReadAsStringAsync().Result;
 
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
@@ -198,7 +208,7 @@ namespace FrontEnd2.Data
         public async void AddItemToStorage(Product AddedItem)
         {
             TempStorageList.Add(AddedItem);
-            DeleteItem(AddedItem._id);
+            await DeleteItem(AddedItem._id);
         }
 
         public async void AddShoppinlistToStorage(string dest)

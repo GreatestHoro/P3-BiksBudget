@@ -1,4 +1,4 @@
-﻿using BBGatherer.StoreApi.CoopApi;
+﻿using BBCollection.StoreApi.CoopApi;
 using BBGatherer.Webcrawler;
 using BBCollection;
 using BBCollection.BBObjects;
@@ -12,9 +12,12 @@ namespace BBGatherer
         static void Main(string[] args)
         {
             DataHandling dh = new DataHandling();
-            //dh.GenerateDatabase();
-            dh.GenerateData(true, true);
+            dh.GenerateDatabase();
+            dh.GenerateData(false, true);
             dh.TestCollection();
+            //ProductSearchLinkConstructer yeet = new ProductSearchLinkConstructer(" øl ", "00", "111111111");
+            //Console.WriteLine(yeet.GetURL());
+            //Console.ReadLine();
         }
     }
 
@@ -50,40 +53,40 @@ namespace BBGatherer
                 }
 
 
-                /*RecipeCrawl WebRunner = new RecipeCrawl();
+                RecipeCrawl WebRunner = new RecipeCrawl();
                 _ = WebRunner.GetRecipes(100, 1200, dbConnect);
 
                 Console.WriteLine("web runner begins... fear its power");
-                Console.ReadLine();*/
+                Console.ReadLine();
         }
 
         public void TestCollection()
         {
         dbConnect.AddUser("Test6", "Test", "BB");
 
-        /*List<Product> testList = new List<Product>();
+            List<Product> testList = new List<Product>();
 
-        Product tProd1 = new Product("F2141400000004", 5, "Full");
+            Product tProd1 = new Product("F2141400000004", 5, "Full");
 
-        Product tProd2 = new Product("F2141640000000", 5, "Full");
-        Product tProd3 = new Product("F4001724019831", 5, "Full");
+            Product tProd2 = new Product("F2141640000000", 5, "Full");
+            Product tProd3 = new Product("F4001724019831", 5, "Full");
 
-        testList.Add(tProd1);
-        testList.Add(tProd2);
-        testList.Add(tProd3);
+            testList.Add(tProd1);
+            testList.Add(tProd2);
+            testList.Add(tProd3);
 
-        dbConnect.AddListToStorage("Test6", testList);
+            dbConnect.AddListToStorage("Test6", testList);
 
-        testList.Remove(tProd2);
+            //testList.Remove(tProd2);
 
-        dbConnect.UpdateStorage("Test6", testList);*/
+            //dbConnect.UpdateStorage("Test6", testList);
 
-        List<Recipe> res = dbConnect.GetRecipes("Lam");
+        //    List<Recipe> res = dbConnect.GetRecipes("Lam");
 
-        foreach (Recipe r in res)
-        {
-            Console.WriteLine(r._ingredientList.Count);
-        }
+        //foreach (Recipe r in res)
+        //{
+        //    Console.WriteLine(r._ingredientList.Count);
+        //}
 
         /*
         List <Recipe> recipes = new List<Recipe>();
@@ -133,4 +136,3 @@ namespace BBGatherer
     }
         }
     }
-
