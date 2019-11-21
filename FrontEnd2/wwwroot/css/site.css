@@ -6,8 +6,9 @@ html, body {
 h1 {
     text-align: center;
 }
-.productSearch {
-    margin-top: 30px;
+/*Search field on search page*/
+.productSearchBar {
+    width: 200px;
 }
 .mapouter {
     position: relative;
