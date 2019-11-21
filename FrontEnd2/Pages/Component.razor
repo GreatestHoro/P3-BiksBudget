@@ -42,7 +42,7 @@
                 </ul>
             }
         </div>
-        <div class="col-2 offset-2">
+        <div class="col-2">
             @if (viewIngredients == true)
             {
                 <table class="table-bordered ingredientsTable">
@@ -57,18 +57,21 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @for (int i = 0; i < ingredients.Count; i++)
+
+
+                        @foreach (Ingredient ing in ingredients)
                         {
                             <tr>
-                                <td>@recipeAmount[i] @ingredients[i]._unit</td>
-                                <td>@ingredients[i]._ingredientName</td>
+                                <td>@ing._amount @ing._unit</td>
+                                <td><button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => retriveIngredient(ing))">@ing._ingredientName</button></td>
                             </tr>
                         }
                         <tr>
                             <td colspan="2" class="text-sm-center">
-                            <div class="value-button" @onclick="incrementRecipeAmount" value="Increase @value"> + </div>
-                            <input type="number" id="number" value="@recipePerPerson" />
-                            <div class="value-button" @onclick="decrementRecipeAmount" value="Decrease @value"> - </div> </td>
+                                <div class="value-button" @onclick="incrementRecipeAmount" value="Increase @value"> + </div>
+                                <input type="number" id="number" value="@recipePerPerson" />
+                                <div class="value-button" @onclick="decrementRecipeAmount" value="Decrease @value"> - </div>
+                            </td>
                         </tr>
                         <tr>
                             <td colspan="2"> <button type="button" class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => AddToShoppinglist())"> Add to Shopping List </button></td>
@@ -77,12 +80,55 @@
                 </table>
             }
         </div>
+
+        <div class="col-2">
+            @if (viewProducts)
+            {
+                <div style="width:250px; max-height:400px; min-height:40px; overflow:auto">
+                    <table class="table-bordered ">
+                        <colgroup>
+                            <col style="width:200%" />
+                            <col style="width:50%" />
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th> Choose a product</th>
+                                <th> <i class="oi oi-basket"></i></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (Product p in products)
+                            {
+                            <tr>
+                                @if (products.Count == 0)
+                                {
+                                    <td>no products found</td>
+                                    <td></td>
+                                }
+                                else
+                                {
+                                    <td>@p._productName</td>
+                                    <td>
+                                        <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => AddToShoppinglist())">
+                                            <i class="oi oi-arrow-circle-right"></i>
+                                        </button>
+                                    </td>
+                                }
+
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                }
+            </div>
         <div class="col-4">
             <h3> @recipeName </h3>
             <p> @recipeDescription </p>
         </div>
     </div>
 </div>
+
 
 @code{
     #region Fields
@@ -93,14 +139,19 @@
     string printRecipe = " ";
     string searchTerm;
     string email;
+    int i = 0;
+    int scalar = 1;
 
     float recipePerPerson;
 
     int value;
 
+    string tempIngredientName = " ";
+
     bool viewRecipeTitle = false;
     bool viewIngredients = false;
     bool isSearching = false;
+    bool viewProducts = false;
 
     //bool viewAddToshoppinglist = false;
 
@@ -108,23 +159,75 @@
     List<Ingredient> ingredients = new List<Ingredient>();
     List<Recipe> recipeData = new List<Recipe>();
     List<ComplexRecipe> complexRecipes = new List<ComplexRecipe>();
+    List<Product> products = new List<Product>();
     List<int> sum = new List<int>();
+    List<string> values = new List<string>();
 
     HttpResponseMessage responseMessage = new HttpResponseMessage();
     ShoppinlistFunctionality ShopList = new ShoppinlistFunctionality("api/Shoppinglist");
     #endregion
 
-    void getTotalRecipePrice()
+    #region Recipe_Methods
+    void addtoMiniBasket()
     {
-        foreach (var rep in recipeData)
+
+    }
+
+    void retriveIngredient(Ingredient ID)
+    {
+        viewProducts = true;
+        Ingredient ing = ingredients.First(x => x._ingredientName == ID._ingredientName);
+        tempIngredientName = ing._ingredientName;
+        getIngredientProducts();
+    }
+
+    void getIngredientProducts()
+    {
+        if (products == null)
         {
-            foreach (var ing in rep._ingredientList)
+            foreach (ComplexRecipe com in complexRecipes)
             {
-
+                foreach (string s in com._complexRecipeComponent._products.Keys)
+                {
+                    if (s.Contains(tempIngredientName))
+                    {
+                        foreach (List<Product> pro in com._complexRecipeComponent._products.Values)
+                        {
+                            foreach (Product p in pro)
+                            {
+                                if (p._productName.Contains(tempIngredientName)&&!products.Contains(p))
+                                {
+                                    products.Add(p);
+                                }
+                            }
+                        }
+                    }
+                }
             }
-
         }
-
+        else
+        {
+            products.Clear();
+            foreach (ComplexRecipe com in complexRecipes)
+            {
+                foreach (string s in com._complexRecipeComponent._products.Keys)
+                {
+                    if (s.Contains(tempIngredientName))
+                    {
+                        foreach (List<Product> pro in com._complexRecipeComponent._products.Values)
+                        {
+                            foreach (Product p in pro)
+                            {
+                                if (p._productName.Contains(tempIngredientName)&&!products.Contains(p))
+                                {
+                                    products.Add(p);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     async void AddToShoppinglist()
@@ -133,19 +236,19 @@
 
         foreach (var item in ingredients)
         {
-            listToSend.Add(new Product() {_id = item._id.ToString(), _amount = item._amount + item._unit, _productName = item._ingredientName });
+            listToSend.Add(new Product() { _id = item._id.ToString(), _amount = item._amount + item._unit, _productName = item._ingredientName });
         }
 
         await ShopList.AddListToShoppinglist(listToSend);
     }
 
-    void incrementRecipeAmount()
+    void incrementRecipeAmount()//aventuel optimering brug en scalar værdi
     {
-        for (int i = 0; i < recipeAmount.Count; i++)
+        for (int i = 0; i < ingredients.Count; i++)
         {
-            if (recipeAmount[i] != 0)
+            if (ingredients[i]._amount != 0)
             {
-                recipeAmount[i] = (recipeAmount[i] / recipePerPerson) * (recipePerPerson + 1F);
+                ingredients[i]._amount = (ingredients[i]._amount / recipePerPerson) * (recipePerPerson + 1F);
                 value++;
             }
         }
@@ -157,13 +260,13 @@
     {
         if (recipePerPerson >= 2)
         {
-            for (int i = 0; i < recipeAmount.Count; i++)
-            {
-                if (recipeAmount[i] != 0)
-                {
-                    recipeAmount[i] = (recipeAmount[i] / recipePerPerson) * (recipePerPerson - 1F);
-                    value--;
 
+            for (int i = 0; i < ingredients.Count; i++)
+            {
+                if (ingredients[i]._amount != 0)
+                {
+                    ingredients[i]._amount = (ingredients[i]._amount / recipePerPerson) * (recipePerPerson - 1F);
+                    value--;
                 }
             }
             recipePerPerson -= 1;
@@ -174,7 +277,6 @@
     void clear()
     {
         ingredients.Clear();
-        recipeAmount.Clear();
     }
 
     void retriveInfo(int ID)
@@ -202,9 +304,14 @@
             }
         }
         viewIngredients = true;
+        viewProducts = false; 
         //viewAddToshoppinglist = true;
     }
 
+
+    #endregion
+
+    #region Recipe_async_Methods
     public async Task Search()
     {
         printRecipe = await Http.GetStringAsync("https://localhost:44325/api/recipe?recipeTitle=" + searchTerm);
@@ -242,4 +349,5 @@
     {
         email = await localStorage.GetItemAsync<string>("Email");
     }
+    #endregion
 }

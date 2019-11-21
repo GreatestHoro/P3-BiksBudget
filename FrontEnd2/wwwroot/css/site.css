@@ -278,6 +278,13 @@ ul.fixed {
     word-break:break-all;
 }
 
+.productListDisplay {
+    max-height: 400px;
+    min-height: 40px;
+    overflow: hidden;
+    overflow-y: scroll;
+}
+
 .recipeDivDisplay {
     text-align: left;
     margin-top: auto;
