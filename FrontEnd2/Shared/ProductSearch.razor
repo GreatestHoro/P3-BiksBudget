@@ -15,7 +15,7 @@
             <input type="text" id="search" class="form-control" placeholder="Råvare.." @onkeyup="@KeyPressed" @bind="searchBox" />
         </div>
         <div class="col-sm-3">
-            <p>@userGeoLocation._latitude</p>
+            <p>@userGeoLocation._latitude @userGeoLocation._longitude</p>
             <button type="button" class="btn btn-success" @onclick="@(() => SearchForProducts())">Search</button>
             <button type="button" class="btn btn-warning" @onclick="GetUserLocation">What Is My Location?</button>
         </div>
@@ -23,7 +23,7 @@
     <div class="row top-margin">
         <div class="btn-group show-on-hover">
             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                Select Stores <span class="caret"></span>
+                Select Stores <span clasusergeolos="caret"></span>
             </button>
             <ul class="dropdown-menu" role="menu">
                 @foreach (FilterItem item in storeList)
@@ -39,7 +39,7 @@
                         //AddEnableStores(false,item.FilterName,EnabledStores);
                     }
                 }
-                <li><button class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(()=>SelectAll(storeList))">@storelistAllSelected</button></li>
+                <li><button class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(()=>SelectAll(storeList))">Select All</button></li>
             </ul>
         </div>
 
@@ -62,10 +62,9 @@
                         //AddEnableStores(false,item.FilterName,EnabledStores);
                     }
                 }
-                <li><button class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(()=>SelectAll(wordList))">@wordlistAllSelected</button></li>
             </ul>
         </div>
-        <input type="range" name="Yeet" min="0" max="10000" @bind="radius" />
+        <input type="range" name="Yeet" min="0" max="40000" @bind="radius" />
         <p>@radius</p>
 
         @*<input id="ex7" type="text" data-slider-min="0" data-slider-max="20" data-slider-step="1" data-slider-value="5" data-slider-enabled="false" />
@@ -114,34 +113,40 @@
             </div>
         </div>
     }
+    else
+    {
+        <p>@messageToUser</p>
+    }
 
 </div>
 
 
 @code {
+    static TaskCompletionSource<GeoCoordinate> tcsUserLocation = new TaskCompletionSource<GeoCoordinate>();
+    static GeoCoordinate userGeoLocation = new GeoCoordinate(0, 0);
     StoreFilterList storeFilters = new StoreFilterList();
     WordFilterList wordFIlters = new WordFilterList();
-    static GeoCoordinate userGeoLocation = new GeoCoordinate(0, 0);
-    String searchBox;
-    String email;
-    string storelistAllSelected = "Select All";
-    string wordlistAllSelected = "Select All";
-    bool storeBoolSetTo = true;
-    bool wordBoolSetTo = true;
-    int radius;
     FindCloseStores closeStore;
-    List<UnifiedAPIStore> allStoresUnified = new List<UnifiedAPIStore>();
-    bool[] EnabledStores;
-    bool[] EnabledKeywords;
-    String productString;
-    List<Product> itemList = new List<Product>();
-    public bool _viewProducts = false;
-    bool IsLocationEnabled = true;
 
     List<FilterItem> storeList = new List<FilterItem>();
     List<FilterItem> wordList = new List<FilterItem>();
-    static TaskCompletionSource<GeoCoordinate> tcsUserLocation = new TaskCompletionSource<GeoCoordinate>();
+    List<UnifiedAPIStore> allStoresUnified = new List<UnifiedAPIStore>();
+    List<Product> itemList = new List<Product>();
 
+    bool[] EnabledStores;
+    bool[] EnabledKeywords;
+
+    bool storeBoolSetTo = true;
+    bool wordBoolSetTo = true;
+    bool _viewProducts = false;
+    bool IsLocationEnabled = true;
+
+    int radius;
+
+    string searchBox;
+    string email;
+    string messageToUser = "Apply Filters And Press Search To Find Products";
+    string productString;
 
     public void ChangeState(string name, List<FilterItem> list)
     {
@@ -182,9 +187,8 @@
 
     private async Task SearchForProducts()
     {
-        //save = searchBox;
 
-        //if (searchBox == "")
+        if (!String.IsNullOrEmpty(searchBox) && !String.IsNullOrWhiteSpace(searchBox))
         {
             FindStoreFunc();
 
@@ -201,12 +205,13 @@
             }
 
         }
+        else
+        {
+            messageToUser = "You Need To Write A Searhcword";
+        }
     }
     public void updateFilters()
     {
-
-
-
         for (int i = 0; i < storeFilters.GetStoreArray().Length; i++)
         {
             EnabledStores[i] = storeFilters.GetStoreArray()[i].IsEnabled;
@@ -234,7 +239,7 @@
         {
             for (int i = 0; i < storeFilters.GetStoreArray().Length; i++)
             {
-                if (item._storeName.Equals(storeFilters.GetStoreArray()[i].FilterName) && EnabledStores[i])
+                if (item._brand.ToLower().Equals(storeFilters.GetStoreArray()[i].FilterName.ToLower()) && EnabledStores[i])
                 {
                     arr[i] = true;
                     break;

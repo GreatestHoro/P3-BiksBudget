@@ -88,7 +88,7 @@ namespace FrontEnd2
             _cityURL = "&city=";
             _geoPosition = new GeoCoordinate(57.0122721, 9.9917718);
             _pageCount = 1;
-            _perPageCount = 10;
+            _perPageCount = 20;
             _radius = 10;
         }
 
