@@ -132,7 +132,7 @@
             listToSend.Add(new Product() {_id = item._id.ToString(), _amount = item._amount + item._unit, _productName = item._ingredientName });
         }
 
-        //await ShopList.AddListToShoppinglist(listToSend);
+        await ShopList.AddListToShoppinglist(listToSend);
     }
 
     void incrementRecipeAmount()

@@ -15,9 +15,8 @@
             <input type="text" id="search" class="form-control" placeholder="Råvare.." @onkeyup="@KeyPressed" @bind="searchBox" />
         </div>
         <div class="col-sm-3">
-            <p>@userGeoLocation._latitude @userGeoLocation._longitude</p>
             <button type="button" class="btn btn-success" @onclick="@(() => SearchForProducts())">Search</button>
-            <button type="button" class="btn btn-warning" @onclick="GetUserLocation">What Is My Location?</button>
+            <input type="checkbox" bind="@IsLocationEnabled" @onclick="toggle" />Use Location<br />
         </div>
     </div>
     <div class="row top-margin">
@@ -31,12 +30,10 @@
                     if (item.IsEnabled == true)
                     {
                         <li><button style="color:green" class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(() => ChangeState(item.FilterName, storeList))">@item.FilterName</button></li>
-                        //AddEnableStores(true,item.FilterName,EnabledStores);
                     }
                     else
                     {
                         <li><button style="color:red" class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(() => ChangeState(item.FilterName, storeList))">@item.FilterName</button></li>
-                        //AddEnableStores(false,item.FilterName,EnabledStores);
                     }
                 }
                 <li><button class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(()=>SelectAll(storeList))">Select All</button></li>
@@ -53,35 +50,29 @@
                     if (item.IsEnabled == true)
                     {
                         <li><button style="color:green" class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(() => ChangeState(item.FilterName, wordList))">@item.FilterName</button></li>
-                        //AddEnableStores(true,item.FilterName,EnabledStores);
                     }
                     else
                     {
                         <li><button style="color:red" class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(() => ChangeState(item.FilterName, wordList))">@item.FilterName</button></li>
-
-                        //AddEnableStores(false,item.FilterName,EnabledStores);
                     }
                 }
             </ul>
         </div>
-        <input type="range" name="Yeet" min="0" max="40000" @bind="radius" />
+        <input type="range" name="Yeet" min="0" max="40000" @bind="radius" step="100" />
         <p>@radius</p>
-
-        @*<input id="ex7" type="text" data-slider-min="0" data-slider-max="20" data-slider-step="1" data-slider-value="5" data-slider-enabled="false" />
-            <input id="ex7-enabled" type="checkbox" /> Enabled*@
-
     </div>
 
-    @*<div class="form-group" col-md-6>
+    <div class="form-group" col-md-6>
             <label for="minPriceB">Minimum Price</label>
             <input type="number" class="form-control" placeholder="Min Price" @bind="minPrice" />
-        </div>*@
-    @*<div class="form-group" col-md-6>
+        </div>
+    <div class="form-group" col-md-6>
             <label for="maxPriceB">Maximum Price</label>
             <input type="number" class="form-control" placeholder="Max Price" @bind="maxPrice" />
 
 
-        </div>*@
+        <p>@minPrice, @maxPrice</p>
+        </div>
     @if (_viewProducts == true)
     {
         <div class="container has-max-width-limit">
@@ -89,26 +80,29 @@
             <div class="row">
                 @foreach (var por in itemList)
                 {
-                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-ll-20pct col-xl-2 mt-3 d-flex flex-column">
-                        <div class="product-card flex-grow-1 d-flex flex-column">
-                            <div class="product-card-top col-6 col-sm-12 flex-0-auto">
-                                <div class="product-card-image position-relative">
-                                    @if (por._image != null)
-                                    {
-                                        //<p>@por._image</p>
-                                        <img class="img-fluid" src="@por._image" style="width: 30px">
-                                    }
+                    if (por._price > minPrice && por._price < maxPrice)
+                    {
+                        <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-ll-20pct col-xl-2 mt-3 d-flex flex-column">
+                            <div class="product-card flex-grow-1 d-flex flex-column">
+                                <div class="product-card-top col-6 col-sm-12 flex-0-auto">
+                                    <div class="product-card-image position-relative">
+                                        @if (por._image != null)
+                                        {
+                                            <img class="img-fluid" src="@por._image" style="width: 30px">
+                                        }
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-6 col-sm-12 flex-grow-1 d-flex flex-column flex-0-auto">
-                                <div class="product-card-body flex-grow-1 d-flex flex-column">
-                                    <h5 class="product-card-title" style="font-weight:bold">@por._productName</h5>
-                                    <p class="product-card-price">@por._price DKK</p>
-                                    <button class="btn btn-success">Læg Til Shoppinglisten</button>
+                                <div class="col-6 col-sm-12 flex-grow-1 d-flex flex-column flex-0-auto">
+                                    <div class="product-card-body flex-grow-1 d-flex flex-column">
+                                        <h5 class="product-card-title" style="font-weight:bold">@por._productName</h5>
+                                        <p class="product-card-price">@por._price DKK</p>
+                                        <button class="btn btn-success" @onclick="(()=>AddProductToSL(por))">Læg Til Shoppinglisten</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    }
+
                 }
             </div>
         </div>
@@ -127,21 +121,74 @@
     StoreFilterList storeFilters = new StoreFilterList();
     WordFilterList wordFIlters = new WordFilterList();
     FindCloseStores closeStore;
+    ShoppinlistFunctionality SLFunc = new ShoppinlistFunctionality("api/Shoppinglist");
 
     List<FilterItem> storeList = new List<FilterItem>();
     List<FilterItem> wordList = new List<FilterItem>();
     List<UnifiedAPIStore> allStoresUnified = new List<UnifiedAPIStore>();
     List<Product> itemList = new List<Product>();
+    List<Product> ToShoppinglist = new List<Product>();
 
     bool[] EnabledStores;
     bool[] EnabledKeywords;
 
+    Product[] slArray = new Product[10];
+    string shopString;
+
     bool storeBoolSetTo = true;
     bool wordBoolSetTo = true;
     bool _viewProducts = false;
-    bool IsLocationEnabled = true;
+    bool IsLocationEnabled = false;
 
-    int radius;
+    int radius = 1000;
+
+    double _minPrice = 0;
+    double  _maxPrice = 5000;
+    double priceLimit = 10000;
+
+    public double minPrice
+    {
+        get => _minPrice;
+        set
+        {
+            if (value < 0)
+            {
+                _minPrice = 0;
+            }
+            else if (value > maxPrice)
+            {
+                _minPrice = maxPrice;
+            }
+            else
+            {
+                _minPrice = value;
+            }
+        }
+    }
+
+    public double maxPrice
+    {
+        get => _maxPrice;
+        set
+        {
+            if (value < 0)
+            {
+                _maxPrice = 0;
+            }
+            else if (value > priceLimit)
+            {
+                _maxPrice = priceLimit;
+            }
+            else if (value < minPrice)
+            {
+                _maxPrice = minPrice;
+            }
+            else
+            {
+                _maxPrice = value;
+            }
+        }
+    }
 
     string searchBox;
     string email;
@@ -162,6 +209,11 @@
 
     }
 
+    void toggle()
+    {
+        IsLocationEnabled = !IsLocationEnabled;
+    }
+
     public void FindStoreFunc()
     {
         closeStore = new FindCloseStores(userGeoLocation, radius);
@@ -174,6 +226,18 @@
         {
             item.IsEnabled = true;
         }
+    }
+
+    public async void AddProductToSL(Product AddedItem)
+    {
+        ToShoppinglist.Add(AddedItem);
+
+        //await localStorage.RemoveItemAsync("Shoppinglist");
+
+        shopString = JsonConvert.SerializeObject(ToShoppinglist);
+
+        await localStorage.SetItemAsync("ProductString", shopString);
+        await localStorage.SetItemAsync("Shoppinglist", ToShoppinglist);
     }
 
     private async Task KeyPressed(KeyboardEventArgs e)
@@ -193,6 +257,7 @@
             FindStoreFunc();
 
             updateFilters();
+
             ProductSearchLinkConstructer link = new ProductSearchLinkConstructer(searchBox,ConvertBoolArrToStr(EnabledKeywords),ConvertBoolArrToStr(EnabledStores));
 
             productString = await Http.GetStringAsync(link.GetURL());
@@ -203,7 +268,6 @@
             {
                 _viewProducts = true;
             }
-
         }
         else
         {
@@ -212,25 +276,34 @@
     }
     public void updateFilters()
     {
-        for (int i = 0; i < storeFilters.GetStoreArray().Length; i++)
-        {
-            EnabledStores[i] = storeFilters.GetStoreArray()[i].IsEnabled;
-        }
-        for (int i = 0; i < wordFIlters.GetWordArray().Length; i++)
-        {
-            EnabledKeywords[i] = wordFIlters.GetWordArray()[i].IsEnabled;
-        }
+        EnabledStores = updateEachFilter(storeFilters.GetStoreArray());
+        EnabledKeywords = updateEachFilter(wordFIlters.GetWordArray());
+
+
+        bool[] closeStoreBool = new bool[EnabledStores.Length];
 
         if (IsLocationEnabled)
         {
-            bool[] closeStore = new bool[EnabledStores.Length];
+            closeStoreBool = SetAllFilters(closeStoreBool,false);
+            closeStoreBool = CompareBoolArr();
 
-            closeStore = SetAllFilters(closeStore,false);
-            closeStore = truetrue();
+            EnabledStores = closeStoreBool;
         }
+
     }
 
-    public bool[] truetrue()
+    public bool[] updateEachFilter(FilterItem[] filterArray)
+    {
+        bool[] resultFilterArr = new bool[filterArray.Length];
+        for (int i = 0; i < filterArray.Length; i++)
+        {
+            resultFilterArr[i] = filterArray[i].IsEnabled;
+        }
+
+        return resultFilterArr;
+    }
+
+    public bool[] CompareBoolArr()
     {
         bool[] arr = new bool[EnabledStores.Length];
         arr = SetAllFilters(arr,false);
@@ -260,10 +333,10 @@
                 Console.WriteLine($"Value for key {e.Key} changed from {e.OldValue} to {e.NewValue}");
             };
 
-            //responseMessage = await ListFunc.GetStorageOnStart(email);
             storeList = storeFilters.GetStoreList();
             wordList = wordFIlters.GetStoreList();
             InitializeBoolArrays(storeList.Count, wordList.Count);
+            await SLFunc.GetShoppinglistOnStart(email);
 
             if (userGeoLocation._latitude == 0 && userGeoLocation._longitude == 0)
             {
@@ -306,6 +379,14 @@
     async Task GetLocalSession()
     {
         email = await localStorage.GetItemAsync<string>("Email");
+        //ToShoppinglist = await localStorage.GetItemAsync<List<Product>>("Shoppinglist");
+        //slArray = await localStorage.GetItemAsync<Product[]>("SLArray");
+        shopString = await localStorage.GetItemAsync<string>("ProductString");
+
+        ToShoppinglist = JsonConvert.DeserializeObject<List<Product>>(shopString);
+
+
+        //slArray[1] = new Product("1", "bacon", "full", 1d, "image", "lidl");
     }
 
     async Task GetUserLocation()
