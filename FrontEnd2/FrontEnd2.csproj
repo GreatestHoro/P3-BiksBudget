@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
@@ -6,22 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="wwwroot\Pictures\coop-store-logos\brugsen.png" />
-    <None Include="wwwroot\Pictures\coop-store-logos\daglibrugsen.png" />
-    <None Include="wwwroot\Pictures\coop-store-logos\fakta.png" />
-    <None Include="wwwroot\Pictures\coop-store-logos\kvickly.png" />
-    <None Include="wwwroot\Pictures\coop-store-logos\superbrugsen.png" />
-    <None Include="wwwroot\Pictures\headerpic.png" />
-    <None Include="wwwroot\Pictures\salling-store-logos\bilka.png" />
-    <None Include="wwwroot\Pictures\salling-store-logos\foetex.png" />
-    <None Include="wwwroot\Pictures\salling-store-logos\netto.png" />
-    <None Include="wwwroot\Pictures\salling-store-logos\salling.png" />
-    <None Include="wwwroot\Pictures\headerpic.png" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <PackageReference Include="AspNetCore.IServiceCollection.AddIUrlHelper" Version="1.1.0" />
     <PackageReference Include="Blazored.LocalStorage" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="3.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="3.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.0.0" />
@@ -34,6 +22,13 @@
   <ItemGroup>
     <ProjectReference Include="..\B3-BiksBudget\BBGatherer.csproj" />
     <ProjectReference Include="..\BBDatabase\BBCollection.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="wwwroot\Pictures\logo.png">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

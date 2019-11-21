@@ -128,15 +128,11 @@ namespace BBCollection.BBObjects
         {
             if (filterApplied.Length == filterName.Length)
             {
-                foreach (var s in filterName)
+                for (int i = 0; i < filterName.Length; i++)
                 {
-                    foreach (var b in filterApplied)
+                    if (filterApplied[i])
                     {
-                        if (b)
-                        {
-                            AppliedFilters.Add(new AppliedFilters(s.FilterName));
-                            break;
-                        }
+                        AppliedFilters.Add(new AppliedFilters(filterName[i].FilterName));
                     }
                 }
             }

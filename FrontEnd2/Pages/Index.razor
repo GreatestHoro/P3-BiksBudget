@@ -58,63 +58,63 @@ else
             static GeoCoordinate userGeoLocation = new GeoCoordinate(0, 0);
 
 
-    public int radius = 1000;
-        public string url;
-        public int newRadius;
-        static bool viewMap = false;
+            public int radius = 1000;
+            public string url;
+            public int newRadius;
+            static bool viewMap = false;
 
-        public void UpdateRadius()
-        {
-            radius = newRadius;
-        }
-
-        public async void ApplyFilters()
-        {
-            if (userGeoLocation._latitude == 0 && userGeoLocation._longitude == 0)
+            public void UpdateRadius()
             {
-                await GetUserLocation();
-                await tcsUserLocation.Task;
+                radius = newRadius;
             }
 
-            radius = newRadius;
-
-            FindStoreFunc();
-
-            this.StateHasChanged();
-        }
-
-
-        protected override async Task OnInitializedAsync()
-        {
-            ipItem = getIP.GetIpData();
-            newRadius = radius;
-        }
-
-        public void FindStoreFunc()
-        {
-            closeStore = new FindCloseStores(userGeoLocation, radius);
-            allStoresUnified = closeStore.GetStore();
-        }
-
-        async Task GetUserLocation()
-        {
-            await JsRuntime.InvokeVoidAsync(identifier: "getCoordinates");
-        }
-
-        [JSInvokable]
-        public static void UpdateUserLocation(double latitude, double longitude)
-        {
-            viewMap = true;
-            userGeoLocation._latitude = latitude;
-            userGeoLocation._longitude = longitude;
-            if (!tcsUserLocation.Task.IsCompleted)
+            public async void ApplyFilters()
             {
-                tcsUserLocation.SetResult(userGeoLocation);
-            }
-        }
+                if (userGeoLocation._latitude == 0 && userGeoLocation._longitude == 0)
+                {
+                    await GetUserLocation();
+                    await tcsUserLocation.Task;
+                }
 
-        private string GoogleMapsIframeUserLocation()
-        {
-            return "https://maps.google.com/maps?q=" + userGeoLocation._latitude + "," + userGeoLocation._longitude + "&t=&z=15&ie=UTF8&iwloc=&output=embed";
-        }
+                radius = newRadius;
+
+                FindStoreFunc();
+
+                this.StateHasChanged();
+            }
+
+
+            protected override async Task OnInitializedAsync()
+            {
+                ipItem = getIP.GetIpData();
+                newRadius = radius;
+            }
+
+            public void FindStoreFunc()
+            {
+                closeStore = new FindCloseStores(userGeoLocation, radius);
+                allStoresUnified = closeStore.GetStore();
+            }
+
+            async Task GetUserLocation()
+            {
+                await JsRuntime.InvokeVoidAsync(identifier: "getCoordinates");
+            }
+
+            //[JSInvokable]
+            //public static void UpdateUserLocation(double latitude, double longitude)
+            //{
+            //    viewMap = true;
+            //    userGeoLocation._latitude = latitude;
+            //    userGeoLocation._longitude = longitude;
+            //    if (!tcsUserLocation.Task.IsCompleted)
+            //    {
+            //        tcsUserLocation.SetResult(userGeoLocation);
+            //    }
+            //}
+
+            private string GoogleMapsIframeUserLocation()
+            {
+                return "https://maps.google.com/maps?q=" + userGeoLocation._latitude + "," + userGeoLocation._longitude + "&t=&z=15&ie=UTF8&iwloc=&output=embed";
+            }
         }

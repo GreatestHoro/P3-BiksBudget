@@ -20,11 +20,11 @@ namespace BBCollection.BBObjects
         public List<FilterItem> storeList = new List<FilterItem>()
         {
             new FilterItem("Bilka", true),
-            new FilterItem("Føtex", true),
+            new FilterItem("Foetex", true),
             new FilterItem("Fakta", true),
-            new FilterItem("DagliBrugsen", true),
+            new FilterItem("Dagli'Brugsen", true),
             new FilterItem("Irma", true),
-            new FilterItem("Kvivkly", true),
+            new FilterItem("Kvickly", true),
             new FilterItem("Salling", true),
             new FilterItem("SuperBrugsen", true),
             new FilterItem("Netto", true),

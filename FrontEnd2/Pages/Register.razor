@@ -5,12 +5,13 @@
 @using FrontEnd2.Data;
 @using System.Diagnostics;
 @inject HttpClient Http
+@inject NavigationManager NavigationManager
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
-@inject AuthenticationFunctionallity uf
+
 
 @if (email != null)
 {
-    <h1>@email (@gottenData)</h1>
+    <p>Loading...</p>
 }
 else
 {
@@ -35,17 +36,18 @@ else
     {
         if (firstRender)
         {
-            Debug.WriteLine("User: -> " + await localStorage.GetItemAsync<string>("Email"));
             await GetLocalSession();
             localStorage.Changed += (sender, e) =>
             {
                 Console.WriteLine($"Value for key {e.Key} changed from {e.OldValue} to {e.NewValue}");
             };
 
-            //if (email != null)
-            //{
-            //    gottenData = await Http.GetStringAsync("https://localhost:44325/api/Login/" + email + "S");
-            //}
+            if (email != null)
+            {
+                NavigationManager.NavigateTo("");
+
+            }
+
             StateHasChanged();
         }
 
@@ -55,4 +57,6 @@ else
     {
         email = await localStorage.GetItemAsync<string>("Email");
     }
+
+
 }
