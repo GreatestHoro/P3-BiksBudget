@@ -18,7 +18,7 @@
             <input class="form-check-input" placeholder="Search..." @bind="searchTerm" @onkeyup="OnKeyPress" />
         </div>
         <div class="col-sm-3 stackComponents">
-            <button type="button" class="btn-success" @onclick="(() => Search())"> Find Recipe </button>
+            <button type="button" class="btn-success" @onclick="(() => Search())"> Find recipe </button>
         </div>
         <div class="col-sm-3 stackComponents">
             <span class="text-muted">
@@ -85,6 +85,7 @@
 </div>
 
 @code{
+    #region Fields
 
 
     string recipeDescription = " ";
@@ -107,9 +108,25 @@
     List<Ingredient> ingredients = new List<Ingredient>();
     List<Recipe> recipeData = new List<Recipe>();
     List<ComplexRecipe> complexRecipes = new List<ComplexRecipe>();
+    List<int> sum = new List<int>();
 
     HttpResponseMessage responseMessage = new HttpResponseMessage();
     ShoppinlistFunctionality ShopList = new ShoppinlistFunctionality("api/Shoppinglist");
+    #endregion
+
+    void getTotalRecipePrice()    List<int> sum = new List<int>();
+
+    {
+        foreach (var rep in recipeData)
+        {
+            foreach (var ing in rep._ingredientList)
+            {
+
+            }
+
+        }
+
+    }
 
     async void AddToShoppinglist()
     {
@@ -120,7 +137,7 @@
             listToSend.Add(new Product() {_id = item._id.ToString(), _amount = item._amount + item._unit, _productName = item._ingredientName });
         }
 
-        //await ShopList.AddListToShoppinglist(listToSend);
+        await ShopList.AddListToShoppinglist(listToSend);
     }
 
     void incrementRecipeAmount()

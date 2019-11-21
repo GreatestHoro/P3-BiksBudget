@@ -4,10 +4,10 @@
 @inject IJSRuntime JsRuntime;
 
 <h3>Search A Product</h3>
-<div class="form-row">
+@*<div class="form-row">
     <div class="form-group col-md-6">
-        <label for="search">Søg Efter En Råvare!</label>
-        <input type="text" id="search" class="form-control" placeholder="Råvare.." @onkeyup="@((e) => KeyPressed(e))" @bind="searchBox" />
+        <label for="search">Search for an item (In Danish)</label>
+        <input type="text" id="search" class="form-control" placeholder="Item.." @onkeyup="@((e) => KeyPressed(e))" @bind="searchBox" />
     </div>
     <div class="form-group" col-md-6>
         <label for="minPriceB">Minimum Price</label>
@@ -18,11 +18,35 @@
         <input type="number" class="form-control" placeholder="Max Price" @bind="maxPrice" />
 
     </div>
-    <button type="button" class="btn btn-success" @onclick="@(() => SearchForProducts())">Find Mig En Spise!</button>
+    <button type="button" class="btn btn-success" @onclick="@(() => SearchForProducts())">Search</button>
+    <button type="button" class="btn btn-warning" @onclick="GetUserLocation">What Is My Location?</button>
+    <span>Your Location is: </span>
+    <p id="demo"></p>
+</div>*@
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-4">
+            <label for="search">Search for an item (In Danish)</label>
+            <input type="text" id="search" class="form-control" placeholder="Item.." @onkeyup="@((e) => KeyPressed(e))" @bind="searchBox" />
+        </div>
+        <div class="col-sm-2">
+            <label for="minPriceB">Minimum Price</label>
+            <input type="number" class="form-control" placeholder="Min Price" @bind="minPrice" />
+        </div>
+        <div class="col-sm-2">
+            <label for="maxPriceB">Maximum Price</label>
+            <input type="number" class="form-control" placeholder="Max Price" @bind="maxPrice" />
+        </div>
+        <div class="col-sm-2">
+            <button type="button" class="btn btn-success productSearch" @onclick="@(() => SearchForProducts())">Search</button>
+        </div>
+    </div>
     <button type="button" class="btn btn-warning" @onclick="GetUserLocation">What Is My Location?</button>
     <span>Your Location is: </span>
     <p id="demo"></p>
 </div>
+
 <!-- GEO LOCATION MAP - Google iframe -->
 
 @if (viewMap == true)
@@ -51,7 +75,7 @@
                             <div class="product-card-body flex-grow-1 d-flex flex-column">
                                 <h5 class="product-card-title" style="font-weight:bold">@product.title</h5>
                                 <p class="product-card-price">@product.price DKK</p>
-                                <button class="btn btn-success">Læg Til Shoppinglisten</button>
+                                <button class="btn btn-success">Add to shoppinglist</button>
                             </div>
                         </div>
                     </div>

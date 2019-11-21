@@ -1,16 +1,19 @@
-﻿<div class="top-row pl-4 navbar navbar-dark">
-    <a class="navbar-brand" href="">BiksBudget</a>
+﻿<div class="top-row pl-4 navbar navbar-dark">    
+    <div class="logo-header-wrapper">
+        <a href="" class="logo-header">
+        </a>
+    </div>
     <button class="navbar-toggler" @onclick="ToggleNavMenu">
         <span class="navbar-toggler-icon"></span>
     </button>
 </div>
 
-<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+<div class="@NavMenuCssClass top-nav-emilie-bar" @onclick="ToggleNavMenu">
     <ul class="nav flex-column">
         <li class="nav-item px-3">
             <NavLink class="nav-link" href="shoppinglist">
                 <span class="oi oi-cart" aria-hidden="true"></span> Shopping list
-            </NavLink>
+            </NavLink> 
         </li>
         <li class="nav-item px-3">
             <NavLink class="nav-link" href="storage">

@@ -3,6 +3,8 @@
 @using Newtonsoft.Json;
 @using  System.Text;
 @using FrontEnd2.Data;
+@using System;
+@using System.Collections;
 @using System.Diagnostics;
 @inject HttpClient Http
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
@@ -31,6 +33,11 @@
 
         User user = new User(email, password);
 
+        List<Product> shoppingList = new List<Product>();
+        Product[] shoppinglistArray = new Product[10];
+
+        string ShopString = JsonConvert.SerializeObject(shoppingList);
+
         userString = JsonConvert.SerializeObject(user);
 
         var content = new StringContent(userString, Encoding.UTF8, "application/json");
@@ -39,12 +46,10 @@
 
         if (response.IsSuccessStatusCode)
         {
-            
+
             await localStorage.SetItemAsync("Email", email);
-            /*
-            await uf.GetAuthenticationStateAsync(email);
-            await LogUsername();
-            */
+            await localStorage.SetItemAsync("Shoppinglist", shoppingList);
+            await localStorage.SetItemAsync("ProductString", ShopString);
         } else
         {
             Debug.WriteLine("Testing Remove");
@@ -91,7 +96,6 @@
     {
         if (firstRender)
         {
-            Debug.WriteLine("User: -> " + await localStorage.GetItemAsync<string>("Email"));
             await GetLocalSession();
             localStorage.Changed += (sender, e) =>
             {

@@ -9,6 +9,7 @@
         public string _image;
         public string _storeName;
 
+        public string _customname;
         public int _amountleft; //Kan navngives anderledes
         public string _timeAdded;
         public string _state;
@@ -38,26 +39,22 @@
             _state = state;
         }
 
-        public Product(string id, int amountleft, string state)
+        public Product(string id, string customname, int amountleft, string timeadded, string state)
         {
             _id = id;
+            _customname = customname;
+            _amountleft = amountleft;
+            _timeAdded = timeadded;
+            _state = state;
+        }
+
+        public Product(string id, string customname, int amountleft, string state)
+        {
+            _id = id;
+            _customname = customname;
             _amountleft = amountleft;
             _state = state;
         }
-        /*public string _ean;
-        public string _name;
-        public string _name2;
-        public double _price;
-        public int _productHierarchyID;
-
-        public Product(string ean, string name, string name2, double price, int productHierachyID)
-        {
-            _ean = ean;
-            _name = name;
-            _name2 = name2;
-            _price = price;
-            _productHierarchyID = productHierachyID;
-        }*/
 
         public Product() { }
 
