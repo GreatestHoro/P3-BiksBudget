@@ -1,11 +1,14 @@
-<AuthorizeView>
-    <Authorized>
-        <a href="Identity/Account/Manage">Hello, @context.User.Identity.Name!</a>
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+
+@if (email != null)
+{
+        <a href="Identity/Account/Manage">Hello, @email!</a>
         <form method="post" action="Identity/Account/LogOut">
             <button type="submit" class="nav-link btn btn-link">Log out</button>
         </form>
-    </Authorized>
-    <NotAuthorized>
+}
+else
+{
         <div class="container-fluid">
             <div class="row no-gutters">
                 <div class="col-sm-8">
@@ -25,7 +28,19 @@
             </div>
         </div>
         @*<a class="LogIn btn-block" href="Register">Register</a>
-        <a class="LogIn btn-block" href="Login">Log in</a>*@
-    </NotAuthorized>
-</AuthorizeView>
+            <a class="LogIn btn-block" href="Login">Log in</a>*@
+}
 
+@code{
+    string email;
+
+    protected async override void OnInitialized()
+    {
+        await GetLocalSession();
+    }
+
+    async Task GetLocalSession()
+    {
+        email = await localStorage.GetItemAsync<string>("Email");
+    }
+}
