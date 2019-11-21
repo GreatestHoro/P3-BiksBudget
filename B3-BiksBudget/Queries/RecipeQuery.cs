@@ -9,6 +9,7 @@ using BBCollection.StoreApi;
 using BBCollection.StoreApi.ApiNeeds;
 using BBCollection;
 using System.Threading.Tasks;
+using B3_BiksBudget.BBGatherer.Queries;
 
 namespace BBGatherer.Queries
 {
@@ -21,7 +22,7 @@ namespace BBGatherer.Queries
         int _productsPerIngredient { get; set; } = 3;
 
         // Cheapest Complex Recipes
-        public List<Recipe> CheapestCRecipes(string searchTerm)
+        public List<ComplexRecipe> CheapestCRecipes(string searchTerm)
         {
             //Get recipes matching searchTerm and Filters
             List<Recipe> recipeList = Recipes(searchTerm);
@@ -32,41 +33,77 @@ namespace BBGatherer.Queries
             //Finc products matching to the ingredients
             //want to make it multithreaded later
             //Find x sallingAPIProducts per distinct ingredient
-            Dictionary<string, List<SallingAPIProduct>> sallingProductsDict = SallingMatchingProducts(distinctIngredients, _productsPerIngredient);
-            Hashtable sallingProductsHashtable = new Hashtable(sallingProductsDict);
+            Dictionary<string, List<Product>> productsDict = MatchingProducts(distinctIngredients);
+            Hashtable productsHashtable = new Hashtable(productsDict);
 
-            return recipeList;
+            List<ComplexRecipe> resultComplexRecipes = new List<ComplexRecipe>();
+
+            //calculate the price of each recipe, and creat a list of ComplexRecipe objects
+            resultComplexRecipes = (from recipe in recipeList select new ComplexRecipe(recipe._recipeID, recipe._Name,
+                                    recipe._description, recipe._ingredientList, recipe._PerPerson, RecipeCost(productsHashtable, recipe))).ToList();
+
+            resultComplexRecipes.Sort((a, b) => a._complexRecipeComponent._recipeCost.CompareTo(b._complexRecipeComponent._recipeCost));
+
+            return resultComplexRecipes;
 
         }
 
-        private Dictionary<string, List<SallingAPIProduct>> SallingMatchingProducts(List<string> distinctIngredients, int _productsPerIngredient)
-        {
-            Dictionary<string, List<SallingAPIProduct>> resDictionary = new Dictionary<string, List<SallingAPIProduct>>();
-            foreach(string ingredient in distinctIngredients)
+        // idea to return complex object with productSuggestions and total cost 
+
+        private ComplexRecipeComponent RecipeCost(Hashtable productsHashtable, Recipe recipe)
+        {            
+            double totalCost = 0;
+            // CRP = ComplexRecipeComponent
+            //ComplexRecipeComponent CRP = new ComplexRecipeComponent();
+            Dictionary<string, List<Product>> CRPProductDicts = new Dictionary<string, List<Product>>();
+            var recipeIngredientList = recipe._ingredientList.Select(a => a._ingredientName);
+            var distinctRecipeIngredients = recipeIngredientList.Distinct();
+
+            foreach (var ingredient in distinctRecipeIngredients)
             {
-                resDictionary.Add(ingredient, SallingProducts(ingredient, _productsPerIngredient));
+                if (productsHashtable.ContainsKey(ingredient))
+                {
+                    var productList = (List<Product>)productsHashtable[ingredient];
+                    if (productList.Any())
+                    {
+                        totalCost += productList.First()._price;
+                        CRPProductDicts.Add(ingredient, productList);
+                    }
+                }
+
+            }
+            return new ComplexRecipeComponent(totalCost, CRPProductDicts);
+        }
+
+        private Dictionary<string, List<Product>> MatchingProducts(List<string> distinctIngredients)
+        {
+            Dictionary<string, List<Product>> resDictionary = new Dictionary<string, List<Product>>();
+
+            foreach(string ingredient in distinctIngredients)
+            {                
+                resDictionary.Add(ingredient, matchingProducts(ingredient));
             }
             return resDictionary;
         }
 
-        private List<SallingAPIProduct> SallingProducts(string ingredient, int _productsPerIngredient)
+        // Input: ingredient to search products for
+        // Output: the list of matching products searched in the products database 
+        private List<Product> matchingProducts(string ingredient)
         {
-            string apiProductLink = _linkMaker.GetProductAPILink(ingredient);
-            OpenHttp<SallingAPIProductSuggestions> openHttp = new OpenHttp<SallingAPIProductSuggestions>(apiProductLink, bearerAccessToken.GetBearerToken());
-            SallingAPIProductSuggestions allMatchingProducts = new SallingAPIProductSuggestions();
-            allMatchingProducts = openHttp.ReadAndParseAPISingle();
-         
-            //sort by price | cheap --> expensive
-            allMatchingProducts.Suggestions.Sort((a, b) => a.price.CompareTo(b.price));
+            List<Product> resProducts = new List<Product>();
+            resProducts = _dbConnect.GetProducts(ingredient);
+            resProducts.Sort((a,b) => a._price.CompareTo(b._price));
 
-            // return the _productsPerIngredient cheapest products
-            return allMatchingProducts.Suggestions.Take(_productsPerIngredient).ToList();
+            return resProducts;
         }
 
         private List<Recipe> Recipes(string searchTerm)
         {
             return _dbConnect.GetRecipes(searchTerm);
         }
+
+        // Input: list of queried recipes matching searchTerm
+        // Output: list of the distinct ingredients in these recipes
         private List<string> DistinctIngredients(List<Recipe> recipeList)
         {
             List<string> resIngredients = new List<string>();
@@ -77,12 +114,10 @@ namespace BBGatherer.Queries
                 //Add that range ^^ to resIngredients 
                 resIngredients.AddRange(recipe._ingredientList.Select((ingredient) => ingredient._ingredientName));
             }
-
             // return distinct ingredients
             List<string> distinctIngredients = resIngredients.Distinct().ToList();
         
             return distinctIngredients;
-
         }
     }
 }

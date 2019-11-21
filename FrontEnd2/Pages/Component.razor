@@ -4,8 +4,11 @@
 @using Newtonsoft.Json;
 @using FrontEnd2.Data;
 @using System.Diagnostics;
+@using BBGatherer.Queries;
+@using B3_BiksBudget.BBGatherer.Queries;
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject AuthenticationFunctionallity uf
+
 
 @inject HttpClient Http
 
@@ -103,6 +106,7 @@
     List<float> recipeAmount = new List<float>();
     List<Ingredient> ingredients = new List<Ingredient>();
     List<Recipe> recipeData = new List<Recipe>();
+    List<ComplexRecipe> complexRecipes = new List<ComplexRecipe>();
 
     HttpResponseMessage responseMessage = new HttpResponseMessage();
     ShoppinlistFunctionality ShopList = new ShoppinlistFunctionality("api/Shoppinglist");
@@ -190,6 +194,8 @@
         printRecipe = await Http.GetStringAsync("https://localhost:44325/api/recipe?recipeTitle=" + searchTerm);
         recipeData = JsonConvert.DeserializeObject<List<Recipe>>(printRecipe);
         viewRecipeTitle = true;
+        RecipeQuery recipeQuery = new RecipeQuery();
+        complexRecipes = recipeQuery.CheapestCRecipes(searchTerm);
     }
 
     private async void OnKeyPress(KeyboardEventArgs args)

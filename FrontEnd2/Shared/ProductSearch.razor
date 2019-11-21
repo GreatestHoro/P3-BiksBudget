@@ -308,16 +308,16 @@
         await JsRuntime.InvokeVoidAsync(identifier: "getCoordinates");
     }
 
-    [JSInvokable]
-    public static void UpdateUserLocation(double latitude, double longitude)
-    {
-        userGeoLocation._latitude = latitude;
-        userGeoLocation._longitude = longitude;
-        if (!tcsUserLocation.Task.IsCompleted)
-        {
-            tcsUserLocation.SetResult(userGeoLocation);
-        }
-    }
+    //[JSInvokable]
+    //public static void UpdateUserLocation(double latitude, double longitude)
+    //{
+    //    userGeoLocation._latitude = latitude;
+    //    userGeoLocation._longitude = longitude;
+    //    if (!tcsUserLocation.Task.IsCompleted)
+    //    {
+    //        tcsUserLocation.SetResult(userGeoLocation);
+    //    }
+    //}
 
 
 }
