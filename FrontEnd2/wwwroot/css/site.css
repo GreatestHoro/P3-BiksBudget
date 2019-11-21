@@ -427,7 +427,7 @@ logo-header-wrapper {
 }
 
 .logo-header {
-    background-size: 200px auto;
+    background-size: 220px auto;
     background-repeat: no-repeat;
     background-position: center center;
     background-image: url('/Pictures/logo.png');
@@ -435,8 +435,8 @@ logo-header-wrapper {
     /*position: relative;*/
     object-fit: contain;
     margin: 0;
-    width:  200px;
-    height: 100px;
+    width:  220px;
+    height: 140px;
 }
     .nav-item a {
     color: #d7d7d7;
