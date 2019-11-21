@@ -261,7 +261,11 @@ namespace BBCollection.DBHandling
 
             msc.Parameters.AddWithValue("@Username", username);
 
+            
+
             new SQLConnect().NonQueryMSC(msc, databaseInformation);
+
+            
         }
     }
 }

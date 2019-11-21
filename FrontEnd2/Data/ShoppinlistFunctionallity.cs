@@ -24,6 +24,8 @@ namespace FrontEnd2.Data
         string dest;
         string Email;
         public List<Product> itemList = new List<Product>();
+        public List<Product> LocalItemList = new List<Product>();
+        public List<Product> CombinedList = new List<Product>();
         List<Shoppinglist> shoppinglists = new List<Shoppinglist>();
         HttpResponseMessage response = new HttpResponseMessage();
         List<Product> TempStorageList = new List<Product>();
@@ -35,6 +37,26 @@ namespace FrontEnd2.Data
             productString = await Http.GetStringAsync("https://localhost:44325/" + dest + "/" + userId);
 
             itemList = JsonConvert.DeserializeObject<List<Product>>(productString);
+
+            return new HttpResponseMessage(HttpStatusCode.OK);
+        }
+
+        public async Task<HttpResponseMessage> GetShoppinglistOnStart(string userId, List<Product> LocalList)
+        {
+            Email = userId;
+
+            productString = await Http.GetStringAsync("https://localhost:44325/" + dest + "/" + userId);
+
+            shoppinglists = JsonConvert.DeserializeObject<List<Shoppinglist>>(productString);
+
+            if (shoppinglists.Count != 0)
+            {
+                itemList = shoppinglists[0]._products;
+            }
+
+            LocalItemList = LocalList;
+
+            CombinedList = LocalItemList.Concat(itemList).ToList();
 
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
@@ -70,7 +92,7 @@ namespace FrontEnd2.Data
         {
             double result = 0;
 
-            foreach (var item in itemList)
+            foreach (var item in CombinedList)
             {
                 result += item._price * item._amountleft;
             }
@@ -95,8 +117,6 @@ namespace FrontEnd2.Data
             //itemList.Add(newItem);
             await AddProductAsItem(newItem, Email);
 
-
-
             //productString = JsonConvert.SerializeObject(itemList[itemList.Count - 1]);
             //var content = new StringContent(productString, Encoding.UTF8, "application/json");
             //response = await Http.PostAsync("https://localhost:44325/" + dest, content);
@@ -114,7 +134,7 @@ namespace FrontEnd2.Data
 
             int userIdLength = Email.Length;
 
-            itemList.Add(newItem);
+            CombinedList.Add(newItem);
 
             //productString = JsonConvert.SerializeObject(newItem);
 
@@ -181,11 +201,11 @@ namespace FrontEnd2.Data
 
             int userIdLength = Email.Length;
 
-            productString = JsonConvert.SerializeObject(itemList);
+            productString = JsonConvert.SerializeObject(CombinedList);
 
             productString = userIdLength.ToString() + "|" + Email + productString;
 
-            await SendToApi(productString);
+            response = await SendToApi(productString);
         }
 
         async Task<HttpResponseMessage> SendToApi(string productString)
@@ -242,7 +262,7 @@ namespace FrontEnd2.Data
 
         public async void DeleteFuncList()
         {
-            itemList.Clear();
+            CombinedList.Clear();
             var response = new HttpResponseMessage();
 
             int userIdLength = Email.Length;
@@ -254,10 +274,10 @@ namespace FrontEnd2.Data
         public async Task<HttpResponseMessage> DeleteItem(string id)
         {
             var response = new HttpResponseMessage();
-            itemList.Remove(itemList.First(x => x._id == id));
+            CombinedList.Remove(CombinedList.First(x => x._id == id));
 
             int userIdLength = Email.Length;
-            productString = JsonConvert.SerializeObject(itemList);
+            productString = JsonConvert.SerializeObject(CombinedList);
 
             productString = userIdLength.ToString() + "|" + Email + productString;
 
@@ -266,16 +286,16 @@ namespace FrontEnd2.Data
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
 
-        public async Task<HttpResponseMessage> ChangeItem(string id, string itemString)
-        {
-            int userIdLength = Email.Length;
+        //public async Task<HttpResponseMessage> ChangeItem(string id, string itemString)
+        //{
+        //    int userIdLength = Email.Length;
 
-            itemString = userIdLength.ToString() + "|" + Email + itemString;
+        //    itemString = userIdLength.ToString() + "|" + Email + itemString;
 
-            var content = new StringContent(itemString, Encoding.UTF8, "application/json");
-            ////HttpResponseMessage responce = await Http.PutAsync("https://localhost:44325/api/Storage/" + id, content);
+        //    var content = new StringContent(itemString, Encoding.UTF8, "application/json");
+        //    ////HttpResponseMessage responce = await Http.PutAsync("https://localhost:44325/api/Storage/" + id, content);
 
-            return new HttpResponseMessage(HttpStatusCode.OK);
-        }
+        //    return new HttpResponseMessage(HttpStatusCode.OK);
+        //}
     }
 }
