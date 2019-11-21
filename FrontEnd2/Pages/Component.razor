@@ -4,9 +4,9 @@
 @using Newtonsoft.Json;
 @using FrontEnd2.Data;
 @using System.Diagnostics;
+
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject AuthenticationFunctionallity uf
-
 @inject HttpClient Http
 
 <div class="container-fluid">
@@ -82,6 +82,7 @@
 </div>
 
 @code{
+    #region Fields
 
 
     string recipeDescription = " ";
@@ -103,9 +104,24 @@
     List<float> recipeAmount = new List<float>();
     List<Ingredient> ingredients = new List<Ingredient>();
     List<Recipe> recipeData = new List<Recipe>();
+    List<int> sum = new List<int>();
 
     HttpResponseMessage responseMessage = new HttpResponseMessage();
     ShoppinlistFunctionality ShopList = new ShoppinlistFunctionality("api/Shoppinglist");
+    #endregion
+
+    void getTotalRecipePrice()
+    {
+        foreach (var rep in recipeData)
+        {
+            foreach (var ing in rep._ingredientList)
+            {
+                
+            }
+
+        }
+
+    }
 
     async void AddToShoppinglist()
     {

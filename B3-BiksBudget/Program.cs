@@ -13,14 +13,14 @@ namespace BBGatherer
         {
             DataHandling dh = new DataHandling();
             dh.GenerateDatabase();
-            //dh.GenerateData(false, true);
+            //dh.GenerateData(true, false);
             dh.TestCollection();
         }
     }
 
     public class DataHandling
     {
-        public DatabaseConnect dbConnect = new DatabaseConnect("localhost", "biksbudgetDB", "root", "BiksBudget123");
+        public DatabaseConnect dbConnect = new DatabaseConnect("localhost", "biksbudgetDB3", "root", "BiksBudget123");
         public void GenerateDatabase()
         {
             dbConnect.InitializeDatabase();
@@ -32,7 +32,7 @@ namespace BBGatherer
         public void GenerateData(bool coop, bool salling)
         {
 
-            CoopDoStuff tryCoop = new CoopDoStuff("d0b9a5266a2749cda99d4468319b6d9f");
+            CoopDoStuff tryCoop = new CoopDoStuff("f0cabde6bb8d4bd78c28270ee203253f");
 
             List<CoopProduct> coopProducts = tryCoop.CoopFindEverythingInStore("24073");
 
@@ -50,29 +50,52 @@ namespace BBGatherer
             }
 
 
-            RecipeCrawl WebRunner = new RecipeCrawl();
-            _ = WebRunner.GetRecipes(100, 1200, dbConnect);
+            if (salling == true)
+            {
+                RecipeCrawl WebRunner = new RecipeCrawl();
+                _ = WebRunner.GetRecipes(100, 1200, dbConnect);
 
-            Console.WriteLine("web runner begins... fear its power");
-            Console.ReadLine();
+                Console.WriteLine("web runner begins... fear its power");
+                Console.ReadLine();
+            }
         }
 
         public void TestCollection()
         {
-            dbConnect.AddUser("Test6", "Test");
+            /*dbConnect.AddUser("Test6", "Test");*/
 
             List<Product> testList = new List<Product>();
 
-            Product tProd1 = new Product("F2141400000004", 5, "Full");
+            Product tProd1 = new Product(null, "TestCust", 5, "Full");
+            Product tProd2 = new Product(null, "TestCust2", 5, "Full");
+            Product tProd3 = new Product(null, "TestCust3", 5, "Full");
 
-            Product tProd2 = new Product("F2141640000000", 5, "Full");
-            Product tProd3 = new Product("F4001724019831", 5, "Full");
+            Product tProdid1 = new Product("B2000060000000", null, 5, "Full");
+            Product tProdid2 = new Product("B2000320000009", null, 5, "Full");
+            Product tProdid3 = new Product("B2000570000002", null, 5, "Full");
 
+            
+
+            testList.Add(tProdid1);
+            testList.Add(tProdid2);
+            testList.Add(tProdid3);
             testList.Add(tProd1);
             testList.Add(tProd2);
             testList.Add(tProd3);
 
-            Shoppinglist shoppinglist = new Shoppinglist("TestShoppingList",testList);
+            dbConnect.AddListToStorage("Test6", testList);
+
+            List<Product> products = dbConnect.GetStorageFromUsername("Test6");
+
+            Console.WriteLine(products.Count);
+            foreach(Product p in products)
+            {
+                Console.WriteLine(p._customname);
+                Console.WriteLine(p._id);
+                
+            }
+
+            /*Shoppinglist shoppinglist = new Shoppinglist("TestShoppingList",testList);
 
             List<Shoppinglist> ShoppingList2 = new List<Shoppinglist>();
             ShoppingList2.Add(shoppinglist);
@@ -95,7 +118,7 @@ namespace BBGatherer
                 }
             }
 
-            dbConnect.DeleteShoppingListFromName("","Test6");
+            dbConnect.DeleteShoppingListFromName("","Test6");*/
         }
     }
 }
