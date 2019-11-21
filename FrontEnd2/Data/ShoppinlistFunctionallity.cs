@@ -47,7 +47,10 @@ namespace FrontEnd2.Data
 
             shoppinglists = JsonConvert.DeserializeObject<List<Shoppinglist>>(productString);
 
-            itemList = shoppinglists[0]._products;
+            if (shoppinglists.Count != 0)
+            {
+                itemList = shoppinglists[0]._products;
+            }
 
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
@@ -111,9 +114,11 @@ namespace FrontEnd2.Data
 
             int userIdLength = Email.Length;
 
-            productString = JsonConvert.SerializeObject(newItem);
+            itemList.Add(newItem);
 
-            productString = userIdLength.ToString() + "|" + Email + productString;
+            //productString = JsonConvert.SerializeObject(newItem);
+
+            //productString = userIdLength.ToString() + "|" + Email + productString;
 
             ////await SendToApi(productString);
 

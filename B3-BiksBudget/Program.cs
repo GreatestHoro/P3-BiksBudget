@@ -1,4 +1,4 @@
-﻿using BBCollection.StoreApi.CoopApi;
+using BBCollection.StoreApi.CoopApi;
 using BBGatherer.Webcrawler;
 using BBCollection;
 using BBCollection.BBObjects;
@@ -13,17 +13,14 @@ namespace BBGatherer
         {
             DataHandling dh = new DataHandling();
             dh.GenerateDatabase();
-            dh.GenerateData(false, true);
+            //dh.GenerateData(true, false);
             dh.TestCollection();
-            //ProductSearchLinkConstructer yeet = new ProductSearchLinkConstructer(" øl ", "00", "111111111");
-            //Console.WriteLine(yeet.GetURL());
-            //Console.ReadLine();
         }
     }
 
     public class DataHandling
     {
-        public DatabaseConnect dbConnect = new DatabaseConnect("localhost", "biksbudgetDB", "root", "BiksBudget123");
+        public DatabaseConnect dbConnect = new DatabaseConnect("localhost", "biksbudgetDB3", "root", "BiksBudget123");
         public void GenerateDatabase()
         {
             dbConnect.InitializeDatabase();
@@ -35,104 +32,93 @@ namespace BBGatherer
         public void GenerateData(bool coop, bool salling)
         {
 
-            CoopDoStuff tryCoop = new CoopDoStuff("d0b9a5266a2749cda99d4468319b6d9f");
+            CoopDoStuff tryCoop = new CoopDoStuff("f0cabde6bb8d4bd78c28270ee203253f");
 
             List<CoopProduct> coopProducts = tryCoop.CoopFindEverythingInStore("24073");
 
             //oopDoStuff tryCoop = new CoopDoStuff("d0b9a5266a2749cda99d4468319b6d9f");
 
             int count = 0;
-                coopProducts = tryCoop.CoopFindEverythingInStore("2096");
+            coopProducts = tryCoop.CoopFindEverythingInStore("2096");
 
-                count = 0;
-                foreach (CoopProduct c in coopProducts)
-                {
-                    count++;
-                    Console.WriteLine(count);
-                    dbConnect.AddProduct(new Product("B" + c.Ean, c.Navn, c.Navn2, c.Pris, "", "SuperBrugsen"));
-                }
+            count = 0;
+            foreach (CoopProduct c in coopProducts)
+            {
+                count++;
+                Console.WriteLine(count);
+                dbConnect.AddProduct(new Product("B" + c.Ean, c.Navn, c.Navn2, c.Pris, "", "SuperBrugsen"));
+            }
 
 
+            if (salling == true)
+            {
                 RecipeCrawl WebRunner = new RecipeCrawl();
                 _ = WebRunner.GetRecipes(100, 1200, dbConnect);
 
                 Console.WriteLine("web runner begins... fear its power");
                 Console.ReadLine();
+            }
         }
 
         public void TestCollection()
         {
-        dbConnect.AddUser("Test6", "Test", "BB");
+            /*dbConnect.AddUser("Test6", "Test");*/
 
             List<Product> testList = new List<Product>();
 
-            Product tProd1 = new Product("F2141400000004", 5, "Full");
+            Product tProd1 = new Product(null, "TestCust", 5, "Full");
+            Product tProd2 = new Product(null, "TestCust2", 5, "Full");
+            Product tProd3 = new Product(null, "TestCust3", 5, "Full");
 
-            Product tProd2 = new Product("F2141640000000", 5, "Full");
-            Product tProd3 = new Product("F4001724019831", 5, "Full");
+            Product tProdid1 = new Product("B2000060000000", null, 5, "Full");
+            Product tProdid2 = new Product("B2000320000009", null, 5, "Full");
+            Product tProdid3 = new Product("B2000570000002", null, 5, "Full");
 
+            
+
+            testList.Add(tProdid1);
+            testList.Add(tProdid2);
+            testList.Add(tProdid3);
             testList.Add(tProd1);
             testList.Add(tProd2);
             testList.Add(tProd3);
 
             dbConnect.AddListToStorage("Test6", testList);
 
-            //testList.Remove(tProd2);
+            List<Product> products = dbConnect.GetStorageFromUsername("Test6");
 
-            //dbConnect.UpdateStorage("Test6", testList);
+            Console.WriteLine(products.Count);
+            foreach(Product p in products)
+            {
+                Console.WriteLine(p._customname);
+                Console.WriteLine(p._id);
+                
+            }
 
-        //    List<Recipe> res = dbConnect.GetRecipes("Lam");
+            /*Shoppinglist shoppinglist = new Shoppinglist("TestShoppingList",testList);
 
-        //foreach (Recipe r in res)
-        //{
-        //    Console.WriteLine(r._ingredientList.Count);
-        //}
+            List<Shoppinglist> ShoppingList2 = new List<Shoppinglist>();
+            ShoppingList2.Add(shoppinglist);
 
-        /*
-        List <Recipe> recipes = new List<Recipe>();
-        Console.WriteLine("?????");
+            dbConnect.AddShoppingListsToDatabase("Test6", ShoppingList2);
 
-        foreach(Recipe r in res)
-        {
-            Console.WriteLine(r._Name + " AND " + r._ingredientList.Count);
-        }
+            List<Shoppinglist> shoppinglists = dbConnect.GetShoppinglists("Test6");
 
-
-
-        /*public void TestCollection()
-        {
+            List<Recipe> recipes = new List<Recipe>();
 
 
-            //Console.WriteLine(dbConnect.checkIfSomethingExist("users", "username", "Test"));
 
-            dbConnect.AddUser("Test6", "Test", "email");
-            //Console.WriteLine(dbConnect.CheckUser("Test", "Test"));
+            foreach (Shoppinglist sl in shoppinglists)
+            {
+                foreach (Product p in sl._products)
+                {
+                    Console.WriteLine("???");
+                    Console.WriteLine(p._productName + sl._name);
 
-        //Console.WriteLine(dbConnect.checkIfSomethingExist("users", "username", "Test"));
-        //dbConnect.AddUser("Test6", "Test", "email");
-        //Console.WriteLine(dbConnect.CheckUser("Test", "Test"));
+                }
+            }
 
-        //List<Product> testList = new List<Product>();
-
-        //Product tProd1 = new Product("B2000020000002", 5, "Full");
-        //Product tProd2 = new Product("B2000110000004", 5, "Full");
-        //Product tProd3 = new Product("B2000060000000", 5, "Full");
-
-        //testList.Add(tProd1);
-        //testList.Add(tProd2);
-        //testList.Add(tProd3);
-        //dbConnect.AddListToStorage("Test6", testList);
-
-
-            //List<Product> testList = new List<Product>();
-
-            //testList = dbConnect.GetStorageFromUsername("Test3");
-
-            //foreach (Product p in testList)
-            //{
-            //    Console.WriteLine(p._timeAdded);
-            //}
-        }*/
-    }
+            dbConnect.DeleteShoppingListFromName("","Test6");*/
         }
     }
+}

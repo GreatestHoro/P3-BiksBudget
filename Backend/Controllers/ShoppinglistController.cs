@@ -20,13 +20,13 @@ namespace Backend.Controllers
     {
         DatabaseConnect dbConnect = new DatabaseConnect("localhost", "biksbudgetDB", "root", "BiksBudget123");
         List<Shoppinglist> shoppinglists = new List<Shoppinglist>();
-        List<Product> resultList = new List<Product>();
         string Email;
         //DatabaseConnect dbConnect = new DatabaseConnect("localhost", "biksbudgetDB", "root", "BiksBudget123");
         // GET: api/Shoppinglist
         [HttpGet]
         public void Get()
         {
+
         }
 
         // GET: api/Storage/5
@@ -75,24 +75,13 @@ namespace Backend.Controllers
 
             if (buffer.Contains("PLS_DELETE"))
             {
-                //Delete the entire list
-                //productData.Clear(); // This means delete database
+                dbConnect.DeleteShoppingListFromName("Shoppinglist", Email);
             }
             else
             {
                 if (buffer.Substring(0, 1) != "[")
                 {
                     buffer = "[" + buffer + "]";
-
-                    //shoppinglists = JsonConvert.DeserializeObject<List<Shoppinglist>>(buffer);
-                    //dbConnect.AddShoppingListsToDatabase(Email, shoppinglists);
-                    //productData.Add(newItem[0]); // This means add one item to shoppinlist
-                }
-                else
-                {
-                    //shoppinglists = JsonConvert.DeserializeObject<List<Shoppinglist>>(buffer);
-                    //dbConnect.AddShoppingListsToDatabase(Email, shoppinglists);
-                    //productData = newItem; // This means add a whole list to shoppinlist
                 }
 
                 newItem = JsonConvert.DeserializeObject<List<Product>>(buffer);
@@ -102,7 +91,7 @@ namespace Backend.Controllers
 
                 if (toSend.Count == 0)
                 {
-                    toSend.Add(new Shoppinglist("Stuff", newItem));
+                    toSend.Add(new Shoppinglist("Shoppinglist", newItem));
                 }
                 else
                 {
@@ -137,21 +126,5 @@ namespace Backend.Controllers
 
             newItem = JsonConvert.DeserializeObject<Product>(buffer);
         }
-
-        //// DELETE: api/ApiWithActions/5
-        //[HttpDelete("{id}")]
-        //public void Delete(int id)
-        //{
-        //    productData = test.GetStuff();
-
-        //    productData.Remove(productData.First(x => x.Id == id));
-
-        //    int i = 1;
-        //    foreach (var product in productData)
-        //    {
-        //        product.Id = i;
-        //        i++;
-        //    }
-        //}
     }
 }

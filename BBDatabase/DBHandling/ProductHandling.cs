@@ -13,9 +13,6 @@ namespace BBCollection.DBHandling
         {
             RemoveStorageFromUsername(username, databaseInformation);
 
-            Console.WriteLine(products.Count);
-            
-
             AddToStorageFromUsername(username, products, databaseInformation);
         }
 
@@ -63,53 +60,94 @@ namespace BBCollection.DBHandling
         {
             List<Product> productList = new List<Product>();
 
-            string storageQuery =
-                "SELECT userstorage.prodid, products.productname , products.amount, products.price, products.image, products.store, userstorage.amountStored, userstorage.timeadded, userstorage.state " +
-                "FROM userstorage INNER JOIN products ON userstorage.prodid = products.id " +
-                "WHERE userstorage.username = @Username";
+            string storageQuery;
+                
 
-            MySqlCommand msc = new MySqlCommand(storageQuery);
-            msc.Parameters.AddWithValue("@Username", username);
-            DataSet ds = new SQLConnect().DynamicSimpleListSQL(msc, dbInformation);
+            
+            
 
+            string checkProdIDExist =
+                "SELECT Count(*) FROM userstorage WHERE prodid IS NOT NULL AND username = @Username";
+            MySqlCommand prodmsc = new MySqlCommand(checkProdIDExist);
+            prodmsc.Parameters.AddWithValue("@Username", username);
 
+            string checkCustNameExist =
+                "SELECT Count(*) FROM userstorage where custom_name IS NOT NULL AND username = @Username";
+            MySqlCommand custmsc = new MySqlCommand(checkCustNameExist);
+            custmsc.Parameters.AddWithValue("@Username", username);
 
-            if (ds.Tables.Count != 0)
+            if (new SQLConnect().CheckRecordExist(prodmsc, dbInformation))
             {
-                foreach (DataRow r in ds.Tables[0].Rows)
+                storageQuery =
+                    "SELECT userstorage.prodid, products.productname , products.amount, products.price, products.image, products.store, userstorage.amountStored, userstorage.timeadded, userstorage.state " +
+                    "FROM userstorage INNER JOIN products ON userstorage.prodid = products.id " +
+                    "WHERE userstorage.username = @Username AND prodid IS NOT NULL";
+                MySqlCommand msc = new MySqlCommand(storageQuery);
+                msc.Parameters.AddWithValue("@Username", username);
+                DataSet ds = new SQLConnect().DynamicSimpleListSQL(msc, dbInformation);
+
+                if (ds.Tables.Count != 0)
                 {
-                    Product product = new Product((string)r[0], (string)r[1], (string)r[2], Convert.ToDouble(r[3]), (string)r[4], (string)r[5], (int)r[6], Convert.ToString(r[7]), (string)r[8]);
-                    productList.Add(product);
+                    foreach (DataRow r in ds.Tables[0].Rows)
+                    {
+                        Product product = new Product((string)r[0], (string)r[1], (string)r[2], Convert.ToDouble(r[3]), (string)r[4], (string)r[5], (int)r[6], Convert.ToString(r[7]), (string)r[8]);
+                        productList.Add(product);
+                    }
+                }
+            } 
+            if (new SQLConnect().CheckRecordExist(custmsc, dbInformation))
+            {
+                storageQuery =
+                    "SELECT userstorage.custom_name, userstorage.amountStored, userstorage.timeadded, userstorage.state " +
+                    "FROM userstorage " +
+                    "WHERE username = @Username AND custom_name IS NOT NULL;";
+                MySqlCommand msc = new MySqlCommand(storageQuery);
+                msc.Parameters.AddWithValue("@Username", username);
+                DataSet ds = new SQLConnect().DynamicSimpleListSQL(msc, dbInformation);
+                
+
+                if (ds.Tables.Count != 0)
+                {
+                    foreach (DataRow r in ds.Tables[0].Rows)
+                    {
+                        Product product = new Product("", (string)r[0], (int) r[1], Convert.ToString(r[2]), (string)r[3]);
+                        productList.Add(product);
+                    }
                 }
             }
 
             return productList;
         }
 
-        public bool AddToStorageFromUsername(string username, List<Product> storage, DatabaseInformation dbInforamtion)
+        public void AddToStorageFromUsername(string username, List<Product> storage, DatabaseInformation dbInforamtion)
         {
+            Console.WriteLine(storage.Count);
+
             foreach (Product p in storage)
             {
-                string productQuery = "INSERT INTO `userstorage`(`username`,`prodid`,`amountstored`,`state`) " +
-                                      "VALUES(@Username,@ProductID,@AmountStored,@State);";
-                string checkExist = "SELECT COUNT(*) FROM userstorage WHERE prodid = @ProductID";
+                string productQuery = "INSERT INTO `userstorage`(`username`,`prodid`,`custom_name`,`amountstored`,`state`) " +
+                                      "VALUES(@Username,@ProductID,@CustomName,@AmountStored,@State);";
+                string checkExist = "SELECT COUNT(*) FROM userstorage WHERE prodid = @ProductID or custom_name = @CustomName;";
 
                 MySqlCommand exist = new MySqlCommand(checkExist);
                 exist.Parameters.AddWithValue("@ProductID", p._id);
+                exist.Parameters.AddWithValue("@CustomName", p._customname);
 
+                Console.WriteLine(p._id);
+                Console.WriteLine(new SQLConnect().CheckRecordExist(exist, dbInforamtion));
                 if (!new SQLConnect().CheckRecordExist(exist, dbInforamtion))
                 {
+                    
                     MySqlCommand msc = new MySqlCommand(productQuery);
 
                     msc.Parameters.AddWithValue("@Username", username);
                     msc.Parameters.AddWithValue("@ProductID", p._id);
+                    msc.Parameters.AddWithValue("@CustomName", p._customname);
                     msc.Parameters.AddWithValue("@AmountStored", p._amountleft);
                     msc.Parameters.AddWithValue("@State", p._state);
                     new SQLConnect().NonQueryMSC(msc, dbInforamtion);
                 }
             }
-
-            return false;
         }
 
         public void AddSingleProductToStorage(string username, Product product, DatabaseInformation databaseInformation)
@@ -121,9 +159,6 @@ namespace BBCollection.DBHandling
 
             MySqlCommand exist = new MySqlCommand(checkExist);
             exist.Parameters.AddWithValue("@ProductID", product._id);
-
-
-            Console.WriteLine(new SQLConnect().CheckRecordExist(exist, databaseInformation));
 
             if (!new SQLConnect().CheckRecordExist(exist, databaseInformation))
             {
@@ -155,18 +190,22 @@ namespace BBCollection.DBHandling
                 "INSERT INTO `shoppinglists`(`username`, `shoppinglist_name`,`product_id`,`amount`) " +
                 "VALUES(@Username,@ShoppinglistName,@ProductID,@Amount)";
 
-            MySqlCommand msc = new MySqlCommand(addQuery);
-
             foreach (Shoppinglist sl in shoppinglists)
             {
                 foreach (Product p in sl._products)
                 {
+                    MySqlCommand msc = new MySqlCommand(addQuery);
+                    Console.WriteLine("INSERT INTO `shoppinglists`(`username`, `shoppinglist_name`,`product_id`,`amount`)VALUES(\'" + username + "\',\'" + sl._name + "\',\'" + p._id + "\'," + p._amountleft + ")");
                     msc.Parameters.AddWithValue("@Username", username);
-                    msc.Parameters.AddWithValue("@ShoppingListName", sl._name);
+                    msc.Parameters.AddWithValue("@ShoppinglistName", sl._name);
                     msc.Parameters.AddWithValue("@ProductID", p._id);
-                    msc.Parameters.AddWithValue("@Amount", p._amount);
+                    msc.Parameters.AddWithValue("@Amount", p._amountleft);
+
+                    new SQLConnect().NonQueryMSC(msc, databaseInformation);
                 }
             }
+
+
         }
 
         public List<Shoppinglist> GetShoppinglistsFromUsername(string username, DatabaseInformation databaseInformation)
@@ -182,19 +221,17 @@ namespace BBCollection.DBHandling
             msc.Parameters.AddWithValue("@Username", username);
             DataSet ds = new SQLConnect().DynamicSimpleListSQL(msc, databaseInformation);
 
-
-            Console.WriteLine("Amount of tables: " + ds.Tables.Count);
-
             if (ds.Tables.Count != 0)
             {
-                if (ds.Tables[0].Rows.Count != 0) 
-                {
-                    string SLName = (string)ds.Tables[0].Rows[0][0];
-                    List<Product> products = new List<Product>();
+                if (ds.Tables[0].Rows.Count != 0)
 
+                {
+                    List<Product> products = new List<Product>();
+                    string SLName = (string)ds.Tables[0].Rows[0][0];
                     foreach (DataRow r in ds.Tables[0].Rows)
                     {
                         Product product = new Product((string)r[1], (string)r[2], (string)r[3], Convert.ToDouble(r[4]), (string)r[5], (string)r[6]);
+
                         if (SLName == (string)r[0])
                         {
                             products.Add(product);
@@ -211,6 +248,20 @@ namespace BBCollection.DBHandling
                 }
             }
             return ShoppingLists;
+        }
+
+        public void DeleteShoppingListFromName(string slName, string username, DatabaseInformation databaseInformation)
+        {
+            string sLQuery =
+                "DELETE FROM `shoppinglists` WHERE `shoppinglist_name` = @SLName AND username = @Username";
+
+            MySqlCommand msc = new MySqlCommand(sLQuery);
+
+            msc.Parameters.AddWithValue("@SLName", slName);
+
+            msc.Parameters.AddWithValue("@Username", username);
+
+            new SQLConnect().NonQueryMSC(msc, databaseInformation);
         }
     }
 }

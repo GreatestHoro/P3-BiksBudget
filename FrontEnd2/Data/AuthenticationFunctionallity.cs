@@ -10,16 +10,14 @@ namespace FrontEnd2.Data
     class AuthenticationFunctionallity
     {
 
-        public Task<AuthenticationState> GetAuthenticationStateAsync(string username)
+        public class ServerAuthenticationStateProvider : AuthenticationStateProvider
         {
-            var identity = new ClaimsIdentity(new[]
+            public override async Task<AuthenticationState> GetAuthenticationStateAsync()
             {
-                new Claim(ClaimTypes.Name, username),
-            }, "Standard user");
-
-            var user = new ClaimsPrincipal(identity);
-
-            return Task.FromResult(new AuthenticationState(user));
+                var claim = new Claim(ClaimTypes.Name, "Fake user");
+                var identity = new ClaimsIdentity(new[] { claim }, "serverauth");
+                return new AuthenticationState(new ClaimsPrincipal(identity));
+            }
         }
     }
 }

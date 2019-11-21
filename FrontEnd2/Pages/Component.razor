@@ -4,8 +4,11 @@
 @using Newtonsoft.Json;
 @using FrontEnd2.Data;
 @using System.Diagnostics;
+@using BBGatherer.Queries;
+@using B3_BiksBudget.BBGatherer.Queries;
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject AuthenticationFunctionallity uf
+
 
 @inject HttpClient Http
 
@@ -82,6 +85,7 @@
 </div>
 
 @code{
+    #region Fields
 
 
     string recipeDescription = " ";
@@ -103,9 +107,25 @@
     List<float> recipeAmount = new List<float>();
     List<Ingredient> ingredients = new List<Ingredient>();
     List<Recipe> recipeData = new List<Recipe>();
+    List<ComplexRecipe> complexRecipes = new List<ComplexRecipe>();
+    List<int> sum = new List<int>();
 
     HttpResponseMessage responseMessage = new HttpResponseMessage();
     ShoppinlistFunctionality ShopList = new ShoppinlistFunctionality("api/Shoppinglist");
+    #endregion
+
+    void getTotalRecipePrice()
+    {
+        foreach (var rep in recipeData)
+        {
+            foreach (var ing in rep._ingredientList)
+            {
+
+            }
+
+        }
+
+    }
 
     async void AddToShoppinglist()
     {
@@ -116,7 +136,7 @@
             listToSend.Add(new Product() {_id = item._id.ToString(), _amount = item._amount + item._unit, _productName = item._ingredientName });
         }
 
-        //await ShopList.AddListToShoppinglist(listToSend);
+        await ShopList.AddListToShoppinglist(listToSend);
     }
 
     void incrementRecipeAmount()
@@ -190,6 +210,8 @@
         printRecipe = await Http.GetStringAsync("https://localhost:44325/api/recipe?recipeTitle=" + searchTerm);
         recipeData = JsonConvert.DeserializeObject<List<Recipe>>(printRecipe);
         viewRecipeTitle = true;
+        RecipeQuery recipeQuery = new RecipeQuery();
+        complexRecipes = recipeQuery.CheapestCRecipes(searchTerm);
     }
 
     private async void OnKeyPress(KeyboardEventArgs args)
