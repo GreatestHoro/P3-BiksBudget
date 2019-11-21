@@ -155,16 +155,18 @@ namespace BBCollection.DBHandling
                 "INSERT INTO `shoppinglists`(`username`, `shoppinglist_name`,`product_id`,`amount`) " +
                 "VALUES(@Username,@ShoppinglistName,@ProductID,@Amount)";
 
-            MySqlCommand msc = new MySqlCommand(addQuery);
+            
 
             foreach (Shoppinglist sl in shoppinglists)
             {
                 foreach (Product p in sl._products)
                 {
+                    MySqlCommand msc = new MySqlCommand(addQuery);
                     msc.Parameters.AddWithValue("@Username", username);
                     msc.Parameters.AddWithValue("@ShoppingListName", sl._name);
                     msc.Parameters.AddWithValue("@ProductID", p._id);
                     msc.Parameters.AddWithValue("@Amount", p._amount);
+                    new SQLConnect().NonQueryMSC(msc, databaseInformation);
                 }
             }
         }
