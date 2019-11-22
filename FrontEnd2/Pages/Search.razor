@@ -16,17 +16,18 @@
 <form class="form-inline md-form mr-auto mb-4">
     <label class="text-muted">
         Advanced search
-        <input type="checkbox" value="viewAdvancedSearch" @onclick="toggleAdvancedCheckBox" checked/>
+        <input type="checkbox" value="viewAdvancedSearch" @onclick="toggleAdvancedCheckBox"/>
     </label>
 </form>
 @if (viewAdvancedSearch)
 {
-    <h6> Select options:</h6>
+    <h4> Select options:</h4>
     <div class="d-flex flex-sm-row flex-column">
         <div class="p-2">
             <div class="btn-group show-on-hover">
                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                    Select Stores <span clasusergeolos="caret"></span>
+                    <h5>Select Stores </h5>
+                    <span clasusergeolos="caret"></span>
                 </button>
                 <ul class="dropdown-menu" role="menu">
                     @foreach (FilterItem item in storeList)
@@ -47,7 +48,7 @@
         <div class="p-2">
             <div class="btn-group show-on-hover">
                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                    Select Stores <span class="caret"></span>
+                    <h5>Select filters</h5> <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" role="menu">
                     @foreach (var item in wordList)
@@ -65,19 +66,42 @@
             </div>
         </div>
         <div class="p-2">
-            <input type="range" name="Yeet" min="0" max="40000" @bind="radius" step="100" />
-            <p>@radius</p>
+            <h5>Distance @(radius / 1000) Km</h5>
+            <input type="range" min="0" max="5000" @bind="radius" step="1000" />
         </div>
     </div>
 }
 
+@if (_viewProducts == true)
+{
 <div class="container">
     <div class="row">
-        <div class="col-sm-12">
-
-        </div>
+        @foreach (Product p in itemList)
+        {
+            <div class="col-12 col-sm-8 col-md-6 col-lg-4">
+                <div class="card">
+                    <img class="card-img" src="@p._image" alt="">
+                    <div class="card-body">
+                        <h4 class="card-title">@p._productName</h4>
+                        <h6 class="card-subtitle mb-2 text-muted"> sub title</h6>
+                        <p class="card-text">
+                            From @p._storeName
+                        </p>
+                        <div class="buy d-flex justify-content-between align-items-center">
+                            <div class="price text-success"><h5 class="mt-4">@p._price</h5></div>
+                            <a href="#" class="btn btn-danger mt-3"><i class="fas fa-shopping-cart"></i> Add to Cart</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
     </div>
 </div>
+}
+else
+{
+    <p>@messageToUser</p>
+}
 
 
 
