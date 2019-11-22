@@ -74,7 +74,7 @@
                             </td>
                         </tr>
                         <tr>
-                            <td colspan="2"> <button type="button" class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => AddToShoppinglist())"> Add to Shopping List </button></td>
+                            <td colspan="2"> <button type="button" class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => QuickAddToShoppinglist(ingredients))"> Quick add </button></td>
                         </tr>
                     </tbody>
                 </table>
@@ -169,6 +169,8 @@
 
     //exsperimental
     List<Product> ToShoppinglist = new List<Product>();
+    List<Product> QuickList = new List<Product>();
+    List<List<Product>> returnList = new List<List<Product>>();
     string shopString;
 
     HttpResponseMessage responseMessage = new HttpResponseMessage();
@@ -206,6 +208,7 @@
                                 if (p._productName.Contains(tempIngredientName) && !products.Contains(p))
                                 {
                                     products.Add(p);
+                                    QuickList.Add(p);
                                 }
                             }
                         }
@@ -229,6 +232,7 @@
                                 if (p._productName.Contains(tempIngredientName) && !products.Contains(p))
                                 {
                                     products.Add(p);
+                                    QuickList.Add(p);
                                 }
                             }
                         }
@@ -238,17 +242,17 @@
         }
     }
 
-    async void AddToShoppinglist()
-    {
-        List<Product> listToSend = new List<Product>();
+    //async void AddToShoppinglist()
+    //{
+    //    List<Product> listToSend = new List<Product>();
 
-        foreach (var item in ingredients)
-        {
-            listToSend.Add(new Product() { _id = item._id.ToString(), _amount = item._amount + item._unit, _productName = item._ingredientName });
-        }
+    //    foreach (var item in ingredients)
+    //    {
+    //        listToSend.Add(new Product() { _id = item._id.ToString(), _amount = item._amount + item._unit, _productName = item._ingredientName });
+    //    }
 
-        await ShopList.AddListToShoppinglist(listToSend);
-    }
+    //    await ShopList.AddListToShoppinglist(listToSend);
+    //}
 
     public async void AddProductToSL(Product AddedItem)
     {
@@ -262,6 +266,48 @@
 
         await localStorage.SetItemAsync("ProductString", shopString);
         //await localStorage.SetItemAsync("Shoppinglist", ToShoppinglist);
+    }
+
+    public async void QuickAddToShoppinglist(List<Ingredient> ingredient)
+    {
+        bool firstRun;
+        Product temp = new Product();
+        List<Product> productsToAddSL = new List<Product>();
+        GetProductLists(ingredient);
+        foreach (List<Product> pro in returnList)
+        {
+            if (pro.Count != 0) 
+            {
+                firstRun = true;
+                foreach (Product p in pro)
+                {
+                    if (temp._price > p._price || firstRun)
+                    {
+                        temp = p;
+                        firstRun = false;
+                    }
+                }
+                productsToAddSL.Add(temp);
+            }
+
+        }
+        foreach (Product pMin in productsToAddSL)
+        {
+            AddProductToSL(pMin);
+        }
+
+    }
+    public void GetProductLists(List<Ingredient> ingredients)
+    {
+        //List<Product> test = new List<Product>();
+        foreach (Ingredient ind in ingredients)
+        {
+            retriveIngredient(ind);
+
+            returnList.Add(new List<Product>(QuickList));
+            QuickList.Clear();
+        }
+
     }
 
     void incrementRecipeAmount()//aventuel optimering brug en scalar værdi
