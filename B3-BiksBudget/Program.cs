@@ -12,9 +12,9 @@ namespace BBGatherer
         static void Main(string[] args)
         {
             DataHandling dh = new DataHandling();
-            //dh.GenerateDatabase();
+            dh.GenerateDatabase();
             //dh.GenerateData(true, false);
-            dh.TestCollection();
+            //dh.TestCollection();
         }
     }
 
