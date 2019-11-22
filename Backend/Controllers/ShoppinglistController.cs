@@ -95,18 +95,15 @@ namespace Backend.Controllers
                 }
                 else
                 {
-                    toSend[0]._products.Clear();
                     foreach (var item in newItem)
                     {
                         toSend[0]._products.Add(item);
 
                     }
-                    
                 }
 
-                dbConnect.DeleteShoppingListFromName("Shoppinglist", Email);
                 dbConnect.AddShoppingListsToDatabase(Email, toSend);
-                
+
             }
 
         }

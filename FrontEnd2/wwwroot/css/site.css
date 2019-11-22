@@ -7,22 +7,8 @@ h1 {
     text-align: center;
 }
 /*Search field on search page*/
-.SearchBar {
+.productSearchBar {
     width: 200px;
-}
-/*When not using bootstrap flex*/
-.SearchField {
-    height: calc(1.5em + .75rem + 2px);
-    padding: .375rem .75rem;
-    font-size: 1rem;
-    font-weight: 400;
-    line-height: 1.5;
-    color: #495057;
-    background-color: #fff;
-    background-clip: padding-box;
-    border: 1px solid #ced4da;
-    border-radius: .25rem;
-    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out
 }
 .mapouter {
     position: relative;
@@ -235,6 +221,13 @@ input[type=number]::-webkit-outer-spin-button {
     margin: 0;
 }
 
+
+.recipeSearch{
+    width: 40%;
+    height: 5%;
+    text-align: center;
+}
+
 table.fixed {
     table-layout: fixed;
     word-break: break-all;
@@ -360,7 +353,7 @@ ul.fixed {
 a {
     /*color: #0366d6;*/
     color: black;
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 300;
     float: left;
 }
@@ -442,7 +435,7 @@ logo-header-wrapper {
 }
 
 .logo-header {
-    background-size: 160px auto;
+    background-size: 220px auto;
     background-repeat: no-repeat;
     background-position: center center;
     background-image: url('/Pictures/logo.png');
@@ -450,8 +443,8 @@ logo-header-wrapper {
     /*position: relative;*/
     object-fit: contain;
     margin: 0;
-    width:  160px;
-    height: 100px;
+    width:  220px;
+    height: 140px;
 }
     .nav-item a {
     color: #d7d7d7;
@@ -518,7 +511,7 @@ logo-header-wrapper {
     }
 
     .sidebar {
-        width: 200px;
+        width: 250px;
         height: 100vh;
         position: sticky;
         top: 0;

@@ -283,13 +283,11 @@ namespace BBGatherer.Webcrawler
         #region(String Cleanups)
         private String NameCleanUp(String name) 
         {
-            List<char> _char = new List<char>() {',', '.', '+', '-', '!', '?','&','%','–','"','*','(',')','/', '½'};
-            List<string> splitString = new List<string>() {"eller","i","med","gerne","fra","fx","ekstra","el","og"};
-            List<string> removeSub = new List<string>() { "evt","ekstra","tsk", "almindelig"};
-            List<string> removeIfFisrt = new List<string>() {"af " , "after "};
+            List<char> _char = new List<char>() {',', '.', '+', '-', '!', '?','&','%'};
+            List<string> splitString = new List<string>() {"eller","i","med"};
+            List<string> removeSub = new List<string>() { "evt" };
 
-            name = RemoveInBetween(name,'(',')');
-            name = RemoveInBetween(name,'"','"');
+            name = RemoveParentheses(name);
             foreach (string s in splitString) 
             {
                 name = RemoveEverythingAfter(name, s);
@@ -301,10 +299,6 @@ namespace BBGatherer.Webcrawler
             foreach (string s in removeSub)
             {
                 name = RemoveSubstring(name, s);
-            }
-            foreach (string s in removeIfFisrt) 
-            {
-                name = RemoveIfFirstInString(name,s);
             }
 
             name = name.ToLower();
@@ -390,7 +384,7 @@ namespace BBGatherer.Webcrawler
             return _return;
         }
         
-        private String RemoveInBetween(string name,char a,char b) 
+        private String RemoveParentheses(string name) 
         {
             char[] chars = name.ToCharArray();
             bool ParenthesesFlag = false;
@@ -400,12 +394,12 @@ namespace BBGatherer.Webcrawler
             {
                 if (ParenthesesFlag)
                 {
-                    if (character.Equals(b)) 
+                    if (character.Equals(')')) 
                     {
                         ParenthesesFlag = false;
                     }
                 }
-                else if (character.Equals(a))
+                else if (character.Equals('('))
                 {
                     ParenthesesFlag = true;
                 }
@@ -431,31 +425,6 @@ namespace BBGatherer.Webcrawler
             }
 
             return returnString;
-        }
-
-        private String RemoveIfFirstInString(string name, string Remove) 
-        {
-            char[] _name = name.Trim().ToCharArray();
-            char[] _Remove = Remove.ToCharArray();
-            int i = 0;
-
-            if (name.Contains(Remove)) 
-            {
-                foreach (char r in _Remove) 
-                {
-                    i++;
-                    if (r == _name[i])
-                    {
-                        _name[i] = '*'; 
-                    }
-                    else 
-                    {
-                        return name.Trim();
-                    }
-                }
-            }
-
-            return RemoveCharFromString(name, '*').Trim(); ;
         }
         #endregion
 

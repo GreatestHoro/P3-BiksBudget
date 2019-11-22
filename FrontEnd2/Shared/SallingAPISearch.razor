@@ -3,10 +3,10 @@
 @using FrontEnd2.Data
 @inject IJSRuntime JsRuntime;
 
-<h3>Search for a product</h3>
+<h3>Search A Product</h3>
 <div class="d-flex flex-sm-row flex-column">
     <div class="p-2">
-        <input type="text" id="search" class="form-control SearchBar" placeholder="Search for a product" @onkeyup="@((e) => KeyPressed(e))" @bind="searchBox" />
+        <input type="text" id="search" class="form-control productSearchBar" placeholder="Search for an item" @onkeyup="@((e) => KeyPressed(e))" @bind="searchBox" />
     </div>
     <div class="p-2">
         <button type="button" class="btn btn-success" @onclick="@(() => SearchForProducts())">Search</button>
