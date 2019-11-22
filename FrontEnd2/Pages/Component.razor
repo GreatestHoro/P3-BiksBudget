@@ -62,14 +62,14 @@
                         @foreach (Ingredient ing in ingredients)
                         {
                             <tr>
-                                <td>@ing._amount @ing._unit</td>
+                                <td>@((ing._amount/recipePerPerson)*scalar) @ing._unit</td>
                                 <td><button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => retriveIngredient(ing))">@ing._ingredientName</button></td>
                             </tr>
                         }
                         <tr>
                             <td colspan="2" class="text-sm-center">
                                 <div class="value-button" @onclick="incrementRecipeAmount" value="Increase @value"> + </div>
-                                <input type="number" id="number" value="@recipePerPerson" />
+                                <input type="number" id="number" value="@(scalar)" />
                                 <div class="value-button" @onclick="decrementRecipeAmount" value="Decrease @value"> - </div>
                             </td>
                         </tr>
@@ -276,7 +276,7 @@
         GetProductLists(ingredient);
         foreach (List<Product> pro in returnList)
         {
-            if (pro.Count != 0) 
+            if (pro.Count != 0)
             {
                 firstRun = true;
                 foreach (Product p in pro)
@@ -310,35 +310,15 @@
 
     }
 
-    void incrementRecipeAmount()//aventuel optimering brug en scalar værdi
+    void incrementRecipeAmount()
     {
-        for (int i = 0; i < ingredients.Count; i++)
-        {
-            if (ingredients[i]._amount != 0)
-            {
-                ingredients[i]._amount = (ingredients[i]._amount / recipePerPerson) * (recipePerPerson + 1F);
-                value++;
-            }
-        }
-        recipePerPerson += 1;
+        scalar++;
     }
 
 
     void decrementRecipeAmount()
     {
-        if (recipePerPerson >= 2)
-        {
-
-            for (int i = 0; i < ingredients.Count; i++)
-            {
-                if (ingredients[i]._amount != 0)
-                {
-                    ingredients[i]._amount = (ingredients[i]._amount / recipePerPerson) * (recipePerPerson - 1F);
-                    value--;
-                }
-            }
-            recipePerPerson -= 1;
-        }
+        scalar--;
     }
 
 
@@ -349,6 +329,7 @@
 
     void retriveInfo(int ID)
     {
+        scalar = 1;
         Recipe show = recipeData.First(x => x._recipeID == ID);
         recipeDescription = show._description;
         recipeName = show._Name;
