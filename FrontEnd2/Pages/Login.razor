@@ -34,8 +34,9 @@
         User user = new User(email, password);
 
         List<Product> shoppingList = new List<Product>();
-        Product[] shoppinglistArray = new Product[10];
+        List<Process> storageList = new List<Process>();
 
+        string StorageString =JsonConvert.SerializeObject(storageList);
         string ShopString = JsonConvert.SerializeObject(shoppingList);
 
         userString = JsonConvert.SerializeObject(user);
@@ -46,10 +47,9 @@
 
         if (response.IsSuccessStatusCode)
         {
-
             await localStorage.SetItemAsync("Email", email);
-            await localStorage.SetItemAsync("Shoppinglist", shoppingList);
             await localStorage.SetItemAsync("ProductString", ShopString);
+            await localStorage.SetItemAsync("StorageString", ShopString);
         } else
         {
             Debug.WriteLine("Testing Remove");
