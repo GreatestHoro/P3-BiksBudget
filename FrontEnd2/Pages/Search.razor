@@ -87,7 +87,7 @@
                         }
                         else
                         {
-                        <img style="width:auto; height:200px; " class="card-img-top " src="@p._image">
+                        <img style="width:auto; height:200px; " class="card-img-top " src="@ProductImage(p._image)">
                         }
                     </div>
                     <div class="card-body h-50 w-100 bg-secondary rounded mx-auto">
@@ -439,6 +439,12 @@ else
         {
             ToShoppinglist = JsonConvert.DeserializeObject<List<Product>>(shopString);
         }
+    }
+
+    // Function to get salling products in high resolution
+    private string ProductImage(string prod_image)
+    {
+        return prod_image + "&imgSize=1080x1080";
     }
 
 }
