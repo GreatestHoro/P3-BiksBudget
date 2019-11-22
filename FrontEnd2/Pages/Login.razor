@@ -1,4 +1,6 @@
-﻿@page "/Login"
+﻿
+
+@page "/Login"
 @using BBCollection.BBObjects;
 @using Newtonsoft.Json;
 @using  System.Text;
@@ -8,7 +10,7 @@
 @using System.Diagnostics;
 @inject HttpClient Http
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
-@inject AuthenticationFunctionallity uf
+@inject NavigationManager NavigationManager
 
 
 
@@ -19,13 +21,12 @@
 <button @onclick="AutorizeLogin">Login</button>
 
 
+
 @code{
     string email;
     string password;
     string userString;
 
-    [CascadingParameter]
-    private Task<AuthenticationState> authenticationStateTask { get; set; }
 
     protected async void AutorizeLogin()
     {
@@ -34,9 +35,8 @@
         User user = new User(email, password);
 
         List<Product> shoppingList = new List<Product>();
-        List<Process> storageList = new List<Process>();
+        Product[] shoppinglistArray = new Product[10];
 
-        string StorageString =JsonConvert.SerializeObject(storageList);
         string ShopString = JsonConvert.SerializeObject(shoppingList);
 
         userString = JsonConvert.SerializeObject(user);
@@ -47,47 +47,19 @@
 
         if (response.IsSuccessStatusCode)
         {
+
             await localStorage.SetItemAsync("Email", email);
+            await localStorage.SetItemAsync("Shoppinglist", shoppingList);
             await localStorage.SetItemAsync("ProductString", ShopString);
-            await localStorage.SetItemAsync("StorageString", ShopString);
-        } else
+            NavigationManager.NavigateTo("");
+        }
+        else
         {
             Debug.WriteLine("Testing Remove");
             await localStorage.RemoveItemAsync("Email");
-            /*
-                        await uf.GetAuthenticationStateAsync("Not Authorized");
-            */
         }
     }
 
-    /*private async Task LogUsername()
-    {
-
-        var username = await localStorage.GetItemAsync<string>("Email");
-        Debug.WriteLine(username + " <--- This is the user" );
-        if (username != null)
-        {
-            var authState = await uf.GetAuthenticationStateAsync(username);
-            var user = authState.User;
-
-            if (user.Identity.IsAuthenticated)
-            {
-                Debug.WriteLine("Authorized");
-            }
-            else
-            {
-                Debug.WriteLine("The user is NOT authenticated.");
-            }
-        }
-    }*/
-
-
-    /*async Task LoginUser()
-    {
-
-        await localStorage.SetItemAsync("UserSession", "PIOQJWDPOIQJWD");
-        await GetLocalSession();
-    }*/
 
 
 
