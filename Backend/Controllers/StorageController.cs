@@ -32,6 +32,7 @@ namespace Backend.Controllers
         DatabaseConnect dbConnect = new DatabaseConnect("localhost", "biksbudgetDB", "root", "BiksBudget123");
         List<Product> resultList = new List<Product>();
         List<Product> oldLists = new List<Product>();
+        Product AddedProduct = new Product();
         int i = 0;
         string Email;
 
@@ -98,12 +99,18 @@ namespace Backend.Controllers
             {
                 if (buffer.Substring(0, 1) != "[")
                 {
-                    buffer = "[" + buffer + "]";
-                }
-                newItem = JsonConvert.DeserializeObject<List<Product>>(buffer);
+                    //buffer = "[" + buffer + "]";
+                    AddedProduct = JsonConvert.DeserializeObject<Product>(buffer);
+                    newItem = dbConnect.GetStorageFromUsername(Email);
+                    newItem.Add(AddedProduct);
 
+                }
+                else
+                {
+                    newItem = JsonConvert.DeserializeObject<List<Product>>(buffer);
+                    dbConnect.DeleteShoppingListFromName("Shoppinglist", Email);
+                }
                 dbConnect.UpdateStorage(Email, newItem);
-                dbConnect.DeleteShoppingListFromName("Shoppinglist", Email);
             } 
         }
 

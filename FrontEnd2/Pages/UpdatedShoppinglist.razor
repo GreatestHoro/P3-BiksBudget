@@ -61,7 +61,7 @@ else
                                     </td>
                                     <td data-th="Subtotal" class="text-center">@ListFunc.FindSubtotal(item) kr</td>
                                     <td class="actions" data-th="">
-                                        <button class="btn btn-info btn-sm" @onclick="(() => ListFunc.AddItemToStorage(item))"><i class="oi oi-reload"></i></button>
+                                        <button class="btn btn-info btn-sm" @onclick="(() => AddItemToStorage(item))"><i class="oi oi-reload"></i></button>
                                         <button class="btn btn-danger btn-sm" @onclick="(() => ListFunc.DeleteItem(item._id))"><i class="oi oi-trash"></i></button>
                                     </td>
                                 </tr>
@@ -179,6 +179,12 @@ else
     {
         //await localStorage.RemoveItemAsync("StorageString");
         ListFunc.AddShoppinlistToStorage(dest);
+    }
+
+    public async void AddItemToStorage(Product AddedItem)
+    {
+        ListFunc.AddItemToStorage(AddedItem, dest);
+        await ListFunc.DeleteItem(AddedItem._id);
     }
 
 }
