@@ -141,6 +141,7 @@ else
     bool wordBoolSetTo = true;
     bool _viewProducts = false;
     bool IsLocationEnabled = false;
+    bool FatalFalure = false;
 
     int value = 1;
     int radius = 1000;
@@ -319,20 +320,31 @@ else
     }
     public void updateFilters()
     {
-        //FindStoreFunc();
-
-        EnabledStores = updateEachFilter(storeFilters.GetStoreArray());
-        EnabledKeywords = updateEachFilter(wordFIlters.GetWordArray());
-
-
-        bool[] closeStoreBool = new bool[EnabledStores.Length];
-
         if (IsLocationEnabled)
         {
+        try
+        {
+            FindStoreFunc();
+        }
+        catch (System.Exception)
+        {
+            FatalFalure = true;
+        }
+
+        if (!FatalFalure) 
+        {
+            EnabledStores = updateEachFilter(storeFilters.GetStoreArray());
+            EnabledKeywords = updateEachFilter(wordFIlters.GetWordArray());
+
+
+            bool[] closeStoreBool = new bool[EnabledStores.Length];
+
+
             closeStoreBool = SetAllFilters(closeStoreBool, false);
             closeStoreBool = CompareBoolArr();
 
             EnabledStores = closeStoreBool;
+                }
         }
 
     }
