@@ -75,9 +75,9 @@
         @* Buttons *@
         <div class="row">
 
-            <div class="col-sm-4 of">
+            @*<div class="col-sm-4 of">
                 <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>ListFunc.AddFuncList())">Save storage</button>
-            </div>
+            </div>*@
             <div class="col-sm-4">
                 <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>ListFunc.DeleteFuncList())">Delete storage</button>
             </div>
@@ -232,6 +232,8 @@
                 break;
             }
         }
+
+        ListFunc.SaveStorage();
     }
 
     private async void AddProduct()
@@ -273,8 +275,10 @@
 
         if (isFound == false)
         {
-            ListFunc.DeleteItem(id);
+            await ListFunc.DeleteItem(id);
         }
+
+        ListFunc.SaveStorage();
     }
     #endregion
 
