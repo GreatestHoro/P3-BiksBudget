@@ -10,6 +10,10 @@ h1 {
 .SearchBar {
     width: 200px;
 }
+
+#search{
+    border: 0 1px 0 0; 
+}
 /*When not using bootstrap flex*/
 .SearchField {
     height: calc(1.5em + .75rem + 2px);
@@ -274,12 +278,28 @@ ul.fixed {
 .buttonPadding{
    margin: 10px;
 }
-
-.card-img-top {
+.card-img {
     width: 200%;
     height: 30px;
     object-fit: cover;
 }
+
+.amount p{
+    font-weight:bold;
+    color:black;
+}
+.price h5{
+    font-weight: bolder;
+    color:black;
+}
+
+.card-img-top {
+    max-width: 200%;
+    min-width: 50px;
+    height: 30px;
+}
+
+
 .card-title {
     width: 100px;
     word-break:break-all;
