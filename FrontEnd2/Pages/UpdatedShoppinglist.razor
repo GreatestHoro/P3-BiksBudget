@@ -50,8 +50,8 @@ else
                                                     <p>@item._amount</p>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </td>
+                                        </td>
+                                    
                                     <td data-th="Price">@item._price kr</td>
                                     <td data-th="Quantity">
                                         <div class="valueClass text-center">
@@ -96,46 +96,46 @@ else
 }
 
 @code {
-    string productString;
-    string newProduct;
-    string dest = "api/Storage";
-    ShoppinlistFunctionality ListFunc = new ShoppinlistFunctionality("api/Shoppinglist");
-    HttpResponseMessage responseMessage = new HttpResponseMessage();
-    int value = 1;
-    int amount;
-    int currentValue;
-    bool test = false;
-    string email;
-    List<Product> ToShoppinglist = new List<Product>();
-    List<Product> ToStorageList = new List<Product>();
-    string shopString;
-    string storageString;
+        string productString;
+        string newProduct;
+        string dest = "api/Storage";
+        ShoppinlistFunctionality ListFunc = new ShoppinlistFunctionality("api/Shoppinglist");
+        HttpResponseMessage responseMessage = new HttpResponseMessage();
+        int value = 1;
+        int amount;
+        int currentValue;
+        bool test = false;
+        string email;
+        List<Product> ToShoppinglist = new List<Product>();
+        List<Product> ToStorageList = new List<Product>();
+        string shopString;
+        string storageString;
 
 
-    protected void IncrementAmount(string id)
-    {
-        foreach (var item in ListFunc.CombinedList)
+        protected void IncrementAmount(string id)
         {
-            if (item._id == id && item._amountleft != 0)
+            foreach (var item in ListFunc.CombinedList)
             {
-                item._amountleft++;
-                value++;
+                if (item._id == id && item._amountleft != 0)
+                {
+                    item._amountleft++;
+                    value++;
+                }
             }
         }
-    }
 
-    protected void DecrementAmount(string id)
-    {
-        foreach (var item in ListFunc.CombinedList)
+        protected void DecrementAmount(string id)
         {
-
-            if (item._id == id && item._amountleft > 1)
+            foreach (var item in ListFunc.CombinedList)
             {
-                item._amountleft--;
-                value--;
+
+                if (item._id == id && item._amountleft > 1)
+                {
+                    item._amountleft--;
+                    value--;
+                }
             }
         }
-    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -178,6 +178,12 @@ else
         ListFunc.AddFuncList();
     }
 
+    public async void AddToStorage()
+    {
+        //await localStorage.RemoveItemAsync("StorageString");
+        ListFunc.AddShoppinlistToStorage(dest);
+    }
+
     public List<Product> removeDublicates(List<Product> shoppingList)
     {
         Dictionary<string, Product> dict = new Dictionary<string, Product>();
@@ -198,6 +204,7 @@ else
         {
             shoppingList.Add(dict[item.Key]);
         }
+        //ListFunc.CombinedList = shoppingList;
         return shoppingList;
         //List<Product> newList = new List<Product>();
         //newList.Add(shoppingList.Where(x => x != x._productName.Contains(newList.ForEach(x => x._productName))));
