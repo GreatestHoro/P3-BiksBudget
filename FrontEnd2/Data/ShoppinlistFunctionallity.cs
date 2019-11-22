@@ -49,16 +49,81 @@ namespace FrontEnd2.Data
 
             shoppinglists = JsonConvert.DeserializeObject<List<Shoppinglist>>(productString);
 
-            if (shoppinglists.Count != 0)
+            if (LocalList.Count > 0)
             {
-                itemList = shoppinglists[0]._products;
+                LocalItemList = LocalList;
+                //LocalItemList = FindDuplicatesInOneList(LocalList);
+            }
+            if (shoppinglists.Count > 0)
+            {
+                if (shoppinglists[0]._products.Count > 0)
+                {
+                    itemList = shoppinglists[0]._products;
+                    //itemList = FindDuplicatesInOneList(shoppinglists[0]._products);
+                }
             }
 
-            LocalItemList = LocalList;
-
-            CombinedList = LocalItemList.Concat(itemList).ToList();
+            if (itemList.Count > 0 && LocalItemList.Count > 0)
+            {
+                CombinedList = LocalItemList.Concat(itemList).ToList();
+            }
+            else if (itemList.Count > 0)
+            {
+                CombinedList = itemList;
+            }
+            else
+            {
+                CombinedList = LocalItemList;
+            }
 
             return new HttpResponseMessage(HttpStatusCode.OK);
+        }
+
+        //public List<Product> CreateList(List<Product> ReturnedList, List<Product> CompareList)
+        //{
+        //    if (CompareList.Count > 0)
+        //    {
+        //        ReturnedList = FindDuplicatesInOneList(CompareList);
+        //        return ReturnedList;
+        //    }
+        //    return null;
+        //}
+
+        public List<Product> FindDuplicatesInOneList(List<Product> inputList)
+        {
+            List<Product> returnList = new List<Product>();
+            int id;
+
+            for (int i = 0; i < inputList.Count; i++)
+            {
+                if (!returnList.Contains(returnList[i]))
+                {
+                    returnList.Add(returnList[i]);
+                }
+                else
+                {
+                    id = FindMatch(inputList, inputList[i]._id);
+                    returnList[id]._amountleft += inputList[i]._amountleft;
+                }
+            }
+
+            return returnList;
+        }
+
+        public int FindMatch(List<Product> InputList, string id)
+        {
+            int result = -1;
+
+            for (int i = 0; i < InputList.Count; i++)
+            {
+                if (InputList[i]._id == id)
+                {
+                    result = i;
+                    break;
+                }
+            }
+
+            return result;
         }
 
         public async Task<HttpResponseMessage> GetShoppinglistOnStart(string userId)
@@ -71,7 +136,7 @@ namespace FrontEnd2.Data
 
             if (shoppinglists.Count != 0)
             {
-                itemList = shoppinglists[0]._products;
+                CombinedList = shoppinglists[0]._products;
             }
 
             return new HttpResponseMessage(HttpStatusCode.OK);
@@ -238,12 +303,13 @@ namespace FrontEnd2.Data
 
         public async void AddShoppinlistToStorage(string dest)
         {
+
             foreach (var item in TempStorageList)
             {
-                itemList.Add(item);
+                CombinedList.Add(item);
             }
 
-            foreach (var item in itemList)
+            foreach (var item in CombinedList)
             {
                 item._timeAdded = DateTime.Now.ToString();
                 item._state = "Full" ;
@@ -251,37 +317,44 @@ namespace FrontEnd2.Data
 
             int userIdLength = Email.Length;
 
+            productString = JsonConvert.SerializeObject(CombinedList);
+
+            productString = userIdLength.ToString() + "|" + Email + productString;
+
+            CombinedList.Clear();
+
+            await SendToApi(productString, dest);
+        }
+
+        public async void SaveStorage()
+        {
+            int userIdLength = Email.Length;
+
             productString = JsonConvert.SerializeObject(itemList);
 
             productString = userIdLength.ToString() + "|" + Email + productString;
 
-            itemList.Clear();
+            CombinedList.Clear();
 
-            await SendToApi(productString, dest);
+            await SendToApi(productString);
         }
 
         public async void DeleteFuncList()
         {
             CombinedList.Clear();
+            itemList.Clear();
             var response = new HttpResponseMessage();
 
             int userIdLength = Email.Length;
             string productString = userIdLength.ToString() + "|" + Email + "[PLS_DELETE]";
 
-            ////await SendToApi(productString);
+            await SendToApi(productString);
         }
 
         public async Task<HttpResponseMessage> DeleteItem(string id)
         {
             var response = new HttpResponseMessage();
             CombinedList.Remove(CombinedList.First(x => x._id == id));
-
-            int userIdLength = Email.Length;
-            productString = JsonConvert.SerializeObject(CombinedList);
-
-            productString = userIdLength.ToString() + "|" + Email + productString;
-
-            ////await SendToApi(productString);
 
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
