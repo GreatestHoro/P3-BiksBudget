@@ -139,6 +139,7 @@
     bool wordBoolSetTo = true;
     bool _viewProducts = false;
     bool IsLocationEnabled = false;
+    bool FatalFalure = false;
 
     int radius = 1000;
 
@@ -256,7 +257,7 @@
 
         if (!String.IsNullOrEmpty(searchBox) && !String.IsNullOrWhiteSpace(searchBox))
         {
-            FindStoreFunc();
+
 
             updateFilters();
 
@@ -286,10 +287,23 @@
 
         if (IsLocationEnabled)
         {
-            closeStoreBool = SetAllFilters(closeStoreBool,false);
-            closeStoreBool = CompareBoolArr();
+            try
+            {
+                FindStoreFunc();
+            }
+            catch (System.Exception)
+            {
+                FatalFalure = true;
+            }
 
-            EnabledStores = closeStoreBool;
+            if (!FatalFalure) 
+            {
+                closeStoreBool = SetAllFilters(closeStoreBool,false);
+                closeStoreBool = CompareBoolArr();
+
+                EnabledStores = closeStoreBool;
+            }
+
         }
 
     }
