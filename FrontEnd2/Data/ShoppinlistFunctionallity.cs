@@ -36,7 +36,7 @@ namespace FrontEnd2.Data
 
             productString = await Http.GetStringAsync("https://localhost:44325/" + dest + "/" + userId);
 
-            itemList = JsonConvert.DeserializeObject<List<Product>>(productString);
+            CombinedList = JsonConvert.DeserializeObject<List<Product>>(productString);
 
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
@@ -295,20 +295,24 @@ namespace FrontEnd2.Data
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
 
-        public async void AddItemToStorage(Product AddedItem)
+        public async void AddItemToStorage(Product AddedItem, string dest)
         {
-            TempStorageList.Add(AddedItem);
-            await DeleteItem(AddedItem._id);
+            AddedItem._timeAdded = DateTime.Now.ToString();
+            AddedItem._state = "Full";
+
+            int userIdLength = Email.Length;
+
+            productString = JsonConvert.SerializeObject(AddedItem);
+
+            productString = userIdLength.ToString() + "|" + Email + productString;
+
+            await SendToApi(productString, dest);
+
+            //await DeleteItem(AddedItem._id);
         }
 
         public async void AddShoppinlistToStorage(string dest)
         {
-
-            foreach (var item in TempStorageList)
-            {
-                CombinedList.Add(item);
-            }
-
             foreach (var item in CombinedList)
             {
                 item._timeAdded = DateTime.Now.ToString();
@@ -321,8 +325,6 @@ namespace FrontEnd2.Data
 
             productString = userIdLength.ToString() + "|" + Email + productString;
 
-            CombinedList.Clear();
-
             await SendToApi(productString, dest);
         }
 
@@ -330,11 +332,11 @@ namespace FrontEnd2.Data
         {
             int userIdLength = Email.Length;
 
-            productString = JsonConvert.SerializeObject(itemList);
+            productString = JsonConvert.SerializeObject(CombinedList);
 
             productString = userIdLength.ToString() + "|" + Email + productString;
 
-            CombinedList.Clear();
+            //CombinedList.Clear();
 
             await SendToApi(productString);
         }
@@ -342,7 +344,6 @@ namespace FrontEnd2.Data
         public async void DeleteFuncList()
         {
             CombinedList.Clear();
-            itemList.Clear();
             var response = new HttpResponseMessage();
 
             int userIdLength = Email.Length;
@@ -354,6 +355,7 @@ namespace FrontEnd2.Data
         public async Task<HttpResponseMessage> DeleteItem(string id)
         {
             var response = new HttpResponseMessage();
+            
             CombinedList.Remove(CombinedList.First(x => x._id == id));
 
             return new HttpResponseMessage(HttpStatusCode.OK);
