@@ -51,7 +51,9 @@ namespace BBCollection.DBHandling
 
                 msc.ExecuteNonQuery();
             }
+#pragma warning disable CS0168 // The variable 'e' is declared but never used
             catch (MySqlException e)
+#pragma warning restore CS0168 // The variable 'e' is declared but never used
             {
                 //Console.WriteLine(e);
             }

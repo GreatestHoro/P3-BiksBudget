@@ -320,7 +320,9 @@ namespace BBCollection.DBHandling
 
         public List<Product> ProductsFromIngredientName(string ingredientname, DatabaseInformation databaseInformation)
         {
+#pragma warning disable CS0219 // The variable 'productQuery' is assigned but its value is never used
             string productQuery =
+#pragma warning restore CS0219 // The variable 'productQuery' is assigned but its value is never used
                 "";
             return null;
         }

@@ -1,46 +1,70 @@
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject NavigationManager NavigationManager
 
 @if (email != null)
 {
-        <a href="Identity/Account/Manage">Hello, @email!</a>
-        <form method="post" action="Identity/Account/LogOut">
-            <button type="submit" class="nav-link btn btn-link">Log out</button>
-        </form>
+    <div class="container-fluid">
+        <div class="row no-gutters">
+            <div class="col-sm-8">
+
+            </div>
+            <div class="col-sm-2">
+                <p>Hello, @email!</p>
+            </div>
+        </div>
+        <div class="row no-gutters">
+            <div class="col-sm-8">
+
+            </div>
+            <div class="col-sm-2">
+                <button @onclick="logout">Log out</button>
+            </div>
+        </div>
+    </div>
 }
 else
 {
-        <div class="container-fluid">
-            <div class="row no-gutters">
-                <div class="col-sm-8">
+    <div class="container-fluid">
+        <div class="row no-gutters">
+            <div class="col-sm-8">
 
-                </div>
-                <div class="col-sm-2">
-                    <a class="LogIn btn-block" href="Register">Register</a>
-                </div>
             </div>
-            <div class="row no-gutters">
-                <div class="col-sm-8">
-
-                </div>
-                <div class="col-sm-2">
-                    <a class="LogIn btn-block" href="Login">Log in</a>
-                </div>
+            <div class="col-sm-2">
+                <a class="LogIn btn-block" href="Register">Register</a>
             </div>
         </div>
-        @*<a class="LogIn btn-block" href="Register">Register</a>
-            <a class="LogIn btn-block" href="Login">Log in</a>*@
+        <div class="row no-gutters">
+            <div class="col-sm-8">
+
+            </div>
+            <div class="col-sm-2">
+                <a class="LogIn btn-block" href="Login">Log in</a>
+            </div>
+        </div>
+    </div>
+    @*<a class="LogIn btn-block" href="Register">Register</a>
+        <a class="LogIn btn-block" href="Login">Log in</a>*@
 }
 
 @code{
     string email;
 
-    protected async override void OnInitialized()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await GetLocalSession();
+        StateHasChanged();
     }
 
     async Task GetLocalSession()
     {
         email = await localStorage.GetItemAsync<string>("Email");
+    }
+
+    private async void logout()
+    {
+        await localStorage.RemoveItemAsync("Email");
+        await localStorage.RemoveItemAsync("Shoppinglist");
+        await localStorage.RemoveItemAsync("ProductString");
+        NavigationManager.NavigateTo("Login");
     }
 }
