@@ -62,6 +62,10 @@ namespace BBGatherer
 
         public void TestCollection()
         {
+
+
+            //dbConnect.combineProductsAndIngredients();
+
             /*dbConnect.AddUser("Test6", "Test");*/
 /*
             dbConnect.DeleteShoppingListFromName("Shoppinglist", "Test6");*/

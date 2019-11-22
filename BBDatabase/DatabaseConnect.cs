@@ -135,5 +135,17 @@ namespace BBCollection
         {
             new ProductHandling().DeleteShoppingListFromName(shoppingListName, username, databaseInformation.GetConnect());
         }
+
+        public void combineProductsAndIngredients()
+        {
+            new ProductHandling().GoThroughIngredientsToFindProducts(databaseInformation.GetConnect());
+        }
+
+        public List<Product> GetProductsFromIngredientName(string ingredientName)
+        {
+
+            return null;
+        }
+
     }
 }
