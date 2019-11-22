@@ -95,7 +95,7 @@ else
     }
 }
 
-@code {
+@code{
         string productString;
         string newProduct;
         string dest = "api/Storage";
@@ -158,17 +158,11 @@ else
     {
         email = await localStorage.GetItemAsync<string>("Email");
         shopString = await localStorage.GetItemAsync<string>("ProductString");
-        //storageString = await localStorage.GetItemAsync<string>("StorageString");
 
         if (!String.IsNullOrEmpty(shopString))
         {
             ToShoppinglist = JsonConvert.DeserializeObject<List<Product>>(shopString);
         }
-
-        //if (!String.IsNullOrEmpty(storageString))
-        //{
-        //    ToStorageList = JsonConvert.DeserializeObject<List<Product>>(storageString);
-        //}
     }
 
     public async void SaveShoppinglist()
