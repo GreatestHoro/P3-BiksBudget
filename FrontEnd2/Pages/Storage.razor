@@ -211,23 +211,26 @@
 
     protected async void ChangeState(string id, string state)
     {
+        //ListFunc.ChangeItem();
+
         //ListFunc.itemList[ListFunc.itemList.Find(x => x.Id.Equals(id))].State = state;
-        AddedProduct ChangedItem = new AddedProduct();
+        //AddedProduct ChangedItem = new AddedProduct();
 
         foreach (var item in ListFunc.CombinedList)
         {
             if (item._id == id)
             {
                 item._state = state;
-                //productString = JsonConvert.SerializeObject(item);
 
-                //await ListFunc.ChangeItem(item.Id, productString, userId);
+                productString = JsonConvert.SerializeObject(item);
+
+                await ListFunc.ChangeItem(productString);
 
                 break;
             }
         }
 
-        ListFunc.SaveStorage();
+        //ListFunc.SaveStorage();
     }
 
     private async void AddProduct()

@@ -264,16 +264,17 @@ namespace FrontEnd2.Data
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
 
-        //public async Task<HttpResponseMessage> ChangeItem(string id, string itemString)
-        //{
-        //    int userIdLength = Email.Length;
+        public async Task<HttpResponseMessage> ChangeItem(string itemString)
+        {
+            int userIdLength = Email.Length;
 
-        //    itemString = userIdLength.ToString() + "|" + Email + itemString;
+            itemString = userIdLength.ToString() + "|" + Email + itemString;
 
-        //    var content = new StringContent(itemString, Encoding.UTF8, "application/json");
-        //    ////HttpResponseMessage responce = await Http.PutAsync("https://localhost:44325/api/Storage/" + id, content);
+            var content = new StringContent(itemString, Encoding.UTF8, "application/json");
+            
+            HttpResponseMessage responce = await Http.PutAsync("https://localhost:44325/api/Storage/" + Email, content);
 
-        //    return new HttpResponseMessage(HttpStatusCode.OK);
-        //}
+            return new HttpResponseMessage(HttpStatusCode.OK);
+        }
     }
 }
