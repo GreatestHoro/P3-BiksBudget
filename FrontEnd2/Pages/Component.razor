@@ -11,22 +11,12 @@
 
 
 @inject HttpClient Http
-
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-sm-6 stackComponents">
-            <input class="form-check-input" placeholder="Search..." @bind="searchTerm" @onkeyup="OnKeyPress" />
-        </div>
-        <div class="col-sm-3 stackComponents">
-            <button type="button" class="btn-success" @onclick="(() => Search())"> Find recipe </button>
-        </div>
-        <div class="col-sm-3 stackComponents">
-            <span class="text-muted">
-                Showing @recipeData.Count out of 15953
-            </span>
-        </div>
-    </div>
-</div>
+<h3>Search for a recipe</h3>
+<input class="SearchField SearchBar" placeholder="Search for a recipe" @bind="searchTerm" @onkeyup="OnKeyPress" />
+<button type="button" class="btn btn-rounded btn-outline-success" @onclick="(() => Search())">Search</button>
+<span class="text-muted">
+    Showing @recipeData.Count out of 15953
+</span>
 
 <div class="container-fluid top-margin">
     <div class="row">
@@ -122,10 +112,10 @@
                 </div>
             }
         </div>
-            <div class="col-4">
-                <h3> @recipeName </h3>
-                <p> @recipeDescription </p>
-            </div>
+        <div class="col-4">
+            <h3> @recipeName </h3>
+            <p> @recipeDescription </p>
+        </div>
     </div>
 </div>
 
@@ -272,7 +262,7 @@
         GetProductLists(ingredient);
         foreach (List<Product> pro in returnList)
         {
-            if (pro.Count != 0) 
+            if (pro.Count != 0)
             {
                 firstRun = true;
                 foreach (Product p in pro)
