@@ -29,7 +29,9 @@ namespace BBCollection.BBObjects
         public List<Product> UseTogglefilters(string searchterm)
         {
             List<Product> FilteredList = new List<Product>();
+#pragma warning disable CS0219 // The variable 'SallingFlag' is assigned but its value is never used
             bool SallingFlag = false;
+#pragma warning restore CS0219 // The variable 'SallingFlag' is assigned but its value is never used
             bool flag = false;
             int i = 0;
             List<Product> searchedProducts = dbConnect.GetProducts(searchterm);
@@ -82,7 +84,9 @@ namespace BBCollection.BBObjects
         }
         private List<Product> StoreFilter(List<Product> products, AppliedFiltersList stores)
         {
+#pragma warning disable CS0219 // The variable 'i' is assigned but its value is never used
             int i = 0;
+#pragma warning restore CS0219 // The variable 'i' is assigned but its value is never used
             List<Product> returnProducts = new List<Product>();
             foreach (Product p in products)
             {

@@ -4,24 +4,32 @@
 @using  System.Text;
 @using FrontEnd2.Data;
 @using System.Diagnostics;
+@using FrontEnd2.Authentication;
 @inject HttpClient Http
 @inject NavigationManager NavigationManager
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 
 
-@if (email != null)
+@if (email == null)
 {
-    <p>Loading...</p>
-}
-else
-{
-    <p>Loading...</p>
+    <input placeholder="Username" @bind="@tempEmail" />
+    <input type="password" placeholder="Password" @bind="@password" />
+    <input type="password" placeholder="Repeast" @bind="@repPassword" />
+    <button @onclick="CheckInputs">ch</button>
+    <label >@verificationText</label>
+} else { 
 }
 
 @code {
     private string _headingText;
-    private string email;
     private string gottenData;
+    private string email;
+    private string tempEmail;
+    private string password;
+    private string repPassword;
+    private string userString;
+    bool passwordFine;
+    private string verificationText = "";
 
     ////protected async override Task OnInitializedAsync()
     //protected async void doStuff()
@@ -31,6 +39,56 @@ else
     //        gottenData = await Http.GetStringAsync("https://localhost:44325/api/Login/" + email);
     //    }
     //}
+
+    protected void CheckInputs()
+    {
+        Verification verify = new Verification();
+
+        Tuple<bool, string> usernameCheck = verify.VerifyUsername(tempEmail);
+        Tuple<bool, string> passwordCheck = verify.VerifyPassword(password, repPassword);
+
+        if (!usernameCheck.Item1)
+        {
+            verificationText = usernameCheck.Item2;
+        }
+        else if (!passwordCheck.Item1)
+        {
+            verificationText = passwordCheck.Item2;
+        }
+
+        if(usernameCheck.Item1 && passwordCheck.Item1)
+        {
+            RegisterUser(tempEmail);
+        }
+    }
+
+    protected async void RegisterUser(string addEmail)
+    {
+        var response = new HttpResponseMessage();
+
+        User user = new User(addEmail, password);
+
+        List<Product> shoppingList = new List<Product>();
+        Product[] shoppinglistArray = new Product[10];
+
+        string ShopString = JsonConvert.SerializeObject(shoppingList);
+
+        userString = JsonConvert.SerializeObject(user);
+
+        var content = new StringContent(userString, Encoding.UTF8, "application/json");
+
+        response = await Http.PostAsync("Https://localhost:44325/User/Register", content);
+
+        if (response.IsSuccessStatusCode)
+        {
+
+            await localStorage.SetItemAsync("Email", addEmail);
+            await localStorage.SetItemAsync("Shoppinglist", shoppingList);
+            await localStorage.SetItemAsync("ProductString", ShopString);
+            StateHasChanged();
+            NavigationManager.NavigateTo("");
+        }
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -52,6 +110,8 @@ else
         }
 
     }
+
+
 
     async Task GetLocalSession()
     {
