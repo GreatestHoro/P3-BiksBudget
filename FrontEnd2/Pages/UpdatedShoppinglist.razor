@@ -147,7 +147,10 @@ else
                 Console.WriteLine($"Value for key {e.Key} changed from {e.OldValue} to {e.NewValue}");
             };
 
+            if(email != null)
+            {
             responseMessage = await ListFunc.GetShoppinglistOnStart(email, ToShoppinglist);
+            }
 
             StateHasChanged();
         }
