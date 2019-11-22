@@ -36,7 +36,7 @@ namespace FrontEnd2.Data
 
             productString = await Http.GetStringAsync("https://localhost:44325/" + dest + "/" + userId);
 
-            itemList = JsonConvert.DeserializeObject<List<Product>>(productString);
+            CombinedList = JsonConvert.DeserializeObject<List<Product>>(productString);
 
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
@@ -52,14 +52,12 @@ namespace FrontEnd2.Data
             if (LocalList.Count > 0)
             {
                 LocalItemList = LocalList;
-                //LocalItemList = FindDuplicatesInOneList(LocalList);
             }
             if (shoppinglists.Count > 0)
             {
                 if (shoppinglists[0]._products.Count > 0)
                 {
                     itemList = shoppinglists[0]._products;
-                    //itemList = FindDuplicatesInOneList(shoppinglists[0]._products);
                 }
             }
 
@@ -79,69 +77,6 @@ namespace FrontEnd2.Data
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
 
-        //public List<Product> CreateList(List<Product> ReturnedList, List<Product> CompareList)
-        //{
-        //    if (CompareList.Count > 0)
-        //    {
-        //        ReturnedList = FindDuplicatesInOneList(CompareList);
-        //        return ReturnedList;
-        //    }
-        //    return null;
-        //}
-
-        public List<Product> FindDuplicatesInOneList(List<Product> inputList)
-        {
-            List<Product> returnList = new List<Product>();
-            int id;
-
-            for (int i = 0; i < inputList.Count; i++)
-            {
-                if (!returnList.Contains(returnList[i]))
-                {
-                    returnList.Add(returnList[i]);
-                }
-                else
-                {
-                    id = FindMatch(inputList, inputList[i]._id);
-                    returnList[id]._amountleft += inputList[i]._amountleft;
-                }
-            }
-
-            return returnList;
-        }
-
-        public int FindMatch(List<Product> InputList, string id)
-        {
-            int result = -1;
-
-            for (int i = 0; i < InputList.Count; i++)
-            {
-                if (InputList[i]._id == id)
-                {
-                    result = i;
-                    break;
-                }
-            }
-
-            return result;
-        }
-
-        public async Task<HttpResponseMessage> GetShoppinglistOnStart(string userId)
-        {
-            Email = userId;
-
-            productString = await Http.GetStringAsync("https://localhost:44325/" + dest + "/" + userId);
-
-            shoppinglists = JsonConvert.DeserializeObject<List<Shoppinglist>>(productString);
-
-            if (shoppinglists.Count != 0)
-            {
-                CombinedList = shoppinglists[0]._products;
-            }
-
-            return new HttpResponseMessage(HttpStatusCode.OK);
-        }
-
         public double FindSubtotal(Product item)
         {
             double result;
@@ -151,7 +86,6 @@ namespace FrontEnd2.Data
 
             return result;
         }
-
 
         public double CompletePrice()
         {
@@ -179,16 +113,7 @@ namespace FrontEnd2.Data
                 _id = id
             };
 
-            //itemList.Add(newItem);
             await AddProductAsItem(newItem, Email);
-
-            //productString = JsonConvert.SerializeObject(itemList[itemList.Count - 1]);
-            //var content = new StringContent(productString, Encoding.UTF8, "application/json");
-            //response = await Http.PostAsync("https://localhost:44325/" + dest, content);
-
-            //string result = response.Content.ReadAsStringAsync().Result;
-
-            //newProduct = string.Empty;
 
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
@@ -200,19 +125,6 @@ namespace FrontEnd2.Data
             int userIdLength = Email.Length;
 
             CombinedList.Add(newItem);
-
-            //productString = JsonConvert.SerializeObject(newItem);
-
-            //productString = userIdLength.ToString() + "|" + Email + productString;
-
-            ////await SendToApi(productString);
-
-            //var content = new StringContent(productString, Encoding.UTF8, "application/json");
-            //response = await Http.PostAsync("https://localhost:44325/" + dest, content);
-
-            //string result = response.Content.ReadAsStringAsync().Result;
-
-            //newProduct = string.Empty;
 
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
@@ -247,15 +159,6 @@ namespace FrontEnd2.Data
             productString = JsonConvert.SerializeObject(newItem);
 
             productString = userIdLength.ToString() + "|" + Email + productString;
-
-            ////await SendToApi(productString, newDest);
-
-            //var content = new StringContent(productString, Encoding.UTF8, "application/json");
-            //response = await Http.PostAsync("https://localhost:44325/" + dest, content);
-
-            //string result = response.Content.ReadAsStringAsync().Result;
-
-            //newProduct = string.Empty;
 
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
@@ -295,20 +198,24 @@ namespace FrontEnd2.Data
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
 
-        public async void AddItemToStorage(Product AddedItem)
+        public async void AddItemToStorage(Product AddedItem, string dest)
         {
-            TempStorageList.Add(AddedItem);
-            await DeleteItem(AddedItem._id);
+            AddedItem._timeAdded = DateTime.Now.ToString();
+            AddedItem._state = "Full";
+
+            int userIdLength = Email.Length;
+
+            productString = JsonConvert.SerializeObject(AddedItem);
+
+            productString = userIdLength.ToString() + "|" + Email + productString;
+
+            await SendToApi(productString, dest);
+
+            //await DeleteItem(AddedItem._id);
         }
 
         public async void AddShoppinlistToStorage(string dest)
         {
-
-            foreach (var item in TempStorageList)
-            {
-                CombinedList.Add(item);
-            }
-
             foreach (var item in CombinedList)
             {
                 item._timeAdded = DateTime.Now.ToString();
@@ -321,8 +228,6 @@ namespace FrontEnd2.Data
 
             productString = userIdLength.ToString() + "|" + Email + productString;
 
-            CombinedList.Clear();
-
             await SendToApi(productString, dest);
         }
 
@@ -330,11 +235,11 @@ namespace FrontEnd2.Data
         {
             int userIdLength = Email.Length;
 
-            productString = JsonConvert.SerializeObject(itemList);
+            productString = JsonConvert.SerializeObject(CombinedList);
 
             productString = userIdLength.ToString() + "|" + Email + productString;
 
-            CombinedList.Clear();
+            //CombinedList.Clear();
 
             await SendToApi(productString);
         }
@@ -342,7 +247,6 @@ namespace FrontEnd2.Data
         public async void DeleteFuncList()
         {
             CombinedList.Clear();
-            itemList.Clear();
             var response = new HttpResponseMessage();
 
             int userIdLength = Email.Length;
@@ -354,6 +258,7 @@ namespace FrontEnd2.Data
         public async Task<HttpResponseMessage> DeleteItem(string id)
         {
             var response = new HttpResponseMessage();
+            
             CombinedList.Remove(CombinedList.First(x => x._id == id));
 
             return new HttpResponseMessage(HttpStatusCode.OK);

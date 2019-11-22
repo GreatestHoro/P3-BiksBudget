@@ -11,20 +11,6 @@ using BBCollection.BBObjects;
 
 namespace Backend.Controllers
 {
-    //public class AddedProduct
-    //{
-    //    public string Name { get; set; }
-    //    public string Amount { get; set; }
-    //    public double Price { get; set; }
-    //    public long Id { get; set; }
-    //    public string State { get; set; }
-    //    public string TimeAdded { get; set; }
-    //    public string UniqueId { get; set; }
-    //    public string Image { get; set; }
-    //    public string StoreName { get; set; }
-    //    public int AmountOfItem { get; set; }
-    //}
-
     [Route("api/[controller]")]
     [ApiController]
     public class StorageController : ControllerBase
@@ -32,6 +18,7 @@ namespace Backend.Controllers
         DatabaseConnect dbConnect = new DatabaseConnect("localhost", "biksbudgetDB", "root", "BiksBudget123");
         List<Product> resultList = new List<Product>();
         List<Product> oldLists = new List<Product>();
+        Product AddedProduct = new Product();
         int i = 0;
         string Email;
 
@@ -39,13 +26,6 @@ namespace Backend.Controllers
         [HttpGet]
         public void Get()
         {
-            //List<Product> storageList = dbConnect.GetStorageFromUsername("Test6");
-
-            //resultList = ConvertBeforeSending(storageList);
-
-            //string jsonRecipes = JsonConvert.SerializeObject(resultList);
-
-            //return jsonRecipes;
         }
 
         // GET: api/Storage/5
@@ -63,6 +43,7 @@ namespace Backend.Controllers
         [HttpPost]
         public void Post(string value)
         {
+            Find find = new Find();
             string buffer;
             List<Product> newItem = new List<Product>();
             int pNum;
@@ -96,16 +77,30 @@ namespace Backend.Controllers
             }
             else
             {
+                List<Product> ListFromDatabase = new List<Product>();
                 if (buffer.Substring(0, 1) != "[")
                 {
-                    buffer = "[" + buffer + "]";
+                    //buffer = "[" + buffer + "]";
+                    AddedProduct = JsonConvert.DeserializeObject<Product>(buffer);
+                    newItem.Add(AddedProduct);
                 }
-                newItem = JsonConvert.DeserializeObject<List<Product>>(buffer);
+                else
+                {
+                    newItem = JsonConvert.DeserializeObject<List<Product>>(buffer);
+                    dbConnect.DeleteShoppingListFromName("Shoppinglist", Email);
+                }
 
-                dbConnect.UpdateStorage(Email, newItem);
-                dbConnect.DeleteShoppingListFromName("Shoppinglist", Email);
+                ListFromDatabase = dbConnect.GetStorageFromUsername(Email);
+
+                foreach (Product p in newItem)
+                {
+                    ListFromDatabase = find.FindDublicats(ListFromDatabase, p);
+                }
+                dbConnect.UpdateStorage(Email, ListFromDatabase);
             } 
         }
+
+
 
         // PUT: api/Storage/5
         [HttpPut("{id}")]
@@ -151,6 +146,33 @@ namespace Backend.Controllers
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
+        }
+
+        
+    }
+
+    class Find
+    {
+        public List<Product> FindDublicats(List<Product> ReturnList, Product FromFrontendProduct)
+        {
+            bool isFound = false;
+
+            foreach (Product p in ReturnList)
+            {
+                if (p._id == FromFrontendProduct._id)
+                {
+                    p._amountleft += FromFrontendProduct._amountleft;
+                    isFound = true;
+                    break;
+                }
+            }
+
+            if (!isFound)
+            {
+                ReturnList.Add(FromFrontendProduct);
+            }
+
+            return ReturnList;
         }
     }
 }

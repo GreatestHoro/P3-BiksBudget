@@ -14,7 +14,7 @@
 
 @if (email != null)
 {
-    @if (ListFunc.itemList == null)
+    @if (ListFunc.CombinedList == null)
     {
         <p>
             <em>Your fridge is empty</em>
@@ -38,7 +38,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var items in ListFunc.itemList)
+                        @foreach (var items in ListFunc.CombinedList)
                         {
                             <tr>
                                 <td data-th="ID">@items._id</td>
@@ -209,18 +209,12 @@
     #region Storage_Methods
     //Storage functionalities
 
-    private void DeleteAll()
-    {
-        ListFunc.itemList.Clear();
-        //ListFunc.DeleteList(userId);
-    }
-
     protected async void ChangeState(string id, string state)
     {
         //ListFunc.itemList[ListFunc.itemList.Find(x => x.Id.Equals(id))].State = state;
         AddedProduct ChangedItem = new AddedProduct();
 
-        foreach (var item in ListFunc.itemList)
+        foreach (var item in ListFunc.CombinedList)
         {
             if (item._id == id)
             {
@@ -261,7 +255,7 @@
     private async void DeleteProduct(string id)
     {
         bool isFound = false;
-        foreach (var item in ListFunc.itemList)
+        foreach (var item in ListFunc.CombinedList)
         {
             if (item._id == id && item._amountleft != 1)
             {

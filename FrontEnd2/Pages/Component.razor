@@ -109,7 +109,7 @@
                                     {
                                         <td>@p._productName</td>
                                         <td>
-                                            <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => AddToShoppinglist())">
+                                            <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => AddProductToSL(p))">
                                                 <i class="oi oi-arrow-circle-right"></i>
                                             </button>
                                         </td>
@@ -122,10 +122,14 @@
                 </div>
             }
         </div>
-        <div class="col-4">
-            <h3> @recipeName </h3>
-            <p> @recipeDescription </p>
-        </div>
+        @if (false)
+        {
+            <div class="col-4">
+                <h3> @recipeName </h3>
+                <p> @recipeDescription </p>
+            </div>
+        }
+
     </div>
 </div>
 
@@ -162,6 +166,10 @@
     List<Product> products = new List<Product>();
     List<int> sum = new List<int>();
     List<string> values = new List<string>();
+
+    //exsperimental
+    List<Product> ToShoppinglist = new List<Product>();
+    string shopString;
 
     HttpResponseMessage responseMessage = new HttpResponseMessage();
     ShoppinlistFunctionality ShopList = new ShoppinlistFunctionality("api/Shoppinglist");
@@ -240,6 +248,20 @@
         }
 
         await ShopList.AddListToShoppinglist(listToSend);
+    }
+
+    public async void AddProductToSL(Product AddedItem)
+    {
+        AddedItem._amountleft = 1;
+
+        ToShoppinglist.Add(AddedItem);
+
+        //await localStorage.RemoveItemAsync("Shoppinglist");
+
+        shopString = JsonConvert.SerializeObject(ToShoppinglist);
+
+        await localStorage.SetItemAsync("ProductString", shopString);
+        //await localStorage.SetItemAsync("Shoppinglist", ToShoppinglist);
     }
 
     void incrementRecipeAmount()//aventuel optimering brug en scalar værdi
