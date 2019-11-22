@@ -12,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Net.Http;
+using Toolbelt.Blazor.Extensions.DependencyInjection;
 
 namespace FrontEnd2
 {
@@ -28,10 +29,7 @@ namespace FrontEnd2
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            // Add auth services
-            services.AddAuthorizationCore();
-            services.AddScoped<AuthenticationStateProvider, ServerAuthenticationStateProvider>();
-
+            services.AddHotKeys();
             services.AddScoped<AuthenticationFunctionallity>();
             services.AddBlazoredLocalStorage();
             services.AddDbContext<ApplicationDbContext>(options =>

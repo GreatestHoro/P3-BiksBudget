@@ -51,7 +51,9 @@ namespace BBCollection.DBHandling
 
                 msc.ExecuteNonQuery();
             }
+#pragma warning disable CS0168 // The variable 'e' is declared but never used
             catch (MySqlException e)
+#pragma warning restore CS0168 // The variable 'e' is declared but never used
             {
                 //Console.WriteLine(e);
             }
@@ -108,7 +110,7 @@ namespace BBCollection.DBHandling
                 "PRIMARY KEY(id)); ";
 
             string productInIngredientQuery =
-                "CREATE TABLE IF NOT EXISTS `ingredients_matching_product`(" +
+                "CREATE TABLE IF NOT EXISTS `products_matching_ingredients`(" +
                 "`ingredient_id` int, " +
                 "`product_id` varchar(255), " +
                 "foreign key(ingredient_id) references ingredients(id)," +
