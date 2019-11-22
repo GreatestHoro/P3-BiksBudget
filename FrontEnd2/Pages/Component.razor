@@ -61,20 +61,6 @@
 
                         @foreach (Ingredient ing in ingredients)
                         {
-                            <li class="no-bullets"> <button type="button" class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => retriveInfo(rep._recipeID))"> @rep._Name </button> </li>
-                        }
-                    </ul>
-                }
-            </div>
-            <div class="col-2 offset-2">
-                @if (viewIngredients == true)
-                {
-                    <table class="table-bordered ingredientsTable">
-                        <colgroup>
-                            <col style="width: 100px" />
-                            <col style="width: 150px" />
-                        </colgroup>
-                        <thead>
                             <tr>
                                 <td>@ing._amount @ing._unit</td>
                                 <td><button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => retriveIngredient(ing))">@ing._ingredientName</button></td>
@@ -113,34 +99,35 @@
                         <tbody>
                             @foreach (Product p in products)
                             {
-                            <tr>
-                                @if (products.Count == 0)
-                                {
-                                    <td>no products found</td>
-                                    <td></td>
-                                }
-                                else
-                                {
-                                    <td>@p._productName</td>
-                                    <td>
-                                        <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => AddToShoppinglist())">
-                                            <i class="oi oi-arrow-circle-right"></i>
-                                        </button>
-                                    </td>
-                                }
+                                <tr>
+                                    @if (products.Count == 0)
+                                    {
+                                        <td>no products found</td>
+                                        <td></td>
+                                    }
+                                    else
+                                    {
+                                        <td>@p._productName</td>
+                                        <td>
+                                            <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => AddToShoppinglist())">
+                                                <i class="oi oi-arrow-circle-right"></i>
+                                            </button>
+                                        </td>
+                                    }
 
-                            </tr>
+                                </tr>
                             }
                         </tbody>
                     </table>
                 </div>
-                }
-            </div>
+            }
+        </div>
         <div class="col-4">
             <h3> @recipeName </h3>
             <p> @recipeDescription </p>
         </div>
     </div>
+</div>
 
 
 @code{
@@ -155,9 +142,9 @@
     int i = 0;
     int scalar = 1;
 
-        float recipePerPerson;
+    float recipePerPerson;
 
-        int value;
+    int value;
 
     string tempIngredientName = " ";
 
@@ -166,7 +153,7 @@
     bool isSearching = false;
     bool viewProducts = false;
 
-        //bool viewAddToshoppinglist = false;
+    //bool viewAddToshoppinglist = false;
 
     List<float> recipeAmount = new List<float>();
     List<Ingredient> ingredients = new List<Ingredient>();
@@ -176,9 +163,9 @@
     List<int> sum = new List<int>();
     List<string> values = new List<string>();
 
-        HttpResponseMessage responseMessage = new HttpResponseMessage();
-        ShoppinlistFunctionality ShopList = new ShoppinlistFunctionality("api/Shoppinglist");
-        #endregion
+    HttpResponseMessage responseMessage = new HttpResponseMessage();
+    ShoppinlistFunctionality ShopList = new ShoppinlistFunctionality("api/Shoppinglist");
+    #endregion
 
     #region Recipe_Methods
     void addtoMiniBasket()
@@ -208,7 +195,7 @@
                         {
                             foreach (Product p in pro)
                             {
-                                if (p._productName.Contains(tempIngredientName)&&!products.Contains(p))
+                                if (p._productName.Contains(tempIngredientName) && !products.Contains(p))
                                 {
                                     products.Add(p);
                                 }
@@ -231,7 +218,7 @@
                         {
                             foreach (Product p in pro)
                             {
-                                if (p._productName.Contains(tempIngredientName)&&!products.Contains(p))
+                                if (p._productName.Contains(tempIngredientName) && !products.Contains(p))
                                 {
                                     products.Add(p);
                                 }
@@ -243,10 +230,9 @@
         }
     }
 
-            foreach (var item in ingredients)
-            {
-                listToSend.Add(new Product() { _id = item._id.ToString(), _amount = item._amount + item._unit, _productName = item._ingredientName });
-            }
+    async void AddToShoppinglist()
+    {
+        List<Product> listToSend = new List<Product>();
 
         foreach (var item in ingredients)
         {
@@ -265,11 +251,14 @@
                 ingredients[i]._amount = (ingredients[i]._amount / recipePerPerson) * (recipePerPerson + 1F);
                 value++;
             }
-            recipePerPerson += 1;
         }
+        recipePerPerson += 1;
+    }
 
 
-        void decrementRecipeAmount()
+    void decrementRecipeAmount()
+    {
+        if (recipePerPerson >= 2)
         {
 
             for (int i = 0; i < ingredients.Count; i++)
@@ -279,47 +268,40 @@
                     ingredients[i]._amount = (ingredients[i]._amount / recipePerPerson) * (recipePerPerson - 1F);
                     value--;
                 }
-                recipePerPerson -= 1;
             }
+            recipePerPerson -= 1;
         }
+    }
+
 
     void clear()
     {
         ingredients.Clear();
     }
 
-        void clear()
+    void retriveInfo(int ID)
+    {
+        Recipe show = recipeData.First(x => x._recipeID == ID);
+        recipeDescription = show._description;
+        recipeName = show._Name;
+        recipePerPerson = show._PerPerson;
+
+        if (show._ingredientList == null)
         {
-            ingredients.Clear();
-            recipeAmount.Clear();
+            foreach (var item in show._ingredientList)
+            {
+                ingredients.Add(item);
+                recipeAmount.Add(item._amount);
+            }
         }
-
-        void retriveInfo(int ID)
+        else
         {
-            Recipe show = recipeData.First(x => x._recipeID == ID);
-            recipeDescription = show._description;
-            recipeName = show._Name;
-            recipePerPerson = show._PerPerson;
-
-            if (show._ingredientList == null)
+            clear();
+            foreach (var item in show._ingredientList)
             {
-                foreach (var item in show._ingredientList)
-                {
-                    ingredients.Add(item);
-                    recipeAmount.Add(item._amount);
-                }
+                ingredients.Add(item);
+                recipeAmount.Add(item._amount);
             }
-            else
-            {
-                clear();
-                foreach (var item in show._ingredientList)
-                {
-                    ingredients.Add(item);
-                    recipeAmount.Add(item._amount);
-                }
-            }
-            viewIngredients = true;
-            //viewAddToshoppinglist = true;
         }
         viewIngredients = true;
         viewProducts = false;
@@ -339,34 +321,33 @@
         complexRecipes = recipeQuery.CheapestCRecipes(searchTerm);
     }
 
-        private async void OnKeyPress(KeyboardEventArgs args)
+    private async void OnKeyPress(KeyboardEventArgs args)
+    {
+        if (args.Key == "Enter")
         {
-            if (args.Key == "Enter")
-            {
-                await Search();
-                StateHasChanged();
-            }
+            await Search();
+            StateHasChanged();
         }
+    }
 
-        protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
         {
-            if (firstRender)
+            Debug.WriteLine("User: -> " + await localStorage.GetItemAsync<string>("Email"));
+            await GetLocalSession();
+            localStorage.Changed += (sender, e) =>
             {
-                Debug.WriteLine("User: -> " + await localStorage.GetItemAsync<string>("Email"));
-                await GetLocalSession();
-                localStorage.Changed += (sender, e) =>
-                {
-                    Console.WriteLine($"Value for key {e.Key} changed from {e.OldValue} to {e.NewValue}");
-                };
-                responseMessage = await ShopList.GetStorageOnStart(email);
-                StateHasChanged();
-            }
+                Console.WriteLine($"Value for key {e.Key} changed from {e.OldValue} to {e.NewValue}");
+            };
+            responseMessage = await ShopList.GetStorageOnStart(email);
+            StateHasChanged();
         }
+    }
 
-        async Task GetLocalSession()
-        {
-            email = await localStorage.GetItemAsync<string>("Email");
-        }
+    async Task GetLocalSession()
+    {
+        email = await localStorage.GetItemAsync<string>("Email");
     }
     #endregion
 }
