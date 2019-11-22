@@ -104,13 +104,11 @@ namespace Backend.Controllers
 
         // PUT: api/Storage/5
         [HttpPut("{id}")]
-        public void Put(int id, string value)
+        public void Put(string id)
         {
             string buffer;
             Product newItem = new Product();
-            List<Product> storageList = dbConnect.GetStorageFromUsername("Test6");
-
-            //List<AddedProduct> resultList = ConvertBeforeSending(storageList);
+            List<Product> storageList = new List<Product>();
             int pNum;
 
             HttpRequest request = HttpContext.Request;
@@ -135,11 +133,19 @@ namespace Backend.Controllers
             Email = buffer.Substring(indexNumber.ToString().Length + pNum, number);
             buffer = buffer.Remove(0, indexNumber.ToString().Length + number + pNum);
 
-
+            storageList = dbConnect.GetStorageFromUsername(Email);
             newItem = JsonConvert.DeserializeObject<Product>(buffer);
 
-            resultList[id-1] = newItem;
-            
+            foreach (Product p in storageList)
+            {
+                if (p._id == newItem._id)
+                {
+                    p._state = newItem._state;
+                    break;
+                }
+            }
+
+            dbConnect.UpdateStorage(Email, storageList);
         }
 
         // DELETE: api/ApiWithActions/5
