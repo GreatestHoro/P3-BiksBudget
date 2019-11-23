@@ -310,7 +310,10 @@
             //    gottenData = await Http.GetStringAsync("https://localhost:44325/api/Login/" + email + "S");
             //}
             userId = email;
+            if(email != null)
+            {
             responseMessage = await ListFunc.GetStorageOnStart(email);
+            }
 
 
             StateHasChanged();
