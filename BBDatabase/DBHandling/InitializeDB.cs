@@ -11,6 +11,7 @@ namespace BBCollection.DBHandling
             CreateDB(databaseInformation);
             GenerateWebcrawelerDatabaseTables(databaseInformation);
             GenerateAPIDatabaseTables(databaseInformation);
+            UpdateProductTable(databaseInformation);
         }
 
         public void CreateUserDB(DatabaseInformation databaseInformation)
@@ -179,6 +180,16 @@ namespace BBCollection.DBHandling
 
             new SQLConnect().NonQueryString(shoppingListTables, databaseInformation);
         }
+
+        private void UpdateProductTable(DatabaseInformation databaseInformation)
+        {
+            string newCollumnQuery =
+                "ALTER TABLE `products` ADD `ingredient_reference` varchar(255)";
+
+            new SQLConnect().NonQueryString(newCollumnQuery, databaseInformation);
+        }
+
+
 
         private void GenerateCombineProductAndIngredient(DatabaseInformation databaseInformation)
         {

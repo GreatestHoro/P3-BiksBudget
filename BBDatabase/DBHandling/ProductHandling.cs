@@ -322,13 +322,67 @@ namespace BBCollection.DBHandling
 
         }
 
-        public List<Product> ProductsFromIngredientName(string ingredientname, DatabaseInformation databaseInformation)
+        public void InsertIngredientReferenceFromId(string reference, string prodid, DatabaseInformation databaseInformation)
         {
-#pragma warning disable CS0219 // The variable 'productQuery' is assigned but its value is never used
-            string productQuery =
-#pragma warning restore CS0219 // The variable 'productQuery' is assigned but its value is never used
-                "";
-            return null;
+            string insertQuery =
+                "UPDATE `products` SET `ingredient_reference` = @Reference WHERE id = @Prodid";
+
+            MySqlCommand msc = new MySqlCommand(insertQuery);
+
+            msc.Parameters.AddWithValue("@Reference", reference);
+            msc.Parameters.AddWithValue("@Prodid", prodid);
+
+            new SQLConnect().NonQueryMSC(msc, databaseInformation);
+        }
+
+        public Product GetProductWithReferenceFromId(string id, DatabaseInformation databaseInformation)
+        {
+            Product product = new Product();
+            string getProductQuery =
+                "SELECT * FROM products WHERE id = @ProdId";
+
+            MySqlCommand msc = new MySqlCommand(getProductQuery);
+
+            msc.Parameters.AddWithValue("@ProdId", id);
+
+            DataSet ds = new SQLConnect().DynamicSimpleListSQL(msc, databaseInformation);
+
+            if (ds.Tables.Count != 0)
+            {
+                if (ds.Tables[0].Rows.Count != 0)
+                {
+                    foreach (DataRow r in ds.Tables[0].Rows)
+                    {
+                        product  = new Product((string)r[0], (string)r[1], (string)r[2], Convert.ToDouble(r[3]), (string)r[4], (string)r[5]);
+                    }
+                }
+            }
+            return product;
+        }
+
+        public List<Product> GetProductsWhereReferenceIncludesString(string reference, DatabaseInformation databaseInformation)
+        {
+            List<Product> productList = new List<Product>();
+
+            string getListQuery =
+                "SELECT * FROM products WHERE reference LIKE = @Reference";
+
+            MySqlCommand msc = new MySqlCommand(getListQuery);
+
+            msc.Parameters.AddWithValue("@Reference", "%" + reference + "%");
+
+            DataSet ds = new SQLConnect().DynamicSimpleListSQL(msc, databaseInformation);
+
+            if (ds.Tables.Count != 0)
+            {
+                foreach (DataRow r in ds.Tables[0].Rows)
+                {
+                    Product product = new Product((string)r[0], (string)r[1], (string)r[2], Convert.ToDouble(r[3]), (string)r[4], (string)r[5]);
+                    productList.Add(product);
+                }
+            }
+
+            return productList;
         }
     }
 }
