@@ -1,0 +1,178 @@
+[
+  {
+    "Ean": "2021050000008",
+    "Navn": "HAMBURGERRYG LUX NET",
+    "Navn2": "",
+    "Pris": 70.00,
+    "VareHierakiId": 3021
+  },
+  {
+    "Ean": "5700380825600",
+    "Navn": "HAKKET OKSEKØD",
+    "Navn2": "8-12% 450G",
+    "Pris": 30.00,
+    "VareHierakiId": 3021
+  },
+  {
+    "Ean": "5700381440291",
+    "Navn": "MÖRT TYKSTEGSBØFFER",
+    "Navn2": "300 G, UNGKVÆG",
+    "Pris": 55.00,
+    "VareHierakiId": 3021
+  },
+  {
+    "Ean": "5700381570912",
+    "Navn": "HAKKET GRISE-& KALVEKØD",
+    "Navn2": "8-12% 500G",
+    "Pris": 32.95,
+    "VareHierakiId": 3021
+  },
+  {
+    "Ean": "5700381932062",
+    "Navn": "STEGEFLÆSK GRIS 500G",
+    "Navn2": "",
+    "Pris": 45.00,
+    "VareHierakiId": 3021
+  },
+  {
+    "Ean": "5700382238569",
+    "Navn": "HAKKET OKSEKØD 4-7% 400G",
+    "Navn2": "",
+    "Pris": 35.00,
+    "VareHierakiId": 3021
+  },
+  {
+    "Ean": "5700383066659",
+    "Navn": "KOTELETTER 500G",
+    "Navn2": "",
+    "Pris": 45.00,
+    "VareHierakiId": 3021
+  },
+  {
+    "Ean": "5700384235023",
+    "Navn": "BRONTOSAURUS STEAK",
+    "Navn2": "400 G",
+    "Pris": 59.00,
+    "VareHierakiId": 3021
+  },
+  {
+    "Ean": "5700384509025",
+    "Navn": "MEDISTER 7-10 %",
+    "Navn2": "500 G, GROVHAKKET",
+    "Pris": 27.50,
+    "VareHierakiId": 3021
+  },
+  {
+    "Ean": "5700384575662",
+    "Navn": "HAKKET GRISEKØD",
+    "Navn2": "8-12% 500G",
+    "Pris": 30.00,
+    "VareHierakiId": 3021
+  },
+  {
+    "Ean": "5789000087123",
+    "Navn": "HEL KYLLING 1350 G",
+    "Navn2": "1350 G",
+    "Pris": 49.95,
+    "VareHierakiId": 3023
+  },
+  {
+    "Ean": "5789000087147",
+    "Navn": "KYLLINGE BRYSTFILET",
+    "Navn2": "280 G",
+    "Pris": 27.50,
+    "VareHierakiId": 3023
+  },
+  {
+    "Ean": "5789000087222",
+    "Navn": "KYLLINGEFILET 10% 450G",
+    "Navn2": "",
+    "Pris": 29.95,
+    "VareHierakiId": 3023
+  },
+  {
+    "Ean": "5789000087246",
+    "Navn": "KYLLINGEFILET 13%",
+    "Navn2": "800 G",
+    "Pris": 54.95,
+    "VareHierakiId": 3023
+  },
+  {
+    "Ean": "5789000087345",
+    "Navn": "LÅRMIX",
+    "Navn2": "800 G",
+    "Pris": 33.00,
+    "VareHierakiId": 3023
+  },
+  {
+    "Ean": "7340011344247",
+    "Navn": "KYLLINGE INDERFILET",
+    "Navn2": "290 G",
+    "Pris": 27.50,
+    "VareHierakiId": 3023
+  },
+  {
+    "Ean": "57067049",
+    "Navn": "SALAMI LAV FEDT",
+    "Navn2": "110 G - 3 STJERNET",
+    "Pris": 20.95,
+    "VareHierakiId": 3025
+  },
+  {
+    "Ean": "57067698",
+    "Navn": "JÆGERPØLSE 9% FEDT",
+    "Navn2": "110 G. - 3 STJERNET",
+    "Pris": 14.95,
+    "VareHierakiId": 3025
+  },
+  {
+    "Ean": "4000404807058",
+    "Navn": "MINI SALAMI",
+    "Navn2": "25 G, BÖKLUNDER",
+    "Pris": 6.75,
+    "VareHierakiId": 3025
+  },
+  {
+    "Ean": "4000404872353",
+    "Navn": "SALAMI SNACK CLASSIC",
+    "Navn2": "25 G.",
+    "Pris": 6.75,
+    "VareHierakiId": 3025
+  },
+  {
+    "Ean": "5700383085216",
+    "Navn": "COOP KYLLINGSTYKKER STEGT",
+    "Navn2": "150 G",
+    "Pris": 17.50,
+    "VareHierakiId": 3025
+  },
+  {
+    "Ean": "5700383342265",
+    "Navn": "X-TRA SALAMI",
+    "Navn2": "200 G",
+    "Pris": 10.95,
+    "VareHierakiId": 3025
+  },
+  {
+    "Ean": "5700384230141",
+    "Navn": "COOP KRYDERET KYLLINGE FILET",
+    "Navn2": "150 G",
+    "Pris": 20.95,
+    "VareHierakiId": 3025
+  },
+  {
+    "Ean": "5701483176187",
+    "Navn": "TYNDTSKÅRET RØGET SKINKE",
+    "Navn2": "100 G.",
+    "Pris": 17.95,
+    "VareHierakiId": 3025
+  },
+  {
+    "Ean": "5701483176200",
+    "Navn": "TYNDTSKÅRET STEGT KYLLING",
+    "Navn2": "80 G.",
+    "Pris": 17.95,
+    "VareHierakiId": 3025
+  }
+]
+

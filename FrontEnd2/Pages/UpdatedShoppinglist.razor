@@ -8,10 +8,6 @@
 @inject AuthenticationFunctionallity uf
 @inject HttpClient Http
 
-
-
-@inject HttpClient Http
-
 @if (email == null)
 {
     <p> You need to be logged in to see shoppinglist</p>
@@ -41,33 +37,32 @@ else
                         <tbody>
                             @foreach (Product item in removeDublicates(ListFunc.CombinedList))
                             {
-                                    <tr>
-                                        <td data-th="Product">
-                                            <div class="row">
-                                                <div class="col-sm-2 hidden-xs"><img src="@item._image" class="img-responsive" /></div>
-                                                <div class="col-sm-10">
-                                                    <h4 class="nomargin">@item._productName</h4>
-                                                    <p>@item._amount</p>
-                                                </div>
+                                <tr>
+                                    <td data-th="Product">
+                                        <div class="row">
+                                            <div class="col-sm-2 hidden-xs"><img src="@item._image" class="img-responsive" /></div>
+                                            <div class="col-sm-10">
+                                                <h4 class="nomargin">@item._productName</h4>
+                                                <p>@item._amount</p>
                                             </div>
-                                        </td>
-
-                                    <td data-th="Price">@item._price kr</td>
-                                    <td data-th="Quantity">
-                                        <div class="valueClass text-center">
-                                            <div class="value-button" id="increase" @onclick="(() => DecrementAmount(item._id))" value="Increase @value"> - </div>
-                                            <input type="number" id="number" value="@item._amountleft" />
-                                            <div class="value-button" id="decrease" @onclick="(() => IncrementAmount(item._id))" value="Decrease @value"> + </div>
                                         </div>
                                     </td>
-                                    <td data-th="Subtotal" class="text-center">@ListFunc.FindSubtotal(item) kr</td>
-                                    <td class="actions" data-th="">
-                                        <button class="btn btn-info btn-sm" @onclick="(() => AddItemToStorage(item))"><i class="oi oi-reload"></i></button>
-                                        <button class="btn btn-danger btn-sm" @onclick="(() => ListFunc.DeleteItem(item._id))"><i class="oi oi-trash"></i></button>
-                                    </td>
-                                </tr>
-                            }
 
+                                <td data-th="Price">@item._price kr</td>
+                                <td data-th="Quantity">
+                                    <div class="valueClass text-center">
+                                        <div class="value-button" id="increase" @onclick="(() => DecrementAmount(item._id))" value="Increase @value"> - </div>
+                                        <input type="number" id="number" value="@item._amountleft" />
+                                        <div class="value-button" id="decrease" @onclick="(() => IncrementAmount(item._id))" value="Decrease @value"> + </div>
+                                    </div>
+                                </td>
+                                <td data-th="Subtotal" class="text-center">@ListFunc.FindSubtotal(item) kr</td>
+                                <td class="actions" data-th="">
+                                    <button class="btn btn-info btn-sm" @onclick="(() => AddItemToStorage(item))"><i class="oi oi-reload"></i></button>
+                                    <button class="btn btn-danger btn-sm" @onclick="(() => ListFunc.DeleteItem(item._id))"><i class="oi oi-trash"></i></button>
+                                </td>
+                            </tr>
+                            }
                         </tbody>
                         <tfoot>
                             <tr class="visible-xs">
@@ -81,9 +76,6 @@ else
                 <div class="col-sm-4">
                     <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>AddToStorage())">Add to strorage</button>
                 </div>
-                @*<div class="col-sm-4">
-                    <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>ListFunc.AddFuncList())">Save shoppinlist</button>
-                </div>*@
                 <div class="col-sm-4">
                     <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>SaveShoppinglist())">Save shoppinlist</button>
                 </div>
@@ -96,22 +88,26 @@ else
 }
 
 @code {
-    string productString;
-    string newProduct;
-    string dest = "api/Storage";
     ShoppinlistFunctionality ListFunc = new ShoppinlistFunctionality("api/Shoppinglist");
     HttpResponseMessage responseMessage = new HttpResponseMessage();
+
+    List<Product> ToShoppinglist = new List<Product>();
+    List<Product> ToStorageList = new List<Product>();
+
+    bool test = false;
+
     int value = 1;
     int amount;
     int currentValue;
-    bool test = false;
+
     string email;
-    List<Product> ToShoppinglist = new List<Product>();
-    List<Product> ToStorageList = new List<Product>();
     string shopString;
     string storageString;
+    string productString;
+    string newProduct;
+    string dest = "api/Storage";
 
-
+    #region Increment/Decrement
     protected void IncrementAmount(string id)
     {
         foreach (var item in ListFunc.CombinedList)
@@ -136,7 +132,9 @@ else
             }
         }
     }
+    #endregion
 
+    #region LocalStorage
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -164,7 +162,9 @@ else
             ToShoppinglist = JsonConvert.DeserializeObject<List<Product>>(shopString);
         }
     }
+    #endregion
 
+    #region Save/add/delete list button
     public async void SaveShoppinglist()
     {
         await localStorage.RemoveItemAsync("ProductString");
@@ -178,11 +178,18 @@ else
         ListFunc.AddShoppinlistToStorage(dest);
     }
 
+    public async void DeleteShoppinglist()
+    {
+
+    }
+    #endregion 
+
     public async void AddItemToStorage(Product AddedItem)
     {
         ListFunc.AddItemToStorage(AddedItem, dest);
         await ListFunc.DeleteItem(AddedItem._id);
     }
+
     public List<Product> removeDublicates(List<Product> shoppingList)
     {
         Dictionary<string, Product> dict = new Dictionary<string, Product>();
@@ -200,18 +207,14 @@ else
                     dict.Add(p._productName,p);
                 }
             }
-
         }
+
         shoppingList.Clear();
         foreach (KeyValuePair<string, Product> item in dict)
         {
             shoppingList.Add(dict[item.Key]);
         }
-        //ListFunc.CombinedList = shoppingList;
+
         return shoppingList;
-        //List<Product> newList = new List<Product>();
-        //newList.Add(shoppingList.Where(x => x != x._productName.Contains(newList.ForEach(x => x._productName))));
-
     }
-
 }

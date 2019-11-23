@@ -55,7 +55,7 @@
                                         <ul class="dropdown-menu" role="menu">
                                             @foreach (var State in ItemState)
                                             {
-                                                <li><button class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(() => ChangeState(items._id, State))">@State</button></li>
+                                                <li><button class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(() => ChangeItemState(items, State))">@State</button></li>
                                             }
                                         </ul>
                                     </div>
@@ -63,7 +63,7 @@
                                 <td data-th="Date added">@items._timeAdded</td>
                                 <td data-th="Delete">
                                     <div>
-                                        <button class="btn btn-danger btn-sm" @onclick="(() => DeleteProduct(items._id))"><i class="oi oi-trash"></i></button>
+                                        <button class="btn btn-danger btn-sm" @onclick="(() => ChangeItemAmout(items))"><i class="oi oi-trash"></i></button>
                                     </div>
                                 </td>
                             </tr>
@@ -209,28 +209,39 @@
     #region Storage_Methods
     //Storage functionalities
 
-    protected async void ChangeState(string id, string state)
+    public async void ChangeItemState(Product item, string state)
     {
-        //ListFunc.ChangeItem();
+        int index = FindIdex(item);
+        ListFunc.CombinedList[index]._state = state;
+        item._state = state;
 
-        //ListFunc.itemList[ListFunc.itemList.Find(x => x.Id.Equals(id))].State = state;
-        //AddedProduct ChangedItem = new AddedProduct();
+        productString = JsonConvert.SerializeObject(item);
 
-        foreach (var item in ListFunc.CombinedList)
+        //ChangeItem(item);
+
+        await ListFunc.ChangeItem(productString);
+    }
+
+    public int FindIdex(Product item)
+    {
+        return ListFunc.CombinedList.FindIndex(ind => ind.Equals(item));
+    }
+
+    public async void ChangeItemAmout(Product item)
+    {
+        int index = FindIdex(item);
+        int left = ListFunc.CombinedList[index]._amountleft;
+
+        if (left >= 2)
         {
-            if (item._id == id)
-            {
-                item._state = state;
-
-                productString = JsonConvert.SerializeObject(item);
-
-                await ListFunc.ChangeItem(productString);
-
-                break;
-            }
+            ListFunc.CombinedList[index]._amountleft--;
+            productString = JsonConvert.SerializeObject(item);
+            await ListFunc.ChangeItem(productString);
         }
-
-        //ListFunc.SaveStorage();
+        else
+        {
+            await ListFunc.DeleteItem(item._id);
+        }
     }
 
     private async void AddProduct()
@@ -264,6 +275,10 @@
             {
                 item._amountleft--;
 
+                productString = JsonConvert.SerializeObject(item);
+
+                await ListFunc.ChangeItem(productString);
+
                 isFound = true;
 
                 break;
@@ -274,8 +289,6 @@
         {
             await ListFunc.DeleteItem(id);
         }
-
-        ListFunc.SaveStorage();
     }
     #endregion
 

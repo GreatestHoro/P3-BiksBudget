@@ -254,11 +254,8 @@
 
     private async Task SearchForProducts()
     {
-
         if (!String.IsNullOrEmpty(searchBox) && !String.IsNullOrWhiteSpace(searchBox))
         {
-
-
             updateFilters();
 
             ProductSearchLinkConstructer link = new ProductSearchLinkConstructer(searchBox,ConvertBoolArrToStr(EnabledKeywords),ConvertBoolArrToStr(EnabledStores));
@@ -339,31 +336,7 @@
         return arr;
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await GetLocalSession();
-            localStorage.Changed += (sender, e) =>
-            {
-                Console.WriteLine($"Value for key {e.Key} changed from {e.OldValue} to {e.NewValue}");
-            };
 
-            storeList = storeFilters.GetStoreList();
-            wordList = wordFIlters.GetStoreList();
-            InitializeBoolArrays(storeList.Count, wordList.Count);
-            await SLFunc.GetShoppinglistOnStart(email, ToShoppinglist);
-
-            if (userGeoLocation._latitude == 0 && userGeoLocation._longitude == 0)
-            {
-                await GetUserLocation();
-                await tcsUserLocation.Task;
-            }
-
-            this.StateHasChanged();
-        }
-
-    }
     public void InitializeBoolArrays(int stores,int words)
     {
         EnabledStores = new bool[stores];
@@ -392,6 +365,33 @@
         return new string(returnChar);
     }
 
+    #region LocalStorage
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await GetLocalSession();
+            localStorage.Changed += (sender, e) =>
+            {
+                Console.WriteLine($"Value for key {e.Key} changed from {e.OldValue} to {e.NewValue}");
+            };
+
+            storeList = storeFilters.GetStoreList();
+            wordList = wordFIlters.GetStoreList();
+            InitializeBoolArrays(storeList.Count, wordList.Count);
+            await SLFunc.GetShoppinglistOnStart(email, ToShoppinglist);
+
+            if (userGeoLocation._latitude == 0 && userGeoLocation._longitude == 0)
+            {
+                await GetUserLocation();
+                await tcsUserLocation.Task;
+            }
+
+            this.StateHasChanged();
+        }
+
+    }
+
     async Task GetLocalSession()
     {
         email = await localStorage.GetItemAsync<string>("Email");
@@ -402,6 +402,7 @@
             ToShoppinglist = JsonConvert.DeserializeObject<List<Product>>(shopString);
         }
     }
+#endregion
 
     async Task GetUserLocation()
     {
@@ -418,6 +419,4 @@
     //        tcsUserLocation.SetResult(userGeoLocation);
     //    }
     //}
-
-
 }
