@@ -299,7 +299,6 @@ else
         if (!String.IsNullOrEmpty(searchBox) && !String.IsNullOrWhiteSpace(searchBox))
         {
 
-
             updateFilters();
 
             ProductSearchLinkConstructer link = new ProductSearchLinkConstructer(searchBox, ConvertBoolArrToStr(EnabledKeywords), ConvertBoolArrToStr(EnabledStores));
@@ -307,6 +306,7 @@ else
             productString = await Http.GetStringAsync(link.GetURL());
 
             itemList = JsonConvert.DeserializeObject<List<Product>>(productString);
+            exsprimental(searchBox);
 
             if (itemList.Count != 0)
             {
@@ -318,33 +318,38 @@ else
             messageToUser = "You Need To Write A Searhcword";
         }
     }
+
+    public void exsprimental(string searchBox) 
+    {
+        itemList.ForEach(x => x.exsperimentalString = searchBox);
+    }
     public void updateFilters()
     {
         if (IsLocationEnabled)
         {
-        try
-        {
-            FindStoreFunc();
-        }
-        catch (System.Exception)
-        {
-            FatalFalure = true;
-        }
+            try
+            {
+                FindStoreFunc();
+            }
+            catch (System.Exception)
+            {
+                FatalFalure = true;
+            }
 
-        if (!FatalFalure) 
-        {
-            EnabledStores = updateEachFilter(storeFilters.GetStoreArray());
-            EnabledKeywords = updateEachFilter(wordFIlters.GetWordArray());
-
-
-            bool[] closeStoreBool = new bool[EnabledStores.Length];
+            if (!FatalFalure)
+            {
+                EnabledStores = updateEachFilter(storeFilters.GetStoreArray());
+                EnabledKeywords = updateEachFilter(wordFIlters.GetWordArray());
 
 
-            closeStoreBool = SetAllFilters(closeStoreBool, false);
-            closeStoreBool = CompareBoolArr();
+                bool[] closeStoreBool = new bool[EnabledStores.Length];
 
-            EnabledStores = closeStoreBool;
-                }
+
+                closeStoreBool = SetAllFilters(closeStoreBool, false);
+                closeStoreBool = CompareBoolArr();
+
+                EnabledStores = closeStoreBool;
+            }
         }
 
     }

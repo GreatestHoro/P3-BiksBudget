@@ -14,6 +14,7 @@
         public string _timeAdded;
         public string _state;
 
+        public string exsperimentalString; 
         public Product(string id, string productName, string amount, double price, string image, string storeName, int amountleft)
         {
             _id = id;
