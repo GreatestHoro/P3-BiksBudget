@@ -47,6 +47,7 @@ namespace Backend.Controllers
         {
             string buffer;
             List<Product> newItem = new List<Product>();
+            List<Product> Fromdb = new List<Product>();
 
             HttpRequest request = HttpContext.Request;
             Microsoft.AspNetCore.Http.HttpRequestRewindExtensions.EnableBuffering(request);
@@ -73,7 +74,10 @@ namespace Backend.Controllers
                 }
                 else
                 {
+                    Fromdb = dbConnect.GetStorageFromUsername(Email);
                     newItem = JsonConvert.DeserializeObject<List<Product>>(buffer);
+                    newItem = newItem.Concat(Fromdb).ToList();
+                    newItem = functionality.HandleDublicats(newItem);
                     dbConnect.DeleteShoppingListFromName("Shoppinglist", Email);
                 }
                 newItem = functionality.HandleDublicats(newItem);
@@ -104,17 +108,29 @@ namespace Backend.Controllers
             storageList = dbConnect.GetStorageFromUsername(Email);
             newItem = JsonConvert.DeserializeObject<Product>(buffer);
 
-            foreach (Product p in storageList)
+            if (newItem._amountleft != 0)
             {
-                if (p._id == newItem._id)
+                foreach (Product p in storageList)
                 {
-                    p._state = newItem._state;
-                    p._amountleft = newItem._amountleft;
-                    break;
+                    if (p._id == newItem._id)
+                    {
+                        p._state = newItem._state;
+                        p._amountleft = newItem._amountleft;
+                        break;
+                    }
                 }
             }
+            else
+            {
+                newItem._amountleft = 1;
+                int i = functionality.FindIdex(storageList, newItem);
+                storageList.RemoveAt(i);
+            }
+
             dbConnect.UpdateStorage(Email, storageList);
         }
+
+
 
         // DELETE: api/ApiWithActions/5
         [HttpDelete("{id}")]

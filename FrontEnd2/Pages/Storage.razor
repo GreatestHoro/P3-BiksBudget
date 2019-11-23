@@ -212,14 +212,9 @@
     public async void ChangeItemState(Product item, string state)
     {
         int index = FindIdex(item);
-        ListFunc.CombinedList[index]._state = state;
         item._state = state;
 
-        productString = JsonConvert.SerializeObject(item);
-
-        //ChangeItem(item);
-
-        await ListFunc.ChangeItem(productString);
+        await ListFunc.ChangeItem(ListFunc.CombinedList[index]);
     }
 
     public int FindIdex(Product item)
@@ -231,17 +226,16 @@
     {
         int index = FindIdex(item);
         int left = ListFunc.CombinedList[index]._amountleft;
+        
+        if (left == 1)
+        {
+            ListFunc.CombinedList.RemoveAt(index);
+        
+        }
+        item._amountleft--;
 
-        if (left >= 2)
-        {
-            ListFunc.CombinedList[index]._amountleft--;
-            productString = JsonConvert.SerializeObject(item);
-            await ListFunc.ChangeItem(productString);
-        }
-        else
-        {
-            await ListFunc.DeleteItem(item._id);
-        }
+        await ListFunc.ChangeItem(item);
+        
     }
 
     private async void AddProduct()
@@ -265,31 +259,6 @@
         }
 
     }
-
-    private async void DeleteProduct(string id)
-    {
-        bool isFound = false;
-        foreach (var item in ListFunc.CombinedList)
-        {
-            if (item._id == id && item._amountleft != 1)
-            {
-                item._amountleft--;
-
-                productString = JsonConvert.SerializeObject(item);
-
-                await ListFunc.ChangeItem(productString);
-
-                isFound = true;
-
-                break;
-            }
-        }
-
-        if (isFound == false)
-        {
-            await ListFunc.DeleteItem(id);
-        }
-    }
     #endregion
 
     #region OnInit_async_Method
@@ -312,7 +281,7 @@
             userId = email;
             if(email != null)
             {
-            responseMessage = await ListFunc.GetStorageOnStart(email);
+                responseMessage = await ListFunc.GetStorageOnStart(email);
             }
 
 

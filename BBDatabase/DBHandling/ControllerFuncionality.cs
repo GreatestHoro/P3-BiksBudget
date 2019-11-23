@@ -104,5 +104,21 @@ namespace BBCollection.DBHandling
 
             return shoppingList;
         }
+
+        public int FindIdex(List<Product> inputList, Product item)
+        {
+            for (int i = 0; i < inputList.Count; i++)
+            {
+                if (inputList[i]._id.Equals(item._id))
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+            //int i = inputList.FindIndex(ind => ind.Equals(item));
+            //return i;
+        }
+
     }
 }

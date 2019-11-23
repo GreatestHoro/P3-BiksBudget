@@ -283,9 +283,12 @@ namespace FrontEnd2.Data
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
 
-        public async Task<HttpResponseMessage> ChangeItem(string itemString)
+        public async Task<HttpResponseMessage> ChangeItem(Product item)
         {
             int userIdLength = Email.Length;
+            string itemString;
+
+            itemString = JsonConvert.SerializeObject(item);
 
             itemString = userIdLength.ToString() + "|" + Email + itemString;
 
@@ -295,5 +298,7 @@ namespace FrontEnd2.Data
 
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
-    }
+
+
+}
 }
