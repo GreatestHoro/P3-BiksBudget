@@ -73,5 +73,36 @@ namespace BBCollection.DBHandling
 
             return uniqueList;
         }
+        public List<Product> removeDublicates(List<Product> shoppingList)
+        {
+            Dictionary<string, Product> dict = new Dictionary<string, Product>();
+
+            foreach (Product p in shoppingList)
+            {
+                if (p._id != null)
+                {
+                    if (dict.ContainsKey(p._id))
+                    {
+                        dict[p._id]._amountleft++;
+                    }
+                    else
+                    {
+                        if (p._amountleft == 0)
+                        {
+                            break;
+                        }
+                        dict.Add(p._id, p);
+                    }
+                }
+            }
+
+            shoppingList.Clear();
+            foreach (KeyValuePair<string, Product> item in dict)
+            {
+                shoppingList.Add(dict[item.Key]);
+            }
+
+            return shoppingList;
+        }
     }
 }

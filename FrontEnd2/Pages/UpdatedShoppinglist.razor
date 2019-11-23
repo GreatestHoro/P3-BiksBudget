@@ -46,22 +46,22 @@ else
                                                     <p>@item._amount</p>
                                                 </div>
                                             </div>
+                                        </td>
+                                    
+                                    <td data-th="Price">@item._price kr</td>
+                                    <td data-th="Quantity">
+                                        <div class="valueClass text-center">
+                                            <div class="value-button" id="increase" @onclick="(() => DecrementAmount(item._id))" value="Increase @value"> - </div>
+                                            <input type="number" id="number" value="@item._amountleft" />
+                                            <div class="value-button" id="decrease" @onclick="(() => IncrementAmount(item._id))" value="Decrease @value"> + </div>
                                         </div>
                                     </td>
-
-                                <td data-th="Price">@item._price kr</td>
-                                <td data-th="Quantity">
-                                    <div class="valueClass text-center">
-                                        <div class="value-button" id="increase" @onclick="(() => DecrementAmount(item._id))" value="Increase @value"> - </div>
-                                        <input type="number" id="number" value="@item._amountleft" />
-                                        <div class="value-button" id="decrease" @onclick="(() => IncrementAmount(item._id))" value="Decrease @value"> + </div>
-                                    </div>
-                                </td>
-                                <td data-th="Subtotal" class="text-center">@ListFunc.FindSubtotal(item) kr</td>
-                                <td class="actions" data-th="">
-                                    <button class="btn btn-info btn-sm" @onclick="(() => AddItemToStorage(item))"><i class="oi oi-reload"></i></button>
-                                    <button class="btn btn-danger btn-sm" @onclick="(() => ListFunc.DeleteItem(item._id))"><i class="oi oi-trash"></i></button>
-                                </td>
+                                    <td data-th="Subtotal" class="text-center">@ListFunc.FindSubtotal(item) kr</td>
+                                    <td class="actions" data-th="">
+                                        <button class="btn btn-info btn-sm" @onclick="(() => AddItemToStorage(item))"><i class="oi oi-reload"></i></button>
+                                        <button class="btn btn-danger btn-sm" @onclick="(() => ListFunc.DeleteItem(item._id))"><i class="oi oi-trash"></i></button>
+                                    </td>
+                                
                             </tr>
                             }
                         </tbody>
@@ -219,7 +219,7 @@ else
             shoppingList.Add(dict[item.Key]);
         }
 
-
+        return shoppingList;
     }
         // Function to get salling products in high resolution
         private string ProductImage(string prod_image)
