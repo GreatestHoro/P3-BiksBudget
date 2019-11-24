@@ -24,5 +24,6 @@ namespace BBCollection.BBObjects
             _ingredientList = ingredientList;
             _PerPerson = PerPerson;
         }
+        public Recipe() { }
     }
 }

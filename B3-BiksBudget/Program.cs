@@ -5,6 +5,7 @@ using BBCollection.BBObjects;
 using System;
 using System.Collections.Generic;
 using BBCollection.DBConncetion;
+using BBCollection.DBHandling;
 
 namespace BBGatherer
 {
@@ -13,9 +14,11 @@ namespace BBGatherer
         static void Main(string[] args)
         {
             DataHandling dh = new DataHandling();
+            
+            
             //dh.GenerateDatabase();
-            //dh.GenerateData(true, false);
-            dh.TestCollection();
+            dh.GenerateData(false, true);
+            //dh.TestCollection();
         }
     }
 
@@ -32,33 +35,40 @@ namespace BBGatherer
 
         public void GenerateData(bool coop, bool salling)
         {
-
-            CoopDoStuff tryCoop = new CoopDoStuff("f0cabde6bb8d4bd78c28270ee203253f");
-
-            List<CoopProduct> coopProducts = tryCoop.CoopFindEverythingInStore("24073");
-
-            //oopDoStuff tryCoop = new CoopDoStuff("d0b9a5266a2749cda99d4468319b6d9f");
-
-            int count = 0;
-            coopProducts = tryCoop.CoopFindEverythingInStore("2096");
-
-            count = 0;
-            foreach (CoopProduct c in coopProducts)
+            ProductHandling test = new ProductHandling();
+            //InitializeDB _test = new InitializeDB();
+            if (coop) 
             {
-                count++;
-                Console.WriteLine(count);
-                dbConnect.AddProduct(new Product("B" + c.Ean, c.Navn, c.Navn2, c.Pris, "", "SuperBrugsen"));
+                CoopDoStuff tryCoop = new CoopDoStuff("f0cabde6bb8d4bd78c28270ee203253f");
+
+                List<CoopProduct> coopProducts = tryCoop.CoopFindEverythingInStore("24073");
+
+                //oopDoStuff tryCoop = new CoopDoStuff("d0b9a5266a2749cda99d4468319b6d9f");
+
+                int count = 0;
+                coopProducts = tryCoop.CoopFindEverythingInStore("2096");
+
+                count = 0;
+                foreach (CoopProduct c in coopProducts)
+                {
+                    count++;
+                    Console.WriteLine(count);
+                    dbConnect.AddProduct(new Product("B" + c.Ean, c.Navn, c.Navn2, c.Pris, "", "SuperBrugsen"));
+                }
             }
-
-
+            //_test.UpdateProductTable(new DatabaseInformation("localhost", "biksbudgetDB", "root", "BiksBudget123"));
             if (salling == true)
             {
                 RecipeCrawl WebRunner = new RecipeCrawl();
-                _ = WebRunner.GetRecipes(100, 1200, dbConnect);
+                _ = WebRunner.GetRecipes(1, 1200, dbConnect);
 
                 Console.WriteLine("web runner begins... fear its power");
                 Console.ReadLine();
             }
+            
+            //dbConnect.AddProduct(new Product("test","hey","alot",1d,"nope","walmart"));
+            //test.InsertIngredientReferenceFromId("tester", "test", new DatabaseInformation("localhost", "biksbudgetDB", "root", "BiksBudget123"));
+            
         }
 
         public void TestCollection()
