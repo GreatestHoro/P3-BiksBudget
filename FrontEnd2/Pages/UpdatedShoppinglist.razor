@@ -26,11 +26,11 @@ else
                     <table id="cart" class="table table-hover table-condensed">
                         <thead>
                             <tr>
-                                <th style="width:45%">Product</th>
+                                <th style="width:48%">Product</th>
                                 <th style="width:10%">Price</th>
                                 <th style="width:20%">Quantity</th>
                                 <th style="width:10%" class="text-center">Subtotal</th>
-                                <th style="width:15%"></th>
+                                <th style="width:12%"></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -50,9 +50,9 @@ else
                                     <td data-th="Price">@item._price kr</td>
                                     <td data-th="Quantity">
                                         <div class="valueClass text-center">
-                                            <div class="value-button" id="increase" @onclick="(() => DecrementAmount(item._id))" value="Increase @value"> - </div>
+                                            <div class="value-button" id="increase" @onclick="(() => DecrementAmount(item))" value="Increase @value"> - </div>
                                             <input type="number" id="number" value="@item._amountleft" />
-                                            <div class="value-button" id="decrease" @onclick="(() => IncrementAmount(item._id))" value="Decrease @value"> + </div>
+                                            <div class="value-button" id="decrease" @onclick="(() => IncrementAmount(item))" value="Decrease @value"> + </div>
                                         </div>
                                     </td>
                                     <td data-th="Subtotal" class="text-center">@ListFunc.FindSubtotal(item) kr</td>
@@ -60,12 +60,23 @@ else
                                         <button class="btn btn-info btn-sm addMore" title="Add one @item._productName to your Storage" @onclick="(() => AddOneItemToStorage(item))"><i class="oi oi-basket"></i></button>
                                         @if (item._amountleft > 1)
                                         {
-                                            <button class="btn btn-info btn-sm addMore" title="Add @item._amountleft @item._productName s to your Storage" @onclick="(() => AddItemToStorage(item))"><i class="oi oi-basket">(All)</i></button>
+                                            <button class="btn btn-info btn-sm addMore" title="Add @item._amountleft @item._productName to your Storage" @onclick="(() => AddItemToStorage(item))">
+                                                <i class="oi oi-basket">(All)</i>
+                                            </button>
                                         }
-                                        <button class="btn btn-danger btn-sm" @onclick="(() => ChangeAmount(item))"><i class="oi oi-trash"></i></button>
+                                        else
+                                        {
+                                            <button disabled class="btn btn-info btn-sm addMore invisibleBtn"><i class="oi oi-basket">(All)</i></button>
+                                        }
+                                        <button class="btn btn-danger btn-sm addMore" title="Delete one @item._productName from your shoppinglist" @onclick="(() => ChangeAmount(item))"><i class="oi oi-trash"></i></button>
                                         @if (item._amountleft > 1)
                                         {
-                                            <button class="btn btn-danger btn-sm" @onclick="(() => DeleteItem(item))"><i class="oi oi-trash"></i>(All)</button>
+                                            <button class="btn btn-danger btn-sm addMore" title="Delete @item._amountleft @item._productName from your shoppinglist" @onclick="(() => DeleteItem(item))"><i class="oi oi-trash"></i>(All)</button>
+                                        }
+                                        else
+                                        {
+                                            <button disabled class="btn btn-danger btn-sm addMore invisibleBtn"><i class="oi oi-trash"></i>(All)</button>
+
                                         }
                                     </td>
                                 
@@ -87,7 +98,7 @@ else
                 <div class="col-sm-4">
                     @if (remindToSave)
                     {
-                        <button class="btn btn-block btn-danger recipeDivDisplay rounded-0" @onclick="(() =>SaveShoppinglist())">Save shoppinlist</button>
+                        <button  class="btn btn-block btn-danger recipeDivDisplay rounded-0" @onclick="(() =>SaveShoppinglist())">Save shoppinlist</button>
                     }
                     else
                     {
@@ -124,31 +135,21 @@ else
     string dest = "api/Storage";
 
     #region Increment/Decrement
-    protected void IncrementAmount(string id)
+    protected void IncrementAmount(Product item)
     {
         remindToSave = true;
-        foreach (var item in ListFunc.CombinedList)
-        {
-            if (item._id == id && item._amountleft != 0)
-            {
-                item._amountleft++;
-                value++;
-            }
-        }
+        item._amountleft++;
     }
 
-    protected void DecrementAmount(string id)
+    protected void DecrementAmount(Product item)
     {
         remindToSave = true;
-        foreach (var item in ListFunc.CombinedList)
-        {
 
-            if (item._id == id && item._amountleft > 1)
-            {
-                item._amountleft--;
-                value--;
-            }
+        if (item._amountleft > 1)
+        {
+            item._amountleft--;
         }
+
     }
     #endregion
 
