@@ -36,27 +36,10 @@ namespace BBCollection.DBHandling
         public List<Product> ListOfProductsFromName(string productName, DatabaseInformation dbInformation)
         {
             List<Product> productList = new List<Product>();
+            string table = "products";
+            string collumn = "productname";
 
-            string recipesQuery = 
-                "SELECT * FROM products WHERE productName LIKE @ProductName " +
-                " ORDER BY case " +
-                "WHEN productname like @ProductNameSort1 then 1 " +
-                "WHEN productname like @ProductNameSort2 then 2 " +
-                "WHEN productname like @ProductNameSort3 then 3 " +
-                "WHEN productname like @ProductNameSort4 then 4 " +
-                "WHEN productname like @ProductNameSort5 then 5 " +
-                "ELSE 6 END;";
-
-            MySqlCommand msc = new MySqlCommand(recipesQuery);
-            msc.Parameters.AddWithValue("@ProductName", "%" + productName + "%");
-
-            msc.Parameters.AddWithValue("@ProductNameSort1", "% " + productName);
-            msc.Parameters.AddWithValue("@ProductNameSort2", "% " + productName + " %");
-            msc.Parameters.AddWithValue("@ProductNameSort3", productName + " %");
-            msc.Parameters.AddWithValue("@ProductNameSort4", productName + "%");
-            msc.Parameters.AddWithValue("@ProductNameSort5", "%" + productName);
-
-            DataSet ds = new SQLConnect().DynamicSimpleListSQL(msc, dbInformation);
+            DataSet ds = new SQLConnect().DynamicSimpleListSQL(new SqlQuerySort().SortMSC(productName,table,collumn), dbInformation);
 
             if (ds.Tables.Count != 0)
             {

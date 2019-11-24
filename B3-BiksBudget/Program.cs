@@ -4,6 +4,7 @@ using BBCollection;
 using BBCollection.BBObjects;
 using System;
 using System.Collections.Generic;
+using BBCollection.DBConncetion;
 
 namespace BBGatherer
 {
@@ -12,9 +13,9 @@ namespace BBGatherer
         static void Main(string[] args)
         {
             DataHandling dh = new DataHandling();
-            dh.GenerateDatabase();
+            //dh.GenerateDatabase();
             //dh.GenerateData(true, false);
-            //dh.TestCollection();
+            dh.TestCollection();
         }
     }
 
@@ -62,19 +63,21 @@ namespace BBGatherer
 
         public void TestCollection()
         {
+            dbConnect.GetRecipes("is");
 
+/*
 
             //dbConnect.combineProductsAndIngredients();
 
-            /*dbConnect.AddUser("Test6", "Test");*/
-/*
-            dbConnect.DeleteShoppingListFromName("Shoppinglist", "Test6");*/
+            dbConnect.AddUser("Test6", "Test");
+
+            dbConnect.DeleteShoppingListFromName("Shoppinglist", "Test6");
 
             List<Product> testList = new List<Product>();
-/*
+
             Product tProd1 = new Product(null, "TestCust", 5, "Full");
             Product tProd2 = new Product(null, "TestCust2", 5, "Full");
-            Product tProd3 = new Product(null, "TestCust3", 5, "Full");*/
+            Product tProd3 = new Product(null, "TestCust3", 5, "Full");
 
             Product tProdid1 = new Product("B2000060000000", null, 5, "Full");
             Product tProdid2 = new Product("B2000320000009", null, 5, "Full");
@@ -84,14 +87,14 @@ namespace BBGatherer
 
             testList.Add(tProdid1);
             testList.Add(tProdid2);
-            testList.Add(tProdid3);/*
+            testList.Add(tProdid3);
             testList.Add(tProd1);
             testList.Add(tProd2);
-            testList.Add(tProd3);*/
-/*
-            dbConnect.AddListToStorage("Test6", testList);*/
+            testList.Add(tProd3);
 
-            /*List<Product> products = dbConnect.GetStorageFromUsername("Test6");
+            dbConnect.AddListToStorage("Test6", testList);
+
+            List<Product> products = dbConnect.GetStorageFromUsername("Test6");
 
             Console.WriteLine(products.Count);
             foreach (Product p in products)
@@ -99,7 +102,7 @@ namespace BBGatherer
                 Console.WriteLine(p._customname);
                 Console.WriteLine(p._id);
 
-            }*/
+            }
 
             Shoppinglist shoppinglist = new Shoppinglist("TestShoppingList", testList);
 
@@ -117,13 +120,13 @@ namespace BBGatherer
             foreach (Shoppinglist sl in shoppinglists)
             {
                 foreach (Product p in sl._products)
-                {/*
-                    Console.WriteLine("???");*/
+                {
+                    Console.WriteLine("???");
                     Console.WriteLine(p._productName + sl._name);
 
                 }
             }
-/*
+
             dbConnect.DeleteShoppingListFromName("", "Test6");*/
         }
     }
