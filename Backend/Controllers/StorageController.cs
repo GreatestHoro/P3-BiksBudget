@@ -19,9 +19,6 @@ namespace Backend.Controllers
         DatabaseConnect dbConnect = new DatabaseConnect("localhost", "biksbudgetDB", "root", "BiksBudget123");
         List<Product> resultList = new List<Product>();
         ControllerFuncionality functionality = new ControllerFuncionality();
-        List<Product> oldLists = new List<Product>();
-        Product AddedProduct = new Product();
-        int i = 0;
         string Email;
 
         // GET: api/Storage
@@ -42,7 +39,7 @@ namespace Backend.Controllers
         }
 
         // POST: api/Storage
-        [HttpPost]
+        [HttpPost("{value}")]
         public void Post(string value)
         {
             string buffer;
@@ -52,34 +49,28 @@ namespace Backend.Controllers
             HttpRequest request = HttpContext.Request;
             Microsoft.AspNetCore.Http.HttpRequestRewindExtensions.EnableBuffering(request);
 
+            Email = value;
+
             using (var sr = new StreamReader(request.Body))
             {
                 buffer = sr.ReadToEnd();
             }
 
-            buffer = functionality.HandleInputstring(buffer, out Email);
-
-            if (buffer.Contains("PLS_DELETE"))
+            if (buffer.Substring(0, 1) != "[")
             {
-                dbConnect.RemoveFromStorage(Email, newItem);
+                buffer = "[" + buffer + "]";
+            }
+
+            newItem = JsonConvert.DeserializeObject<List<Product>>(buffer);
+
+            if (newItem.Count == 0)
+            {
+                dbConnect.UpdateStorage(Email, newItem);
             }
             else
             {
-                if (buffer.Substring(0, 1) != "[")
-                {
-                    AddedProduct = JsonConvert.DeserializeObject<Product>(buffer);
-                    newItem = dbConnect.GetStorageFromUsername(Email);
-                    newItem.Add(AddedProduct);
-                    //dbConnect.UpdateStorage(Email, newItem);
-                }
-                else
-                {
-                    Fromdb = dbConnect.GetStorageFromUsername(Email);
-                    newItem = JsonConvert.DeserializeObject<List<Product>>(buffer);
-                    newItem = newItem.Concat(Fromdb).ToList();
-                    newItem = functionality.HandleDublicats(newItem);
-                    dbConnect.DeleteShoppingListFromName("Shoppinglist", Email);
-                }
+                Fromdb = dbConnect.GetStorageFromUsername(Email);
+                newItem = newItem.Concat(Fromdb).ToList();
                 newItem = functionality.HandleDublicats(newItem);
                 dbConnect.UpdateStorage(Email, newItem);
             }
@@ -95,6 +86,8 @@ namespace Backend.Controllers
             Product newItem = new Product();
             List<Product> storageList = new List<Product>();
 
+            Email = id;
+
             HttpRequest request = HttpContext.Request;
             Microsoft.AspNetCore.Http.HttpRequestRewindExtensions.EnableBuffering(request);
 
@@ -102,8 +95,6 @@ namespace Backend.Controllers
             {
                 buffer = sr.ReadToEnd();
             }
-
-            buffer = functionality.HandleInputstring(buffer, out Email);
 
             storageList = dbConnect.GetStorageFromUsername(Email);
             newItem = JsonConvert.DeserializeObject<Product>(buffer);

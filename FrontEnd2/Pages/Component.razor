@@ -277,12 +277,29 @@
             }
 
         }
-        foreach (Product pMin in productsToAddSL)
-        {
-            AddProductToSL(pMin);
-        }
+
+        QuickAddListToSL(productsToAddSL);
+
+        //foreach (Product pMin in productsToAddSL)
+        //{
+        //    AddProductToSL(pMin);
+        //}
 
     }
+
+    public async void QuickAddListToSL(List<Product> ingredientList)
+    {
+        if (!String.IsNullOrEmpty(email))
+        {
+            foreach (Product p in ingredientList)
+            {
+                p._amountleft = 1;
+            }
+
+            await ShopList.QuickaddListToShoppinglist(ingredientList);
+        }
+    }
+
     public void GetProductLists(List<Ingredient> ingredients)
     {
         //List<Product> test = new List<Product>();

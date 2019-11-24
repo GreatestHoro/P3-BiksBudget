@@ -294,12 +294,6 @@
     {
         email = await localStorage.GetItemAsync<string>("Email");
     }
-
-    protected async override Task OnInitializedAsync()
-    {
-        userId = email;
-        responseMessage = await ListFunc.GetStorageOnStart(userId);
-    }
     #endregion
 
     #region Recipe_Display_Methods

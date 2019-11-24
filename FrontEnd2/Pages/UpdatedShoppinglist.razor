@@ -40,7 +40,7 @@ else
                                     <tr>
                                         <td data-th="Product">
                                             <div class="row">
-                                                <div class="col-sm-2 hidden-xs"><img src="@ProductImage(item._image)" class="img-responsive" /></div>
+                                                @*<div class="col-sm-2 hidden-xs"><img src="@ProductImage(item._image)" class="img-responsive" /></div>*@
                                                 <div class="col-sm-10">
                                                     <h4 class="nomargin">@item._productName</h4>
                                                     <p>@item._amount</p>
@@ -59,7 +59,7 @@ else
                                     <td data-th="Subtotal" class="text-center">@ListFunc.FindSubtotal(item) kr</td>
                                     <td class="actions" data-th="">
                                         <button class="btn btn-info btn-sm" @onclick="(() => AddItemToStorage(item))"><i class="oi oi-reload"></i></button>
-                                        <button class="btn btn-danger btn-sm" @onclick="(() => ListFunc.DeleteItem(item._id))"><i class="oi oi-trash"></i></button>
+                                        <button class="btn btn-danger btn-sm" @onclick="(() => DeleteItem(item._id))"><i class="oi oi-trash"></i></button>
                                     </td>
                                 
                             </tr>
@@ -81,7 +81,7 @@ else
                     <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>SaveShoppinglist())">Save shoppinlist</button>
                 </div>
                 <div class="col-sm-4">
-                    <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>ListFunc.DeleteFuncList())">Delete shoppinglist</button>
+                    <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>DeleteShoppinglist())">Delete shoppinglist</button>
                 </div>
             </div>
         </div>
@@ -148,7 +148,7 @@ else
 
             if(email != null)
             {
-            responseMessage = await ListFunc.GetShoppinglistOnStart(email, ToShoppinglist);
+                responseMessage = await ListFunc.GetShoppinglistOnStart(email, ToShoppinglist);
             }
 
             StateHasChanged();
@@ -176,22 +176,29 @@ else
         ListFunc.AddFuncList();
     }
 
+    public void DeleteItem(string id)
+    {
+        ListFunc.CombinedList.Remove(ListFunc.CombinedList.First(x => x._id == id));
+    }
+
     public async void AddToStorage()
     {
-        //await localStorage.RemoveItemAsync("StorageString");
         ListFunc.AddShoppinlistToStorage(dest);
+        ListFunc.CombinedList.Clear();
     }
 
     public async void DeleteShoppinglist()
     {
-
+        ListFunc.CombinedList.Clear();
     }
     #endregion
 
     public async void AddItemToStorage(Product AddedItem)
     {
         ListFunc.AddItemToStorage(AddedItem, dest);
-        await ListFunc.DeleteItem(AddedItem._id);
+
+        DeleteItem(AddedItem._id);
+
     }
 
     public List<Product> removeDublicates(List<Product> shoppingList)
@@ -221,10 +228,10 @@ else
 
         return shoppingList;
     }
-        // Function to get salling products in high resolution
-        private string ProductImage(string prod_image)
-        {
-            return prod_image + "&imgSize=1080x1080";
-        }
+    // Function to get salling products in high resolution
+    private string ProductImage(string prod_image)
+    {
+        return prod_image + "&imgSize=1080x1080";
+    }
 
 }
