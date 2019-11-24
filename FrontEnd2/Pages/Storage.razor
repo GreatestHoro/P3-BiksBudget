@@ -397,18 +397,16 @@
     #region EmptyFridge_Methods
 
 
-    private async Task<List<WeightedRecipies>> FindValidRecipies(List<Product> storageInventory)
+    private async Task<List<WeightedRecipies>> FindValidRecipies()
     {
-        //await Search();
         List<Recipe> ValidRecipies = new List<Recipe>();
         bool breakFlag;
-        List<Product> tester = new List<Product>() { new Product("1", "bacon", "full", 1d, "image", "lidl") };
-        //string id, string productName, string amount, double price, string image, string storeName
+        List<Product> storageInventory = ListFunc.CombinedList;
         foreach (Recipe r in _recpies)
         {
             breakFlag = false;
             //foreach (Product p in storageInventory)
-            foreach (Product p in tester)
+            foreach (Product p in storageInventory)
             {
                 foreach (Ingredient i in r._ingredientList)
                 {
@@ -432,7 +430,6 @@
 
     private List<WeightedRecipies> GenerateWeightedRecepies(List<Recipe> recipes, List<Product> storageInventory)
     {
-        List<Product> tester = new List<Product>() { new Product("1", "bacon", "full", 1d, "image", "lidl") };
         List<WeightedRecipies> returnRecipies = new List<WeightedRecipies>();
         foreach (Recipe r in recipes)
         {
@@ -442,7 +439,7 @@
         foreach (WeightedRecipies w in returnRecipies)
         {
             //foreach (Product p in storageInventory)
-            foreach (Product p in tester)
+            foreach (Product p in storageInventory)
             {
                 foreach (Ingredient i in w._recipie._ingredientList)
                 {
@@ -459,7 +456,20 @@
 
     private bool compareIngrdientAndProduct(Ingredient ingrdient, Product product)
     {
-        return ingrdient._ingredientName.Contains(product._productName);
+        List<String> searchterms = GetRefrencesFromCustomField(product._CustomReferenceField);
+        foreach (string s in searchterms)
+        {
+            if (ingrdient._ingredientName.Contains(s)) 
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private List<string> GetRefrencesFromCustomField(string customfield)
+    {
+        return customfield.Split(",").ToList();
     }
 
     protected async Task Search()
@@ -469,54 +479,13 @@
         printRecipe = await Http.GetStringAsync("https://localhost:44325/api/recipe?recipeTitle=" + " ");
         _recpies = JsonConvert.DeserializeObject<List<Recipe>>(printRecipe);
 
-        compareWR test1 = new compareWR(CompareComplexity);
-        compareWR test2 = new compareWR(CompareMatches);
-
         //recpies = Sort(FindValidRecipies(ListFunc.itemList).Result, test1);
-        recpies = FindValidRecipies(ListFunc.itemList).Result;
+        recpies = FindValidRecipies().Result;
         foreach (WeightedRecipies wr in recpies)
         {
             testvalue = testvalue + wr._recipie._Name + " ? ";
         }
         viewTitle = true;
-    }
-
-    private static bool CompareComplexity(WeightedRecipies r1, WeightedRecipies r2)
-    {
-        return r1.complexity > r2.complexity;
-    }
-
-    private static bool CompareMatches(WeightedRecipies r1, WeightedRecipies r2)
-    {
-        return r1.matchingIngrdientsNum > r2.matchingIngrdientsNum;
-    }
-
-    private static List<WeightedRecipies> Sort(List<WeightedRecipies> recipies, compareWR CompareWR)
-    {
-        WeightedRecipies[] arr = recipies.ToArray();
-
-        int i, j;
-        WeightedRecipies temp;
-        bool swapped;
-        for (i = 0; i < arr.Length - 1; i++)
-        {
-            swapped = false;
-            for (j = 0; j < arr.Length - i - 1; j++)
-            {
-                if (CompareWR(arr[j], arr[j + 1]))
-                {
-                    temp = arr[j];
-                    arr[j] = arr[j + 1];
-                    arr[j + 1] = temp;
-                    swapped = true;
-                }
-            }
-
-            if (swapped == false)
-                break;
-        }
-
-        return arr.ToList();
     }
     #endregion
 }

@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using BBCollection.StoreApi;
 using BBCollection.StoreApi.ApiNeeds;
 using BBCollection.StoreApi.SallingApi;
+using BBCollection.DBHandling;
+using BBCollection.DBConncetion;
 
 
 namespace BBGatherer.Webcrawler
@@ -100,9 +102,12 @@ namespace BBGatherer.Webcrawler
             if (!String.IsNullOrWhiteSpace(name.Trim()))
             {
                 name = CheckForValidIndgredients(name, dbConnect, out fatalError);
-                name = EdgeCaseCleanUp(name);
-                Console.WriteLine("OUTPUT: " + name);
-                fatalError = EvaluateName(name);
+                if (!fatalError) 
+                {
+                    name = EdgeCaseCleanUp(name);
+                    Console.WriteLine("OUTPUT: " + name);
+                    fatalError = EvaluateName(name);
+                }
             }
             else 
             {
@@ -117,6 +122,7 @@ namespace BBGatherer.Webcrawler
         {
             fatalError = false;
             List<String> Combinations = GetAllCombinations(name,dbConnect);
+            Combinations = removeInvalidRefrenceName(Combinations);
 
             List<string> matches = CheckIngredientInDatabase(Combinations,dbConnect);
             if (matches.Count == 0) 
@@ -125,17 +131,27 @@ namespace BBGatherer.Webcrawler
                 {
                     if (CheckIngredientsInApi(Searchterm, dbConnect)) 
                     {
-                        matches.Add(Searchterm);
+                        matches = (CheckIngredientInDatabase(Combinations, dbConnect));
                     }
                 }
             }
             //lav en metode til at gemme det afviste svar
-            if (Combinations.Count() == 0)
+            if (matches.Count() == 0 && !fatalError)
             {
                 fatalError = true;
             }
 
             return Combinations[Combinations.Count - 1];
+        }
+
+        private List<String> removeInvalidRefrenceName(List<string> combinations) 
+        {
+            List<string> remove = new List<string>() { "til", "el", "af" };
+            foreach (string s in remove) 
+            {
+                combinations.Remove(s);
+            }
+            return combinations;
         }
         private List<String> GetAllCombinations(string name, DatabaseConnect dbConnect) 
         {
@@ -206,9 +222,33 @@ namespace BBGatherer.Webcrawler
 
         private bool CheckCOOPProductsInDatabase(String Searchterm, DatabaseConnect dbConnect) 
         {
+            string newRefrence;
+            ProductHandling productHandling = new ProductHandling();
             List<Product> Products = dbConnect.GetProducts(Searchterm);
-
+            foreach (Product p in Products) 
+            {
+                newRefrence = UpdateProductRefrence(p._CustomReferenceField, Searchterm);
+                productHandling.InsertIngredientReferenceFromId(newRefrence,p._id, new DatabaseInformation("localhost", "biksbudgetDB", "root", "BiksBudget123"));
+            }
             return Products.Count != 0 ? true : false;
+        }
+
+        private string UpdateProductRefrence(string CurrentRefrence, string searchterm) 
+        {
+            if (CurrentRefrence != null)
+            {
+                if (!CurrentRefrence.Contains(","+searchterm))
+                {
+                    
+                    CurrentRefrence += "," + searchterm;
+                }
+                return CurrentRefrence;
+            }
+            else 
+            {
+                return searchterm;
+            }
+
         }
 
         private bool CheckIngredientsInApi(string Searchterm, DatabaseConnect dbConnect) 
