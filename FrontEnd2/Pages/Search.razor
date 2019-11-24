@@ -26,6 +26,27 @@
         <div class="p-2">
             <div class="btn-group show-on-hover">
                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                    <h5>Sort By</h5>
+                    <span clasusergeolos="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    @foreach (Options item in optionsList)
+                    {
+                        if (item.isEnabled)
+                        {
+                            <li><button style="color:green" class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(() => ChangeState(item.filterName, optionsList))">@item.filterName</button></li>
+                        }
+                        else
+                        {
+                            <li><button style="color:red" class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(() => ChangeState(item.filterName, optionsList))">@item.filterName</button></li>
+                        }
+                    }
+                </ul>
+            </div>
+        </div>
+        <div class="p-2">
+            <div class="btn-group show-on-hover">
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
                     <h5>Select Stores </h5>
                     <span clasusergeolos="caret"></span>
                 </button>
@@ -69,6 +90,14 @@
             <h5>Distance @(radius / 1000) Km</h5>
             <input type="range" min="0" max="5000" @bind="radius" step="1000" />
         </div>
+        <div class="p-2">
+            <label for="minPriceB">Minimum Price</label>
+            <input type="number" class="form-control" placeholder="Min Price" @bind="minPrice" />
+        </div>
+        <div class="p-2">
+            <label for="maxPriceB">Maximum Price</label>
+            <input type="number" class="form-control" placeholder="Max Price" @bind="maxPrice" />
+        </div>
     </div>
 }
 
@@ -78,6 +107,8 @@
     <div class="row top-margin">
         @foreach (Product p in itemList)
         {
+            if (p._price > minPrice && p._price < maxPrice)
+            {
             <div class="col-12 col-sm-8 col-md-6 col-lg-4 top-margin">
                 <div class="card w-100 h-100">
                     <div class="card-header h-50 bg-white mx-auto text-center">
@@ -108,6 +139,7 @@
                     </div>
                 </div>
             </div>
+            }
         }
     </div>
 </div>
@@ -117,71 +149,75 @@ else
     <p>@messageToUser</p>
 }
 @code {
-        static TaskCompletionSource<GeoCoordinate> tcsUserLocation = new TaskCompletionSource<GeoCoordinate>();
-        static GeoCoordinate userGeoLocation = new GeoCoordinate(0, 0);
-        StoreFilterList storeFilters = new StoreFilterList();
-        WordFilterList wordFIlters = new WordFilterList();
-        FindCloseStores closeStore;
-        ShoppinlistFunctionality SLFunc = new ShoppinlistFunctionality("api/Shoppinglist");
+    static TaskCompletionSource<GeoCoordinate> tcsUserLocation = new TaskCompletionSource<GeoCoordinate>();
+    static GeoCoordinate userGeoLocation = new GeoCoordinate(0, 0);
 
-        List<FilterItem> storeList = new List<FilterItem>();
-        List<FilterItem> wordList = new List<FilterItem>();
-        List<UnifiedAPIStore> allStoresUnified = new List<UnifiedAPIStore>();
-        List<Product> itemList = new List<Product>();
-        List<Product> ToShoppinglist = new List<Product>();
+    SortoptionsList sortOptions = new SortoptionsList();
+    StoreFilterList storeFilters = new StoreFilterList();
+    WordFilterList wordFIlters = new WordFilterList();
+    FindCloseStores closeStore;
+    ShoppinlistFunctionality SLFunc = new ShoppinlistFunctionality("api/Shoppinglist");
 
-        bool[] EnabledStores;
-        bool[] EnabledKeywords;
+    List<FilterItem> storeList = new List<FilterItem>();
+    List<FilterItem> wordList = new List<FilterItem>();
+    List<UnifiedAPIStore> allStoresUnified = new List<UnifiedAPIStore>();
+    List<Product> itemList = new List<Product>();
+    List<Product> ToShoppinglist = new List<Product>();
+    List<Options> optionsList = new List<Options>();
 
-        Product[] slArray = new Product[10];
-        string shopString;
 
-        bool viewAdvancedSearch = false;
-        bool storeBoolSetTo = true;
-        bool wordBoolSetTo = true;
-        bool _viewProducts = false;
-        bool IsLocationEnabled = false;
-        bool FatalFalure = false;
+    bool[] EnabledStores;
+    bool[] EnabledKeywords;
 
-        int value = 1;
-        int radius = 1000;
-        int amountAddedToSL = 1;
-        double _minPrice = 0;
-        double _maxPrice = 5000;
-        double priceLimit = 10000;
+    Product[] slArray = new Product[10];
+    string shopString;
 
-        protected void IncrementAmount(string id)
+    bool viewAdvancedSearch = false;
+    bool storeBoolSetTo = true;
+    bool wordBoolSetTo = true;
+    bool _viewProducts = false;
+    bool IsLocationEnabled = false;
+    bool FatalFalure = false;
+
+    int value = 1;
+    int radius = 1000;
+    int amountAddedToSL = 1;
+    double _minPrice = 0;
+    double _maxPrice = 5000;
+    double priceLimit = 10000;
+
+    protected void IncrementAmount(string id)
+    {
+        foreach (var item in itemList)
         {
-            foreach (var item in itemList)
+            if (item._id == id && item._amountleft != 0)
             {
-                if (item._id == id && item._amountleft != 0)
-                {
-                    item._amountleft++;
-                    value++;
-                }
+                item._amountleft++;
+                value++;
             }
         }
+    }
 
-        protected void DecrementAmount(string id)
+    protected void DecrementAmount(string id)
+    {
+        foreach (var item in itemList)
         {
-            foreach (var item in itemList)
-            {
 
-                if (item._id == id && item._amountleft > 1)
-                {
-                    item._amountleft--;
-                    value--;
-                }
+            if (item._id == id && item._amountleft > 1)
+            {
+                item._amountleft--;
+                value--;
             }
         }
+    }
 
 
 
 
-        void toggleAdvancedCheckBox()
-        {
-            viewAdvancedSearch = !viewAdvancedSearch;
-        }
+    void toggleAdvancedCheckBox()
+    {
+        viewAdvancedSearch = !viewAdvancedSearch;
+    }
 
     public double minPrice
     {
@@ -246,6 +282,79 @@ else
 
     }
 
+    public void ChangeState(string name, List<Options> optionList)
+    {
+        foreach (Options o in optionList)
+        {
+            if (o.filterName == name)
+            {
+                o.isEnabled = true;
+
+                DecideOrderFilter(o.filterName);
+            }
+            else
+            {
+                o.isEnabled = false;
+            }
+        }
+
+    }
+
+    public void DecideOrderFilter(string filterName)
+    {
+        switch (filterName)
+        {
+            case "Price (Low to High)":
+                SortByPriceLH();
+                break;
+            case "Price (High to Low)":
+                SortBypriceHL();
+                break;
+            case "Alphabetical order (A - Z)":
+                SortByNameAZ();
+                break;
+            case "Alphabetical order (Z - A)":
+                SortByNameZA();
+                break;
+            case "Store (A - Z)":
+                SortByStoreAZ();
+                break;
+            case "Store (Z - A":
+                SortByStoreZA();
+                break;
+        }
+    }
+
+    public void SortByPriceLH()
+    {
+        itemList.Sort((a, b) =>  a._price.CompareTo(b._price));
+    }
+
+    public void SortBypriceHL()
+    {
+        itemList.Sort((a, b) =>  b._price.CompareTo(a._price));
+    }
+
+    public void SortByStoreAZ()
+    {
+        itemList.Sort((a, b) =>  a._storeName.CompareTo(b._storeName));
+    }
+
+    public void SortByStoreZA()
+    {
+        itemList.Sort((a, b) =>  b._storeName.CompareTo(a._storeName));
+    }
+
+    public void SortByNameAZ()
+    {
+        itemList.Sort((a, b) =>  a._productName.CompareTo(b._productName));
+    }
+
+    public void SortByNameZA()
+    {
+        itemList.Sort((a, b) =>  b._productName.CompareTo(a._productName));
+    }
+
     void toggle()
     {
         IsLocationEnabled = !IsLocationEnabled;
@@ -298,8 +407,7 @@ else
 
         if (!String.IsNullOrEmpty(searchBox) && !String.IsNullOrWhiteSpace(searchBox))
         {
-
-
+            
             updateFilters();
 
             ProductSearchLinkConstructer link = new ProductSearchLinkConstructer(searchBox, ConvertBoolArrToStr(EnabledKeywords), ConvertBoolArrToStr(EnabledStores));
@@ -307,6 +415,8 @@ else
             productString = await Http.GetStringAsync(link.GetURL());
 
             itemList = JsonConvert.DeserializeObject<List<Product>>(productString);
+
+            DecideOrderFilter(FindActiveSortFilter());
 
             if (itemList.Count != 0)
             {
@@ -318,6 +428,19 @@ else
             messageToUser = "You Need To Write A Searhcword";
         }
     }
+
+    public string FindActiveSortFilter()
+    {
+        foreach (Options o in optionsList)
+        {
+            if (o.isEnabled)
+            {
+                return o.filterName;
+            }
+        }
+        return "Price (Low to High)";
+    }
+
     public void updateFilters()
     {
         if (IsLocationEnabled)
@@ -382,6 +505,8 @@ else
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        optionsList = sortOptions.GetList();
+
         if (firstRender)
         {
             await GetLocalSession();
