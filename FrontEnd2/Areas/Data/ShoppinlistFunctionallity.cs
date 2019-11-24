@@ -135,7 +135,48 @@ namespace FrontEnd2.Data
                 CombinedList = LocalItemList;
             }
 
+            CombinedList = HandleDublicats(CombinedList);
+
             return new HttpResponseMessage(HttpStatusCode.OK);
+        }
+
+        public List<Product> HandleDublicats(List<Product> inputList)
+        {
+            bool isFound = false;
+            List<Product> uniqueList = new List<Product>();
+            List<Product> dublicateList = new List<Product>();
+
+            foreach (Product i in inputList)
+            {
+                isFound = false;
+                foreach (Product u in uniqueList)
+                {
+                    if (i._id == u._id)
+                    {
+                        dublicateList.Add(i);
+                        isFound = true;
+                        break;
+                    }
+                }
+                if (isFound == false)
+                {
+                    uniqueList.Add(i);
+                }
+            }
+
+            foreach (Product d in dublicateList)
+            {
+                foreach (Product i in uniqueList)
+                {
+                    if (d._id == i._id)
+                    {
+                        i._amountleft += d._amountleft;
+                        break;
+                    }
+                }
+            }
+
+            return uniqueList;
         }
 
         public async Task<HttpResponseMessage> QuickaddListToShoppinglist(List<Product> sentList)
