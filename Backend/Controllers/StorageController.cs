@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using BBCollection;
 using BBCollection.BBObjects;
+using BBCollection.DBHandling;
 
 namespace Backend.Controllers
 {
@@ -17,9 +18,7 @@ namespace Backend.Controllers
     {
         DatabaseConnect dbConnect = new DatabaseConnect("localhost", "biksbudgetDB", "root", "BiksBudget123");
         List<Product> resultList = new List<Product>();
-        List<Product> oldLists = new List<Product>();
-        Product AddedProduct = new Product();
-        int i = 0;
+        ControllerFuncionality functionality = new ControllerFuncionality();
         string Email;
 
         // GET: api/Storage
@@ -40,64 +39,41 @@ namespace Backend.Controllers
         }
 
         // POST: api/Storage
-        [HttpPost]
+        [HttpPost("{value}")]
         public void Post(string value)
         {
-            Find find = new Find();
             string buffer;
             List<Product> newItem = new List<Product>();
-            int pNum;
+            List<Product> Fromdb = new List<Product>();
 
             HttpRequest request = HttpContext.Request;
             Microsoft.AspNetCore.Http.HttpRequestRewindExtensions.EnableBuffering(request);
+
+            Email = value;
 
             using (var sr = new StreamReader(request.Body))
             {
                 buffer = sr.ReadToEnd();
             }
 
-            int indexNumber = buffer.IndexOf("|");
-            int number = Convert.ToInt32(buffer.Substring(0, indexNumber));
-            if (number >= 10)
+            if (buffer.Substring(0, 1) != "[")
             {
-                pNum = 2;
+                buffer = "[" + buffer + "]";
+            }
+
+            newItem = JsonConvert.DeserializeObject<List<Product>>(buffer);
+
+            if (newItem.Count == 0)
+            {
+                dbConnect.UpdateStorage(Email, newItem);
             }
             else
             {
-                 pNum = 1;
+                Fromdb = dbConnect.GetStorageFromUsername(Email);
+                newItem = newItem.Concat(Fromdb).ToList();
+                newItem = functionality.HandleDublicats(newItem);
+                dbConnect.UpdateStorage(Email, newItem);
             }
-
-            Email = buffer.Substring(indexNumber.ToString().Length + pNum, number);
-            buffer = buffer.Remove(0, indexNumber.ToString().Length + number + pNum);
-
-            if (buffer.Contains("PLS_DELETE"))
-            {
-                //Delete the entire list
-                dbConnect.RemoveFromStorage(Email, newItem);
-            }
-            else
-            {
-                List<Product> ListFromDatabase = new List<Product>();
-                if (buffer.Substring(0, 1) != "[")
-                {
-                    //buffer = "[" + buffer + "]";
-                    AddedProduct = JsonConvert.DeserializeObject<Product>(buffer);
-                    newItem.Add(AddedProduct);
-                }
-                else
-                {
-                    newItem = JsonConvert.DeserializeObject<List<Product>>(buffer);
-                    dbConnect.DeleteShoppingListFromName("Shoppinglist", Email);
-                }
-
-                ListFromDatabase = dbConnect.GetStorageFromUsername(Email);
-
-                foreach (Product p in newItem)
-                {
-                    ListFromDatabase = find.FindDublicats(ListFromDatabase, p);
-                }
-                dbConnect.UpdateStorage(Email, ListFromDatabase);
-            } 
         }
 
 
@@ -109,7 +85,8 @@ namespace Backend.Controllers
             string buffer;
             Product newItem = new Product();
             List<Product> storageList = new List<Product>();
-            int pNum;
+
+            Email = id;
 
             HttpRequest request = HttpContext.Request;
             Microsoft.AspNetCore.Http.HttpRequestRewindExtensions.EnableBuffering(request);
@@ -119,66 +96,39 @@ namespace Backend.Controllers
                 buffer = sr.ReadToEnd();
             }
 
-            int indexNumber = buffer.IndexOf("|");
-            int number = Convert.ToInt32(buffer.Substring(0, indexNumber));
-            if (number >= 10)
-            {
-                pNum = 2;
-            }
-            else
-            {
-                pNum = 1;
-            }
-
-            Email = buffer.Substring(indexNumber.ToString().Length + pNum, number);
-            buffer = buffer.Remove(0, indexNumber.ToString().Length + number + pNum);
-
             storageList = dbConnect.GetStorageFromUsername(Email);
             newItem = JsonConvert.DeserializeObject<Product>(buffer);
 
-            foreach (Product p in storageList)
+            if (newItem._amountleft != 0)
             {
-                if (p._id == newItem._id)
+                foreach (Product p in storageList)
                 {
-                    p._state = newItem._state;
-                    break;
+                    if (p._id == newItem._id)
+                    {
+                        p._state = newItem._state;
+                        p._amountleft = newItem._amountleft;
+                        break;
+                    }
                 }
+            }
+            else
+            {
+                newItem._amountleft = 1;
+                int i = functionality.FindIdex(storageList, newItem);
+                storageList.RemoveAt(i);
             }
 
             dbConnect.UpdateStorage(Email, storageList);
         }
+
+
 
         // DELETE: api/ApiWithActions/5
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
         }
-
-        
-    }
-
-    class Find
-    {
-        public List<Product> FindDublicats(List<Product> ReturnList, Product FromFrontendProduct)
-        {
-            bool isFound = false;
-
-            foreach (Product p in ReturnList)
-            {
-                if (p._id == FromFrontendProduct._id)
-                {
-                    p._amountleft += FromFrontendProduct._amountleft;
-                    isFound = true;
-                    break;
-                }
-            }
-
-            if (!isFound)
-            {
-                ReturnList.Add(FromFrontendProduct);
-            }
-
-            return ReturnList;
-        }
     }
 }
+
+

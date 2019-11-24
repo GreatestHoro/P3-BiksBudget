@@ -55,7 +55,7 @@
                                         <ul class="dropdown-menu" role="menu">
                                             @foreach (var State in ItemState)
                                             {
-                                                <li><button class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(() => ChangeState(items._id, State))">@State</button></li>
+                                                <li><button class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(() => ChangeItemState(items, State))">@State</button></li>
                                             }
                                         </ul>
                                     </div>
@@ -63,7 +63,7 @@
                                 <td data-th="Date added">@items._timeAdded</td>
                                 <td data-th="Delete">
                                     <div>
-                                        <button class="btn btn-danger btn-sm" @onclick="(() => DeleteProduct(items._id))"><i class="oi oi-trash"></i></button>
+                                        <button class="btn btn-danger btn-sm" @onclick="(() => ChangeItemAmout(items))"><i class="oi oi-trash"></i></button>
                                     </div>
                                 </td>
                             </tr>
@@ -209,28 +209,33 @@
     #region Storage_Methods
     //Storage functionalities
 
-    protected async void ChangeState(string id, string state)
+    public async void ChangeItemState(Product item, string state)
     {
-        //ListFunc.ChangeItem();
+        int index = FindIdex(item);
+        item._state = state;
 
-        //ListFunc.itemList[ListFunc.itemList.Find(x => x.Id.Equals(id))].State = state;
-        //AddedProduct ChangedItem = new AddedProduct();
+        await ListFunc.ChangeItem(ListFunc.CombinedList[index]);
+    }
 
-        foreach (var item in ListFunc.CombinedList)
+    public int FindIdex(Product item)
+    {
+        return ListFunc.CombinedList.FindIndex(ind => ind.Equals(item));
+    }
+
+    public async void ChangeItemAmout(Product item)
+    {
+        int index = FindIdex(item);
+        int left = ListFunc.CombinedList[index]._amountleft;
+        
+        if (left == 1)
         {
-            if (item._id == id)
-            {
-                item._state = state;
-
-                productString = JsonConvert.SerializeObject(item);
-
-                await ListFunc.ChangeItem(productString);
-
-                break;
-            }
+            ListFunc.CombinedList.RemoveAt(index);
+        
         }
+        item._amountleft--;
 
-        //ListFunc.SaveStorage();
+        await ListFunc.ChangeItem(item);
+        
     }
 
     private async void AddProduct()
@@ -254,29 +259,6 @@
         }
 
     }
-
-    private async void DeleteProduct(string id)
-    {
-        bool isFound = false;
-        foreach (var item in ListFunc.CombinedList)
-        {
-            if (item._id == id && item._amountleft != 1)
-            {
-                item._amountleft--;
-
-                isFound = true;
-
-                break;
-            }
-        }
-
-        if (isFound == false)
-        {
-            await ListFunc.DeleteItem(id);
-        }
-
-        ListFunc.SaveStorage();
-    }
     #endregion
 
     #region OnInit_async_Method
@@ -299,7 +281,7 @@
             userId = email;
             if(email != null)
             {
-            responseMessage = await ListFunc.GetStorageOnStart(email);
+                responseMessage = await ListFunc.GetStorageOnStart(email);
             }
 
 
@@ -311,12 +293,6 @@
     async Task GetLocalSession()
     {
         email = await localStorage.GetItemAsync<string>("Email");
-    }
-
-    protected async override Task OnInitializedAsync()
-    {
-        userId = email;
-        responseMessage = await ListFunc.GetStorageOnStart(userId);
     }
     #endregion
 

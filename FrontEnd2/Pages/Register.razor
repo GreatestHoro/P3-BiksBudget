@@ -12,12 +12,16 @@
 
 @if (email == null)
 {
-    <input placeholder="Username" @bind="@tempEmail" />
-    <input type="password" placeholder="Password" @bind="@password" />
-    <input type="password" placeholder="Repeast" @bind="@repPassword" />
-    <button @onclick="CheckInputs">ch</button>
-    <label >@verificationText</label>
-} else { 
+    //sæt dem under hinanden
+    <h1>Register</h1>
+    <input class="SearchField SearchBar" placeholder="Username" @bind="@tempEmail" />
+    <input class="SearchField SearchBar" type="password" placeholder="Password" @bind="@password" />
+    <input class="SearchField SearchBar" type="password" placeholder="Repeat" @bind="@repPassword" />
+    <button class="btn btn-rounded btn-outline-success" @onclick="CheckInputs">Register</button>
+    <label>@verificationText</label>
+}
+else
+{
 }
 
 @code {
@@ -56,7 +60,7 @@
             verificationText = passwordCheck.Item2;
         }
 
-        if(usernameCheck.Item1 && passwordCheck.Item1)
+        if (usernameCheck.Item1 && passwordCheck.Item1)
         {
             RegisterUser(tempEmail);
         }
