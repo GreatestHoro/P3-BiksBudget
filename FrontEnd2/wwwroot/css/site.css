@@ -23,13 +23,6 @@ h1 {
     opacity: 0.5;
 }
 
-.tooltip {
-    display: inline-block;
-    position: relative;
-    border-bottom: 1px dotted #666;
-    text-align: left;
-}
-
 #search{
     border: 0 1px 0 0; 
 }

@@ -304,6 +304,9 @@ else
     {
         switch (filterName)
         {
+            case "Most relevant":
+                SortByMostRelevant();
+                break;
             case "Price (Low to High)":
                 SortByPriceLH();
                 break;
@@ -322,7 +325,13 @@ else
             case "Store (Z - A":
                 SortByStoreZA();
                 break;
+
         }
+    }
+
+    public async void SortByMostRelevant()
+    {
+        await SearchForProducts();
     }
 
     public void SortByPriceLH()
@@ -407,16 +416,20 @@ else
 
         if (!String.IsNullOrEmpty(searchBox) && !String.IsNullOrWhiteSpace(searchBox))
         {
-            
+            itemList.Clear();
+
             updateFilters();
 
             ProductSearchLinkConstructer link = new ProductSearchLinkConstructer(searchBox, ConvertBoolArrToStr(EnabledKeywords), ConvertBoolArrToStr(EnabledStores));
 
             productString = await Http.GetStringAsync(link.GetURL());
 
-            itemList = JsonConvert.DeserializeObject<List<Product>>(productString);
+            if (!(FindActiveSortFilter() == "Most relevant"))
+            {
+                DecideOrderFilter(FindActiveSortFilter());
+            }
 
-            DecideOrderFilter(FindActiveSortFilter());
+            itemList = JsonConvert.DeserializeObject<List<Product>>(productString);
 
             if (itemList.Count != 0)
             {
