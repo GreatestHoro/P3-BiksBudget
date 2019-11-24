@@ -8,7 +8,8 @@ namespace BBCollection.BBObjects
     {
         public List<Options> optionsList = new List<Options>()
         {
-            new Options("Price (Low to High)", true),
+            new Options("Most relevant", true),
+            new Options("Price (Low to High)", false),
             new Options("Price (High to Low)", false),
             new Options("Alphabetical order (A - Z)", false),
             new Options("Alphabetical order (Z - A)", false),

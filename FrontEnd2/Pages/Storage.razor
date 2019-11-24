@@ -60,10 +60,15 @@
                                 <td data-th="Date added">@items._timeAdded</td>
                                 <td data-th="Delete">
                                     <div>
-                                        <button class="btn btn-danger btn-sm" @onclick="(() => ChangeItemAmout(items))"><i class="oi oi-trash"></i></button>
+                                        <button class="btn btn-danger btn-sm" title="Delete one @items._productName from storage" @onclick="(() => ChangeItemAmout(items))"><i class="oi oi-trash"></i></button>
                                         @if (items._amountleft > 1)
                                         {
-                                            <button class="btn btn-danger btn-sm" @onclick="(() => DeleteItem(items))"><i class="oi oi-trash"></i>(All)</button>
+                                            <button class="btn btn-danger btn-sm" title="Delete all @items._amountleft @items._productName from storage" @onclick="(() => DeleteItem(items))"><i class="oi oi-trash"></i>(All)</button>
+                                        }
+                                        else
+                                        {
+                                            <button disabled class="btn btn-danger btn-sm invisibleBtn" ><i class="oi oi-trash"></i>(All)</button>
+
                                         }
                                     </div>
                                 </td>
