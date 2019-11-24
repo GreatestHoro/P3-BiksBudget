@@ -149,91 +149,90 @@ else
 {
     <p>@messageToUser</p>
 }
-@code {
-    #region fields
+
+@code{
+        #region fields
+        static TaskCompletionSource<GeoCoordinate> tcsUserLocation = new TaskCompletionSource<GeoCoordinate>();
+        static GeoCoordinate userGeoLocation = new GeoCoordinate(0, 0);
+
+        SortoptionsList sortOptions = new SortoptionsList();
+        StoreFilterList storeFilters = new StoreFilterList();
+        WordFilterList wordFIlters = new WordFilterList();
+        FindCloseStores closeStore;
+        ShoppinlistFunctionality SLFunc = new ShoppinlistFunctionality("api/Shoppinglist");
+
+        List<FilterItem> storeList = new List<FilterItem>();
+        List<FilterItem> wordList = new List<FilterItem>();
+        List<UnifiedAPIStore> allStoresUnified = new List<UnifiedAPIStore>();
+        List<Product> itemList = new List<Product>();
+        List<Product> ToShoppinglist = new List<Product>();
+        List<Options> optionsList = new List<Options>();
 
 
-    static TaskCompletionSource<GeoCoordinate> tcsUserLocation = new TaskCompletionSource<GeoCoordinate>();
-    static GeoCoordinate userGeoLocation = new GeoCoordinate(0, 0);
+        bool[] EnabledStores;
+        bool[] EnabledKeywords;
 
-    SortoptionsList sortOptions = new SortoptionsList();
-    StoreFilterList storeFilters = new StoreFilterList();
-    WordFilterList wordFIlters = new WordFilterList();
-    FindCloseStores closeStore;
-    ShoppinlistFunctionality SLFunc = new ShoppinlistFunctionality("api/Shoppinglist");
+        Product[] slArray = new Product[10];
+        string shopString;
 
-    List<FilterItem> storeList = new List<FilterItem>();
-    List<FilterItem> wordList = new List<FilterItem>();
-    List<UnifiedAPIStore> allStoresUnified = new List<UnifiedAPIStore>();
-    List<Product> itemList = new List<Product>();
-    List<Product> ToShoppinglist = new List<Product>();
-    List<Options> optionsList = new List<Options>();
+        bool viewAdvancedSearch = false;
+        bool storeBoolSetTo = true;
+        bool wordBoolSetTo = true;
+        bool _viewProducts = false;
+        bool IsLocationEnabled = false;
+        bool FatalFalure = false;
 
+        int value = 1;
+        int radius = 1000;
+        int amountAddedToSL = 1;
 
-    bool[] EnabledStores;
-    bool[] EnabledKeywords;
+        double _minPrice = 0;
+        double _maxPrice = 5000;
+        double priceLimit = 10000;
 
-    Product[] slArray = new Product[10];
-    string shopString;
+        string searchBox;
+        string email;
+        string messageToUser = "Apply filters and press search to find products";
+        string productString;
+        #endregion
 
-    bool viewAdvancedSearch = false;
-    bool storeBoolSetTo = true;
-    bool wordBoolSetTo = true;
-    bool _viewProducts = false;
-    bool IsLocationEnabled = false;
-    bool FatalFalure = false;
-
-    int value = 1;
-    int radius = 1000;
-    int amountAddedToSL = 1;
-
-    double _minPrice = 0;
-    double _maxPrice = 5000;
-    double priceLimit = 10000;
-
-    string searchBox;
-    string email;
-    string messageToUser = "Apply filters and press search to find products";
-    string productString;
-    #endregion
-
-    #region Page_Methods
-    // Function to get salling products in high resolution
-    private string ProductImage(string prod_image)
-    {
-        return prod_image + "&imgSize=1080x1080";
-    }
-
-
-    protected void IncrementAmount(string id)
-    {
-        foreach (var item in itemList)
+        #region Page_Methods
+        // Function to get salling products in high resolution
+        private string ProductImage(string prod_image)
         {
-            if (item._id == id && item._amountleft != 0)
+            return prod_image + "&imgSize=1080x1080";
+        }
+
+
+        protected void IncrementAmount(string id)
+        {
+            foreach (var item in itemList)
             {
-                item._amountleft++;
-                value++;
+                if (item._id == id && item._amountleft != 0)
+                {
+                    item._amountleft++;
+                    value++;
+                }
             }
         }
-    }
 
-    protected void DecrementAmount(string id)
-    {
-        foreach (var item in itemList)
+        protected void DecrementAmount(string id)
         {
-
-            if (item._id == id && item._amountleft > 1)
+            foreach (var item in itemList)
             {
-                item._amountleft--;
-                value--;
+
+                if (item._id == id && item._amountleft > 1)
+                {
+                    item._amountleft--;
+                    value--;
+                }
             }
         }
-    }
 
-    void toggleAdvancedCheckBox()
-    {
-        viewAdvancedSearch = !viewAdvancedSearch;
-    }
+        void toggleAdvancedCheckBox()
+        {
+            viewAdvancedSearch = !viewAdvancedSearch;
+        }
 
     public double minPrice
     {
@@ -419,30 +418,30 @@ else
     }
 
     public List<Product> HandleDublicats(List<Product> inputList)
-        {
-            bool isFound = false;
-            List<Product> uniqueList = new List<Product>();
-            List<Product> dublicateList = new List<Product>();
+    {
+        bool isFound = false;
+        List<Product> uniqueList = new List<Product>();
+        List<Product> dublicateList = new List<Product>();
 
-            foreach (Product i in inputList)
+        foreach (Product i in inputList)
+        {
+            isFound = false;
+            foreach (Product u in uniqueList)
             {
-                isFound = false;
-                foreach (Product u in uniqueList)
+                if (i._id == u._id)
                 {
-                    if (i._id == u._id)
-                    {
-                        dublicateList.Add(i);
-                        isFound = true;
-                        break;
-                    }
-                }
-                if (isFound == false)
-                {
-                    uniqueList.Add(i);
+                    dublicateList.Add(i);
+                    isFound = true;
+                    break;
                 }
             }
-            return uniqueList;
+            if (isFound == false)
+            {
+                uniqueList.Add(i);
+            }
         }
+        return uniqueList;
+    }
 
     private async Task KeyPressed(KeyboardEventArgs e)
     {
@@ -521,12 +520,10 @@ else
             ToShoppinglist = JsonConvert.DeserializeObject<List<Product>>(shopString);
         }
     }
-
-
     #endregion
 
-    #region Filter_Methods
 
+    #region Filter_Methods
     public string FindActiveSortFilter()
     {
         foreach (Options o in optionsList)
@@ -600,29 +597,6 @@ else
         }
         return arr;
     }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        optionsList = sortOptions.GetList();
-
-        if (firstRender)
-        {
-            await GetLocalSession();
-            localStorage.Changed += (sender, e) =>
-            {
-                Console.WriteLine($"Value for key {e.Key} changed from {e.OldValue} to {e.NewValue}");
-            };
-
-            storeList = storeFilters.GetStoreList();
-            wordList = wordFIlters.GetStoreList();
-            InitializeBoolArrays(storeList.Count, wordList.Count);
-            if (email != null)
-            {
-                //await SLFunc.GetShoppinglistOnStart(email, ToShoppinglist);
-            }
-
-            this.StateHasChanged();
-        }
 
     public void InitializeBoolArrays(int stores, int words)
     {
