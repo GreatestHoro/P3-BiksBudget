@@ -75,10 +75,17 @@ else
             </div>
             <div class="row">
                 <div class="col-sm-4">
-                    <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>AddToStorage())">Add to strorage</button>
+                    <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>AddListToStorage())">Add to strorage</button>
                 </div>
                 <div class="col-sm-4">
-                    <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>SaveShoppinglist())">Save shoppinlist</button>
+                    @if (remindToSave)
+                    {
+                        <button class="btn btn-block btn-danger recipeDivDisplay rounded-0" @onclick="(() =>SaveShoppinglist())">Save shoppinlist</button>
+                    }
+                    else
+                    {
+                        <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>SaveShoppinglist())">Save shoppinlist</button>
+                    }
                 </div>
                 <div class="col-sm-4">
                     <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>DeleteShoppinglist())">Delete shoppinglist</button>
@@ -96,6 +103,7 @@ else
     List<Product> ToStorageList = new List<Product>();
 
     bool test = false;
+    bool remindToSave = false;
 
     int value = 1;
     int amount;
@@ -111,6 +119,7 @@ else
     #region Increment/Decrement
     protected void IncrementAmount(string id)
     {
+        remindToSave = true;
         foreach (var item in ListFunc.CombinedList)
         {
             if (item._id == id && item._amountleft != 0)
@@ -123,6 +132,7 @@ else
 
     protected void DecrementAmount(string id)
     {
+        remindToSave = true;
         foreach (var item in ListFunc.CombinedList)
         {
 
@@ -171,6 +181,8 @@ else
     #region Save/add/delete list button
     public async void SaveShoppinglist()
     {
+        remindToSave = false;
+
         await localStorage.RemoveItemAsync("ProductString");
 
         ListFunc.AddFuncList();
@@ -178,23 +190,27 @@ else
 
     public void DeleteItem(string id)
     {
+        remindToSave = true;
         ListFunc.CombinedList.Remove(ListFunc.CombinedList.First(x => x._id == id));
     }
 
-    public async void AddToStorage()
+    public async void AddListToStorage()
     {
+        remindToSave = true;
         ListFunc.AddShoppinlistToStorage(dest);
         ListFunc.CombinedList.Clear();
     }
 
     public async void DeleteShoppinglist()
     {
+        remindToSave = true;
         ListFunc.CombinedList.Clear();
     }
     #endregion
 
     public async void AddItemToStorage(Product AddedItem)
     {
+        remindToSave = true;
         ListFunc.AddItemToStorage(AddedItem, dest);
 
         DeleteItem(AddedItem._id);
