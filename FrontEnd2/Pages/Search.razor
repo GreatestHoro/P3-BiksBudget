@@ -385,22 +385,48 @@ else
 
     public async void AddProductToSL(Product AddedItem)
     {
+        AddedItem._amountleft++;
 
-        AddedItem._amountleft += 1;
+        int actualAmout = AddedItem._amountleft;
 
         ToShoppinglist.Add(AddedItem);
 
-        value = AddedItem._amountleft;
+        ToShoppinglist = HandleDublicats(ToShoppinglist);
 
-        AddedItem._amountleft = 1;
-
-        //await localStorage.RemoveItemAsync("Shoppinglist");
+        await localStorage.RemoveItemAsync("Shoppinglist");
 
         shopString = JsonConvert.SerializeObject(ToShoppinglist);
 
         await localStorage.SetItemAsync("ProductString", shopString);
+
         //await localStorage.SetItemAsync("Shoppinglist", ToShoppinglist);
     }
+
+    public List<Product> HandleDublicats(List<Product> inputList)
+        {
+            bool isFound = false;
+            List<Product> uniqueList = new List<Product>();
+            List<Product> dublicateList = new List<Product>();
+
+            foreach (Product i in inputList)
+            {
+                isFound = false;
+                foreach (Product u in uniqueList)
+                {
+                    if (i._id == u._id)
+                    {
+                        dublicateList.Add(i);
+                        isFound = true;
+                        break;
+                    }
+                }
+                if (isFound == false)
+                {
+                    uniqueList.Add(i);
+                }
+            }
+            return uniqueList;
+        }
 
     private async Task KeyPressed(KeyboardEventArgs e)
     {
@@ -533,7 +559,7 @@ else
             InitializeBoolArrays(storeList.Count, wordList.Count);
             if (email != null)
             {
-                await SLFunc.GetShoppinglistOnStart(email, ToShoppinglist);
+                //await SLFunc.GetShoppinglistOnStart(email, ToShoppinglist);
             }
 
             this.StateHasChanged();

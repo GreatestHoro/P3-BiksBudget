@@ -34,7 +34,7 @@ else
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (Product item in removeDublicates(ListFunc.CombinedList))
+                            @foreach (Product item in @*removeDublicates(*@ListFunc.CombinedList@*)*@)
                             {
                                     <tr>
                                         <td data-th="Product">
@@ -167,6 +167,11 @@ else
             if(email != null)
             {
                 responseMessage = await ListFunc.GetShoppinglistOnStart(email, ToShoppinglist);
+            }
+
+            if (ToShoppinglist.Count > 0)
+            {
+                remindToSave = true;
             }
 
             StateHasChanged();
