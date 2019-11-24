@@ -114,11 +114,12 @@
                     <div class="card-header h-50 bg-white mx-auto text-center">
                         @if (p._image.Length == 0)
                         {
-                            <img style="width:auto; height:200px; " class="card-img-top " src="https://cdn.discordapp.com/attachments/509313911229513740/647326558813421637/normark-2009.png">
+                            <img style="width:280px; height:auto; " class="card-img-top " src="https://cdn.discordapp.com/attachments/509313911229513740/647326558813421637/normark-2009.png">
                         }
                         else
                         {
-                        <img style="width:auto; height:200px; " class="card-img-top " src="@ProductImage(p._image)">
+                        <img style="width: auto; height: auto; max-height:280px; max-width: 280px;" 
+                             class="card-img-top" src="@ProductImage(p._image)">
                         }
                     </div>
                     <div class="card-body h-50 w-100 bg-light rounded mx-auto">
@@ -149,6 +150,9 @@ else
     <p>@messageToUser</p>
 }
 @code {
+    #region fields
+
+
     static TaskCompletionSource<GeoCoordinate> tcsUserLocation = new TaskCompletionSource<GeoCoordinate>();
     static GeoCoordinate userGeoLocation = new GeoCoordinate(0, 0);
 
@@ -182,9 +186,24 @@ else
     int value = 1;
     int radius = 1000;
     int amountAddedToSL = 1;
+
     double _minPrice = 0;
     double _maxPrice = 5000;
     double priceLimit = 10000;
+
+    string searchBox;
+    string email;
+    string messageToUser = "Apply filters and press search to find products";
+    string productString;
+    #endregion
+
+    #region Page_Methods
+    // Function to get salling products in high resolution
+    private string ProductImage(string prod_image)
+    {
+        return prod_image + "&imgSize=1080x1080";
+    }
+
 
     protected void IncrementAmount(string id)
     {
@@ -210,9 +229,6 @@ else
             }
         }
     }
-
-
-
 
     void toggleAdvancedCheckBox()
     {
@@ -263,10 +279,6 @@ else
         }
     }
 
-    string searchBox;
-    string email;
-    string messageToUser = "Apply filters and press search to find products";
-    string productString;
 
     public void ChangeState(string name, List<FilterItem> list)
     {
@@ -382,6 +394,10 @@ else
             item.IsEnabled = true;
         }
     }
+    #endregion
+
+    #region Async_Methods
+
 
     public async void AddProductToSL(Product AddedItem)
     {
@@ -441,6 +457,49 @@ else
             messageToUser = "You Need To Write A Searhcword";
         }
     }
+
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        optionsList = sortOptions.GetList();
+
+        if (firstRender)
+        {
+            await GetLocalSession();
+            localStorage.Changed += (sender, e) =>
+            {
+                Console.WriteLine($"Value for key {e.Key} changed from {e.OldValue} to {e.NewValue}");
+            };
+
+            storeList = storeFilters.GetStoreList();
+            wordList = wordFIlters.GetStoreList();
+            InitializeBoolArrays(storeList.Count, wordList.Count);
+            if (email != null)
+            {
+                await SLFunc.GetShoppinglistOnStart(email, ToShoppinglist);
+            }
+
+            this.StateHasChanged();
+        }
+
+    }
+
+
+    async Task GetLocalSession()
+    {
+        email = await localStorage.GetItemAsync<string>("Email");
+        shopString = await localStorage.GetItemAsync<string>("ProductString");
+
+        if (!String.IsNullOrEmpty(shopString))
+        {
+            ToShoppinglist = JsonConvert.DeserializeObject<List<Product>>(shopString);
+        }
+    }
+
+
+    #endregion
+
+    #region Filter_Methods
 
     public string FindActiveSortFilter()
     {
@@ -516,30 +575,7 @@ else
         return arr;
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        optionsList = sortOptions.GetList();
 
-        if (firstRender)
-        {
-            await GetLocalSession();
-            localStorage.Changed += (sender, e) =>
-            {
-                Console.WriteLine($"Value for key {e.Key} changed from {e.OldValue} to {e.NewValue}");
-            };
-
-            storeList = storeFilters.GetStoreList();
-            wordList = wordFIlters.GetStoreList();
-            InitializeBoolArrays(storeList.Count, wordList.Count);
-            if (email != null)
-            {
-                await SLFunc.GetShoppinglistOnStart(email, ToShoppinglist);
-            }
-
-            this.StateHasChanged();
-        }
-
-    }
     public void InitializeBoolArrays(int stores, int words)
     {
         EnabledStores = new bool[stores];
@@ -567,22 +603,5 @@ else
         }
         return new string(returnChar);
     }
-
-    async Task GetLocalSession()
-    {
-        email = await localStorage.GetItemAsync<string>("Email");
-        shopString = await localStorage.GetItemAsync<string>("ProductString");
-
-        if (!String.IsNullOrEmpty(shopString))
-        {
-            ToShoppinglist = JsonConvert.DeserializeObject<List<Product>>(shopString);
-        }
-    }
-
-    // Function to get salling products in high resolution
-    private string ProductImage(string prod_image)
-    {
-        return prod_image + "&imgSize=1080x1080";
-    }
-
+    #endregion
 }

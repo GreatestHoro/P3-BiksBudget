@@ -306,11 +306,11 @@ ul.fixed {
     color:black;
 }
 
-.card-img-top {
+/*.card-img-top {
     max-width: 200%;
     min-width: 50px;
     height: 30px;
-}
+}*/
 
 
 .card-title {
@@ -331,6 +331,8 @@ ul.fixed {
 }
 
 .recipeListDisplay{
+    min-width: 300px;
+    max-width: 400px;
     max-height: 400px;
     min-height: 40px;
     overflow: hidden;
