@@ -29,7 +29,6 @@
                 <table class="table table-hover">
                     <thead>
                         <tr>
-                            <th style="width:10%">ID</th>
                             <th style="width:30%">Product</th>
                             <th style="width:20%">Amount</th>
                             <th style="width:20%">Amount remaining</th>
@@ -41,7 +40,6 @@
                         @foreach (var items in ListFunc.CombinedList)
                         {
                             <tr>
-                                <td data-th="ID">@items._id</td>
                                 <td data-th="Product">@items._productName</td>
                                 <td data-th="Amount">
                                     <input type="number" id="number" value="@items._amountleft" />
@@ -64,6 +62,10 @@
                                 <td data-th="Delete">
                                     <div>
                                         <button class="btn btn-danger btn-sm" @onclick="(() => ChangeItemAmout(items))"><i class="oi oi-trash"></i></button>
+                                        @if (items._amountleft > 1)
+                                        {
+                                            <button class="btn btn-danger btn-sm" @onclick="(() => DeleteItem(items))"><i class="oi oi-trash"></i>(All)</button>
+                                        }
                                     </div>
                                 </td>
                             </tr>
@@ -222,20 +224,26 @@
         return ListFunc.CombinedList.FindIndex(ind => ind.Equals(item));
     }
 
+    public void DeleteItem(Product item)
+    {
+        item._amountleft = 1;
+        ChangeItemAmout(item);
+    }
+
     public async void ChangeItemAmout(Product item)
     {
         int index = FindIdex(item);
         int left = ListFunc.CombinedList[index]._amountleft;
-        
+
         if (left == 1)
         {
             ListFunc.CombinedList.RemoveAt(index);
-        
+
         }
         item._amountleft--;
 
         await ListFunc.ChangeItem(item);
-        
+
     }
 
     private async void AddProduct()

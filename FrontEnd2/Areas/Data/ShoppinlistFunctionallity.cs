@@ -174,12 +174,32 @@ namespace FrontEnd2.Data
 
         public async void AddItemToStorage(Product AddedItem, string dest)
         {
-            AddedItem._timeAdded = DateTime.Now.ToString();
-            AddedItem._state = "Full";
+            AddedItem = HelpToAdd(AddedItem);
 
             productString = JsonConvert.SerializeObject(AddedItem);
 
             await SendToApi(productString, dest);
+        }
+
+        public async void AddOneItemToStorage(Product AddedItem, string dest)
+        {
+            int realAmountLeft = AddedItem._amountleft;
+            AddedItem = HelpToAdd(AddedItem);
+            AddedItem._amountleft = 1;
+
+            productString = JsonConvert.SerializeObject(AddedItem);
+
+            AddedItem._amountleft = realAmountLeft;
+
+            await SendToApi(productString, dest);
+        }
+
+        Product HelpToAdd(Product item)
+        {
+            item._timeAdded = DateTime.Now.ToString();
+            item._state = "Full";
+
+            return item;
         }
 
         public async void AddShoppinlistToStorage(string dest)
