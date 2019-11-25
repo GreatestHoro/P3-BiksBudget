@@ -7,11 +7,11 @@
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject HttpClient Http
 
-@if (email == null)
+@*@if (email == null)
 {
     <p> You need to be logged in to see shoppinglist</p>
 }
-else
+else*@
 {
 
     @if (ListFunc.CombinedList == null)
@@ -57,17 +57,30 @@ else
                                     </td>
                                     <td data-th="Subtotal" class="text-center">@ListFunc.FindSubtotal(item) kr</td>
                                     <td class="actions" data-th="">
-                                        <button class="btn btn-info btn-sm" title="Add one @item._productName to your Storage" @onclick="(() => AddOneItemToStorage(item))"><i class="oi oi-basket"></i></button>
-                                        @if (item._amountleft > 1)
+                                        @if (!String.IsNullOrEmpty(email))
+                                        {
+                                            <button class="btn btn-info btn-sm" title="Add one @item._productName to your Storage" @onclick="(() => AddOneItemToStorage(item))"><i class="oi oi-basket"></i></button>
+                                        }
+                                        else
+                                        {
+                                            <button disabled class="btn btn-info btn-sm invisibleBtn" title="Log in to access storage"><i class="oi oi-basket"></i></button>
+                                        }
+
+                                        @if (item._amountleft > 1 && !String.IsNullOrEmpty(email))
                                         {
                                             <button class="btn btn-info btn-sm addMore" title="Add @item._amountleft @item._productName to your Storage" @onclick="(() => AddItemToStorage(item))">
                                                 <i class="oi oi-basket">(All)</i>
                                             </button>
                                         }
+                                        else if (String.IsNullOrEmpty(email))
+                                        {
+                                            <button disabled class="btn btn-info btn-sm invisibleBtn" title="Log in to access storage"><i class="oi oi-basket">(All)</i></button>
+                                        }
                                         else
                                         {
                                             <button disabled class="btn btn-info btn-sm invisibleBtn"><i class="oi oi-basket">(All)</i></button>
                                         }
+
                                         <button class="btn btn-danger btn-sm" title="Delete one @item._productName from your shoppinglist" @onclick="(() => ChangeAmount(item))"><i class="oi oi-trash"></i></button>
                                         @if (item._amountleft > 1)
                                         {
@@ -76,7 +89,6 @@ else
                                         else
                                         {
                                             <button disabled class="btn btn-danger btn-sm addMore invisibleBtn"><i class="oi oi-trash"></i>(All)</button>
-
                                         }
                                     </td>
                                 
@@ -93,12 +105,19 @@ else
             </div>
             <div class="row">
                 <div class="col-sm-4">
-                    <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>AddListToStorage())">Add to strorage</button>
+                    @if (isLoggedIn)
+                    {
+                        <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>AddListToStorage())">Add to strorage</button>
+                    }
+                    else
+                    {
+                        <button disabled class="btn btn-block btn-light recipeDivDisplay rounded-0" title="Log in to access storage">Add to strorage</button>
+                    }
                 </div>
                 <div class="col-sm-4">
                     @if (remindToSave)
                     {
-                        <button  class="btn btn-block btn-danger recipeDivDisplay rounded-0" @onclick="(() =>SaveShoppinglist())">Save shoppinlist</button>
+                        <button class="btn btn-block btn-danger recipeDivDisplay rounded-0" @onclick="(() =>SaveShoppinglist())">Save shoppinlist</button>
                     }
                     else
                     {
@@ -122,6 +141,7 @@ else
 
     bool test = false;
     bool remindToSave = false;
+    bool isLoggedIn = false;
 
     int value = 1;
     int amount;
@@ -166,12 +186,12 @@ else
 
             if(email != null)
             {
-                responseMessage = await ListFunc.GetShoppinglistOnStart(email, ToShoppinglist);
+                isLoggedIn = true;
+                responseMessage = await ListFunc.GetShoppinglistOnStart(email);
             }
-
-            if (ToShoppinglist.Count > 0)
+            else
             {
-                remindToSave = true;
+                responseMessage = await ListFunc.GetShoppinglistWhileNotLoggedIn(ToShoppinglist);
             }
 
             StateHasChanged();
@@ -196,9 +216,20 @@ else
     {
         remindToSave = false;
 
-        await localStorage.RemoveItemAsync("ProductString");
+        if (String.IsNullOrEmpty(email))
+        {
+            productString = JsonConvert.SerializeObject(ListFunc.CombinedList);
 
-        ListFunc.AddFuncList();
+            await localStorage.RemoveItemAsync("ProductString");
+
+            await localStorage.SetItemAsync("ProductString", productString);
+        }
+        else
+        {
+            ListFunc.AddFuncList();
+        }
+
+
     }
 
     public void DeleteItem(Product item)

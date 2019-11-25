@@ -102,7 +102,18 @@ namespace FrontEnd2.Data
 
         #region Shoppinglist
 
-        public async Task<HttpResponseMessage> GetShoppinglistOnStart(string userId, List<Product> LocalList)
+        public async Task<HttpResponseMessage> GetShoppinglistWhileNotLoggedIn(List<Product> LocalStorageList)
+        {
+            if (LocalStorageList.Count != 0)
+            {
+                CombinedList = LocalStorageList;
+                CombinedList = HandleDublicats(CombinedList);
+            }
+
+            return new HttpResponseMessage(HttpStatusCode.OK);
+        }
+
+        public async Task<HttpResponseMessage> GetShoppinglistOnStart(string userId)
         {
             Email = userId;
 
@@ -110,32 +121,14 @@ namespace FrontEnd2.Data
 
             shoppinglists = JsonConvert.DeserializeObject<List<Shoppinglist>>(productString);
 
-            if (LocalList.Count > 0)
-            {
-                LocalItemList = LocalList;
-            }
             if (shoppinglists.Count > 0)
             {
                 if (shoppinglists[0]._products.Count > 0)
                 {
-                    itemList = shoppinglists[0]._products;
+                    CombinedList = shoppinglists[0]._products;
+                    CombinedList = HandleDublicats(CombinedList);
                 }
             }
-
-            if (itemList.Count > 0 && LocalItemList.Count > 0)
-            {
-                CombinedList = LocalItemList.Concat(itemList).ToList();
-            }
-            else if (itemList.Count > 0)
-            {
-                CombinedList = itemList;
-            }
-            else
-            {
-                CombinedList = LocalItemList;
-            }
-
-            CombinedList = HandleDublicats(CombinedList);
 
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
@@ -182,6 +175,17 @@ namespace FrontEnd2.Data
         public async Task<HttpResponseMessage> QuickaddListToShoppinglist(List<Product> sentList)
         {
             productString = JsonConvert.SerializeObject(sentList);
+
+            await PutToApi(productString);
+
+            return new HttpResponseMessage(HttpStatusCode.OK);
+        }
+
+        public async Task<HttpResponseMessage> QuickaddItemToShoppinglist(Product item, int actualAmout)
+        {
+            productString = JsonConvert.SerializeObject(item);
+
+            item._amountleft = actualAmout;
 
             await PutToApi(productString);
 

@@ -72,7 +72,7 @@ namespace BBCollection.DBHandling
             }
 
             return uniqueList;
-        }
+                }
 
         public int FindIdex(List<Product> inputList, Product item)
         {
