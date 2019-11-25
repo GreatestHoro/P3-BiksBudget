@@ -147,5 +147,20 @@ namespace BBCollection
             return null;
         }
 
+        public void InsertReferenceToProduct(string reference, string productID)
+        {
+            new ProductHandling().InsertIngredientReferenceFromId(reference, productID, databaseInformation.GetConnect());
+        }
+
+        public Product GetProductWithReference(string prodID)
+        {
+            return new ProductHandling().GetProductWithReferenceFromId(prodID, databaseInformation.GetConnect());
+        }
+
+        public List<Product> GetListOfProductsFromReference(string reference)
+        {
+            return new ProductHandling().GetProductsWhereReferenceIncludesString(reference, databaseInformation.GetConnect());
+        }
+
     }
 }

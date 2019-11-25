@@ -8,11 +8,24 @@
         public double _price;
         public string _image;
         public string _storeName;
+        public string _CustomReferenceField;
 
         public string _customname;
         public int _amountleft; //Kan navngives anderledes
         public string _timeAdded;
         public string _state;
+
+        public Product(string id, string productName, string amount, double price, string image, string storeName, int amountleft, string customField)
+        {
+            _id = id;
+            _productName = productName;
+            _amount = amount;
+            _price = price;
+            _image = image;
+            _storeName = storeName;
+            _amountleft = amountleft;
+            _CustomReferenceField = customField;
+        }
 
         public Product(string id, string productName, string amount, double price, string image, string storeName, int amountleft)
         {
@@ -23,6 +36,17 @@
             _image = image;
             _storeName = storeName;
             _amountleft = amountleft;
+        }
+
+        public Product(string id, string productName, string amount, double price, string image, string storeName, string customField)
+        {
+            _id = id;
+            _productName = productName;
+            _amount = amount;
+            _price = price;
+            _image = image;
+            _storeName = storeName;
+            _CustomReferenceField = customField;
         }
 
         public Product(string id, string productName, string amount, double price, string image, string storeName)

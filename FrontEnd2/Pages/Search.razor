@@ -6,7 +6,7 @@
 
 @inject HttpClient Http
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
-@inject AuthenticationFunctionallity uf
+
 <h1> Find a product</h1>
 
 <div class="form-inline md-form mr-auto mb-4">
@@ -23,6 +23,27 @@
 {
     <h4> Select options:</h4>
     <div class="d-flex flex-sm-row flex-column">
+        <div class="p-2">
+            <div class="btn-group show-on-hover">
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                    <h5>Sort By</h5>
+                    <span clasusergeolos="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    @foreach (Options item in optionsList)
+                    {
+                        if (item.isEnabled)
+                        {
+                            <li><button style="color:green" class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(() => ChangeState(item.filterName, optionsList))">@item.filterName</button></li>
+                        }
+                        else
+                        {
+                            <li><button style="color:red" class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(() => ChangeState(item.filterName, optionsList))">@item.filterName</button></li>
+                        }
+                    }
+                </ul>
+            </div>
+        </div>
         <div class="p-2">
             <div class="btn-group show-on-hover">
                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
@@ -69,6 +90,14 @@
             <h5>Distance @(radius / 1000) Km</h5>
             <input type="range" min="0" max="5000" @bind="radius" step="1000" />
         </div>
+        <div class="p-2">
+            <label for="minPriceB">Minimum Price</label>
+            <input type="number" class="form-control" placeholder="Min Price" @bind="minPrice" />
+        </div>
+        <div class="p-2">
+            <label for="maxPriceB">Maximum Price</label>
+            <input type="number" class="form-control" placeholder="Max Price" @bind="maxPrice" />
+        </div>
     </div>
 }
 
@@ -78,16 +107,19 @@
     <div class="row top-margin">
         @foreach (Product p in itemList)
         {
+            if (p._price > minPrice && p._price < maxPrice)
+            {
             <div class="col-12 col-sm-8 col-md-6 col-lg-4 top-margin">
                 <div class="card w-100 h-100">
                     <div class="card-header h-50 bg-white mx-auto text-center">
                         @if (p._image.Length == 0)
                         {
-                            <img style="width:auto; height:200px; " class="card-img-top " src="https://cdn.discordapp.com/attachments/509313911229513740/647326558813421637/normark-2009.png">
+                            <img style="width:280px; height:auto; " class="card-img-top " src="https://cdn.discordapp.com/attachments/509313911229513740/647326558813421637/normark-2009.png">
                         }
                         else
                         {
-                        <img style="width:auto; height:200px; " class="card-img-top " src="@ProductImage(p._image)">
+                        <img style="width: auto; height: auto; max-height:280px; max-width: 280px;"
+                             class="card-img-top" src="@ProductImage(p._image)">
                         }
                     </div>
                     <div class="card-body h-50 w-100 bg-light rounded mx-auto">
@@ -108,6 +140,7 @@
                     </div>
                 </div>
             </div>
+            }
         }
     </div>
 </div>
@@ -116,9 +149,13 @@ else
 {
     <p>@messageToUser</p>
 }
-@code {
+
+@code{
+        #region fields
         static TaskCompletionSource<GeoCoordinate> tcsUserLocation = new TaskCompletionSource<GeoCoordinate>();
         static GeoCoordinate userGeoLocation = new GeoCoordinate(0, 0);
+
+        SortoptionsList sortOptions = new SortoptionsList();
         StoreFilterList storeFilters = new StoreFilterList();
         WordFilterList wordFIlters = new WordFilterList();
         FindCloseStores closeStore;
@@ -129,6 +166,8 @@ else
         List<UnifiedAPIStore> allStoresUnified = new List<UnifiedAPIStore>();
         List<Product> itemList = new List<Product>();
         List<Product> ToShoppinglist = new List<Product>();
+        List<Options> optionsList = new List<Options>();
+
 
         bool[] EnabledStores;
         bool[] EnabledKeywords;
@@ -146,9 +185,24 @@ else
         int value = 1;
         int radius = 1000;
         int amountAddedToSL = 1;
+
         double _minPrice = 0;
         double _maxPrice = 5000;
         double priceLimit = 10000;
+
+        string searchBox;
+        string email;
+        string messageToUser = "Apply filters and press search to find products";
+        string productString;
+        #endregion
+
+        #region Page_Methods
+        // Function to get salling products in high resolution
+        private string ProductImage(string prod_image)
+        {
+            return prod_image + "&imgSize=1080x1080";
+        }
+
 
         protected void IncrementAmount(string id)
         {
@@ -174,9 +228,6 @@ else
                 }
             }
         }
-
-
-
 
         void toggleAdvancedCheckBox()
         {
@@ -227,10 +278,6 @@ else
         }
     }
 
-    string searchBox;
-    string email;
-    string messageToUser = "Apply Filters And Press Search To Find Products";
-    string productString;
 
     public void ChangeState(string name, List<FilterItem> list)
     {
@@ -244,6 +291,88 @@ else
             }
         }
 
+    }
+
+    public void ChangeState(string name, List<Options> optionList)
+    {
+        foreach (Options o in optionList)
+        {
+            if (o.filterName == name)
+            {
+                o.isEnabled = true;
+
+                DecideOrderFilter(o.filterName);
+            }
+            else
+            {
+                o.isEnabled = false;
+            }
+        }
+
+    }
+
+    public void DecideOrderFilter(string filterName)
+    {
+        switch (filterName)
+        {
+            case "Most relevant":
+                SortByMostRelevant();
+                break;
+            case "Price (Low to High)":
+                SortByPriceLH();
+                break;
+            case "Price (High to Low)":
+                SortBypriceHL();
+                break;
+            case "Alphabetical order (A - Z)":
+                SortByNameAZ();
+                break;
+            case "Alphabetical order (Z - A)":
+                SortByNameZA();
+                break;
+            case "Store (A - Z)":
+                SortByStoreAZ();
+                break;
+            case "Store (Z - A":
+                SortByStoreZA();
+                break;
+
+        }
+    }
+
+    public async void SortByMostRelevant()
+    {
+        await SearchForProducts();
+    }
+
+    public void SortByPriceLH()
+    {
+        itemList.Sort((a, b) =>  a._price.CompareTo(b._price));
+    }
+
+    public void SortBypriceHL()
+    {
+        itemList.Sort((a, b) =>  b._price.CompareTo(a._price));
+    }
+
+    public void SortByStoreAZ()
+    {
+        itemList.Sort((a, b) =>  a._storeName.CompareTo(b._storeName));
+    }
+
+    public void SortByStoreZA()
+    {
+        itemList.Sort((a, b) =>  b._storeName.CompareTo(a._storeName));
+    }
+
+    public void SortByNameAZ()
+    {
+        itemList.Sort((a, b) =>  a._productName.CompareTo(b._productName));
+    }
+
+    public void SortByNameZA()
+    {
+        itemList.Sort((a, b) =>  b._productName.CompareTo(a._productName));
     }
 
     void toggle()
@@ -264,24 +393,54 @@ else
             item.IsEnabled = true;
         }
     }
+    #endregion
+
+    #region Async_Methods
+
 
     public async void AddProductToSL(Product AddedItem)
     {
+        AddedItem._amountleft++;
 
-        AddedItem._amountleft += 1;
+        int actualAmout = AddedItem._amountleft;
 
         ToShoppinglist.Add(AddedItem);
 
-        value = AddedItem._amountleft;
+        ToShoppinglist = HandleDublicats(ToShoppinglist);
 
-        AddedItem._amountleft = 1;
-
-        //await localStorage.RemoveItemAsync("Shoppinglist");
+        await localStorage.RemoveItemAsync("Shoppinglist");
 
         shopString = JsonConvert.SerializeObject(ToShoppinglist);
 
         await localStorage.SetItemAsync("ProductString", shopString);
+
         //await localStorage.SetItemAsync("Shoppinglist", ToShoppinglist);
+    }
+
+    public List<Product> HandleDublicats(List<Product> inputList)
+    {
+        bool isFound = false;
+        List<Product> uniqueList = new List<Product>();
+        List<Product> dublicateList = new List<Product>();
+
+        foreach (Product i in inputList)
+        {
+            isFound = false;
+            foreach (Product u in uniqueList)
+            {
+                if (i._id == u._id)
+                {
+                    dublicateList.Add(i);
+                    isFound = true;
+                    break;
+                }
+            }
+            if (isFound == false)
+            {
+                uniqueList.Add(i);
+            }
+        }
+        return uniqueList;
     }
 
     private async Task KeyPressed(KeyboardEventArgs e)
@@ -298,15 +457,19 @@ else
 
         if (!String.IsNullOrEmpty(searchBox) && !String.IsNullOrWhiteSpace(searchBox))
         {
-
-
             updateFilters();
 
             ProductSearchLinkConstructer link = new ProductSearchLinkConstructer(searchBox, ConvertBoolArrToStr(EnabledKeywords), ConvertBoolArrToStr(EnabledStores));
 
             productString = await Http.GetStringAsync(link.GetURL());
 
+            if (!(FindActiveSortFilter() == "Most relevant"))
+            {
+                DecideOrderFilter(FindActiveSortFilter());
+            }
+
             itemList = JsonConvert.DeserializeObject<List<Product>>(productString);
+            StateHasChanged();
 
             if (itemList.Count != 0)
             {
@@ -318,6 +481,60 @@ else
             messageToUser = "You Need To Write A Searhcword";
         }
     }
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        optionsList = sortOptions.GetList();
+
+        if (firstRender)
+        {
+            await GetLocalSession();
+            localStorage.Changed += (sender, e) =>
+            {
+                Console.WriteLine($"Value for key {e.Key} changed from {e.OldValue} to {e.NewValue}");
+            };
+
+            storeList = storeFilters.GetStoreList();
+            wordList = wordFIlters.GetStoreList();
+            InitializeBoolArrays(storeList.Count, wordList.Count);
+            if (email != null)
+            {
+                await SLFunc.GetShoppinglistOnStart(email, ToShoppinglist);
+            }
+
+            this.StateHasChanged();
+        }
+
+    }
+
+
+    async Task GetLocalSession()
+    {
+        email = await localStorage.GetItemAsync<string>("Email");
+        shopString = await localStorage.GetItemAsync<string>("ProductString");
+
+        if (!String.IsNullOrEmpty(shopString))
+        {
+            ToShoppinglist = JsonConvert.DeserializeObject<List<Product>>(shopString);
+        }
+    }
+    #endregion
+
+
+    #region Filter_Methods
+    public string FindActiveSortFilter()
+    {
+        foreach (Options o in optionsList)
+        {
+            if (o.isEnabled)
+            {
+                return o.filterName;
+            }
+        }
+        return "Price (Low to High)";
+    }
+
     public void updateFilters()
     {
         if (IsLocationEnabled)
@@ -380,28 +597,6 @@ else
         return arr;
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await GetLocalSession();
-            localStorage.Changed += (sender, e) =>
-            {
-                Console.WriteLine($"Value for key {e.Key} changed from {e.OldValue} to {e.NewValue}");
-            };
-
-            storeList = storeFilters.GetStoreList();
-            wordList = wordFIlters.GetStoreList();
-            InitializeBoolArrays(storeList.Count, wordList.Count);
-            if (email != null)
-            {
-                await SLFunc.GetShoppinglistOnStart(email, ToShoppinglist);
-            }
-
-            this.StateHasChanged();
-        }
-
-    }
     public void InitializeBoolArrays(int stores, int words)
     {
         EnabledStores = new bool[stores];
@@ -429,22 +624,5 @@ else
         }
         return new string(returnChar);
     }
-
-    async Task GetLocalSession()
-    {
-        email = await localStorage.GetItemAsync<string>("Email");
-        shopString = await localStorage.GetItemAsync<string>("ProductString");
-
-        if (!String.IsNullOrEmpty(shopString))
-        {
-            ToShoppinglist = JsonConvert.DeserializeObject<List<Product>>(shopString);
-        }
-    }
-
-    // Function to get salling products in high resolution
-    private string ProductImage(string prod_image)
-    {
-        return prod_image + "&imgSize=1080x1080";
-    }
-
+    #endregion
 }

@@ -3,7 +3,6 @@ using FrontEnd2.Areas.Identity;
 using FrontEnd2.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components.Authorization;
-using static FrontEnd2.Data.AuthenticationFunctionallity;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
@@ -30,7 +29,6 @@ namespace FrontEnd2
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddHotKeys();
-            services.AddScoped<AuthenticationFunctionallity>();
             services.AddBlazoredLocalStorage();
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(

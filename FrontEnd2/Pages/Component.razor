@@ -6,8 +6,8 @@
 @using System.Diagnostics;
 @using BBGatherer.Queries;
 @using B3_BiksBudget.BBGatherer.Queries;
+@using System.Diagnostics;
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
-@inject AuthenticationFunctionallity uf
 
 
 @inject HttpClient Http
@@ -277,12 +277,29 @@
             }
 
         }
-        foreach (Product pMin in productsToAddSL)
-        {
-            AddProductToSL(pMin);
-        }
+
+        QuickAddListToSL(productsToAddSL);
+
+        //foreach (Product pMin in productsToAddSL)
+        //{
+        //    AddProductToSL(pMin);
+        //}
 
     }
+
+    public async void QuickAddListToSL(List<Product> ingredientList)
+    {
+        if (!String.IsNullOrEmpty(email))
+        {
+            foreach (Product p in ingredientList)
+            {
+                p._amountleft = 1;
+            }
+
+            await ShopList.QuickaddListToShoppinglist(ingredientList);
+        }
+    }
+
     public void GetProductLists(List<Ingredient> ingredients)
     {
         //List<Product> test = new List<Product>();
@@ -349,6 +366,7 @@
     #region Recipe_async_Methods
     public async Task Search()
     {
+
         printRecipe = await Http.GetStringAsync("https://localhost:44325/api/recipe?recipeTitle=" + searchTerm);
         recipeData = JsonConvert.DeserializeObject<List<Recipe>>(printRecipe);
         viewRecipeTitle = true;

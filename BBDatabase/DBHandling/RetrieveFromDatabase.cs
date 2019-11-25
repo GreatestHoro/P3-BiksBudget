@@ -4,6 +4,7 @@ using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 
 namespace BBCollection.HandleRecipe
 {
@@ -11,12 +12,13 @@ namespace BBCollection.HandleRecipe
     {
         public List<Recipe> RetrieveRecipeList(string recipeName, DatabaseInformation dbInformation)
         {
+            Stopwatch sw = new Stopwatch();
             List<Recipe> recipeList = new List<Recipe>();
-            string recipesQuery = "SELECT * FROM recipes WHERE recipeName LIKE @RecipeName";
-
-            MySqlCommand msc = new MySqlCommand(recipesQuery);
-            msc.Parameters.AddWithValue("@RecipeName", "%" + recipeName + "%");
-
+            string table = "recipes";
+            string collumn = "recipename";
+            
+            MySqlCommand msc = new SqlQuerySort().SortMSC(recipeName, table,collumn);
+            sw.Start();
             foreach (DataRow r in new SQLConnect().DynamicSimpleListSQL(msc, dbInformation).Tables[0].Rows)
             {
 
@@ -24,7 +26,8 @@ namespace BBCollection.HandleRecipe
 
                 recipeList.Add(recipe);
             }
-
+            sw.Stop();
+            Console.WriteLine(sw.ElapsedMilliseconds);
             return recipeList;
         }
 
@@ -37,8 +40,6 @@ namespace BBCollection.HandleRecipe
 
             MySqlCommand msc = new MySqlCommand(ingredientsToRecipeQuery);
             msc.Parameters.AddWithValue("@RecipeID", recipeID);
-
-            Console.WriteLine("RECIPE ID: " + recipeID);
 
             foreach (DataRow r in new SQLConnect().DynamicSimpleListSQL(msc, dbInformation).Tables[0].Rows)
             {

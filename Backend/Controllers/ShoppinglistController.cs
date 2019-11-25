@@ -10,6 +10,7 @@ using MySqlX.XDevAPI.Common;
 using Newtonsoft.Json;
 using BBCollection;
 using BBCollection.BBObjects;
+using BBCollection.DBHandling;
 
 namespace Backend.Controllers
 {
@@ -19,7 +20,12 @@ namespace Backend.Controllers
     public class ShoppinglistController : ControllerBase
     {
         DatabaseConnect dbConnect = new DatabaseConnect("localhost", "biksbudgetDB", "root", "BiksBudget123");
+        ControllerFuncionality funcionality = new ControllerFuncionality();
         List<Shoppinglist> shoppinglists = new List<Shoppinglist>();
+        List<Shoppinglist> toSend = new List<Shoppinglist>();
+        List<Product> newItem = new List<Product>();
+
+        string buffer;
         string Email;
         //DatabaseConnect dbConnect = new DatabaseConnect("localhost", "biksbudgetDB", "root", "BiksBudget123");
         // GET: api/Shoppinglist
@@ -33,10 +39,7 @@ namespace Backend.Controllers
         [HttpGet("{id}")]
         public string Get(string id)
         {
-            //List<Product> storageList = dbConnect.GetStorageFromUsername(id);
             shoppinglists = dbConnect.GetShoppinglists(id);
-
-            //List<Product> resultList = ConvertBeforeSending(storageList);
 
             string jsonStorage = JsonConvert.SerializeObject(shoppinglists);
 
@@ -44,49 +47,32 @@ namespace Backend.Controllers
         }
 
         // POST: api/Shoppinglist
-        [HttpPost]
+        [HttpPost("{value}")]
         public void Post(String value)
         {
-            string buffer;
-            List<Product> newItem = new List<Product>();
-            int pNum;
-
             HttpRequest request = HttpContext.Request;
             Microsoft.AspNetCore.Http.HttpRequestRewindExtensions.EnableBuffering(request);
+
+            Email = value;
 
             using (var sr = new StreamReader(request.Body))
             {
                 buffer = sr.ReadToEnd();
             }
 
-            int indexNumber = buffer.IndexOf("|");
-            int number = Convert.ToInt32(buffer.Substring(0, indexNumber));
-            if (number >= 10)
+            if (buffer.Substring(0, 1) != "[")
             {
-                pNum = 2;
-            }
-            else
-            {
-                pNum = 1;
+                buffer = "[" + buffer + "]";
             }
 
-            Email = buffer.Substring(indexNumber.ToString().Length + pNum, number);
-            buffer = buffer.Remove(0, indexNumber.ToString().Length + number + pNum);
+            newItem = JsonConvert.DeserializeObject<List<Product>>(buffer);
 
-            if (buffer.Contains("PLS_DELETE"))
+            if (newItem.Count == 0)
             {
                 dbConnect.DeleteShoppingListFromName("Shoppinglist", Email);
             }
             else
             {
-                if (buffer.Substring(0, 1) != "[")
-                {
-                    buffer = "[" + buffer + "]";
-                }
-
-                newItem = JsonConvert.DeserializeObject<List<Product>>(buffer);
-
-                List<Shoppinglist> toSend = new List<Shoppinglist>();
                 toSend = dbConnect.GetShoppinglists(Email);
 
                 if (toSend.Count == 0)
@@ -100,8 +86,7 @@ namespace Backend.Controllers
                     {
                         toSend[0]._products.Add(item);
 
-                    }
-                    
+                    } 
                 }
 
                 dbConnect.DeleteShoppingListFromName("Shoppinglist", Email);
@@ -113,21 +98,41 @@ namespace Backend.Controllers
 
         // PUT: api/Shoppinglist/5
         [HttpPut("{id}")]
-        public void Put(int id, string value)
+        public void PutQuick(string id)
         {
-            string buffer;
-            Product newItem = new Product();
-            //productData = test.GetStuff();
-
             HttpRequest request = HttpContext.Request;
             Microsoft.AspNetCore.Http.HttpRequestRewindExtensions.EnableBuffering(request);
+
+            Email = id;
 
             using (var sr = new StreamReader(request.Body))
             {
                 buffer = sr.ReadToEnd();
             }
 
-            newItem = JsonConvert.DeserializeObject<Product>(buffer);
+            if (buffer.Substring(0, 1) != "[")
+            {
+                buffer = "[" + buffer + "]";
+            }
+
+            newItem = JsonConvert.DeserializeObject<List<Product>>(buffer);
+
+            toSend = dbConnect.GetShoppinglists(Email);
+
+            if (toSend.Count == 0)
+            {
+                toSend.Add(new Shoppinglist("Shoppinglist", newItem));
+            }
+            else
+            {
+                foreach (var item in newItem)
+                {
+                    toSend[0]._products.Add(item);
+                }
+                toSend[0]._products = funcionality.HandleDublicats(toSend[0]._products);
+            }
+
+            dbConnect.AddShoppingListsToDatabase(Email, toSend);
         }
     }
 }

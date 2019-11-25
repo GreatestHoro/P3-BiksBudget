@@ -7,7 +7,6 @@
 
 @inject HttpClient Http
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
-@inject AuthenticationFunctionallity uf
 
 
 <h1>My fridge</h1>
@@ -29,7 +28,6 @@
                 <table class="table table-hover">
                     <thead>
                         <tr>
-                            <th style="width:10%">ID</th>
                             <th style="width:30%">Product</th>
                             <th style="width:20%">Amount</th>
                             <th style="width:20%">Amount remaining</th>
@@ -41,7 +39,6 @@
                         @foreach (var items in ListFunc.CombinedList)
                         {
                             <tr>
-                                <td data-th="ID">@items._id</td>
                                 <td data-th="Product">@items._productName</td>
                                 <td data-th="Amount">
                                     <input type="number" id="number" value="@items._amountleft" />
@@ -55,7 +52,7 @@
                                         <ul class="dropdown-menu" role="menu">
                                             @foreach (var State in ItemState)
                                             {
-                                                <li><button class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(() => ChangeState(items._id, State))">@State</button></li>
+                                                <li><button class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(() => ChangeItemState(items, State))">@State</button></li>
                                             }
                                         </ul>
                                     </div>
@@ -63,7 +60,16 @@
                                 <td data-th="Date added">@items._timeAdded</td>
                                 <td data-th="Delete">
                                     <div>
-                                        <button class="btn btn-danger btn-sm" @onclick="(() => DeleteProduct(items._id))"><i class="oi oi-trash"></i></button>
+                                        <button class="btn btn-danger btn-sm" title="Delete one @items._productName from storage" @onclick="(() => ChangeItemAmout(items))"><i class="oi oi-trash"></i></button>
+                                        @if (items._amountleft > 1)
+                                        {
+                                            <button class="btn btn-danger btn-sm" title="Delete all @items._amountleft @items._productName from storage" @onclick="(() => DeleteItem(items))"><i class="oi oi-trash"></i>(All)</button>
+                                        }
+                                        else
+                                        {
+                                            <button disabled class="btn btn-danger btn-sm invisibleBtn" ><i class="oi oi-trash"></i>(All)</button>
+
+                                        }
                                     </div>
                                 </td>
                             </tr>
@@ -209,28 +215,39 @@
     #region Storage_Methods
     //Storage functionalities
 
-    protected async void ChangeState(string id, string state)
+    public async void ChangeItemState(Product item, string state)
     {
-        //ListFunc.ChangeItem();
+        int index = FindIdex(item);
+        item._state = state;
 
-        //ListFunc.itemList[ListFunc.itemList.Find(x => x.Id.Equals(id))].State = state;
-        //AddedProduct ChangedItem = new AddedProduct();
+        await ListFunc.ChangeItem(ListFunc.CombinedList[index]);
+    }
 
-        foreach (var item in ListFunc.CombinedList)
+    public int FindIdex(Product item)
+    {
+        return ListFunc.CombinedList.FindIndex(ind => ind.Equals(item));
+    }
+
+    public void DeleteItem(Product item)
+    {
+        item._amountleft = 1;
+        ChangeItemAmout(item);
+    }
+
+    public async void ChangeItemAmout(Product item)
+    {
+        int index = FindIdex(item);
+        int left = ListFunc.CombinedList[index]._amountleft;
+
+        if (left == 1)
         {
-            if (item._id == id)
-            {
-                item._state = state;
+            ListFunc.CombinedList.RemoveAt(index);
 
-                productString = JsonConvert.SerializeObject(item);
-
-                await ListFunc.ChangeItem(productString);
-
-                break;
-            }
         }
+        item._amountleft--;
 
-        //ListFunc.SaveStorage();
+        await ListFunc.ChangeItem(item);
+
     }
 
     private async void AddProduct()
@@ -254,29 +271,6 @@
         }
 
     }
-
-    private async void DeleteProduct(string id)
-    {
-        bool isFound = false;
-        foreach (var item in ListFunc.CombinedList)
-        {
-            if (item._id == id && item._amountleft != 1)
-            {
-                item._amountleft--;
-
-                isFound = true;
-
-                break;
-            }
-        }
-
-        if (isFound == false)
-        {
-            await ListFunc.DeleteItem(id);
-        }
-
-        ListFunc.SaveStorage();
-    }
     #endregion
 
     #region OnInit_async_Method
@@ -299,7 +293,7 @@
             userId = email;
             if(email != null)
             {
-            responseMessage = await ListFunc.GetStorageOnStart(email);
+                responseMessage = await ListFunc.GetStorageOnStart(email);
             }
 
 
@@ -311,12 +305,6 @@
     async Task GetLocalSession()
     {
         email = await localStorage.GetItemAsync<string>("Email");
-    }
-
-    protected async override Task OnInitializedAsync()
-    {
-        userId = email;
-        responseMessage = await ListFunc.GetStorageOnStart(userId);
     }
     #endregion
 
@@ -409,18 +397,16 @@
     #region EmptyFridge_Methods
 
 
-    private async Task<List<WeightedRecipies>> FindValidRecipies(List<Product> storageInventory)
+    private async Task<List<WeightedRecipies>> FindValidRecipies()
     {
-        //await Search();
         List<Recipe> ValidRecipies = new List<Recipe>();
         bool breakFlag;
-        List<Product> tester = new List<Product>() { new Product("1", "bacon", "full", 1d, "image", "lidl") };
-        //string id, string productName, string amount, double price, string image, string storeName
+        List<Product> storageInventory = ListFunc.CombinedList;
         foreach (Recipe r in _recpies)
         {
             breakFlag = false;
             //foreach (Product p in storageInventory)
-            foreach (Product p in tester)
+            foreach (Product p in storageInventory)
             {
                 foreach (Ingredient i in r._ingredientList)
                 {
@@ -444,7 +430,6 @@
 
     private List<WeightedRecipies> GenerateWeightedRecepies(List<Recipe> recipes, List<Product> storageInventory)
     {
-        List<Product> tester = new List<Product>() { new Product("1", "bacon", "full", 1d, "image", "lidl") };
         List<WeightedRecipies> returnRecipies = new List<WeightedRecipies>();
         foreach (Recipe r in recipes)
         {
@@ -454,7 +439,7 @@
         foreach (WeightedRecipies w in returnRecipies)
         {
             //foreach (Product p in storageInventory)
-            foreach (Product p in tester)
+            foreach (Product p in storageInventory)
             {
                 foreach (Ingredient i in w._recipie._ingredientList)
                 {
@@ -471,7 +456,20 @@
 
     private bool compareIngrdientAndProduct(Ingredient ingrdient, Product product)
     {
-        return ingrdient._ingredientName.Contains(product._productName);
+        List<String> searchterms = GetRefrencesFromCustomField(product._CustomReferenceField);
+        foreach (string s in searchterms)
+        {
+            if (ingrdient._ingredientName.Contains(s)) 
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private List<string> GetRefrencesFromCustomField(string customfield)
+    {
+        return customfield.Split(",").ToList();
     }
 
     protected async Task Search()
@@ -481,54 +479,13 @@
         printRecipe = await Http.GetStringAsync("https://localhost:44325/api/recipe?recipeTitle=" + " ");
         _recpies = JsonConvert.DeserializeObject<List<Recipe>>(printRecipe);
 
-        compareWR test1 = new compareWR(CompareComplexity);
-        compareWR test2 = new compareWR(CompareMatches);
-
         //recpies = Sort(FindValidRecipies(ListFunc.itemList).Result, test1);
-        recpies = FindValidRecipies(ListFunc.itemList).Result;
+        recpies = FindValidRecipies().Result;
         foreach (WeightedRecipies wr in recpies)
         {
             testvalue = testvalue + wr._recipie._Name + " ? ";
         }
         viewTitle = true;
-    }
-
-    private static bool CompareComplexity(WeightedRecipies r1, WeightedRecipies r2)
-    {
-        return r1.complexity > r2.complexity;
-    }
-
-    private static bool CompareMatches(WeightedRecipies r1, WeightedRecipies r2)
-    {
-        return r1.matchingIngrdientsNum > r2.matchingIngrdientsNum;
-    }
-
-    private static List<WeightedRecipies> Sort(List<WeightedRecipies> recipies, compareWR CompareWR)
-    {
-        WeightedRecipies[] arr = recipies.ToArray();
-
-        int i, j;
-        WeightedRecipies temp;
-        bool swapped;
-        for (i = 0; i < arr.Length - 1; i++)
-        {
-            swapped = false;
-            for (j = 0; j < arr.Length - i - 1; j++)
-            {
-                if (CompareWR(arr[j], arr[j + 1]))
-                {
-                    temp = arr[j];
-                    arr[j] = arr[j + 1];
-                    arr[j + 1] = temp;
-                    swapped = true;
-                }
-            }
-
-            if (swapped == false)
-                break;
-        }
-
-        return arr.ToList();
     }
     #endregion
 }
