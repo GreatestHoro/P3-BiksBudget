@@ -19,6 +19,8 @@
         <input type="checkbox" value="viewAdvancedSearch" @onclick="toggleAdvancedCheckBox"/>
     </label>
 </div>
+@*<button id="myBtn"><a href="search" style="color: white">Top</a></button>*@
+
 @if (viewAdvancedSearch)
 {
     <h4> Select options:</h4>
@@ -109,40 +111,42 @@
         {
             if (p._price > minPrice && p._price < maxPrice)
             {
-            <div class="col-12 col-sm-8 col-md-6 col-lg-4 top-margin">
-                <div class="card w-100 h-100">
-                    <div class="card-header h-50 bg-white mx-auto text-center">
-                        @if (p._image.Length == 0)
-                        {
-                            <img style="width:280px; height:auto; " class="card-img-top " src="https://cdn.discordapp.com/attachments/509313911229513740/647326558813421637/normark-2009.png">
-                        }
-                        else
-                        {
-                        <img style="width: auto; height: auto; max-height:280px; max-width: 280px;"
-                             class="card-img-top" src="@ProductImage(p._image)">
-                        }
-                    </div>
-                    <div class="card-body h-50 w-100 bg-light rounded mx-auto">
-                        <h5 class="card-title w-100">@p._productName</h5>
-                        <p class="card-text ">
-                            From @p._storeName <hr />
-                            @p._amount
-                        </p>
-                        <div class="buy d-flex justify-content-between align-items-center">
-                            <div class="price"><h5 class="mt-4">@p._price kr.</h5></div>
-                            <div class="amount">
-                                <div class="valueClass text-center">
-                                    <p>@p._amountleft</p>
+                <div class="col-12 col-sm-8 col-md-6 col-lg-4 top-margin">
+                    <div class="card w-100 h-100">
+                        <div class="card-header h-50 bg-white mx-auto text-center">
+                            @if (p._image.Length == 0)
+                            {
+                                <img style="width:280px; height:auto; " class="card-img-top " src="https://cdn.discordapp.com/attachments/509313911229513740/647326558813421637/normark-2009.png">
+                            }
+                            else
+                            {
+                                <img style="width: auto; height: auto; max-height:280px; max-width: 280px;"
+                                     class="card-img-top" src="@ProductImage(p._image)">
+                            }
+                        </div>
+                        <div class="card-body h-50 w-100 bg-light rounded mx-auto">
+                            <h5 class="card-title w-100">@p._productName</h5>
+                            <p class="card-text ">
+                                From @p._storeName <hr />
+                                @p._amount
+                            </p>
+                            <div class="buy d-flex justify-content-between align-items-center">
+                                <div class="price"><h5 class="mt-4">@p._price kr.</h5></div>
+                                <div class="amount">
+                                    <div class="valueClass text-center">
+                                        <p>@p._amountleft</p>
+                                    </div>
                                 </div>
+                                <button @onclick="(() => AddProductToSL(p))" class="btn btn-success mt-3"><i class="oi oi-basket"></i> Add to cart</button>
                             </div>
-                            <button @onclick="(() => AddProductToSL(p))" class="btn btn-success mt-3"><i class="oi oi-basket"></i> Add to cart</button>
                         </div>
                     </div>
                 </div>
-            </div>
             }
         }
-    </div>
+    </div> 
+    <!--Scroll to top button   -->
+    <button  id="myBtn" class="btn btn-rounded btn-success"><a href="search" style="color: white">Top</a></button>
 </div>
 }
 else
