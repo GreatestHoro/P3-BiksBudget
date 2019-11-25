@@ -232,14 +232,24 @@
     {
         AddedItem._amountleft = 1;
 
-        ToShoppinglist.Add(AddedItem);
+        if (String.IsNullOrEmpty(email))
+        {
+            ToShoppinglist.Add(AddedItem);
 
-        //await localStorage.RemoveItemAsync("Shoppinglist");
+            //await localStorage.RemoveItemAsync("Shoppinglist");
 
-        shopString = JsonConvert.SerializeObject(ToShoppinglist);
+            await localStorage.RemoveItemAsync("ProductString");
 
-        await localStorage.SetItemAsync("ProductString", shopString);
-        //await localStorage.SetItemAsync("Shoppinglist", ToShoppinglist);
+            shopString = JsonConvert.SerializeObject(ToShoppinglist);
+
+            await localStorage.SetItemAsync("ProductString", shopString);
+            //await localStorage.SetItemAsync("Shoppinglist", ToShoppinglist);
+        }
+        else
+        {
+
+        }
+
     }
 
     private async Task KeyPressed(KeyboardEventArgs e)
@@ -378,7 +388,7 @@
             storeList = storeFilters.GetStoreList();
             wordList = wordFIlters.GetStoreList();
             InitializeBoolArrays(storeList.Count, wordList.Count);
-            await SLFunc.GetShoppinglistOnStart(email, ToShoppinglist);
+            await SLFunc.GetShoppinglistOnStart(email);
 
             if (userGeoLocation._latitude == 0 && userGeoLocation._longitude == 0)
             {
@@ -394,14 +404,19 @@
     async Task GetLocalSession()
     {
         email = await localStorage.GetItemAsync<string>("Email");
-        shopString = await localStorage.GetItemAsync<string>("ProductString");
 
-        if (!String.IsNullOrEmpty(shopString))
+        if (String.IsNullOrEmpty(email))
         {
-            ToShoppinglist = JsonConvert.DeserializeObject<List<Product>>(shopString);
+            shopString = await localStorage.GetItemAsync<string>("ProductString");
+
+            if (!String.IsNullOrEmpty(shopString))
+            {
+                ToShoppinglist = JsonConvert.DeserializeObject<List<Product>>(shopString);
+            }
         }
+        
     }
-#endregion
+    #endregion
 
 
     async Task GetUserLocation()

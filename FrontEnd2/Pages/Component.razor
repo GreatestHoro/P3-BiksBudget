@@ -242,16 +242,23 @@
 
     public async void AddProductToSL(Product AddedItem)
     {
-        AddedItem._amountleft = 1;
+        int actualAmount = AddedItem._amountleft;
 
-        ToShoppinglist.Add(AddedItem);
+        if (String.IsNullOrEmpty(email))
+        {
+            AddedItem._amountleft = 1;
 
-        //await localStorage.RemoveItemAsync("Shoppinglist");
+            ToShoppinglist.Add(AddedItem);
 
-        shopString = JsonConvert.SerializeObject(ToShoppinglist);
+            shopString = JsonConvert.SerializeObject(ToShoppinglist);
 
-        await localStorage.SetItemAsync("ProductString", shopString);
-        //await localStorage.SetItemAsync("Shoppinglist", ToShoppinglist);
+            await localStorage.SetItemAsync("ProductString", shopString);
+        }
+        else
+        {
+            AddedItem._amountleft = 1;
+            await ShopList.QuickaddItemToShoppinglist(AddedItem, actualAmount);
+        }
     }
 
     public async void QuickAddToShoppinglist(List<Ingredient> ingredient)
@@ -275,16 +282,8 @@
                 }
                 productsToAddSL.Add(temp);
             }
-
         }
-
         QuickAddListToSL(productsToAddSL);
-
-        //foreach (Product pMin in productsToAddSL)
-        //{
-        //    AddProductToSL(pMin);
-        //}
-
     }
 
     public async void QuickAddListToSL(List<Product> ingredientList)
@@ -295,7 +294,6 @@
             {
                 p._amountleft = 1;
             }
-
             await ShopList.QuickaddListToShoppinglist(ingredientList);
         }
     }

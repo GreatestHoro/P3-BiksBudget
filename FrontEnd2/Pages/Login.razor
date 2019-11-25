@@ -14,11 +14,21 @@
 
 
 <h1>Login</h1>
-<input class="SearchField SearchBar" placeholder="Email" @bind="@email" />
+@*<input class="SearchField SearchBar" placeholder="Email" @bind="@email" />
 <input class="SearchField SearchBar" type="password" placeholder="Password" @bind="@password" />
-<button class="btn btn-rounded btn-outline-success" @onclick="AutorizeLogin">Login</button>
+<button class="btn btn-rounded btn-outline-success" @onclick="AutorizeLogin">Login</button>*@
 
-
+<div class="d-flex flex-column bd-highlight mb-3">
+    <div class="p-2">
+        <input class="SearchField SearchBar" placeholder="Email" @bind="@email" />
+    </div>
+    <div class="p-2">
+        <input class="SearchField SearchBar" type="password" placeholder="Password" @bind="@password" />
+    </div>
+    <div class="p-2">
+        <button class="btn btn-rounded btn-outline-success" @onclick="AutorizeLogin">Login</button>
+    </div>
+</div>
 
 
 @code{
@@ -29,6 +39,8 @@
 
     protected async void AutorizeLogin()
     {
+        await localStorage.RemoveItemAsync("ProductString");
+
         var response = new HttpResponseMessage();
 
         User user = new User(email, password);
@@ -48,7 +60,6 @@
         {
 
             await localStorage.SetItemAsync("Email", email);
-            await localStorage.SetItemAsync("Shoppinglist", shoppingList);
             await localStorage.SetItemAsync("ProductString", ShopString);
             NavigationManager.NavigateTo("");
         }

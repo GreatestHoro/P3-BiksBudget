@@ -23,7 +23,7 @@ namespace Backend.Controllers
         ControllerFuncionality funcionality = new ControllerFuncionality();
         List<Shoppinglist> shoppinglists = new List<Shoppinglist>();
         List<Shoppinglist> toSend = new List<Shoppinglist>();
-        List<Product> newItem = new List<Product>();
+        List<Product> newItems = new List<Product>();
 
         string buffer;
         string Email;
@@ -65,9 +65,9 @@ namespace Backend.Controllers
                 buffer = "[" + buffer + "]";
             }
 
-            newItem = JsonConvert.DeserializeObject<List<Product>>(buffer);
+            newItems = JsonConvert.DeserializeObject<List<Product>>(buffer);
 
-            if (newItem.Count == 0)
+            if (newItems.Count == 0)
             {
                 dbConnect.DeleteShoppingListFromName("Shoppinglist", Email);
             }
@@ -77,12 +77,12 @@ namespace Backend.Controllers
 
                 if (toSend.Count == 0)
                 {
-                    toSend.Add(new Shoppinglist("Shoppinglist", newItem));
+                    toSend.Add(new Shoppinglist("Shoppinglist", newItems));
                 }
                 else
                 {
                     toSend[0]._products.Clear();
-                    foreach (var item in newItem)
+                    foreach (var item in newItems)
                     {
                         toSend[0]._products.Add(item);
 
@@ -115,23 +115,24 @@ namespace Backend.Controllers
                 buffer = "[" + buffer + "]";
             }
 
-            newItem = JsonConvert.DeserializeObject<List<Product>>(buffer);
+            newItems = JsonConvert.DeserializeObject<List<Product>>(buffer);
 
             toSend = dbConnect.GetShoppinglists(Email);
 
             if (toSend.Count == 0)
             {
-                toSend.Add(new Shoppinglist("Shoppinglist", newItem));
+                toSend.Add(new Shoppinglist("Shoppinglist", newItems));
             }
             else
             {
-                foreach (var item in newItem)
+                foreach (Product item in newItems)
                 {
                     toSend[0]._products.Add(item);
                 }
                 toSend[0]._products = funcionality.HandleDublicats(toSend[0]._products);
             }
 
+            dbConnect.DeleteShoppingListFromName("Shoppinglist", Email);
             dbConnect.AddShoppingListsToDatabase(Email, toSend);
         }
     }
