@@ -38,6 +38,17 @@
             _amountleft = amountleft;
         }
 
+        public Product(string id, string productName, string amount, double price, string image, string storeName, string customField)
+        {
+            _id = id;
+            _productName = productName;
+            _amount = amount;
+            _price = price;
+            _image = image;
+            _storeName = storeName;
+            _CustomReferenceField = customField;
+        }
+
         public Product(string id, string productName, string amount, double price, string image, string storeName)
         {
             _id = id;
