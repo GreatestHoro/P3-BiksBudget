@@ -184,13 +184,15 @@ else*@
                 Console.WriteLine($"Value for key {e.Key} changed from {e.OldValue} to {e.NewValue}");
             };
 
-            if(email != null)
+            if(!String.IsNullOrEmpty(email))
             {
                 isLoggedIn = true;
                 responseMessage = await ListFunc.GetShoppinglistOnStart(email);
             }
             else
             {
+                shopString = await localStorage.GetItemAsync<string>("ProductString");
+                ToShoppinglist = JsonConvert.DeserializeObject<List<Product>>(shopString);
                 responseMessage = await ListFunc.GetShoppinglistWhileNotLoggedIn(ToShoppinglist);
             }
 
@@ -202,12 +204,6 @@ else*@
     async Task GetLocalSession()
     {
         email = await localStorage.GetItemAsync<string>("Email");
-        shopString = await localStorage.GetItemAsync<string>("ProductString");
-
-        if (!String.IsNullOrEmpty(shopString))
-        {
-            ToShoppinglist = JsonConvert.DeserializeObject<List<Product>>(shopString);
-        }
     }
     #endregion
 
