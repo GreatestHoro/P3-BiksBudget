@@ -335,6 +335,7 @@ namespace BBCollection.DBHandling
         public Product GetProductWithReferenceFromId(string id, DatabaseInformation databaseInformation)
         {
             Product product = new Product();
+            ProductHandling handle = new ProductHandling();
             string getProductQuery =
                 "SELECT * FROM products WHERE id = @ProdId";
 
@@ -350,7 +351,7 @@ namespace BBCollection.DBHandling
                 {
                     foreach (DataRow r in ds.Tables[0].Rows)
                     {
-                        product  = new Product((string)r[0], (string)r[1], (string)r[2], Convert.ToDouble(r[3]), (string)r[4], (string)r[5], (string)r[6]);
+                            product = new Product((string)r[0], (string)r[1], (string)r[2], Convert.ToDouble(r[3]), (string)r[4], (string)r[5], (string)r[6]);
                     }
                 }
             }
