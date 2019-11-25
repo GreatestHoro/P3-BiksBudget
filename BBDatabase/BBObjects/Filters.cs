@@ -36,7 +36,7 @@ namespace BBCollection.BBObjects
 #pragma warning restore CS0219 // The variable 'SallingFlag' is assigned but its value is never used
             bool flag = false;
             int i = 0;
-            List<Product> searchedProducts = GetProductWithRef(searchterm,dbConnect);
+            List<Product> searchedProducts = dbConnect.GetProducts(searchterm);
             AppliedFiltersList keyWordFilters = new AppliedFiltersList(ToggleWordFilters, wordArray);
             AppliedFiltersList storeNameFilters = new AppliedFiltersList(ToggleStoreFILters, storeArray);
 
@@ -62,18 +62,6 @@ namespace BBCollection.BBObjects
             return FilteredList;
         }
 
-        private List<Product> GetProductWithRef(string Searchterm, DatabaseConnect dbConnect)
-        {
-            List<Product> Products = dbConnect.GetProducts(Searchterm);
-            List<Product> ProductsWithRef = new List<Product>();
-            ProductHandling productHandling = new ProductHandling();
-
-            foreach (Product p in Products)
-            {
-                ProductsWithRef.Add(productHandling.GetProductWithReferenceFromId(p._id, new DatabaseInformation("localhost", "biksbudgetdb", "root", "BiksBudget123")));
-            }
-            return ProductsWithRef;
-        }
         private List<Product> SearchForProducts(String searchterm)
         {
             BearerAccessToken bearerAccessToken = new BearerAccessToken("fc5aefca-c70f-4e59-aaaa-1c4603607df8");

@@ -61,7 +61,7 @@
 
         public Product(string id, string productName, string amount,
                        double price, string image, string storename,
-                       int amountleft, string timeAdded, string state)
+                       int amountleft, string timeAdded, string state, string customField)
         {
             _id = id;
             _productName = productName;
@@ -72,6 +72,7 @@
             _amountleft = amountleft;
             _timeAdded = timeAdded;
             _state = state;
+            _CustomReferenceField = customField;
         }
 
         public Product(string id, string customname, int amountleft, string timeadded, string state)
