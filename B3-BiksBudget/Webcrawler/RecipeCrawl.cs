@@ -219,21 +219,27 @@ namespace BBGatherer.Webcrawler
         {
             string newRefrence;
             ProductHandling productHandling = new ProductHandling();
-            List<Product> Products = dbConnect.GetProducts(Searchterm);
-            List<Product> ProductsWithRef = new List<Product>();
-
-            foreach (Product p in Products) 
-            {
-                ProductsWithRef.Add(productHandling.GetProductWithReferenceFromId(p._id, new DatabaseInformation("localhost", "nytest", "root", "BiksBudget123")));
-            }
+            List<Product> ProductsWithRef = GetProductWithRef(Searchterm,dbConnect);
             foreach (Product p in ProductsWithRef) 
             {
                 newRefrence = UpdateProductRefrence(p._CustomReferenceField.Trim(), Searchterm);
-                productHandling.InsertIngredientReferenceFromId(newRefrence,p._id, new DatabaseInformation("localhost", "nytest", "root", "BiksBudget123"));
+                productHandling.InsertIngredientReferenceFromId(newRefrence,p._id, new DatabaseInformation("localhost", "biksbudgetdb", "root", "BiksBudget123"));
             }
             //Product hey = productHandling.GetProductWithReferenceFromId("S14933501", new DatabaseInformation("localhost", "nytest", "root", "BiksBudget123"));
             
-            return Products.Count != 0 ? true : false;
+            return ProductsWithRef.Count != 0 ? true : false;
+        }
+        private List<Product> GetProductWithRef(string Searchterm,DatabaseConnect dbConnect) 
+        {
+            List<Product> Products = dbConnect.GetProducts(Searchterm);
+            List<Product> ProductsWithRef = new List<Product>();
+            ProductHandling productHandling = new ProductHandling();
+
+            foreach (Product p in Products)
+            {
+                ProductsWithRef.Add(productHandling.GetProductWithReferenceFromId(p._id, new DatabaseInformation("localhost", "biksbudgetdb", "root", "BiksBudget123")));
+            }
+            return ProductsWithRef;
         }
 
         private string UpdateProductRefrence(string CurrentRefrence, string searchterm) 

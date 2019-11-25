@@ -5,6 +5,8 @@ using BBCollection;
 using BBCollection.StoreApi;
 using BBCollection.StoreApi.ApiNeeds;
 using BBCollection.StoreApi.SallingApi;
+using BBCollection.DBHandling;
+using BBCollection.DBConncetion;
 
 namespace BBCollection.BBObjects
 {
@@ -34,7 +36,7 @@ namespace BBCollection.BBObjects
 #pragma warning restore CS0219 // The variable 'SallingFlag' is assigned but its value is never used
             bool flag = false;
             int i = 0;
-            List<Product> searchedProducts = dbConnect.GetProducts(searchterm);
+            List<Product> searchedProducts = GetProductWithRef(searchterm,dbConnect);
             AppliedFiltersList keyWordFilters = new AppliedFiltersList(ToggleWordFilters, wordArray);
             AppliedFiltersList storeNameFilters = new AppliedFiltersList(ToggleStoreFILters, storeArray);
 
@@ -58,6 +60,19 @@ namespace BBCollection.BBObjects
             } while (i++ <=2);
 
             return FilteredList;
+        }
+
+        private List<Product> GetProductWithRef(string Searchterm, DatabaseConnect dbConnect)
+        {
+            List<Product> Products = dbConnect.GetProducts(Searchterm);
+            List<Product> ProductsWithRef = new List<Product>();
+            ProductHandling productHandling = new ProductHandling();
+
+            foreach (Product p in Products)
+            {
+                ProductsWithRef.Add(productHandling.GetProductWithReferenceFromId(p._id, new DatabaseInformation("localhost", "biksbudgetdb", "root", "BiksBudget123")));
+            }
+            return ProductsWithRef;
         }
         private List<Product> SearchForProducts(String searchterm)
         {
