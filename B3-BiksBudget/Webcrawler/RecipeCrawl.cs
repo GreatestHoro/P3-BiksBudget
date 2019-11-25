@@ -121,20 +121,24 @@ namespace BBGatherer.Webcrawler
         private String CheckForValidIndgredients(String name, DatabaseConnect dbConnect, out bool fatalError)
         {
             fatalError = false;
+            List<string> matches = new List<string>();
             List<String> Combinations = GetAllCombinations(name,dbConnect);
-            Combinations = removeInvalidRefrenceName(Combinations);
 
-            List<string> matches = CheckIngredientInDatabase(Combinations,dbConnect);
-            if (matches.Count == 0) 
+            if (Combinations.Count != 0) 
             {
-                foreach (string Searchterm in Combinations) 
+                matches = CheckIngredientInDatabase(Combinations, dbConnect);
+                if (matches.Count == 0)
                 {
-                    if (CheckIngredientsInApi(Searchterm, dbConnect)) 
+                    foreach (string Searchterm in Combinations)
                     {
-                        matches = (CheckIngredientInDatabase(Combinations, dbConnect));
+                        if (CheckIngredientsInApi(Searchterm, dbConnect))
+                        {
+                            matches = (CheckIngredientInDatabase(Combinations, dbConnect));
+                        }
                     }
                 }
             }
+            
             //lav en metode til at gemme det afviste svar
             if (matches.Count() == 0 && !fatalError)
             {
@@ -144,15 +148,6 @@ namespace BBGatherer.Webcrawler
             return Combinations[Combinations.Count - 1];
         }
 
-        private List<String> removeInvalidRefrenceName(List<string> combinations) 
-        {
-            List<string> remove = new List<string>() { "til", "el", "af" };
-            foreach (string s in remove) 
-            {
-                combinations.Remove(s);
-            }
-            return combinations;
-        }
         private List<String> GetAllCombinations(string name, DatabaseConnect dbConnect) 
         {
             String[] str = name.Split(" ");
@@ -178,7 +173,7 @@ namespace BBGatherer.Webcrawler
             {
                 ReturnString = ReturnString + " " + word;
             }
-            return ReturnString;
+            return ReturnString.Trim(); ;
         }
         private List<String> Combination(string[] str, int size, int i)
         {
@@ -211,9 +206,9 @@ namespace BBGatherer.Webcrawler
             List<string> results = new List<string>();
             foreach (string Searchterm in Searchterms) 
             {
-                if (CheckCOOPProductsInDatabase(Searchterm, dbConnect)) 
+                if (CheckCOOPProductsInDatabase(Searchterm.Trim(), dbConnect)) 
                 {
-                    results.Add(Searchterm);
+                    results.Add(Searchterm.Trim());
                 }
             }
 
@@ -233,26 +228,28 @@ namespace BBGatherer.Webcrawler
             }
             foreach (Product p in ProductsWithRef) 
             {
-                newRefrence = UpdateProductRefrence(p._CustomReferenceField, Searchterm);
+                newRefrence = UpdateProductRefrence(p._CustomReferenceField.Trim(), Searchterm);
                 productHandling.InsertIngredientReferenceFromId(newRefrence,p._id, new DatabaseInformation("localhost", "nytest", "root", "BiksBudget123"));
             }
+            //Product hey = productHandling.GetProductWithReferenceFromId("S14933501", new DatabaseInformation("localhost", "nytest", "root", "BiksBudget123"));
+            
             return Products.Count != 0 ? true : false;
         }
 
         private string UpdateProductRefrence(string CurrentRefrence, string searchterm) 
         {
-            if (CurrentRefrence != null)
+            if (!String.IsNullOrWhiteSpace(CurrentRefrence))
             {
                 if (!CurrentRefrence.Contains(searchterm+","))
                 {
                     
-                    CurrentRefrence += searchterm+",";
+                    CurrentRefrence += searchterm+ ",";
                 }
                 return CurrentRefrence;
             }
             else 
             {
-                return searchterm+ ",";
+                return searchterm+",";
             }
 
         }
@@ -331,8 +328,9 @@ namespace BBGatherer.Webcrawler
         {
             List<char> _char = new List<char>() {',', '.', '+', '-', '!', '?','&','%','–','"','*','(',')','/', '½'};
             List<string> splitString = new List<string>() {"eller","i","med","gerne","fra","fx","ekstra","el","og"};
-            List<string> removeSub = new List<string>() { "evt","ekstra","tsk", "almindelig"};
+            List<string> removeSub = new List<string>() {"dl","hel","der","er","kg","små","evt","ekstra","tsk","almindelig", "til", "el", "af", "stk", "ud", "g", "ca", "a", "pr", "sk", "hele","cm","nye","frisk","st","u","en","uden"};
             List<string> removeIfFisrt = new List<string>() {"af " , "after "};
+            name = new String(name.Where(c => c != '-' && (c < '0' || c > '9')).ToArray());
 
             name = RemoveInBetween(name,'(',')');
             name = RemoveInBetween(name,'"','"');
