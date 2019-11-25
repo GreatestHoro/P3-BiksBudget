@@ -351,6 +351,13 @@ namespace BBCollection.DBHandling
                 {
                     foreach (DataRow r in ds.Tables[0].Rows)
                     {
+                        string reference = (string)r[6];
+
+                        if(reference == null)
+                        {
+                            reference = "";
+                        }
+
                         product  = new Product((string)r[0], (string)r[1], (string)r[2], Convert.ToDouble(r[3]), (string)r[4], (string)r[5], (string)r[6]);
                     }
                 }
