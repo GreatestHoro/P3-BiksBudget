@@ -227,7 +227,8 @@ namespace BBCollection.DBHandling
                     string SLName = (string)ds.Tables[0].Rows[0][0];
                     foreach (DataRow r in ds.Tables[0].Rows)
                     {
-                        Product product = new Product((string)r[1], (string)r[2], (string)r[3], Convert.ToDouble(r[4]), (string)r[5], (string)r[6], (int)r[7]);
+                        
+                        Product product = new Product((string)r[1], (string)r[2], (string)r[3], Convert.ToDouble(r[4]), (string)r[5], (string)r[6], (int)r[8]);
 
                         if (SLName == (string)r[0])
                         {
