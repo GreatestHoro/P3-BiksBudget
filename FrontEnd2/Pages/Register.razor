@@ -14,10 +14,25 @@
 {
     //sæt dem under hinanden
     <h1>Register</h1>
-    <input class="SearchField SearchBar" placeholder="Username" @bind="@tempEmail" />
+    @*<input class="SearchField SearchBar" placeholder="Username" @bind="@tempEmail" />
     <input class="SearchField SearchBar" type="password" placeholder="Password" @bind="@password" />
     <input class="SearchField SearchBar" type="password" placeholder="Repeat" @bind="@repPassword" />
     <button class="btn btn-rounded btn-outline-success" @onclick="CheckInputs">Register</button>
+    <label>@verificationText</label>*@
+    <div class="d-flex flex-column bd-highlight mb-3">
+        <div class="p-2">
+            <input class="SearchField SearchBar" placeholder="Username" @bind="@tempEmail" />
+        </div>
+        <div class="p-2">
+            <input class="SearchField SearchBar" type="password" placeholder="Password" @bind="@password" />
+        </div>
+        <div class="p-2">
+            <input class="SearchField SearchBar" type="password" placeholder="Repeat password" @bind="@repPassword" />
+        </div>
+        <div class="p-2">
+            <button class="btn btn-rounded btn-outline-success" @onclick="CheckInputs">Register</button>
+        </div>
+    </div>
     <label>@verificationText</label>
 }
 else

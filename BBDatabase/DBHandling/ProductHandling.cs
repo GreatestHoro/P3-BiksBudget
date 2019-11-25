@@ -1,4 +1,4 @@
-﻿using BBCollection.BBObjects;
+using BBCollection.BBObjects;
 using BBCollection.DBConncetion;
 using MySql.Data.MySqlClient;
 using System;
@@ -227,7 +227,8 @@ namespace BBCollection.DBHandling
                     string SLName = (string)ds.Tables[0].Rows[0][0];
                     foreach (DataRow r in ds.Tables[0].Rows)
                     {
-                        Product product = new Product((string)r[1], (string)r[2], (string)r[3], Convert.ToDouble(r[4]), (string)r[5], (string)r[6], (int)r[7]);
+                        
+                        Product product = new Product((string)r[1], (string)r[2], (string)r[3], Convert.ToDouble(r[4]), (string)r[5], (string)r[6], (int)r[8]);
 
                         if (SLName == (string)r[0])
                         {
@@ -335,6 +336,7 @@ namespace BBCollection.DBHandling
         public Product GetProductWithReferenceFromId(string id, DatabaseInformation databaseInformation)
         {
             Product product = new Product();
+            ProductHandling handle = new ProductHandling();
             string getProductQuery =
                 "SELECT * FROM products WHERE id = @ProdId";
 
@@ -350,7 +352,14 @@ namespace BBCollection.DBHandling
                 {
                     foreach (DataRow r in ds.Tables[0].Rows)
                     {
-                        product  = new Product((string)r[0], (string)r[1], (string)r[2], Convert.ToDouble(r[3]), (string)r[4], (string)r[5], (string)r[6]);
+                        string reference = (string)r[6];
+
+                        if(reference == null)
+                        {
+                            reference = "";
+                        }
+
+                        product  = new Product((string)r[0], (string)r[1], (string)r[2], Convert.ToDouble(r[3]), (string)r[4], (string)r[5], reference);
                     }
                 }
             }

@@ -225,10 +225,16 @@ namespace BBGatherer.Webcrawler
             string newRefrence;
             ProductHandling productHandling = new ProductHandling();
             List<Product> Products = dbConnect.GetProducts(Searchterm);
+            List<Product> ProductsWithRef = new List<Product>();
+
             foreach (Product p in Products) 
             {
+                ProductsWithRef.Add(productHandling.GetProductWithReferenceFromId(p._id, new DatabaseInformation("localhost", "nytest", "root", "BiksBudget123")));
+            }
+            foreach (Product p in ProductsWithRef) 
+            {
                 newRefrence = UpdateProductRefrence(p._CustomReferenceField, Searchterm);
-                productHandling.InsertIngredientReferenceFromId(newRefrence,p._id, new DatabaseInformation("localhost", "biksbudgetDB", "root", "BiksBudget123"));
+                productHandling.InsertIngredientReferenceFromId(newRefrence,p._id, new DatabaseInformation("localhost", "nytest", "root", "BiksBudget123"));
             }
             return Products.Count != 0 ? true : false;
         }
@@ -237,16 +243,16 @@ namespace BBGatherer.Webcrawler
         {
             if (CurrentRefrence != null)
             {
-                if (!CurrentRefrence.Contains(","+searchterm))
+                if (!CurrentRefrence.Contains(searchterm+","))
                 {
                     
-                    CurrentRefrence += "," + searchterm;
+                    CurrentRefrence += searchterm+",";
                 }
                 return CurrentRefrence;
             }
             else 
             {
-                return searchterm;
+                return searchterm+ ",";
             }
 
         }
