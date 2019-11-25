@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 
+
 namespace BBCollection.DBHandling
 {
     public class ProductHandling
@@ -59,10 +60,6 @@ namespace BBCollection.DBHandling
 
             string storageQuery;
                 
-
-            
-            
-
             string checkProdIDExist =
                 "SELECT Count(*) FROM userstorage WHERE prodid IS NOT NULL AND username = @Username";
             MySqlCommand prodmsc = new MySqlCommand(checkProdIDExist);
@@ -76,7 +73,7 @@ namespace BBCollection.DBHandling
             if (new SQLConnect().CheckRecordExist(prodmsc, dbInformation))
             {
                 storageQuery =
-                    "SELECT userstorage.prodid, products.productname , products.amount, products.price, products.image, products.store, userstorage.amountStored, userstorage.timeadded, userstorage.state " +
+                    "SELECT userstorage.prodid, products.productname , products.amount, products.price, products.image, products.store, userstorage.amountStored, userstorage.timeadded, userstorage.state, products.ingredient_reference " +
                     "FROM userstorage INNER JOIN products ON userstorage.prodid = products.id " +
                     "WHERE userstorage.username = @Username AND prodid IS NOT NULL";
                 MySqlCommand msc = new MySqlCommand(storageQuery);
@@ -87,7 +84,7 @@ namespace BBCollection.DBHandling
                 {
                     foreach (DataRow r in ds.Tables[0].Rows)
                     {
-                        Product product = new Product((string)r[0], (string)r[1], (string)r[2], Convert.ToDouble(r[3]), (string)r[4], (string)r[5], (int)r[6], Convert.ToString(r[7]), (string)r[8]);
+                        Product product = new Product((string)r[0], (string)r[1], (string)r[2], Convert.ToDouble(r[3]), (string)r[4], (string)r[5], (int)r[6], Convert.ToString(r[7]), (string)r[8], (string)r[9]);
                         productList.Add(product);
                     }
                 }
@@ -228,7 +225,7 @@ namespace BBCollection.DBHandling
                     foreach (DataRow r in ds.Tables[0].Rows)
                     {
                         
-                        Product product = new Product((string)r[1], (string)r[2], (string)r[3], Convert.ToDouble(r[4]), (string)r[5], (string)r[6], (int)r[8]);
+                        Product product = new Product((string)r[1], (string)r[2], (string)r[3], Convert.ToDouble(r[4]), (string)r[5], (string)r[6], (int)r[8],(string)r[7]);
 
                         if (SLName == (string)r[0])
                         {
@@ -352,14 +349,19 @@ namespace BBCollection.DBHandling
                 {
                     foreach (DataRow r in ds.Tables[0].Rows)
                     {
-                        string reference = (string)r[6];
-
-                        if(reference == null)
+                        string reference = "";
+                        
+                        if(r[6] == DBNull.Value)
                         {
                             reference = "";
+                            product = new Product((string)r[0], (string)r[1], (string)r[2], Convert.ToDouble(r[3]), (string)r[4], (string)r[5], reference);
+                        }
+                        else 
+                        {
+                            product = new Product((string)r[0], (string)r[1], (string)r[2], Convert.ToDouble(r[3]), (string)r[4], (string)r[5], (string)r[6]);
                         }
 
-                        product  = new Product((string)r[0], (string)r[1], (string)r[2], Convert.ToDouble(r[3]), (string)r[4], (string)r[5], reference);
+                        
                     }
                 }
             }

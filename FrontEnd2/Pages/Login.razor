@@ -39,6 +39,8 @@
 
     protected async void AutorizeLogin()
     {
+        await localStorage.RemoveItemAsync("ProductString");
+
         var response = new HttpResponseMessage();
 
         User user = new User(email, password);
@@ -58,7 +60,6 @@
         {
 
             await localStorage.SetItemAsync("Email", email);
-            await localStorage.SetItemAsync("Shoppinglist", shoppingList);
             await localStorage.SetItemAsync("ProductString", ShopString);
             NavigationManager.NavigateTo("");
         }

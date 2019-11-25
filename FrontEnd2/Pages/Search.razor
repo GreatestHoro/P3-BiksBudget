@@ -155,88 +155,62 @@ else
 }
 
 @code{
-        #region fields
-        static TaskCompletionSource<GeoCoordinate> tcsUserLocation = new TaskCompletionSource<GeoCoordinate>();
-        static GeoCoordinate userGeoLocation = new GeoCoordinate(0, 0);
+    #region fields
+    static TaskCompletionSource<GeoCoordinate> tcsUserLocation = new TaskCompletionSource<GeoCoordinate>();
+    static GeoCoordinate userGeoLocation = new GeoCoordinate(0, 0);
 
-        SortoptionsList sortOptions = new SortoptionsList();
-        StoreFilterList storeFilters = new StoreFilterList();
-        WordFilterList wordFIlters = new WordFilterList();
-        FindCloseStores closeStore;
-        ShoppinlistFunctionality SLFunc = new ShoppinlistFunctionality("api/Shoppinglist");
+    SortoptionsList sortOptions = new SortoptionsList();
+    StoreFilterList storeFilters = new StoreFilterList();
+    WordFilterList wordFIlters = new WordFilterList();
+    FindCloseStores closeStore;
+    ShoppinlistFunctionality SLFunc = new ShoppinlistFunctionality("api/Shoppinglist");
 
-        List<FilterItem> storeList = new List<FilterItem>();
-        List<FilterItem> wordList = new List<FilterItem>();
-        List<UnifiedAPIStore> allStoresUnified = new List<UnifiedAPIStore>();
-        List<Product> itemList = new List<Product>();
-        List<Product> ToShoppinglist = new List<Product>();
-        List<Options> optionsList = new List<Options>();
-
-
-        bool[] EnabledStores;
-        bool[] EnabledKeywords;
-
-        Product[] slArray = new Product[10];
-        string shopString;
-
-        bool viewAdvancedSearch = false;
-        bool storeBoolSetTo = true;
-        bool wordBoolSetTo = true;
-        bool _viewProducts = false;
-        bool IsLocationEnabled = false;
-        bool FatalFalure = false;
-
-        int value = 1;
-        int radius = 1000;
-        int amountAddedToSL = 1;
-
-        double _minPrice = 0;
-        double _maxPrice = 5000;
-        double priceLimit = 10000;
-
-        string searchBox;
-        string email;
-        string messageToUser = "Apply filters and press search to find products";
-        string productString;
-        #endregion
-
-        #region Page_Methods
-        // Function to get salling products in high resolution
-        private string ProductImage(string prod_image)
-        {
-            return prod_image + "&imgSize=1080x1080";
-        }
+    List<FilterItem> storeList = new List<FilterItem>();
+    List<FilterItem> wordList = new List<FilterItem>();
+    List<UnifiedAPIStore> allStoresUnified = new List<UnifiedAPIStore>();
+    List<Product> itemList = new List<Product>();
+    List<Product> ToShoppinglist = new List<Product>();
+    List<Options> optionsList = new List<Options>();
 
 
-        protected void IncrementAmount(string id)
-        {
-            foreach (var item in itemList)
-            {
-                if (item._id == id && item._amountleft != 0)
-                {
-                    item._amountleft++;
-                    value++;
-                }
-            }
-        }
+    bool[] EnabledStores;
+    bool[] EnabledKeywords;
 
-        protected void DecrementAmount(string id)
-        {
-            foreach (var item in itemList)
-            {
+    Product[] slArray = new Product[10];
+    string shopString;
 
-                if (item._id == id && item._amountleft > 1)
-                {
-                    item._amountleft--;
-                    value--;
-                }
-            }
-        }
+    bool viewAdvancedSearch = false;
+    bool storeBoolSetTo = true;
+    bool wordBoolSetTo = true;
+    bool _viewProducts = false;
+    bool IsLocationEnabled = false;
+    bool FatalFalure = false;
 
-        void toggleAdvancedCheckBox()
-        {
-            viewAdvancedSearch = !viewAdvancedSearch;
-        }
+    int value = 1;
+    int radius = 1000;
+    int amountAddedToSL = 1;
+
+    double _minPrice = 0;
+    double _maxPrice = 5000;
+    double priceLimit = 10000;
+
+    string searchBox;
+    string email;
+    string messageToUser = "Apply filters and press search to find products";
+    string productString;
+    #endregion
+
+    #region Page_Methods
+    // Function to get salling products in high resolution
+    private string ProductImage(string prod_image)
+    {
+        return prod_image + "&imgSize=1080x1080";
+    }
+
+    void toggleAdvancedCheckBox()
+    {
+        viewAdvancedSearch = !viewAdvancedSearch;
+    }
 
     public double minPrice
     {
@@ -344,6 +318,7 @@ else
         }
     }
 
+    #region Product Sort Filters
     public async void SortByMostRelevant()
     {
         await SearchForProducts();
@@ -378,6 +353,7 @@ else
     {
         itemList.Sort((a, b) =>  b._productName.CompareTo(a._productName));
     }
+    #endregion
 
     void toggle()
     {
@@ -408,17 +384,23 @@ else
 
         int actualAmout = AddedItem._amountleft;
 
-        ToShoppinglist.Add(AddedItem);
+        if (String.IsNullOrEmpty(email))
+        {
+            ToShoppinglist.Add(AddedItem);
 
-        ToShoppinglist = HandleDublicats(ToShoppinglist);
+            ToShoppinglist = HandleDublicats(ToShoppinglist);
 
-        await localStorage.RemoveItemAsync("Shoppinglist");
+            await localStorage.RemoveItemAsync("ProductString");
 
-        shopString = JsonConvert.SerializeObject(ToShoppinglist);
+            shopString = JsonConvert.SerializeObject(ToShoppinglist);
 
-        await localStorage.SetItemAsync("ProductString", shopString);
-
-        //await localStorage.SetItemAsync("Shoppinglist", ToShoppinglist);
+            await localStorage.SetItemAsync("ProductString", shopString);
+        }
+        else
+        {
+            AddedItem._amountleft = 1;
+            await SLFunc.QuickaddItemToShoppinglist(AddedItem, actualAmout);
+        }
     }
 
     public List<Product> HandleDublicats(List<Product> inputList)
@@ -502,9 +484,18 @@ else
             storeList = storeFilters.GetStoreList();
             wordList = wordFIlters.GetStoreList();
             InitializeBoolArrays(storeList.Count, wordList.Count);
-            if (email != null)
+            if (!String.IsNullOrEmpty(email))
             {
-                await SLFunc.GetShoppinglistOnStart(email, ToShoppinglist);
+                await SLFunc.GetShoppinglistOnStart(email);
+            }
+            else
+            {
+                shopString = await localStorage.GetItemAsync<string>("ProductString");
+
+                if (!String.IsNullOrEmpty(shopString))
+                {
+                    ToShoppinglist = JsonConvert.DeserializeObject<List<Product>>(shopString);
+                }
             }
 
             this.StateHasChanged();
