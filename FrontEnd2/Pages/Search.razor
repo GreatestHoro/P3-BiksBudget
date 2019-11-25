@@ -457,8 +457,6 @@ else
 
         if (!String.IsNullOrEmpty(searchBox) && !String.IsNullOrWhiteSpace(searchBox))
         {
-            itemList.Clear();
-
             updateFilters();
 
             ProductSearchLinkConstructer link = new ProductSearchLinkConstructer(searchBox, ConvertBoolArrToStr(EnabledKeywords), ConvertBoolArrToStr(EnabledStores));
@@ -471,6 +469,7 @@ else
             }
 
             itemList = JsonConvert.DeserializeObject<List<Product>>(productString);
+            StateHasChanged();
 
             if (itemList.Count != 0)
             {
