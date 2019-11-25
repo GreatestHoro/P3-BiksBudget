@@ -24,7 +24,7 @@ namespace BBGatherer
 
     public class DataHandling
     {
-        public DatabaseConnect dbConnect = new DatabaseConnect("localhost", "biksbudgetDB", "root", "BiksBudget123");
+        public DatabaseConnect dbConnect = new DatabaseConnect("localhost", "nytest", "root", "BiksBudget123");
         public void GenerateDatabase()
         {
             dbConnect.InitializeDatabase();
@@ -60,7 +60,7 @@ namespace BBGatherer
             if (salling == true)
             {
                 RecipeCrawl WebRunner = new RecipeCrawl();
-                _ = WebRunner.GetRecipes(1, 1200, dbConnect);
+                _ = WebRunner.GetRecipes(600, 1200, dbConnect);
 
                 Console.WriteLine("web runner begins... fear its power");
                 Console.ReadLine();
