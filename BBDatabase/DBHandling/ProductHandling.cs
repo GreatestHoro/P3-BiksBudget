@@ -224,20 +224,40 @@ namespace BBCollection.DBHandling
                     string SLName = (string)ds.Tables[0].Rows[0][0];
                     foreach (DataRow r in ds.Tables[0].Rows)
                     {
-                        
-                        Product product = new Product((string)r[1], (string)r[2], (string)r[3], Convert.ToDouble(r[4]), (string)r[5], (string)r[6], (int)r[8],(string)r[7]);
+                        string reference = "";
+                        if(r[7] != DBNull.Value)
+                        {
+                            reference = (string) r[7];
+                            Product product = new Product((string)r[1], (string)r[2], (string)r[3], Convert.ToDouble(r[4]), (string)r[5], (string)r[6], (int)r[8],(string)r[7]);
+                            if (SLName == (string)r[0])
+                            {
+                                products.Add(product);
+                            }
+                            else
+                            {
+                                ShoppingLists.Add(new Shoppinglist(SLName, products));
+                                products = new List<Product>();
+                                products.Add(product);
+                            }
+                            SLName = (string)r[0];
+                        } else
+                        {
+                            Product product = new Product((string)r[1], (string)r[2], (string)r[3], Convert.ToDouble(r[4]), (string)r[5], (string)r[6], (int)r[8]);
+                            if (SLName == (string)r[0])
+                            {
+                                products.Add(product);
+                            }
+                            else
+                            {
+                                ShoppingLists.Add(new Shoppinglist(SLName, products));
+                                products = new List<Product>();
+                                products.Add(product);
+                            }
+                            SLName = (string)r[0];
 
-                        if (SLName == (string)r[0])
-                        {
-                            products.Add(product);
                         }
-                        else
-                        {
-                            ShoppingLists.Add(new Shoppinglist(SLName, products));
-                            products = new List<Product>();
-                            products.Add(product);
-                        }
-                        SLName = (string)r[0];
+
+                        
                     }
                     ShoppingLists.Add(new Shoppinglist(SLName, products));
                 }

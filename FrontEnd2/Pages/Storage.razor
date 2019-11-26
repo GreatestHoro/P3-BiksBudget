@@ -214,8 +214,7 @@
     private delegate bool compareWR(WeightedRecipies r1, WeightedRecipies r2);
     #endregion
 
-    #region Storage_Methods
-    //Storage functionalities
+    #region StorageMethods
 
     public async void ChangeItemState(Product item, string state)
     {
@@ -249,29 +248,6 @@
         item._amountleft--;
 
         await ListFunc.ChangeItem(item);
-
-    }
-
-    private async void AddProduct()
-    {
-        if (newProduct != null)
-        {
-            Product newItem = new Product()
-            {
-                _productName = newProduct,
-                _amount = "",
-                _state = "Full",
-                _id = "2000000000045000",
-                _amountleft = 1,
-                _timeAdded = DateTime.Now.ToString()
-            };
-
-            newProduct = string.Empty;
-
-            ListFunc.itemList.Add(newItem);
-            //responseMessage = await ListFunc.AddProductItem(newItem, userId);
-        }
-
     }
     #endregion
 
@@ -288,16 +264,11 @@
                 Console.WriteLine($"Value for key {e.Key} changed from {e.OldValue} to {e.NewValue}");
             };
 
-            //if (email != null)
-            //{
-            //    gottenData = await Http.GetStringAsync("https://localhost:44325/api/Login/" + email + "S");
-            //}
             userId = email;
             if(email != null)
             {
                 responseMessage = await ListFunc.GetStorageOnStart(email);
             }
-
 
             StateHasChanged();
         }
@@ -396,7 +367,7 @@
     }
     #endregion
 
-    #region EmptyFridge_Methods
+    #region EmptyFridgeMethods
 
 
     private async Task<List<WeightedRecipies>> FindValidRecipies()

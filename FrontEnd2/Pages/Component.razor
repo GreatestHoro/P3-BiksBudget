@@ -58,7 +58,7 @@
                             }
 
                             <tr>
-                                <td>@((ing._amount/recipePerPerson)*scalar) @ing._unit</td>
+                                <td>@(String.Format("{0:0.0}", (ing._amount/recipePerPerson)*scalar)) @ing._unit</td>
                                 <td><button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => retriveIngredient(ing))">@ing._ingredientName</button></td>
                             </tr>
                         }
@@ -275,6 +275,7 @@
         Product temp = new Product();
         List<Product> productsToAddSL = new List<Product>();
         GetProductLists(ingredient);
+
         foreach (List<Product> pro in returnList)
         {
             if (pro.Count != 0)
@@ -291,6 +292,7 @@
                 productsToAddSL.Add(temp);
             }
         }
+
         if (String.IsNullOrEmpty(email))
         {
             QuickaddListToLocalStorage(productsToAddSL);
@@ -299,7 +301,7 @@
         {
             QuickAddListToSL(productsToAddSL);
         }
-
+        returnList.Clear();
     }
 
     public async void QuickAddListToSL(List<Product> ingredientList)

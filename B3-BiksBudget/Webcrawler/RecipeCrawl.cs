@@ -20,7 +20,7 @@ namespace BBGatherer.Webcrawler
         public async Task GetRecipes(int start_page, int Last_page, DatabaseConnect dbConnect)
         {
             List<Recipe> opskrifter = new List<Recipe>(); //The list that holdes the recipies
-            
+
             for (int i = start_page; i <= Last_page; i++) //loop that goes from the first page to the last page
             {
                 String url = ("https://www.dk-kogebogen.dk/opskrifter/" + i + "/");
@@ -37,7 +37,7 @@ namespace BBGatherer.Webcrawler
                 HtmlNodeCollection PerPerson = htmlDocument.DocumentNode.SelectNodes("//span[@itemprop='recipeYield']");
                 HtmlNodeCollection Beskrivels = htmlDocument.DocumentNode.SelectNodes("//div[@itemprop]");
                 HtmlNodeCollection name = htmlDocument.DocumentNode.SelectNodes("//center");
-                
+
                 Console.WriteLine(i);
                 if (!CheckIfPageFound(name, Beskrivels, ingredienser))
                 {
@@ -54,9 +54,9 @@ namespace BBGatherer.Webcrawler
                         {
                             if (!ind.InnerText.Contains(':'))
                             {
-                                
+
                                 Ingredient ingredient = CreateIngriedient(ind.InnerText, out fatalError, dbConnect);
-                                if (!ingredient._ingredientName.Equals("none")) 
+                                if (!ingredient._ingredientName.Equals("none"))
                                 {
                                     IngriedisensList.Add(ingredient);
                                 }
@@ -72,9 +72,9 @@ namespace BBGatherer.Webcrawler
                             IngriedisensList,
                             CleanUpPerPerson(PerPerson)));
                         }
-                        else 
+                        else
                         {
-                            
+
                             Console.WriteLine("Recipie determined false..");
                         }
 
@@ -98,18 +98,18 @@ namespace BBGatherer.Webcrawler
             String name = DeterminName(ind).Trim();
             name = NameCleanUp(name);
             Console.WriteLine("INPUT: "+name);
-            
+
             if (!String.IsNullOrWhiteSpace(name.Trim()))
             {
                 name = CheckForValidIndgredients(name, dbConnect, out fatalError);
-                if (!fatalError) 
+                if (!fatalError)
                 {
                     name = EdgeCaseCleanUp(name);
                     Console.WriteLine("OUTPUT: " + name);
                     fatalError = EvaluateName(name);
                 }
             }
-            else 
+            else
             {
                 fatalError = false;
                 name = "none";
@@ -124,7 +124,7 @@ namespace BBGatherer.Webcrawler
             List<string> matches = new List<string>();
             List<String> Combinations = GetAllCombinations(name,dbConnect);
 
-            if (Combinations.Count != 0) 
+            if (Combinations.Count != 0)
             {
                 matches = CheckIngredientInDatabase(Combinations, dbConnect);
                 if (matches.Count == 0)
@@ -138,7 +138,7 @@ namespace BBGatherer.Webcrawler
                     }
                 }
             }
-            
+
             //lav en metode til at gemme det afviste svar
             if (matches.Count() == 0 && !fatalError)
             {
@@ -148,7 +148,7 @@ namespace BBGatherer.Webcrawler
             return Combinations[Combinations.Count - 1];
         }
 
-        private List<String> GetAllCombinations(string name, DatabaseConnect dbConnect) 
+        private List<String> GetAllCombinations(string name, DatabaseConnect dbConnect)
         {
             String[] str = name.Split(" ");
             int CombinationSize = 1;
@@ -204,9 +204,9 @@ namespace BBGatherer.Webcrawler
         private List<string> CheckIngredientInDatabase(List<string> Searchterms, DatabaseConnect dbConnect)
         {
             List<string> results = new List<string>();
-            foreach (string Searchterm in Searchterms) 
+            foreach (string Searchterm in Searchterms)
             {
-                if (CheckCOOPProductsInDatabase(Searchterm.Trim(), dbConnect)) 
+                if (CheckCOOPProductsInDatabase(Searchterm.Trim(), dbConnect))
                 {
                     results.Add(Searchterm.Trim());
                 }
@@ -215,21 +215,21 @@ namespace BBGatherer.Webcrawler
             return results;
         }
 
-        private bool CheckCOOPProductsInDatabase(String Searchterm, DatabaseConnect dbConnect) 
+        private bool CheckCOOPProductsInDatabase(String Searchterm, DatabaseConnect dbConnect)
         {
             string newRefrence;
             ProductHandling productHandling = new ProductHandling();
             List<Product> ProductsWithRef = GetProductWithRef(Searchterm,dbConnect);
-            foreach (Product p in ProductsWithRef) 
+            foreach (Product p in ProductsWithRef)
             {
                 newRefrence = UpdateProductRefrence(p._CustomReferenceField.Trim(), Searchterm);
                 productHandling.InsertIngredientReferenceFromId(newRefrence,p._id, new DatabaseInformation("localhost", "biksbudgetdb", "root", "BiksBudget123"));
             }
             //Product hey = productHandling.GetProductWithReferenceFromId("S14933501", new DatabaseInformation("localhost", "nytest", "root", "BiksBudget123"));
-            
+
             return ProductsWithRef.Count != 0 ? true : false;
         }
-        private List<Product> GetProductWithRef(string Searchterm,DatabaseConnect dbConnect) 
+        private List<Product> GetProductWithRef(string Searchterm,DatabaseConnect dbConnect)
         {
             List<Product> Products = dbConnect.GetProducts(Searchterm);
             List<Product> ProductsWithRef = new List<Product>();
@@ -242,25 +242,25 @@ namespace BBGatherer.Webcrawler
             return ProductsWithRef;
         }
 
-        private string UpdateProductRefrence(string CurrentRefrence, string searchterm) 
+        private string UpdateProductRefrence(string CurrentRefrence, string searchterm)
         {
             if (!String.IsNullOrWhiteSpace(CurrentRefrence))
             {
                 if (!CurrentRefrence.Contains(searchterm+","))
                 {
-                    
+
                     CurrentRefrence += searchterm+ ",";
                 }
                 return CurrentRefrence;
             }
-            else 
+            else
             {
                 return searchterm+",";
             }
 
         }
 
-        private bool CheckIngredientsInApi(string Searchterm, DatabaseConnect dbConnect) 
+        private bool CheckIngredientsInApi(string Searchterm, DatabaseConnect dbConnect)
         {
             System.Threading.Thread.Sleep(4000);
             BearerAccessToken bearerAccessToken = new BearerAccessToken("fc5aefca-c70f-4e59-aaaa-1c4603607df8");
@@ -281,7 +281,7 @@ namespace BBGatherer.Webcrawler
                     dbConnect.AddSallingProduct(new SallingProduct(p.title,p.id,p.prod_id,p.price,p.description,p.link,p.img));
                 }
             }
-            
+
             catch (System.Net.WebException)
             {
                Console.WriteLine("Exception found is being handled");
@@ -289,7 +289,7 @@ namespace BBGatherer.Webcrawler
                Console.WriteLine("Exception resolved");
                 return false;
             }
-        
+
 
             return productSuggestions.Suggestions.Count != 0?true:false;
             }
@@ -330,7 +330,7 @@ namespace BBGatherer.Webcrawler
         #endregion
 
         #region(String Cleanups)
-        private String NameCleanUp(String name) 
+        private String NameCleanUp(String name)
         {
             List<char> _char = new List<char>() {',', '.', '+', '-', '!', '?','&','%','–','"','*','(',')','/', '½'};
             List<string> splitString = new List<string>() {"eller","i","med","gerne","fra","fx","ekstra","el","og"};
@@ -340,7 +340,7 @@ namespace BBGatherer.Webcrawler
 
             name = RemoveInBetween(name,'(',')');
             name = RemoveInBetween(name,'"','"');
-            foreach (string s in splitString) 
+            foreach (string s in splitString)
             {
                 name = RemoveEverythingAfter(name, s);
             }
@@ -352,7 +352,7 @@ namespace BBGatherer.Webcrawler
             {
                 name = RemoveSubstring(name, s);
             }
-            foreach (string s in removeIfFisrt) 
+            foreach (string s in removeIfFisrt)
             {
                 name = RemoveIfFirstInString(name,s);
             }
@@ -363,7 +363,7 @@ namespace BBGatherer.Webcrawler
 
         }
 
-        private String EdgeCaseCleanUp(String name) 
+        private String EdgeCaseCleanUp(String name)
         {
             name = new String(name.Where(c => c != '-' && (c < '0' || c > '9')).ToArray());
             List<String> Substring = new List<string>() {"u","dl", "ca", "á", "g", "kg", "til"};
@@ -372,7 +372,7 @@ namespace BBGatherer.Webcrawler
                 name = RemoveSubstring(name.Trim(), s);
             }
 
-            if (name.Trim().Equals("i tern") || name.Trim().Equals("i") || name.Trim().Equals("med")) 
+            if (name.Trim().Equals("i tern") || name.Trim().Equals("i") || name.Trim().Equals("med"))
             {
                 name = "";
             }
@@ -406,11 +406,11 @@ namespace BBGatherer.Webcrawler
         #endregion
 
         #region(remove)
-        private string RemoveSubstring(String name,String substring) 
+        private string RemoveSubstring(String name,String substring)
         {
             String[] Words = name.Split(" ");
             string ReturnString = "";
-            foreach (string w in Words) 
+            foreach (string w in Words)
             {
                 if (!w.Equals(substring))
                 {
@@ -421,36 +421,36 @@ namespace BBGatherer.Webcrawler
             return ReturnString;
         }
 
-        private string RemoveEverythingAfter(string _string, string RemoveStart) 
+        private string RemoveEverythingAfter(string _string, string RemoveStart)
         {
             String[] Words = _string.Split(" ");
             String _return = "";
             bool KeyFlag = false;
-            foreach (String s in Words) 
+            foreach (String s in Words)
             {
-                if (s.Equals(RemoveStart)) 
+                if (s.Equals(RemoveStart))
                 {
                     KeyFlag = true;
                 }
-                if (!KeyFlag) 
+                if (!KeyFlag)
                 {
                     _return = _return + s + " ";
                 }
             }
             return _return;
         }
-        
-        private String RemoveInBetween(string name,char a,char b) 
+
+        private String RemoveInBetween(string name,char a,char b)
         {
             char[] chars = name.ToCharArray();
             bool ParenthesesFlag = false;
             String _string = "";
 
-            foreach (char character in chars) 
+            foreach (char character in chars)
             {
                 if (ParenthesesFlag)
                 {
-                    if (character.Equals(b)) 
+                    if (character.Equals(b))
                     {
                         ParenthesesFlag = false;
                     }
@@ -459,7 +459,7 @@ namespace BBGatherer.Webcrawler
                 {
                     ParenthesesFlag = true;
                 }
-                else 
+                else
                 {
                     _string += character;
                 }
@@ -467,14 +467,14 @@ namespace BBGatherer.Webcrawler
             return _string;
         }
 
-        private String RemoveCharFromString(string _string, char _char) 
+        private String RemoveCharFromString(string _string, char _char)
         {
             Char[] charArray = _string.ToCharArray();
             string returnString = "";
 
-            foreach (Char c in charArray) 
+            foreach (Char c in charArray)
             {
-                if (c != _char) 
+                if (c != _char)
                 {
                     returnString = returnString + c;
                 }
@@ -483,22 +483,22 @@ namespace BBGatherer.Webcrawler
             return returnString;
         }
 
-        private String RemoveIfFirstInString(string name, string Remove) 
+        private String RemoveIfFirstInString(string name, string Remove)
         {
             char[] _name = name.Trim().ToCharArray();
             char[] _Remove = Remove.ToCharArray();
             int i = 0;
 
-            if (name.Contains(Remove)) 
+            if (name.Contains(Remove))
             {
-                foreach (char r in _Remove) 
+                foreach (char r in _Remove)
                 {
                     i++;
                     if (r == _name[i])
                     {
-                        _name[i] = '*'; 
+                        _name[i] = '*';
                     }
-                    else 
+                    else
                     {
                         return name.Trim();
                     }
@@ -528,7 +528,7 @@ namespace BBGatherer.Webcrawler
             {
                 fatalError = true;
             }
-            else 
+            else
             {
                 fatalError = false;
             }
@@ -541,7 +541,7 @@ namespace BBGatherer.Webcrawler
             {
                 fatalError = false;
             }
-            
+
             return fatalError;
         }
 
@@ -558,5 +558,5 @@ namespace BBGatherer.Webcrawler
         }
         #endregion
     }
-    
+
 }

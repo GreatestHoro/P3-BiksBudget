@@ -97,6 +97,7 @@ namespace BBGatherer.Queries
             return resProducts;
         }
 
+        //Function which finds corresponding recipes to the searchTerm in the database
         private List<Recipe> Recipes(string searchTerm)
         {
             return _dbConnect.GetRecipes(searchTerm);
