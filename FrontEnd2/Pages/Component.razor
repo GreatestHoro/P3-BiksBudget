@@ -51,6 +51,12 @@
 
                         @foreach (Ingredient ing in ingredients)
                         {
+                            if (runCounter <= ingredients.Count) //comback and fix
+                            {
+                                runCounter++;
+                                scalar = recipePerPerson;
+                            }
+
                             <tr>
                                 <td>@((ing._amount/recipePerPerson)*scalar) @ing._unit</td>
                                 <td><button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => retriveIngredient(ing))">@ing._ingredientName</button></td>
@@ -131,8 +137,9 @@
     string email;
     int i = 0;
     int scalar = 1;
+    int runCounter = 0;
 
-    float recipePerPerson;
+    int recipePerPerson;
 
     int value;
 
@@ -142,6 +149,7 @@
     bool viewIngredients = false;
     bool isSearching = false;
     bool viewProducts = false;
+    bool IsRun = false;
 
     //bool viewAddToshoppinglist = false;
 
@@ -354,10 +362,11 @@
     void retriveInfo(int ID)
     {
         scalar = 1;
+        runCounter = 0;
         Recipe show = recipeData.First(x => x._recipeID == ID);
         recipeDescription = show._description;
         recipeName = show._Name;
-        recipePerPerson = show._PerPerson;
+        recipePerPerson = (int)show._PerPerson;
 
         if (show._ingredientList == null)
         {
