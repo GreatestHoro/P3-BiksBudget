@@ -570,6 +570,21 @@ logo-header-wrapper {
         display: block;
         width: 300px;
     }
+
+    .sidebar {
+        width: 100%;
+        min-height: 50px;
+        position: sticky;
+        top: 0;
+    }
+
+    .logo-header{
+        height: 50px; 
+    }
+
+    .top-row{
+        max-height: 90px; 
+    }
    
 }
 
