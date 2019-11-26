@@ -267,6 +267,7 @@
         Product temp = new Product();
         List<Product> productsToAddSL = new List<Product>();
         GetProductLists(ingredient);
+
         foreach (List<Product> pro in returnList)
         {
             if (pro.Count != 0)
@@ -283,6 +284,7 @@
                 productsToAddSL.Add(temp);
             }
         }
+
         if (String.IsNullOrEmpty(email))
         {
             QuickaddListToLocalStorage(productsToAddSL);
@@ -291,7 +293,7 @@
         {
             QuickAddListToSL(productsToAddSL);
         }
-
+        returnList.Clear();
     }
 
     public async void QuickAddListToSL(List<Product> ingredientList)

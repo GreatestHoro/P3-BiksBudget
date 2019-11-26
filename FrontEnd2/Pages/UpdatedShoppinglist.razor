@@ -11,8 +11,8 @@
 {
     <p> You need to be logged in to see shoppinglist</p>
 }
-else*@
-{
+else
+{*@
 
     @if (ListFunc.CombinedList == null)
     {
@@ -130,7 +130,7 @@ else*@
             </div>
         </div>
     }
-}
+@*}*@
 
 @code {
     ShoppinlistFunctionality ListFunc = new ShoppinlistFunctionality("api/Shoppinglist");
@@ -191,7 +191,6 @@ else*@
             }
             else
             {
-                shopString = await localStorage.GetItemAsync<string>("ProductString");
                 ToShoppinglist = JsonConvert.DeserializeObject<List<Product>>(shopString);
                 responseMessage = await ListFunc.GetShoppinglistWhileNotLoggedIn(ToShoppinglist);
             }
@@ -204,6 +203,11 @@ else*@
     async Task GetLocalSession()
     {
         email = await localStorage.GetItemAsync<string>("Email");
+
+        if (String.IsNullOrEmpty(email))
+        {
+                shopString = await localStorage.GetItemAsync<string>("ProductString");
+        }
     }
     #endregion
 

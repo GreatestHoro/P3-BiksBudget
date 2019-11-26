@@ -129,8 +129,8 @@ namespace Backend.Controllers
                 {
                     toSend[0]._products.Add(item);
                 }
-                toSend[0]._products = funcionality.HandleDublicats(toSend[0]._products);
             }
+            toSend[0]._products = funcionality.HandleDublicats(toSend[0]._products);
 
             dbConnect.DeleteShoppingListFromName("Shoppinglist", Email);
             dbConnect.AddShoppingListsToDatabase(Email, toSend);
