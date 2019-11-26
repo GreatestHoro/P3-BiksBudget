@@ -566,6 +566,11 @@ logo-header-wrapper {
     .top-nav {
         display: none;
     }
+    .Log-btn-design {
+        background: none;
+        border: 1px solid transparent;
+        /*color: #d7d7d7;*/
+    }
     .recipeSearchBtn{
         display: block;
         width: 300px;
@@ -585,13 +590,16 @@ logo-header-wrapper {
     .top-row{
         max-height: 90px; 
     }
-   
+   /*.Log-btn{
+       background-color:red;
+   }*/
 }
 
 @media (min-width: 768px) {
     app {
         flex-direction: row;
     }
+    /*Removes log buttons from Navmenu on big screens*/
     .Log-btn {
         display: none;
     }
