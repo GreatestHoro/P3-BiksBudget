@@ -16,8 +16,8 @@ namespace BBGatherer
             DataHandling dh = new DataHandling();
             
             
-            //dh.GenerateDatabase();
-            dh.GenerateData(false, true);
+            dh.GenerateDatabase();
+            dh.GenerateData(true, true);
             //dh.TestCollection();
         }
     }
@@ -60,7 +60,7 @@ namespace BBGatherer
             if (salling == true)
             {
                 RecipeCrawl WebRunner = new RecipeCrawl();
-                _ = WebRunner.GetRecipes(212, 1200, dbConnect);
+                _ = WebRunner.GetRecipes(75, 1200, dbConnect);
 
                 Console.WriteLine("web runner begins... fear its power");
                 Console.ReadLine();

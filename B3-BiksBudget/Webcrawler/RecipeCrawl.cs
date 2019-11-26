@@ -334,7 +334,7 @@ namespace BBGatherer.Webcrawler
         {
             List<char> _char = new List<char>() {',', '.', '+', '-', '!', '?','&','%','–','"','*','(',')','/', '½'};
             List<string> splitString = new List<string>() {"eller","i","med","gerne","fra","fx","ekstra","el","og"};
-            List<string> removeSub = new List<string>() {"dl","hel","der","er","kg","små","evt","ekstra","tsk","almindelig", "til", "el", "af", "stk", "ud", "g", "ca", "a", "pr", "sk", "hele","cm","nye","frisk","st","u","en","uden"};
+            List<string> removeSub = new List<string>() { "l", "for","par","I","op","gr","et","de","a","à","á","i","let","på","dl","hel","der","er","kg","små","evt","ekstra","tsk","almindelig", "til", "el", "af", "stk", "ud", "g", "ca", "a", "pr", "sk", "hele","cm","nye","frisk","st","u","en","uden","ben","løse"};
             List<string> removeIfFisrt = new List<string>() {"af " , "after "};
             name = new String(name.Where(c => c != '-' && (c < '0' || c > '9')).ToArray());
 
