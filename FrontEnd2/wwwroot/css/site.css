@@ -19,6 +19,27 @@ h1 {
     /*background-color: rgba(248, 249, 249, 0.5);*/
 }
 
+div {
+    min-height: 40px;
+    box-sizing: border-box;
+}
+
+#parent {
+    width: 400px;
+    border: 1px solid black;
+    margin: 0 auto;
+}
+
+#something {
+    border: 2px solid red;
+}
+
+#wide-div {
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+    border: 2px solid green;
+}
+
 .invisibleBtn {
     opacity: 0.5;
 }
