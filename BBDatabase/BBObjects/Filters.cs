@@ -114,7 +114,7 @@ namespace BBCollection.BBObjects
             {
                 foreach (AppliedFilters a in keywords.AppliedFilters)
                 {
-                    if (p._productName.Contains(a.name) || p._amount.Contains(a.name))
+                    if (p._productName.ToLower().Contains(a.name) || p._amount.ToLower().Contains(a.name))
                     {
                         returnProducts.Add(p);
                         break;
@@ -149,8 +149,6 @@ namespace BBCollection.BBObjects
             {
                 throw new SystemException("bools and the length of options were not equal");
             }
-
-
         }
         public AppliedFiltersList(String[] filterName)
         {
