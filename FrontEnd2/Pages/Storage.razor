@@ -137,12 +137,6 @@
 
                                 @for (int i = 0; i < ingredients.Count; i++)
                                 {
-
-                                        if (ingredients[i]._ingredientName.Contains("bacon")) 
-                                        {
-                                        
-                                        }
-                                    
                                     matchFound();
                     <tr>
                         <td>
@@ -456,6 +450,7 @@
 
                     if (compareIngrdientAndProduct(i, p))
                     {
+
                         w.MatchFound(i,p);
                     }
                 }
