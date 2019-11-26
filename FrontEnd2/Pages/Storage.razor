@@ -134,28 +134,28 @@
                         {
                             @if (found == true)
                             {
-                                @foreach (Product match in rep.products)
+
+                                @for (int i = 0; i < ingredients.Count; i++)
                                 {
-                                    @for (int i = 0; i < ingredients.Count; i++)
-                                    {
-                                        matchFound();
-                                        <tr>
-                                            <td>
-                                                @recipeAmount[i] @ingredients[i]._unit
-                                            </td>
+                                    matchFound();
+                    <tr>
+                        <td>
+                            @recipeAmount[i] @ingredients[i]._unit
+                        </td>
 
-                                            @if (ingredients[i]._ingredientName.Contains(match._productName))
-                                            {
-                                                <td style="background-color:green">@ingredients[i]._ingredientName</td>
-                                            }
+                        @if (CompareIngrdientsToAllMatches(ingredients[i],rep.products))
+                        {
+                            <td style="background-color:green">@ingredients[i]._ingredientName</td>
+                        }
 
-                                            else
-                                            {
-                                                <td style="background-color:red"> @ingredients[i]._ingredientName</td>
-                                            }
-                                        </tr>
-                                    }
-                                }
+                        else
+                        {
+                            <td style="background-color:red"> @ingredients[i]._ingredientName</td>
+
+                        }
+                    </tr>
+                }
+
                             }
 
                         }
@@ -188,12 +188,14 @@
 
 @code{
     #region Fields
-    string productString, newProduct, _headingText, email, userId, testvalue, recipeDescription, recipeName;
+    string productString, newProduct, _headingText, email, userId, recipeDescription, recipeName;
+    int testvalue;
 
     float recipePerPerson;
 
     int value;
     int x;
+
 
     bool found = true;
     bool viewTitle = false;
@@ -395,8 +397,9 @@
             }
 
         }
+        List<WeightedRecipies> yeet = GenerateWeightedRecepies(ValidRecipies, storageInventory);
 
-        return GenerateWeightedRecepies(ValidRecipies, storageInventory); ;
+        return yeet;
     }
 
     private List<WeightedRecipies> GenerateWeightedRecepies(List<Recipe> recipes, List<Product> storageInventory)
@@ -412,10 +415,13 @@
             //foreach (Product p in storageInventory)
             foreach (Product p in storageInventory)
             {
+
                 foreach (Ingredient i in w._recipie._ingredientList)
                 {
+
                     if (compareIngrdientAndProduct(i, p))
                     {
+
                         w.MatchFound(i,p);
                     }
                 }
@@ -424,16 +430,37 @@
         }
         return returnRecipies;
     }
+    private bool CompareIngrdientsToAllMatches(Ingredient ing, List<Product> products)
+    {
+
+        foreach (Product p in products)
+        {
+            if (compareIngrdientAndProduct(ing, p))
+            {
+                return true;
+            }
+        }
+        return false;
+
+    }
 
     private bool compareIngrdientAndProduct(Ingredient ingrdient, Product product)
     {
         List<String> searchterms = GetRefrencesFromCustomField(product._CustomReferenceField);
         foreach (string s in searchterms)
         {
-            if (ingrdient._ingredientName.Contains(s)) 
+            if (s.Equals("") || s.Equals(" ") || s.Length < 2)
             {
-                return true;
+
             }
+            else
+            {
+                if (ingrdient._ingredientName.ToLower().Contains(s))
+                {
+                    return true;
+                }
+            }
+
         }
         return false;
     }
@@ -452,10 +479,9 @@
 
         //recpies = Sort(FindValidRecipies(ListFunc.itemList).Result, test1);
         recpies = FindValidRecipies().Result;
-        foreach (WeightedRecipies wr in recpies)
-        {
-            testvalue = testvalue + wr._recipie._Name + " ? ";
-        }
+
+        recpies = recpies.OrderByDescending(x => x.matchingIngrdientsNum).ToList();
+
         viewTitle = true;
     }
     #endregion
