@@ -5,6 +5,8 @@ using BBCollection;
 using BBCollection.StoreApi;
 using BBCollection.StoreApi.ApiNeeds;
 using BBCollection.StoreApi.SallingApi;
+using BBCollection.DBHandling;
+using BBCollection.DBConncetion;
 
 namespace BBCollection.BBObjects
 {
@@ -59,6 +61,7 @@ namespace BBCollection.BBObjects
 
             return FilteredList;
         }
+
         private List<Product> SearchForProducts(String searchterm)
         {
             BearerAccessToken bearerAccessToken = new BearerAccessToken("fc5aefca-c70f-4e59-aaaa-1c4603607df8");
