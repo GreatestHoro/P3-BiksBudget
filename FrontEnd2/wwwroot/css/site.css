@@ -23,6 +23,16 @@ h1 {
     opacity: 0.5;
 }
 
+.recipeSearch{
+    max-width: 300px;
+    margin: 10px; 
+}
+
+.recipeSearchBtn{
+    max-width: 100px;
+    margin: 10px;
+}
+
 /*Floating Back-To-Top Button*/
 #myBtn {
     position: fixed;
@@ -555,6 +565,10 @@ logo-header-wrapper {
     }
     .top-nav {
         display: none;
+    }
+    .recipeSearchBtn{
+        display: block;
+        width: 300px;
     }
    
 }
