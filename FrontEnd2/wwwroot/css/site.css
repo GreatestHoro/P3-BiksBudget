@@ -553,14 +553,18 @@ logo-header-wrapper {
     .main .top-row {
         display: none;
     }
-    /*.top-nav {
+    .top-nav {
         display: none;
-    }*/
+    }
+   
 }
 
 @media (min-width: 768px) {
     app {
         flex-direction: row;
+    }
+    .Log-btn {
+        display: none;
     }
 
     .sidebar {
