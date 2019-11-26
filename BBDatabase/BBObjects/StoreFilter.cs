@@ -45,7 +45,7 @@ namespace BBCollection.BBObjects
     {
         public List<FilterItem> wordFilterlist = new List<FilterItem>()
         {
-            new FilterItem("Økologisk", false),
+            new FilterItem("Økologisk", "Øko", false),
             new FilterItem("Glutenfri", false),
         };
 
@@ -63,11 +63,19 @@ namespace BBCollection.BBObjects
     public class FilterItem
     {
         public string FilterName { get; set; }
+        public string SearchName { get; set; }
         public bool IsEnabled { get; set; }
 
         public FilterItem(string _filterName, bool _isEnabled)
         {
             FilterName = _filterName;
+            IsEnabled = _isEnabled;
+        }
+
+        public FilterItem(string _filterName, string _searchName, bool _isEnabled)
+        {
+            FilterName = _filterName;
+            SearchName = _searchName;
             IsEnabled = _isEnabled;
         }
     }

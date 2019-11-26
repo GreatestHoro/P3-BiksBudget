@@ -130,6 +130,7 @@ namespace BBCollection.BBObjects
     class AppliedFiltersList
     {
         public List<AppliedFilters> AppliedFilters = new List<AppliedFilters>();
+        string nameToAdd;
 
         public AppliedFiltersList(bool[] filterApplied, FilterItem[] filterName)
         {
@@ -139,7 +140,8 @@ namespace BBCollection.BBObjects
                 {
                     if (filterApplied[i])
                     {
-                        AppliedFilters.Add(new AppliedFilters(filterName[i].FilterName));
+                        nameToAdd = String.IsNullOrEmpty(filterName[i].SearchName) ? filterName[i].FilterName : filterName[i].SearchName;
+                        AppliedFilters.Add(new AppliedFilters(nameToAdd));
                     }
                 }
             }

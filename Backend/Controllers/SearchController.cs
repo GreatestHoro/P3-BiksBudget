@@ -24,8 +24,6 @@ namespace Backend.Controllers
             bool[] storeFilter = GetFilters(_storeFilter);
             Filters filters = new Filters(keywordFilter, storeFilter);
 
-
-            
             return JsonConvert.SerializeObject(filters.UseTogglefilters(searchterm));
         }
 

@@ -225,7 +225,7 @@ namespace BBCollection.DBHandling
                     foreach (DataRow r in ds.Tables[0].Rows)
                     {
                         string reference = "";
-                        if(r[7] == DBNull.Value)
+                        if(r[7] != DBNull.Value)
                         {
                             reference = (string) r[7];
                         }
