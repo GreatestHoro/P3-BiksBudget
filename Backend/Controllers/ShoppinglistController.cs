@@ -19,7 +19,7 @@ namespace Backend.Controllers
     [ApiController]
     public class ShoppinglistController : ControllerBase
     {
-        DatabaseConnect dbConnect = new DatabaseConnect("localhost", "biksbudgetDB", "root", "BiksBudget123");
+        DatabaseConnect dbConnect = new DatabaseConnect();
         ControllerFuncionality funcionality = new ControllerFuncionality();
         List<Shoppinglist> shoppinglists = new List<Shoppinglist>();
         List<Shoppinglist> toSend = new List<Shoppinglist>();

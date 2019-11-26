@@ -1,6 +1,7 @@
 ﻿@page "/storage"
 
 @using BBCollection.BBObjects;
+@using BBCollection.DBConncetion;
 @using Newtonsoft.Json;
 @using FrontEnd2.Data;
 
@@ -187,6 +188,7 @@
 
 
 @code{
+    ConnectionSettings connectionSettings = new ConnectionSettings();
     #region Fields
     string productString, newProduct, _headingText, email, userId, testvalue, recipeDescription, recipeName;
 
@@ -288,7 +290,7 @@
 
             //if (email != null)
             //{
-            //    gottenData = await Http.GetStringAsync("https://localhost:44325/api/Login/" + email + "S");
+            //    gottenData = await Http.GetStringAsync(connectionSettings.GetApiLink() + "api/Login/" + email + "S");
             //}
             userId = email;
             if(email != null)
@@ -459,7 +461,7 @@
         List<String> searchterms = GetRefrencesFromCustomField(product._CustomReferenceField);
         foreach (string s in searchterms)
         {
-            if (ingrdient._ingredientName.Contains(s)) 
+            if (ingrdient._ingredientName.Contains(s))
             {
                 return true;
             }
@@ -476,7 +478,7 @@
     {
         string printRecipe;
 
-        printRecipe = await Http.GetStringAsync("https://localhost:44325/api/recipe?recipeTitle=" + " ");
+        printRecipe = await Http.GetStringAsync("api/recipe?recipeTitle=" + " ");
         _recpies = JsonConvert.DeserializeObject<List<Recipe>>(printRecipe);
 
         //recpies = Sort(FindValidRecipies(ListFunc.itemList).Result, test1);

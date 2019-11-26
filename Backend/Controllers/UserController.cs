@@ -20,7 +20,7 @@ namespace Backend.Controllers
         public IActionResult Register(string value)
         {
             string buffer;
-            DatabaseConnect dbConnect = new DatabaseConnect("localhost", "biksbudgetdb", "root", "BiksBudget123");
+            DatabaseConnect dbConnect = new DatabaseConnect();
 
             User user = new User();
 

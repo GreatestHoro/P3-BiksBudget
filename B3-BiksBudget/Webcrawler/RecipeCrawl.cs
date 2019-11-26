@@ -229,12 +229,12 @@ namespace BBGatherer.Webcrawler
 
             foreach (Product p in Products) 
             {
-                ProductsWithRef.Add(productHandling.GetProductWithReferenceFromId(p._id, new DatabaseInformation("localhost", "nytest", "root", "BiksBudget123")));
+                ProductsWithRef.Add(productHandling.GetProductWithReferenceFromId(p._id, new DatabaseInformation()));
             }
             foreach (Product p in ProductsWithRef) 
             {
                 newRefrence = UpdateProductRefrence(p._CustomReferenceField, Searchterm);
-                productHandling.InsertIngredientReferenceFromId(newRefrence,p._id, new DatabaseInformation("localhost", "nytest", "root", "BiksBudget123"));
+                productHandling.InsertIngredientReferenceFromId(newRefrence,p._id, new DatabaseInformation());
             }
             return Products.Count != 0 ? true : false;
         }

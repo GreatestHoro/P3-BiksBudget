@@ -17,14 +17,14 @@ namespace BBGatherer
             
             
             //dh.GenerateDatabase();
-            dh.GenerateData(false, true);
-            //dh.TestCollection();
+            //dh.GenerateData(true, true);
+            dh.TestCollection();
         }
     }
 
     public class DataHandling
     {
-        public DatabaseConnect dbConnect = new DatabaseConnect("localhost", "nytest", "root", "BiksBudget123");
+        public DatabaseConnect dbConnect = new DatabaseConnect();
         public void GenerateDatabase()
         {
             dbConnect.InitializeDatabase();
@@ -39,7 +39,7 @@ namespace BBGatherer
             //InitializeDB _test = new InitializeDB();
             if (coop) 
             {
-                CoopDoStuff tryCoop = new CoopDoStuff("f0cabde6bb8d4bd78c28270ee203253f");
+                CoopDoStuff tryCoop = new CoopDoStuff("d0b9a5266a2749cda99d4468319b6d9f");
 
                 List<CoopProduct> coopProducts = tryCoop.CoopFindEverythingInStore("24073");
 
@@ -73,7 +73,12 @@ namespace BBGatherer
 
         public void TestCollection()
         {
-            dbConnect.GetRecipes("is");
+
+            string test = "sigh";
+            foreach(Recipe r in dbConnect.GetRecipes("kakao"))
+            {
+                Console.WriteLine(r._Name);
+            }
 
 /*
 

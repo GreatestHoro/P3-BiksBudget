@@ -358,8 +358,10 @@ namespace BBCollection.DBHandling
                         {
                             reference = "";
                         }
-
+                        Console.WriteLine("HERE");
                         product  = new Product((string)r[0], (string)r[1], (string)r[2], Convert.ToDouble(r[3]), (string)r[4], (string)r[5], reference);
+
+                        Console.WriteLine("HERE");
                     }
                 }
             }

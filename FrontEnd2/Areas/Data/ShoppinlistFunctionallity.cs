@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Globalization;
 using BBCollection.BBObjects;
+using BBCollection.DBConncetion;
 
 namespace FrontEnd2.Data
 {
@@ -17,6 +18,8 @@ namespace FrontEnd2.Data
         {
             dest = _dest;
         }
+
+        readonly ConnectionSettings connectionSettings = new ConnectionSettings();
 
         public string productString;
         string newProduct; 
@@ -106,7 +109,7 @@ namespace FrontEnd2.Data
         {
             Email = userId;
 
-            productString = await Http.GetStringAsync("https://localhost:44325/" + dest + "/" + userId);
+            productString = await Http.GetStringAsync(connectionSettings.GetApiLink() + dest + "/" + userId);
 
             shoppinglists = JsonConvert.DeserializeObject<List<Shoppinglist>>(productString);
 
@@ -206,7 +209,7 @@ namespace FrontEnd2.Data
         {
             Email = userId;
 
-            productString = await Http.GetStringAsync("https://localhost:44325/" + dest + "/" + userId);
+            productString = await Http.GetStringAsync(connectionSettings.GetApiLink() + dest + "/" + userId);
 
             CombinedList = JsonConvert.DeserializeObject<List<Product>>(productString);
 
@@ -269,7 +272,7 @@ namespace FrontEnd2.Data
         async Task<HttpResponseMessage> SendToApi(string productString)
         {
             var content = new StringContent(productString, Encoding.UTF8, "application/json");
-            response = await Http.PostAsync("https://localhost:44325/" + dest + "/" + Email, content);
+            response = await Http.PostAsync(connectionSettings.GetApiLink() + dest + "/" + Email, content);
 
             string result = response.Content.ReadAsStringAsync().Result;
 
@@ -281,7 +284,7 @@ namespace FrontEnd2.Data
         async Task<HttpResponseMessage> SendToApi(string productString, string newDest)
         {
             var content = new StringContent(productString, Encoding.UTF8, "application/json");
-            response = await Http.PostAsync("https://localhost:44325/" + newDest + "/" + Email, content);
+            response = await Http.PostAsync(connectionSettings.GetApiLink() + newDest + "/" + Email, content);
 
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
@@ -289,7 +292,7 @@ namespace FrontEnd2.Data
         async Task<HttpResponseMessage> PutToApi(string productString)
         {
             var content = new StringContent(productString, Encoding.UTF8, "application/json");
-            response = await Http.PutAsync("https://localhost:44325/api/Shoppinglist/" + Email, content);
+            response = await Http.PutAsync(connectionSettings.GetApiLink() + Email, content);
 
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
@@ -336,7 +339,7 @@ namespace FrontEnd2.Data
 
             var content = new StringContent(itemString, Encoding.UTF8, "application/json");
             
-            HttpResponseMessage responce = await Http.PutAsync("https://localhost:44325/api/Storage/" + Email, content);
+            HttpResponseMessage responce = await Http.PutAsync(connectionSettings.GetApiLink() + Email, content);
 
             return new HttpResponseMessage(HttpStatusCode.OK);
         }

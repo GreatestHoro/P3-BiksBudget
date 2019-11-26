@@ -16,7 +16,7 @@ namespace BBCollection.BBObjects
         bool[] ToggleStoreFILters;
         FilterItem[] storeArray;
         FilterItem[] wordArray;
-        private DatabaseConnect dbConnect = new DatabaseConnect("localhost", "biksbudgetDB", "root", "BiksBudget123");
+        private DatabaseConnect dbConnect = new DatabaseConnect();
 
         public Filters(bool[] _ToggleWordFilters, bool[] _ToggleStoreFILters)
         {

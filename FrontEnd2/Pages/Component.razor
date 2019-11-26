@@ -1,6 +1,7 @@
 ﻿@page "/recipe"
 
 @using BBCollection.BBObjects;
+@using BBCollection.DBConncetion;
 @using Newtonsoft.Json;
 @using FrontEnd2.Data;
 @using System.Diagnostics;
@@ -123,7 +124,7 @@
 @code{
     #region Fields
 
-
+    ConnectionSettings connectionSettings = new ConnectionSettings();
     string recipeDescription = " ";
     string recipeName = " ";
     string printRecipe = " ";
@@ -367,7 +368,7 @@
     public async Task Search()
     {
 
-        printRecipe = await Http.GetStringAsync("https://localhost:44325/api/recipe?recipeTitle=" + searchTerm);
+        printRecipe = await Http.GetStringAsync(connectionSettings.GetApiLink() + "api/recipe?recipeTitle=" + searchTerm);
         recipeData = JsonConvert.DeserializeObject<List<Recipe>>(printRecipe);
         viewRecipeTitle = true;
         RecipeQuery recipeQuery = new RecipeQuery();
