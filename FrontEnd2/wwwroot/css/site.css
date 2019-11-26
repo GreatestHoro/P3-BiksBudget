@@ -23,6 +23,14 @@ h1 {
     opacity: 0.5;
 }
 
+/*Floating Back-To-Top Button*/
+#myBtn {
+    position: fixed;
+    bottom: 10px;
+    float: right;
+    right: 12px;
+    font-size: 12px;
+}
 #search{
     border: 0 1px 0 0; 
 }
@@ -545,6 +553,9 @@ logo-header-wrapper {
     .main .top-row {
         display: none;
     }
+    /*.top-nav {
+        display: none;
+    }*/
 }
 
 @media (min-width: 768px) {

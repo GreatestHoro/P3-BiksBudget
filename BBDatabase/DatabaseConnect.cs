@@ -47,7 +47,14 @@ namespace BBCollection
 
         public List<Product> GetProducts(string productName)
         {
-            return new ProductHandling().ListOfProductsFromName(productName, databaseInformation.GetConnect());
+            ProductHandling productHandling = new ProductHandling();
+            List<Product> returnProducts = new List<Product>();
+            List<Product> products = productHandling.ListOfProductsFromName(productName, databaseInformation.GetConnect());
+            foreach (Product p in products)
+            {
+                returnProducts.Add(productHandling.GetProductWithReferenceFromId(p._id, databaseInformation));
+            }
+            return returnProducts;
         }
 
         public void AddRecipe(Recipe recipe)
