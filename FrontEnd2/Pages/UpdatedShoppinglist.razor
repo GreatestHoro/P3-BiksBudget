@@ -7,13 +7,6 @@
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject HttpClient Http
 
-@*@if (email == null)
-{
-    <p> You need to be logged in to see shoppinglist</p>
-}
-else
-{*@
-
     @if (ListFunc.CombinedList == null)
     {
         <p><em> Loading list .. </em></p>
@@ -130,9 +123,10 @@ else
             </div>
         </div>
     }
-@*}*@
 
 @code {
+
+    #region Fields
     ShoppinlistFunctionality ListFunc = new ShoppinlistFunctionality("api/Shoppinglist");
     HttpResponseMessage responseMessage = new HttpResponseMessage();
 
@@ -153,8 +147,9 @@ else
     string productString;
     string newProduct;
     string dest = "api/Storage";
+    #endregion
 
-    #region Increment/Decrement
+    #region EditShoppintlistProducts
     protected void IncrementAmount(Product item)
     {
         remindToSave = true;
@@ -171,6 +166,26 @@ else
         }
 
     }
+
+    public void DeleteItem(Product item)
+    {
+        item._amountleft = 1;
+        ChangeAmount(item);
+    }
+
+    public void ChangeAmount(Product item)
+    {
+        remindToSave = true;
+        if (item._amountleft == 1)
+        {
+            ListFunc.CombinedList.Remove(ListFunc.CombinedList.First(x => x._id == item._id));
+        }
+        else
+        {
+            item._amountleft--;
+        }
+    }
+
     #endregion
 
     #region LocalStorage
@@ -206,12 +221,13 @@ else
 
         if (String.IsNullOrEmpty(email))
         {
-                shopString = await localStorage.GetItemAsync<string>("ProductString");
+            shopString = await localStorage.GetItemAsync<string>("ProductString");
         }
     }
     #endregion
 
-    #region Save/add/delete list button
+    #region Shoppinglist
+
     public async void SaveShoppinglist()
     {
         remindToSave = false;
@@ -228,29 +244,11 @@ else
         {
             ListFunc.AddFuncList();
         }
-
-
     }
 
-    public void DeleteItem(Product item)
-    {
-        item._amountleft = 1;
-        ChangeAmount(item);
-    }
+    #endregion
 
-    public void ChangeAmount(Product item)
-    {
-        remindToSave = true;
-        if (item._amountleft == 1)
-        {
-            ListFunc.CombinedList.Remove(ListFunc.CombinedList.First(x => x._id == item._id));
-        }
-        else
-        {
-            item._amountleft--;
-        }
-    }
-
+    #region Storage
     public async void AddListToStorage()
     {
         remindToSave = true;
@@ -263,7 +261,6 @@ else
         remindToSave = true;
         ListFunc.CombinedList.Clear();
     }
-    #endregion
 
     public async void AddItemToStorage(Product AddedItem)
     {
@@ -271,7 +268,6 @@ else
         ListFunc.AddItemToStorage(AddedItem, dest);
 
         DeleteItem(AddedItem);
-
     }
 
     public async void AddOneItemToStorage(Product AddedItem)
@@ -288,6 +284,9 @@ else
         }
     }
 
+    #endregion
+
+    #region HandleDublicates
     public List<Product> removeDublicates(List<Product> shoppingList)
     {
         Dictionary<string, Product> dict = new Dictionary<string, Product>();
@@ -320,5 +319,5 @@ else
     {
         return prod_image + "&imgSize=1080x1080";
     }
-
+#endregion
 }

@@ -52,7 +52,7 @@
                         @foreach (Ingredient ing in ingredients)
                         {
                             <tr>
-                                <td>@((ing._amount/recipePerPerson)*scalar) @ing._unit</td>
+                                <td>@(String.Format("{0:0.0}", (ing._amount/recipePerPerson)*scalar)) @ing._unit</td>
                                 <td><button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => retriveIngredient(ing))">@ing._ingredientName</button></td>
                             </tr>
                         }
