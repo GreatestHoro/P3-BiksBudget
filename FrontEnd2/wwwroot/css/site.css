@@ -704,11 +704,9 @@ logo-header-wrapper {
     padding-right: 0px;
     padding-bottom: 40px;
     padding-left: 10px;
-    /*text-align: center;*/
 }
-/*.logDesign {
-    height: 50%;
-}*/
+
+
 
 @media (max-width: 767.98px) {
     .main .top-row {
@@ -717,10 +715,12 @@ logo-header-wrapper {
     .top-nav {
         display: none;
     }
+    /*Log system on small screens*/
     .Log-btn-design {
         background: none;
         border: 1px solid transparent;
-        /*color: #d7d7d7;*/
+        font-size: 1.1rem;
+        padding-left: 0; 
     }
     .recipeSearchBtn{
         display: block;
@@ -731,6 +731,7 @@ logo-header-wrapper {
         min-height: 50px;
         position: sticky;
         top: 0;
+        z-index: 999;
     }
 
     .logo-header{
@@ -740,9 +741,6 @@ logo-header-wrapper {
     .top-row{
         max-height: 90px; 
     }
-   /*.Log-btn{
-       background-color:red;
-   }*/
 }
 
 @media (min-width: 768px) {
