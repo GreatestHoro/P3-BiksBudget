@@ -49,5 +49,26 @@ namespace BBCollection.HandleRecipe
 
             return ingredients;
         }
+
+        public List<Recipe> RetrieveRecipeListInterval(string recipeName, int limit, int offset, DatabaseInformation dbInformation)
+        {
+            Stopwatch sw = new Stopwatch();
+            List<Recipe> recipeList = new List<Recipe>();
+            string table = "recipes";
+            string collumn = "recipename";
+
+            MySqlCommand msc = new SqlQuerySort().SortMSCInterval(recipeName, table, collumn, limit, offset);
+            sw.Start();
+            foreach (DataRow r in new SQLConnect().DynamicSimpleListSQL(msc, dbInformation).Tables[0].Rows)
+            {
+
+                Recipe recipe = new Recipe((int)r[0], (string)r[1], (string)r[3], GetIngredientsFromRecipeID((int)r[0], dbInformation), Convert.ToSingle(r[2]));
+
+                recipeList.Add(recipe);
+            }
+            sw.Stop();
+            Console.WriteLine(sw.ElapsedMilliseconds);
+            return recipeList;
+        }
     }
 }
