@@ -2,6 +2,7 @@
 
 @page "/Login"
 @using BBCollection.BBObjects;
+@using BBCollection.DBConncetion;
 @using Newtonsoft.Json;
 @using  System.Text;
 @using FrontEnd2.Data;
@@ -35,6 +36,7 @@
     string email;
     string password;
     string userString;
+    ConnectionSettings connectionSettings = new ConnectionSettings();
 
 
     protected async void AutorizeLogin()
@@ -54,7 +56,7 @@
 
         var content = new StringContent(userString, Encoding.UTF8, "application/json");
 
-        response = await Http.PostAsync("Https://localhost:44325/api/Login", content);
+        response = await Http.PostAsync(connectionSettings.GetApiLink() + "api/Login", content);
 
         if (response.IsSuccessStatusCode)
         {

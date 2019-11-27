@@ -1,6 +1,7 @@
 ﻿@page "/storage"
 
 @using BBCollection.BBObjects;
+@using BBCollection.DBConncetion;
 @using Newtonsoft.Json;
 @using FrontEnd2.Data;
 
@@ -187,6 +188,7 @@
 
 
 @code{
+    ConnectionSettings connectionSettings = new ConnectionSettings();
     #region Fields
     string productString, newProduct, _headingText, email, userId, recipeDescription, recipeName;
     int testvalue;
@@ -263,7 +265,6 @@
             {
                 Console.WriteLine($"Value for key {e.Key} changed from {e.OldValue} to {e.NewValue}");
             };
-
             userId = email;
             if(email != null)
             {
@@ -474,7 +475,7 @@
     {
         string printRecipe;
 
-        printRecipe = await Http.GetStringAsync("https://localhost:44325/api/recipe?recipeTitle=" + " ");
+        printRecipe = await Http.GetStringAsync("api/recipe?recipeTitle=" + " ");
         _recpies = JsonConvert.DeserializeObject<List<Recipe>>(printRecipe);
 
         //recpies = Sort(FindValidRecipies(ListFunc.itemList).Result, test1);
