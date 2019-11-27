@@ -127,7 +127,7 @@ namespace BBGatherer.Webcrawler
             if (Combinations.Count != 0)
             {
                 matches = CheckIngredientInDatabase(Combinations, dbConnect);
-                if (matches.Count == 0)
+                /*if (matches.Count == 0)
                 {
                     foreach (string Searchterm in Combinations)
                     {
@@ -136,7 +136,7 @@ namespace BBGatherer.Webcrawler
                             matches = (CheckIngredientInDatabase(Combinations, dbConnect));
                         }
                     }
-                }
+                }*/
             }
 
             //lav en metode til at gemme det afviste svar
@@ -196,11 +196,6 @@ namespace BBGatherer.Webcrawler
 
             }
         }
-        /*private bool CheckIngredient(String Searchterm, DatabaseConnect dbConnect)
-        {
-            return   CheckIngredientInDatabase(Searchterm, dbConnect) || CheckIngredientsInApi(Searchterm.Trim(),dbConnect);
-        }*/
-
         private List<string> CheckIngredientInDatabase(List<string> Searchterms, DatabaseConnect dbConnect)
         {
             List<string> results = new List<string>();
@@ -223,12 +218,80 @@ namespace BBGatherer.Webcrawler
             foreach (Product p in ProductsWithRef)
             {
                 newRefrence = UpdateProductRefrence(p._CustomReferenceField.Trim(), Searchterm);
+                newRefrence = InterpretAndEditProductRef(newRefrence);
                 productHandling.InsertIngredientReferenceFromId(newRefrence,p._id, new DatabaseInformation());
             }
-            //Product hey = productHandling.GetProductWithReferenceFromId("S14933501", new DatabaseInformation("localhost", "nytest", "root", "BiksBudget123"));
 
             return ProductsWithRef.Count != 0 ? true : false;
         }
+        #region Interpret
+        private string InterpretAndEditProductRef(string _ref) 
+        {
+            string[] refs = _ref.Split(",");
+            List<string> newRef = new List<string>();
+            string returnRef = "";
+            refs.OrderByDescending(x => x.Length);
+            newRef.AddRange(GetBiggestStrings(refs,2));
+
+            foreach (string s in newRef)
+            {
+                returnRef += s + ",";
+            }
+            return returnRef;
+        }
+        private List<string> GetBiggestStrings(string[] sortedStrings,int Levels) 
+        {
+            List<string> returnList = new List<string>();
+            returnList.AddRange(GetBiggest(sortedStrings));
+            while (Levels-- > 0)
+            {
+                returnList = GetNextBiggest(sortedStrings, returnList.Last());
+            }
+            return returnList;
+        }
+        private List<string> GetBiggest(string[] strings) 
+        {
+            List<string> retrunList = new List<string>();
+            int biggestYet = strings.First().Length;
+            foreach (string s in strings) 
+            {
+                if (biggestYet == s.Length)
+                {
+                    retrunList.Add(s);
+                }
+                else 
+                {
+                    break;
+                }
+            }
+            return retrunList;
+        }
+
+        private List<string> GetNextBiggest(string[] strings, string StringList) 
+        {
+            List<string> retrunList = new List<string>();
+            bool flag = false;
+            int biggestYet = StringList.Length;
+
+            foreach (string s in strings)
+            {
+                if (biggestYet != s.Length && !flag)
+                {
+                    flag = true;
+                    biggestYet = s.Length;
+                }
+
+                if (flag && biggestYet == s.Length)
+                {
+                    retrunList.Add(s);
+                }
+                else
+                { 
+                }
+            }
+            return retrunList;
+        }
+        #endregion
         private List<Product> GetProductWithRef(string Searchterm,DatabaseConnect dbConnect)
         {
             List<Product> Products = dbConnect.GetProducts(Searchterm);
@@ -281,10 +344,14 @@ namespace BBGatherer.Webcrawler
             {
                 openHttp = new OpenHttp<SallingAPIProductSuggestions>(apiLink, bearerAccessToken.GetBearerToken());
                 productSuggestions = openHttp.ReadAndParseAPISingle();
-                foreach (var p in productSuggestions.Suggestions)
+                if(productSuggestions.Suggestions != null)
                 {
-                    dbConnect.AddSallingProduct(new SallingProduct(p.title,p.id,p.prod_id,p.price,p.description,p.link,p.img));
+                    foreach (var p in productSuggestions.Suggestions)
+                    {
+                        dbConnect.AddSallingProduct(new SallingProduct(p.title, p.id, p.prod_id, p.price, p.description, p.link, p.img));
+                    }
                 }
+
             }
 
             catch (System.Net.WebException)
@@ -295,8 +362,14 @@ namespace BBGatherer.Webcrawler
                 return false;
             }
 
-
-            return productSuggestions.Suggestions.Count != 0?true:false;
+            if (productSuggestions.Suggestions != null)
+            {
+                return productSuggestions.Suggestions.Count != 0 ? true : false;
+            }
+            else
+            {
+                return false;
+            }
             }
         #endregion
 
@@ -341,6 +414,8 @@ namespace BBGatherer.Webcrawler
             List<string> splitString = new List<string>() {"eller","i","med","gerne","fra","fx","ekstra","el","og"};
             List<string> removeSub = new List<string>() {"dl","hel","der","er","kg","små","evt","ekstra","tsk","almindelig", "til", "el", "af", "stk", "ud", "g", "ca", "a", "pr", "sk", "hele","cm","nye","frisk","st","u","en","uden"};
             List<string> removeIfFisrt = new List<string>() {"af " , "after "};
+            List<string> exeptions = new List<string>() {"æg","ål","øl","te"};
+
             name = new String(name.Where(c => c != '-' && (c < '0' || c > '9')).ToArray());
 
             name = RemoveInBetween(name,'(',')');
@@ -361,6 +436,8 @@ namespace BBGatherer.Webcrawler
             {
                 name = RemoveIfFirstInString(name,s);
             }
+
+            name = removeSubstringOfLentgh(name,2, exeptions);
 
             name = name.ToLower();
 
@@ -411,6 +488,36 @@ namespace BBGatherer.Webcrawler
         #endregion
 
         #region(remove)
+        private string removeSubstringOfLentgh(string name,int length,List<string> exceptions) 
+        {
+            bool flag = true;
+            string[] words = name.Split(" ");
+            string ReturnString = "";
+            foreach (string word in words)
+            {
+                if (word.Length < length)
+                {
+                    foreach (string sE in exceptions)
+                    {
+                        if (sE.Equals(name))
+                        {
+                            flag = true;
+                        }
+                    }
+                }
+                else
+                {
+                    flag = true;
+                }
+
+                if (flag)
+                {
+                    ReturnString += word + " ";
+                }
+            }
+            return ReturnString;
+        }
+
         private string RemoveSubstring(String name,String substring)
         {
             String[] Words = name.Split(" ");
