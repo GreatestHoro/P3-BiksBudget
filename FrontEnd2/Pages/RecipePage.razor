@@ -15,7 +15,7 @@
                     </button>
                 </div>
             </div>
-            <div id="recipeListZone">
+            <div id="recipeListZone mt-5">
                 <div id="unloaded-roller" class="center_div">
                     <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
                 </div>
@@ -28,6 +28,10 @@
                             </div>
                         </div>
                     }
+                    <button class="btn btn-warning mb-5" style="display:none;" @onclick="LoadMore" id="LoadMore">Load More</button>
+                    <div id="loadMore-roller" style="display:none;" class="center_div">
+                        <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -37,6 +41,8 @@
 @code {
     string searchTerm;
     List<ComplexRecipe> complexRecipes = new List<ComplexRecipe>();
+    RecipeQuery recipeQuery = new RecipeQuery();
+
 
     private async void OnKeyPress(KeyboardEventArgs args)
     {
@@ -49,13 +55,30 @@
 
     private async void Search()
     {
+        complexRecipes.Clear();
+        recipeQuery._loadCount = -1;
         await MakeInvisible("recipeListOverview");
+        await MakeInvisible("LoadMore");
         await MakeVisible("unloaded-roller");
-        RecipeQuery recipeQuery = new RecipeQuery();
         complexRecipes = recipeQuery.CheapestCRecipes(searchTerm);
         await MakeInvisible("unloaded-roller");
         await MakeVisible("recipeListOverview");
+        if (complexRecipes.Count() % recipeQuery._productsPerLoad == 0)
+        {
+            await MakeVisible("LoadMore");
+        }
         this.StateHasChanged();
+    }
+
+    private async void LoadMore()
+    {
+        MakeVisible("loadMore-roller");
+        complexRecipes.AddRange(recipeQuery.CheapestCRecipes(searchTerm));
+        MakeInvisible("loadMore-roller");
+        if (complexRecipes.Count() % recipeQuery._productsPerLoad != 0)
+        {
+            await MakeInvisible("LoadMore");
+        }
     }
 
     async Task RemoveElementFocus(string idStr)
