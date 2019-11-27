@@ -8,7 +8,6 @@
 @inject IJSRuntime JsRuntime
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 
-<h1> Find a product</h1>
 
 <div class="form-inline md-form mr-auto mb-4">
     <input type="text" class="form-control oi-underline" placeholder="Enter a product name.." @onkeyup="@KeyPressed" @bind="searchBox" />
@@ -24,8 +23,7 @@
 
 @if (viewAdvancedSearch)
 {
-    <h4> Select options:</h4>
-    <div class="d-flex flex-sm-row flex-column">
+    <div class="d-flex flex-sm-row flex-column searchAdvancedText">
         <div class="p-2">
             <div class="btn-group show-on-hover">
                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
@@ -90,19 +88,20 @@
             </div>
         </div>
         <div class="p-2">
-            <h5>Distance @(radius / 1000) Km</h5>
+            <h5>Distance @(radius / 1000) Km:</h5>
             <input type="range" min="0" max="5000" @bind="radius" step="1000" />
         </div>
         <div class="p-2">
-            <label for="minPriceB">Minimum Price</label>
+            <label for="minPriceB">Minimum Price:</label>
             <input type="number" class="form-control" placeholder="Min Price" @bind="minPrice" />
         </div>
         <div class="p-2">
-            <label for="maxPriceB">Maximum Price</label>
+            <label for="maxPriceB">Maximum Price:</label>
             <input type="number" class="form-control" placeholder="Max Price" @bind="maxPrice" />
         </div>
         <div class="p-2">
-            <input type="checkbox" bind="@IsLocationEnabled" @onclick="toggle" />Use Location<br />
+            <p>Use Location:</p>
+            <input type="checkbox" class="locationCheckBox" bind="@IsLocationEnabled" @onclick="toggle"/>
         </div>
     </div>
 }
