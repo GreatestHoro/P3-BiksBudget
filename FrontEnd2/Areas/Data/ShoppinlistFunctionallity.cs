@@ -296,7 +296,7 @@ namespace FrontEnd2.Data
         async Task<HttpResponseMessage> PutToApi(string productString)
         {
             var content = new StringContent(productString, Encoding.UTF8, "application/json");
-            response = await Http.PutAsync(connectionSettings.GetApiLink() + Email, content);
+            response = await Http.PutAsync(connectionSettings.GetApiLink() + dest + "/" + Email, content);
 
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
