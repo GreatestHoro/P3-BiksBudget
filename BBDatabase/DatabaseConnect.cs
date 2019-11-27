@@ -169,5 +169,15 @@ namespace BBCollection
             return new ProductHandling().GetProductsWhereReferenceIncludesString(reference, databaseInformation.GetConnect());
         }
 
+        public List<Product> GetProductInterval(string name, int limit, int offset)
+        {
+            return new ProductHandling().GetProductsInterval(name, limit, offset, databaseInformation.GetConnect());
+        }
+
+        public List<Recipe> GetRecipesInterval(string name, int limit, int offset)
+        {
+            return new RetrieveFromDatabase().RetrieveRecipeListInterval(name, limit, offset, databaseInformation.GetConnect());
+        }
+
     }
 }
