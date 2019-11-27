@@ -14,11 +14,11 @@ namespace BBGatherer
         static void Main(string[] args)
         {
             DataHandling dh = new DataHandling();
-            
-            
-            //dh.GenerateDatabase();
-            //dh.GenerateData(true, true);
-            dh.TestCollection();
+
+
+            dh.GenerateDatabase();
+            dh.GenerateData(true, true);
+            //dh.TestCollection();
         }
     }
 
@@ -42,7 +42,7 @@ namespace BBGatherer
 
                 List<CoopProduct> coopProducts = tryCoop.CoopFindEverythingInStore("24073");
 
-                
+
 
                 int count = 0;
                 coopProducts.AddRange(tryCoop.CoopFindEverythingInStore("2096"));
@@ -59,15 +59,15 @@ namespace BBGatherer
             if (salling == true)
             {
                 RecipeCrawl WebRunner = new RecipeCrawl();
-                _ = WebRunner.GetRecipes(212, 1200, dbConnect);
+                _ = WebRunner.GetRecipes(75, 1200, dbConnect);
 
                 Console.WriteLine("web runner begins... fear its power");
                 Console.ReadLine();
             }
-            
+
             //dbConnect.AddProduct(new Product("test","hey","alot",1d,"nope","walmart"));
             //test.InsertIngredientReferenceFromId("tester", "test", new DatabaseInformation("localhost", "biksbudgetDB", "root", "BiksBudget123"));
-            
+
         }
 
         public void TestCollection()
