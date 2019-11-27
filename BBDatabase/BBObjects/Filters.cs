@@ -7,6 +7,7 @@ using BBCollection.StoreApi.ApiNeeds;
 using BBCollection.StoreApi.SallingApi;
 using BBCollection.DBHandling;
 using BBCollection.DBConncetion;
+using System.Net;
 
 namespace BBCollection.BBObjects
 {
@@ -31,9 +32,6 @@ namespace BBCollection.BBObjects
         public List<Product> UseTogglefilters(string searchterm)
         {
             List<Product> FilteredList = new List<Product>();
-#pragma warning disable CS0219 // The variable 'SallingFlag' is assigned but its value is never used
-            bool SallingFlag = false;
-#pragma warning restore CS0219 // The variable 'SallingFlag' is assigned but its value is never used
             bool flag = false;
             int i = 0;
             List<Product> searchedProducts = dbConnect.GetProducts(searchterm);
@@ -42,7 +40,7 @@ namespace BBCollection.BBObjects
 
             do
             {
-                if (flag) 
+                if (flag && IsBilkTrue(storeNameFilters))
                 {
                     FilteredList = SearchForProducts(searchterm);
                     flag = false;
@@ -70,26 +68,32 @@ namespace BBCollection.BBObjects
             string apiLink = linkMaker.GetProductAPILink(searchterm);
             OpenHttp<SallingAPIProductSuggestions> openHttp;
             List<Product> returnList = new List<Product>();
-
-            openHttp = new OpenHttp<SallingAPIProductSuggestions>(apiLink, bearerAccessToken.GetBearerToken());
-            productSuggestions = openHttp.ReadAndParseAPISingle();
-
-            foreach (SallingAPIProduct products in productSuggestions.Suggestions)
+            try
             {
-                returnList.Add(new Product(products.id,products.title,products.description,products.price,products.img,"Bilka"));
+                openHttp = new OpenHttp<SallingAPIProductSuggestions>(apiLink, bearerAccessToken.GetBearerToken());
+                productSuggestions = openHttp.ReadAndParseAPISingle();
+
+                foreach (SallingAPIProduct products in productSuggestions.Suggestions)
+                {
+                    returnList.Add(new Product(products.id, products.title, products.description, products.price, products.img, "Bilka"));
+                }
             }
+            catch (WebException e)
+            {
+                Console.WriteLine("This program is expected to throw WebException on successful run." +
+                                  "\n\nException Message :" + e.Message);
+            }
+            
             return returnList;
         }
         private bool CheckList(List<Product> products, out bool flag) 
         {
             flag = true;
-            return products.Count != 0 ? true : false;
+            return (products.Count != 0) ? true : false;
         }
+
         private List<Product> StoreFilter(List<Product> products, AppliedFiltersList stores)
         {
-#pragma warning disable CS0219 // The variable 'i' is assigned but its value is never used
-            int i = 0;
-#pragma warning restore CS0219 // The variable 'i' is assigned but its value is never used
             List<Product> returnProducts = new List<Product>();
             foreach (Product p in products)
             {
@@ -101,10 +105,20 @@ namespace BBCollection.BBObjects
                         break;
                     }
                 }
-
             }
-
             return returnProducts;
+        }
+
+        private bool IsBilkTrue(AppliedFiltersList stores)
+        {
+            foreach (var item in stores.AppliedFilters)
+            {
+                if (item.name == "Bilka")
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         private List<Product> keyWorkFilters(List<Product> products, AppliedFiltersList keywords)
@@ -120,9 +134,7 @@ namespace BBCollection.BBObjects
                         break;
                     }
                 }
-
             }
-
             return returnProducts;
         }
     }
@@ -155,9 +167,7 @@ namespace BBCollection.BBObjects
             foreach (var s in filterName)
             {
                 AppliedFilters.Add(new AppliedFilters(s));
-
             }
-
         }
     }
 
