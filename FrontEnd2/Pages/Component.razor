@@ -1,6 +1,7 @@
 ﻿@page "/recipe"
 
 @using BBCollection.BBObjects;
+@using BBCollection.DBConncetion;
 @using Newtonsoft.Json;
 @using FrontEnd2.Data;
 @using System.Diagnostics;
@@ -128,15 +129,14 @@
 @code{
         #region Fields
 
-
-        string recipeDescription = " ";
-        string recipeName = " ";
-        string printRecipe = " ";
-        string searchTerm;
-        string email;
-        int i = 0;
-        int scalar = 1;
-        int runCounter = 0;
+    ConnectionSettings connectionSettings = new ConnectionSettings();
+    string recipeDescription = " ";
+    string recipeName = " ";
+    string printRecipe = " ";
+    string searchTerm;
+    string email;
+    int i = 0;
+    int scalar = 1;
 
         int recipePerPerson;
 
@@ -397,12 +397,11 @@
         #region Recipe_async_Methods
         public async Task Search()
         {
-
-            printRecipe = await Http.GetStringAsync("https://localhost:44325/api/recipe?recipeTitle=" + searchTerm);
-            recipeData = JsonConvert.DeserializeObject<List<Recipe>>(printRecipe);
-            viewRecipeTitle = true;
-            RecipeQuery recipeQuery = new RecipeQuery();
-            complexRecipes = recipeQuery.CheapestCRecipes(searchTerm);
+        printRecipe = await Http.GetStringAsync(connectionSettings.GetApiLink() + "api/recipe?recipeTitle=" + searchTerm);
+        recipeData = JsonConvert.DeserializeObject<List<Recipe>>(printRecipe);
+        viewRecipeTitle = true;
+        RecipeQuery recipeQuery = new RecipeQuery();
+        complexRecipes = recipeQuery.CheapestCRecipes(searchTerm);
         }
 
         private async void OnKeyPress(KeyboardEventArgs args)

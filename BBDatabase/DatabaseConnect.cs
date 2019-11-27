@@ -9,12 +9,7 @@ namespace BBCollection
 {
     public class DatabaseConnect
     {
-        DatabaseInformation databaseInformation = null;
-
-        public DatabaseConnect(string sName, string dBName, string dBUser, string dBPw)
-        {
-            databaseInformation = new DatabaseInformation(sName, dBName, dBUser, dBPw);
-        }
+        DatabaseInformation databaseInformation = new DatabaseInformation();
 
         /* In this section the initalization of the database will be handled */
 

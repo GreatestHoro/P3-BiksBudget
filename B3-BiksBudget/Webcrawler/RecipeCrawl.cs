@@ -235,9 +235,14 @@ namespace BBGatherer.Webcrawler
             List<Product> ProductsWithRef = new List<Product>();
             ProductHandling productHandling = new ProductHandling();
 
-            foreach (Product p in Products)
+            foreach (Product p in Products) 
             {
-                ProductsWithRef.Add(productHandling.GetProductWithReferenceFromId(p._id, new DatabaseInformation("localhost", "biksbudgetdb", "root", "BiksBudget123")));
+                ProductsWithRef.Add(productHandling.GetProductWithReferenceFromId(p._id, new DatabaseInformation()));
+            }
+            foreach (Product p in ProductsWithRef) 
+            {
+                newRefrence = UpdateProductRefrence(p._CustomReferenceField, Searchterm);
+                productHandling.InsertIngredientReferenceFromId(newRefrence,p._id, new DatabaseInformation());
             }
             return ProductsWithRef;
         }

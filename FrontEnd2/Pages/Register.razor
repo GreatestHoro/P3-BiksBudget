@@ -1,5 +1,6 @@
 ﻿@page "/Register"
 @using BBCollection.BBObjects;
+@using BBCollection.DBConncetion;
 @using Newtonsoft.Json;
 @using  System.Text;
 @using FrontEnd2.Data;
@@ -49,13 +50,14 @@ else
     private string userString;
     bool passwordFine;
     private string verificationText = "";
+    ConnectionSettings connectionSettings = new ConnectionSettings();
 
     ////protected async override Task OnInitializedAsync()
     //protected async void doStuff()
     //{
     //    if (email != null)
     //    {
-    //        gottenData = await Http.GetStringAsync("https://localhost:44325/api/Login/" + email);
+    //        gottenData = await Http.GetStringAsync(connectionSettings.GetApiLink() + "api/Login/" + email);
     //    }
     //}
 
@@ -96,7 +98,7 @@ else
 
         var content = new StringContent(userString, Encoding.UTF8, "application/json");
 
-        response = await Http.PostAsync("Https://localhost:44325/User/Register", content);
+        response = await Http.PostAsync(connectionSettings.GetApiLink() + "User/Register", content);
 
         if (response.IsSuccessStatusCode)
         {
