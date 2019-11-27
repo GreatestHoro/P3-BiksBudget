@@ -18,6 +18,16 @@ h1 {
     text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
     /*background-color: rgba(248, 249, 249, 0.5);*/
 }
+/*Check box in advanced search*/
+.locationCheckBox {
+    margin: auto;
+    /*display: block;*/
+}
+/*Text in advanced search*/
+.searchAdvancedText {
+    text-align:center;
+    display:block;
+}
 
 .invisibleBtn {
     opacity: 0.5;
@@ -25,7 +35,7 @@ h1 {
 
 .recipeSearch{
     max-width: 90%;
-    margin: 10px; 
+    margin: 10px;
 }
 
 .recipeSearchBtn{
@@ -42,7 +52,7 @@ h1 {
     font-size: 12px;
 }
 #search{
-    border: 0 1px 0 0; 
+    border: 0 1px 0 0;
 }
 /*When not using bootstrap flex*/
 .SearchField {
@@ -69,7 +79,7 @@ h1 {
 .gmap_canvas {
     overflow: hidden;
     background: none !important;
-    height: auto;   
+    height: auto;
     width: auto;
     border-color: salmon;
     border-width: 10px;
@@ -217,9 +227,9 @@ card-store-img {
 }
 
 .top-nav-emilie-bar{
-   margin-top: 10px; 
+   margin-top: 10px;
 }
-    
+
 
 
 
@@ -463,13 +473,13 @@ app {
 .sidebar {
     background: linear-gradient(black, grey);
     /*background-color: #3e3e3d;*/
-    
+
 }
  /*.sidebar .top-row {
      height: 180px;
     }*/
 
-   
+
 .sidebar .navbar-brand {
     font-size: 1.1rem;
     text-shadow: none;
@@ -515,6 +525,27 @@ logo-header-wrapper {
     width:  160px;
     height: 100px;
 }
+.nav-item a{
+    color:#d7d7d7;
+    border-radius:4px;
+    height:3rem;
+    display: flex;
+    align-items: center;
+    line-height: 3rem;
+    text-shadow: none;
+    float:left;
+}
+.nav-item a:active {
+    background-color: rgba(255, 255, 255, 0.25);
+    color: white;
+}
+.nav-item a:hover {
+    background-color: rgba(255,255,255,0.1);
+    color:white;
+}
+
+
+
 
 /*#form-buscar > .form-group > .input-group > .form-control {
     height: 40px;
@@ -678,17 +709,6 @@ logo-header-wrapper {
     border-radius: 0px;
 }
 
-.nav-item a.active {
-    background-color: rgba(255,255,255,0.25);
-    color: white;
-
-}
-
-.nav-item a:hover {
-    background-color: rgba(255,255,255,0.1);
-    color: white;
-}
-
 .content {
     padding-top: 1.1rem;
 }
@@ -713,11 +733,9 @@ logo-header-wrapper {
     padding-right: 0px;
     padding-bottom: 40px;
     padding-left: 10px;
-    /*text-align: center;*/
 }
-/*.logDesign {
-    height: 50%;
-}*/
+
+
 
 @media (max-width: 767.98px) {
     .main .top-row {
@@ -726,10 +744,12 @@ logo-header-wrapper {
     .top-nav {
         display: none;
     }
+    /*Log system on small screens*/
     .Log-btn-design {
         background: none;
         border: 1px solid transparent;
-        /*color: #d7d7d7;*/
+        font-size: 1.1rem;
+        padding-left: 0;
     }
     .recipeSearchBtn{
         display: block;
@@ -740,14 +760,15 @@ logo-header-wrapper {
         min-height: 50px;
         position: sticky;
         top: 0;
+        z-index: 999;
     }
 
     .logo-header{
-        height: 50px; 
+        height: 50px;
     }
 
     .top-row{
-        max-height: 90px; 
+        max-height: 90px;
     }
    /*.Log-btn{
        background-color:red;
@@ -756,7 +777,6 @@ logo-header-wrapper {
    .miniBasket{
        width:85%;
    }
-}
 
 @media (min-width: 768px) {
     app {

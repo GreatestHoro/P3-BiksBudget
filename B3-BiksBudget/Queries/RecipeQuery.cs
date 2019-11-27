@@ -14,10 +14,15 @@ namespace BBGatherer.Queries
 {
     public class RecipeQuery
     {
-        DatabaseConnect _dbConnect = new DatabaseConnect("localhost", "BiksBudgetDB", "root", "BiksBudget123");
+        DatabaseConnect _dbConnect = new DatabaseConnect();
         BearerAccessToken bearerAccessToken = new BearerAccessToken("a6f4495c-ace4-4c39-805c-46071dd536db");
         SallingAPILink _linkMaker = new SallingAPILink();
         Filter<SallingAPIProduct> _productFilter = new Filter<SallingAPIProduct>();
+        public int _productsPerLoad { get; set; } = 10;
+        public int _productsToMatch { get; set; } = 10;
+        public int _loadCount { get; set; } = 0;
+        string _prevSearch { get; set; }
+
         int _productsPerIngredient { get; set; } = 3;
 
         // Cheapest Complex Recipes
@@ -90,7 +95,7 @@ namespace BBGatherer.Queries
         private List<Product> matchingProducts(string ingredient)
         {
             List<Product> resProducts = new List<Product>();
-            resProducts = _dbConnect.GetProducts(ingredient);
+            resProducts = _dbConnect.GetProductInterval(ingredient, _productsToMatch, 0);
             resProducts.Sort((a,b) => a._price.CompareTo(b._price));
 
             return resProducts;
@@ -99,7 +104,16 @@ namespace BBGatherer.Queries
         //Function which finds corresponding recipes to the searchTerm in the database
         private List<Recipe> Recipes(string searchTerm)
         {
-            return _dbConnect.GetRecipes(searchTerm);
+            if (_prevSearch == searchTerm)
+            {
+                _loadCount++;
+            } 
+            else
+            {
+                _loadCount = 0;
+                _prevSearch = searchTerm;
+            }
+            return _dbConnect.GetRecipesInterval(searchTerm, _productsPerLoad, _productsPerLoad * _loadCount);
         }
 
         // Input: list of queried recipes matching searchTerm

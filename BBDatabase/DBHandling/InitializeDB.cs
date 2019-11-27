@@ -6,6 +6,7 @@ namespace BBCollection.DBHandling
 {
     class InitializeDB
     {
+        ConnectionSettings connectionSettings = new ConnectionSettings();
         public void start(DatabaseInformation databaseInformation)
         {
             CreateDB(databaseInformation);
@@ -46,17 +47,15 @@ namespace BBCollection.DBHandling
                 connection = new MySqlConnection(databaseInformation.ConnectionString(false));
                 connection.Open();
 
-                string databaseExist = "CREATE DATABASE IF NOT EXISTS `" + databaseInformation.DatabaseName + "`;";
+                string databaseExist = "CREATE DATABASE IF NOT EXISTS `"+ connectionSettings._DatabaseName +"`;";
 
                 MySqlCommand msc = new MySqlCommand(databaseExist, connection);
 
                 msc.ExecuteNonQuery();
             }
-#pragma warning disable CS0168 // The variable 'e' is declared but never used
             catch (MySqlException e)
-#pragma warning restore CS0168 // The variable 'e' is declared but never used
             {
-                //Console.WriteLine(e);
+                Console.WriteLine(e);
             }
             finally
             {

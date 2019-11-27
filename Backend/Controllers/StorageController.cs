@@ -16,7 +16,7 @@ namespace Backend.Controllers
     [ApiController]
     public class StorageController : ControllerBase
     {
-        DatabaseConnect dbConnect = new DatabaseConnect("localhost", "biksbudgetDB", "root", "BiksBudget123");
+        DatabaseConnect dbConnect = new DatabaseConnect();
         List<Product> resultList = new List<Product>();
         ControllerFuncionality functionality = new ControllerFuncionality();
         string Email;

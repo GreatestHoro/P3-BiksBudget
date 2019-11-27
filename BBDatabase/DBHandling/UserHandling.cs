@@ -29,7 +29,7 @@ namespace BBCollection.DBHandling
 
             msc.Parameters.AddWithValue("@Username", username);
             msc.Parameters.AddWithValue("@Password", ConvertPasswordToHash(password));
-
+            
             new SQLConnect().NonQueryMSC(msc, dbInformation);
         }
 

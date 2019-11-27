@@ -87,7 +87,7 @@ namespace Backend.Controllers
 
             string jsonRecipes = JsonConvert.SerializeObject(recipeData);
 
-            DatabaseConnect dbConnect = new DatabaseConnect("localhost", "BiksBudgetDB", "root", "BiksBudget123");
+            DatabaseConnect dbConnect = new DatabaseConnect();
             var data = dbConnect.GetRecipes(recipeTitle);
             string jsonDBRecipes = JsonConvert.SerializeObject(data);
 
@@ -99,7 +99,7 @@ namespace Backend.Controllers
         [HttpGet]
         public string GetRecipes(string search)
         {
-            DatabaseConnect Database = new DatabaseConnect("localhost", "BiksBudgetDB", "root", "BiksBudget123");
+            DatabaseConnect Database = new DatabaseConnect();
             return JsonConvert.SerializeObject(Database.GetRecipes(search));
         }
 
@@ -108,7 +108,7 @@ namespace Backend.Controllers
         [HttpPost]
         public void Post()
         {
-            string buffer, buffer2;
+            string buffer;
 
             HttpRequest request = HttpContext.Request;
             Microsoft.AspNetCore.Http.HttpRequestRewindExtensions.EnableBuffering(request);
