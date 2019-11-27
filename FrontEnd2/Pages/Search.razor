@@ -201,19 +201,6 @@ else
     string email;
     string messageToUser = "Apply filters and press search to find products";
     string productString;
-    #endregion
-
-    #region Page_Methods
-    // Function to get salling products in high resolution
-    private string ProductImage(string prod_image)
-    {
-        return prod_image + "&imgSize=1080x1080";
-    }
-
-    void toggleAdvancedCheckBox()
-    {
-        viewAdvancedSearch = !viewAdvancedSearch;
-    }
 
     public double minPrice
     {
@@ -259,6 +246,14 @@ else
         }
     }
 
+    #endregion
+
+    #region ChangeFilterControl
+
+    void toggleAdvancedCheckBox()
+    {
+        viewAdvancedSearch = !viewAdvancedSearch;
+    }
 
     public void ChangeState(string name, List<FilterItem> list)
     {
@@ -326,13 +321,6 @@ else
         IsLocationEnabled = !IsLocationEnabled;
     }
 
-    public void FindStoreFunc()
-    {
-        closeStore = new FindCloseStores(userGeoLocation, radius);
-        allStoresUnified = closeStore.GetStore();
-        lastRadius = radius;
-    }
-
     public void SelectAll(List<FilterItem> list)
     {
         foreach (var item in list)
@@ -340,6 +328,7 @@ else
             item.IsEnabled = true;
         }
     }
+
     #endregion
 
     #region Product Sort Filters
@@ -379,9 +368,7 @@ else
     }
     #endregion
 
-    #region Async_Methods
-
-
+    #region ProductToShoppinglistMethod
     public async void AddProductToSL(Product AddedItem)
     {
         AddedItem._amountleft++;
@@ -432,16 +419,9 @@ else
         }
         return uniqueList;
     }
+#endregion
 
-    private async Task KeyPressed(KeyboardEventArgs e)
-    {
-        if (e.Key == "Enter")
-        {
-            await SearchForProducts();
-            StateHasChanged();
-        }
-    }
-
+    #region SearchMethods
     private async Task SearchForProducts()
     {
         if (!String.IsNullOrEmpty(searchBox) && !String.IsNullOrWhiteSpace(searchBox))
@@ -462,6 +442,11 @@ else
             itemList = JsonConvert.DeserializeObject<List<Product>>(productString);
             StateHasChanged();
 
+            if (itemList.Count == 0)
+            {
+                messageToUser = "No Products Found With These Filters";
+            }
+
             if (itemList.Count != 0)
             {
                 _viewProducts = true;
@@ -473,7 +458,24 @@ else
         }
     }
 
+    public void FindStoreFunc()
+    {
+        closeStore = new FindCloseStores(userGeoLocation, radius);
+        allStoresUnified = closeStore.GetStore();
+        lastRadius = radius;
+    }
 
+    private async Task KeyPressed(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await SearchForProducts();
+            StateHasChanged();
+        }
+    }
+    #endregion
+
+    #region OnStart
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         optionsList = sortOptions.GetList();
@@ -528,7 +530,7 @@ else
     }
     #endregion
 
-    #region Filter_Methods
+    #region BoolArrayMethods
     public string FindActiveSortFilter()
     {
         foreach (Options o in optionsList)
@@ -538,7 +540,7 @@ else
                 return o.filterName;
             }
         }
-        return "Price (Low to High)";
+        return "Most Relevant";
     }
 
     public void updateFilters()
@@ -636,6 +638,7 @@ else
     }
     #endregion
 
+    #region UserLocation
     async Task GetUserLocation()
     {
         await JsRuntime.InvokeVoidAsync(identifier: "getCoordinates");
@@ -650,5 +653,11 @@ else
         {
             tcsUserLocation.SetResult(userGeoLocation);
         }
+    }
+    #endregion
+
+    private string ProductImage(string prod_image)
+    {
+        return prod_image + "&imgSize=1080x1080";
     }
 }
