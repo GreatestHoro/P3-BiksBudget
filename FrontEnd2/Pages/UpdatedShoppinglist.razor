@@ -204,7 +204,7 @@
                 isLoggedIn = true;
                 responseMessage = await ListFunc.GetShoppinglistOnStart(email);
             }
-            else
+            else if (!String.IsNullOrEmpty(shopString))
             {
                 ToShoppinglist = JsonConvert.DeserializeObject<List<Product>>(shopString);
                 responseMessage = await ListFunc.GetShoppinglistWhileNotLoggedIn(ToShoppinglist);
@@ -319,5 +319,5 @@
     {
         return prod_image + "&imgSize=1080x1080";
     }
-#endregion
+    #endregion
 }
