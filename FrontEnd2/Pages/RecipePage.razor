@@ -22,8 +22,10 @@
                 <div id="recipeListOverview">
                     @foreach (var recipe in complexRecipes)
                     {
-                        <div class="recipe">
-
+                        <div class="recipeBar">
+                            <div class="recipeTitleBar">
+                                <p>@recipe._Name</p>
+                            </div>
                         </div>
                     }
                 </div>
@@ -42,16 +44,18 @@
         {
             await RemoveElementFocus("recipeSearchInput");
             Search();
-            this.StateHasChanged();
         }
     }
 
     private async void Search()
     {
+        await MakeInvisible("recipeListOverview");
         await MakeVisible("unloaded-roller");
         RecipeQuery recipeQuery = new RecipeQuery();
         complexRecipes = recipeQuery.CheapestCRecipes(searchTerm);
         await MakeInvisible("unloaded-roller");
+        await MakeVisible("recipeListOverview");
+        this.StateHasChanged();
     }
 
     async Task RemoveElementFocus(string idStr)
