@@ -1,27 +1,73 @@
 ﻿@page "/recipeDevelop"
+@using BBGatherer.Queries;
+@inject IJSRuntime JsRuntime
 
-<div class="text-center md-form recipeSearch">
 
-</div>
-<div class="md-form">
-    
-</div>
+<div class="container-fluid">
+    <div class="row d-flex justify-content-center">
+        <div class="col-sm-10 col-md-8 col-lg-7 col-xl-5">
+            <div id="recipeSearchZone"> 
+                <div class="form-check-inline center_div recipe-search-bar mb-2">
+                    <input type="text" @bind="searchTerm" @onkeyup="OnKeyPress" class="form-control recipe-search-input" id="recipeSearchInput" placeholder="Search" />
 
-<div id="parent">
-    <div id="something">Red</div>
-    <div id="wide-div">Green</div>
-    <div id="something-else">Other content, which is not behind Green as you can see.</div>
-</div>
+                    <button class="btn btn-success recipe-search-button" @onclick="(() => Search())">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </div>
+            </div>
+            <div id="recipeListZone">
+                <div id="unloaded-roller" class="center_div">
+                    <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+                </div>
+                <div id="recipeListOverview">
+                    @foreach (var recipe in complexRecipes)
+                    {
+                        <div class="recipe">
 
-<div class="container">
-    <div class="row">
-        <div class="col-sm-4 offset-4 form-inline mx-auto md-form mb-4">
-            <input type="text" class="form-control oi-underline recipeSearch" placeholder="Enter a Recipe name.." />
-            <button class="btn btn-rounded btn-success recipeSearchBtn">Search</button>
+                        </div>
+                    }
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
 @code {
+    string searchTerm;
+    List<ComplexRecipe> complexRecipes = new List<ComplexRecipe>();
+
+    private async void OnKeyPress(KeyboardEventArgs args)
+    {
+        if (args.Key == "Enter")
+        {
+            await RemoveElementFocus("recipeSearchInput");
+            Search();
+            this.StateHasChanged();
+        }
+    }
+
+    private async void Search()
+    {
+        await MakeVisible("unloaded-roller");
+        RecipeQuery recipeQuery = new RecipeQuery();
+        complexRecipes = recipeQuery.CheapestCRecipes(searchTerm);
+        await MakeInvisible("unloaded-roller");
+    }
+
+    async Task RemoveElementFocus(string idStr)
+    {
+        await JsRuntime.InvokeVoidAsync(identifier: "onElementFocused",idStr);
+    }
+
+    async Task MakeVisible(string idStr)
+    {
+        await JsRuntime.InvokeVoidAsync(identifier: "makeVisible", idStr);
+    }
+
+    async Task MakeInvisible(string idStr)
+    {
+        await JsRuntime.InvokeVoidAsync(identifier: "makeInvisible", idStr);
+    }
+
 
 }

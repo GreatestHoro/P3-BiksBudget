@@ -24,7 +24,7 @@ h1 {
 }
 
 .recipeSearch{
-    max-width: 300px;
+    max-width: 90%;
     margin: 10px; 
 }
 
@@ -506,16 +506,167 @@ logo-header-wrapper {
     width:  160px;
     height: 100px;
 }
-    .nav-item a {
-    color: #d7d7d7;
-    border-radius: 4px;
-    height: 3rem;
-    display: flex;
-    align-items: center;
-    line-height: 3rem;
-    text-shadow: none;
-    float:left;
-    /*font-size: 2vw;*/
+
+/*#form-buscar > .form-group > .input-group > .form-control {
+    height: 40px;
+}*/
+
+/*#form-buscar > .form-group > .input-group > .input-group-btn > .btn {
+    height: 40px;
+    font-size: 16px;
+    font-weight: 300;
+}*/
+
+.center_div {
+    margin: 0 auto !important;
+    width: 100%; /* value of your choice which suits your alignment */
+}
+
+.glyphicon {
+    margin-right: 12px;
+}
+
+.pull-left{
+    margin-right: 7px;
+}
+
+.recipe-search-bar {
+    border-width: 5px;
+    border-style: solid;
+    border-color: #0BA428;
+    border-radius: 7px;
+}
+
+.recipe-search-input {
+    border-radius: 0px;
+    border-bottom-right-radius: 0px;
+    padding:10px;
+}
+
+.recipe-search-input:focus {
+    box-shadow: 0 0 0 99999px rgba(0, 0, 0, .5);
+}
+
+.recipe-search-input:focus::placeholder {
+    color: transparent;
+}
+
+/* START lds-roller animation*/
+#unloaded-roller{
+    display:none;
+}
+
+.lds-roller {
+    display: block;
+    position: relative;
+    width: 80px;
+    height: 80px;
+    margin: 20% auto;
+}
+
+.lds-roller div {
+    animation: lds-roller 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+    transform-origin: 40px 40px;
+}
+
+    .lds-roller div:after {
+        content: " ";
+        display: block;
+        position: absolute;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #5cb85c;
+        margin: -4px 0 0 -4px;
+    }
+
+.lds-roller div:nth-child(1) {
+    animation-delay: -0.036s;
+}
+
+    .lds-roller div:nth-child(1):after {
+        top: 63px;
+        left: 63px;
+    }
+
+.lds-roller div:nth-child(2) {
+    animation-delay: -0.072s;
+}
+
+    .lds-roller div:nth-child(2):after {
+        top: 68px;
+        left: 56px;
+    }
+
+.lds-roller div:nth-child(3) {
+    animation-delay: -0.108s;
+}
+
+    .lds-roller div:nth-child(3):after {
+        top: 71px;
+        left: 48px;
+    }
+
+.lds-roller div:nth-child(4) {
+    animation-delay: -0.144s;
+}
+
+    .lds-roller div:nth-child(4):after {
+        top: 72px;
+        left: 40px;
+    }
+
+.lds-roller div:nth-child(5) {
+    animation-delay: -0.18s;
+}
+
+    .lds-roller div:nth-child(5):after {
+        top: 71px;
+        left: 32px;
+    }
+
+.lds-roller div:nth-child(6) {
+    animation-delay: -0.216s;
+}
+
+    .lds-roller div:nth-child(6):after {
+        top: 68px;
+        left: 24px;
+    }
+
+.lds-roller div:nth-child(7) {
+    animation-delay: -0.252s;
+}
+
+    .lds-roller div:nth-child(7):after {
+        top: 63px;
+        left: 17px;
+    }
+
+.lds-roller div:nth-child(8) {
+    animation-delay: -0.288s;
+}
+
+    .lds-roller div:nth-child(8):after {
+        top: 56px;
+        left: 12px;
+    }
+
+@keyframes lds-roller {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* END lds-roller*/
+
+.recipe-search-button {
+    border-radius: 0px;
 }
 
 .nav-item a.active {
@@ -568,7 +719,6 @@ logo-header-wrapper {
     }
     .recipeSearchBtn{
         display: block;
-        width: 300px;
     }
    
 }
