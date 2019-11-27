@@ -9,7 +9,6 @@ using BBCollection.StoreApi;
 using BBCollection.StoreApi.ApiNeeds;
 using BBCollection;
 using System.Threading.Tasks;
-using B3_BiksBudget.BBGatherer.Queries;
 
 namespace BBGatherer.Queries
 {
