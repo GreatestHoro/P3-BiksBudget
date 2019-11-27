@@ -35,49 +35,6 @@ namespace FrontEnd2.Data
         HttpResponseMessage response = new HttpResponseMessage();
         HttpClient Http = new HttpClient();
 
-        #region AddProduct
-        public async Task<HttpResponseMessage> AddProductAsItem(Product newItem, string newDest)
-        {
-            var response = new HttpResponseMessage();
-
-            int userIdLength = Email.Length;
-
-            productString = JsonConvert.SerializeObject(newItem);
-
-            productString = userIdLength.ToString() + "|" + Email + productString;
-
-            return new HttpResponseMessage(HttpStatusCode.OK);
-        }
-
-        public async Task<HttpResponseMessage> AddProductAsString(string name, string amount, double price, string id)
-        {
-            var response = new HttpResponseMessage();
-
-            Product newItem = new Product()
-            {
-                _productName = name,
-                _amount = amount,
-                _price = price,
-                _id = id
-            };
-
-            await AddProductAsItem(newItem, Email);
-
-            return new HttpResponseMessage(HttpStatusCode.OK);
-        }
-
-        public async Task<HttpResponseMessage> AddProductAsItem(Product newItem)
-        {
-            var response = new HttpResponseMessage();
-
-            int userIdLength = Email.Length;
-
-            CombinedList.Add(newItem);
-
-            return new HttpResponseMessage(HttpStatusCode.OK);
-        }
-        #endregion
-
         #region FindPrice
 
         public double FindSubtotal(Product item)
@@ -105,15 +62,13 @@ namespace FrontEnd2.Data
 
         #region Shoppinglist
 
-        public async Task<HttpResponseMessage> GetShoppinglistWhileNotLoggedIn(List<Product> LocalStorageList)
+        public void GetShoppinglistWhileNotLoggedIn(List<Product> LocalStorageList)
         {
             if (LocalStorageList.Count != 0)
             {
                 CombinedList = LocalStorageList;
                 CombinedList = HandleDublicats(CombinedList);
             }
-
-            return new HttpResponseMessage(HttpStatusCode.OK);
         }
 
         public async Task<HttpResponseMessage> GetShoppinglistOnStart(string userId)

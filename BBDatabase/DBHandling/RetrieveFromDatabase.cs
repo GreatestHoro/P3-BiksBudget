@@ -30,7 +30,7 @@ namespace BBCollection.HandleRecipe
             }
             catch(NullReferenceException e)
             {
-
+                Console.WriteLine(e);
             }
             
             sw.Stop();

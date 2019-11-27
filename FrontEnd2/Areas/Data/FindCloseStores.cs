@@ -102,6 +102,7 @@ namespace FrontEnd2.Data
             }
             catch (ArgumentNullException e)
             {
+                Console.WriteLine(e);
                 // No Salling Stores Nearby
             }
             catch (Exception e)
