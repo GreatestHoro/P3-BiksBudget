@@ -9,10 +9,18 @@
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 
 
-<div class="form-inline md-form mr-auto mb-4">
-    <input type="text" class="form-control oi-underline" placeholder="Enter a product name.." @onkeyup="@KeyPressed" @bind="searchBox" />
-    <button class="btn btn-rounded btn-outline-success" @onclick="(() => SearchForProducts())">Search</button>
-</div>
+    <div class="form-inline md-form mr-auto mb-4">
+        <input type="text" class="form-control oi-underline" placeholder="Enter a product name.." @onkeyup="@KeyPressed" @bind="searchBox" />
+        @*<button class="btn btn-rounded btn-outline-success" @onclick="(() => SearchForProducts())">Search</button>*@
+        @if (isSearching)
+        {
+            <button class="btn btn-rounded btn-outline-success search disabled" disabled><span class='fa-left fas fa-sync-alt spinning'></span>Searching...</button>
+        }
+        else
+        {
+            <button class="btn btn-rounded btn-outline-success search" @onclick="(() => SearchForProducts())">Search</button>
+        }
+    </div>
 <div class="form-inline md-form mr-auto mb-4">
     <label class="text-muted">
         Advanced search
@@ -187,6 +195,7 @@ else
     bool _viewProducts = false;
     bool IsLocationEnabled = false;
     bool FatalFalure = false;
+    bool isSearching = false;
 
     int value = 1;
     int radius = 1000;
@@ -426,6 +435,8 @@ else
     {
         if (!String.IsNullOrEmpty(searchBox) && !String.IsNullOrWhiteSpace(searchBox))
         {
+            isSearching = true;
+            StateHasChanged();
             itemList.Clear();
 
             updateFilters();
@@ -440,7 +451,6 @@ else
             }
 
             itemList = JsonConvert.DeserializeObject<List<Product>>(productString);
-            StateHasChanged();
 
             if (itemList.Count == 0)
             {
@@ -451,6 +461,10 @@ else
             {
                 _viewProducts = true;
             }
+
+            isSearching = false;
+            StateHasChanged();
+
         }
         else
         {
@@ -470,7 +484,6 @@ else
         if (e.Key == "Enter")
         {
             await SearchForProducts();
-            StateHasChanged();
         }
     }
     #endregion

@@ -398,7 +398,7 @@
         recipeData = JsonConvert.DeserializeObject<List<Recipe>>(printRecipe);
         viewRecipeTitle = true;
         RecipeQuery recipeQuery = new RecipeQuery();
-        complexRecipes = recipeQuery.CheapestCRecipes(searchTerm);
+        complexRecipes = await recipeQuery.CheapestCRecipes(searchTerm);
         }
 
         private async void OnKeyPress(KeyboardEventArgs args)

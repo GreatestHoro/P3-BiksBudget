@@ -26,10 +26,10 @@ namespace BBGatherer.Queries
         int _productsPerIngredient { get; set; } = 3;
 
         // Cheapest Complex Recipes
-        public List<ComplexRecipe> CheapestCRecipes(string searchTerm)
+        public async Task<List<ComplexRecipe>> CheapestCRecipes(string searchTerm)
         {
             //Get recipes matching searchTerm and Filters
-            List<Recipe> recipeList = Recipes(searchTerm);
+            List<Recipe> recipeList = await Recipes(searchTerm);
 
             //Make an array of distinct ingredients
             List<string> distinctIngredients = DistinctIngredients(recipeList);
@@ -102,7 +102,7 @@ namespace BBGatherer.Queries
         }
 
         //Function which finds corresponding recipes to the searchTerm in the database
-        private List<Recipe> Recipes(string searchTerm)
+        private async Task<List<Recipe>> Recipes(string searchTerm)
         {
             if (_prevSearch == searchTerm)
             {
@@ -113,7 +113,7 @@ namespace BBGatherer.Queries
                 _loadCount = 0;
                 _prevSearch = searchTerm;
             }
-            return _dbConnect.GetRecipesInterval(searchTerm, _productsPerLoad, _productsPerLoad * _loadCount);
+            return await _dbConnect.GetRecipesInterval(searchTerm, _productsPerLoad, _productsPerLoad * _loadCount);
         }
 
         // Input: list of queried recipes matching searchTerm

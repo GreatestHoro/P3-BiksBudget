@@ -11,15 +11,15 @@
                 <div class="form-check-inline center_div recipe-search-bar mb-2">
                     <input type="text" @bind="searchTerm" @onkeyup="OnKeyPress" class="form-control recipe-search-input" id="recipeSearchInput" placeholder="Search" />
                     <button class="btn btn-success recipe-search-button" @onclick="(() => Search())">
-                        <i class="fa fa-search"></i>
-                    </button>
+            <i class="fa fa-search"></i>
+        </button>
                 </div>
-                @*@if (isSearching == true)
+                @if (isSearching == true)
                 {
                     <div class="center_div lds-roller">
                         <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
                     </div>
-                }*@
+                }
             </div>
         </div>
         <!-- #endregion -->
@@ -147,18 +147,20 @@
         if (args.Key == "Enter")
         {
             //await RemoveElementFocus("recipeSearchInput");
+            complexRecipes.Clear();
             Search();
         }
     }
 
-    private void Search()
+    private async Task Search()
     {
-        complexRecipes.Clear();
+        isSearching = true;
+        StateHasChanged();
         recipeQuery._loadCount = -1;
         //await MakeInvisible("recipeListOverview");
         //await MakeInvisible("LoadMore");
         //await MakeVisible("unloaded-roller");
-        complexRecipes = recipeQuery.CheapestCRecipes(searchTerm);
+        complexRecipes = await recipeQuery.CheapestCRecipes(searchTerm);
         //await MakeInvisible("unloaded-roller");
         //await MakeVisible("recipeListOverview");
         //if (complexRecipes.Count() % recipeQuery._productsPerLoad == 0)
@@ -166,13 +168,14 @@
         //    await MakeVisible("LoadMore");
         //}
         viewRecipeList = true;
-        this.StateHasChanged();
+        isSearching = false;
+        StateHasChanged();
     }
 
-    private void LoadMore()
+    private async Task LoadMore()
     {
         //MakeVisible("loadMore-roller");
-        complexRecipes.AddRange(recipeQuery.CheapestCRecipes(searchTerm));
+        complexRecipes.AddRange(await recipeQuery.CheapestCRecipes(searchTerm));
         //MakeInvisible("loadMore-roller");
         //if (complexRecipes.Count() % recipeQuery._productsPerLoad != 0)
         //{

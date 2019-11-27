@@ -4,6 +4,8 @@ using BBCollection.DBHandling;
 using BBCollection.HandleRecipe;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+
 
 namespace BBCollection
 {
@@ -162,9 +164,9 @@ namespace BBCollection
             return new ProductHandling().GetProductsInterval(name, limit, offset, databaseInformation.GetConnect());
         }
 
-        public List<Recipe> GetRecipesInterval(string name, int limit, int offset)
+        public async Task<List<Recipe>> GetRecipesInterval(string name, int limit, int offset)
         {
-            return new RetrieveFromDatabase().RetrieveRecipeListInterval(name, limit, offset, databaseInformation.GetConnect());
+            return await new RetrieveFromDatabase().RetrieveRecipeListInterval(name, limit, offset, databaseInformation.GetConnect());
         }
 
     }
