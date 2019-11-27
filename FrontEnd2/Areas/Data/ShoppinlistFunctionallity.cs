@@ -14,6 +14,8 @@ namespace FrontEnd2.Data
 {
     class ShoppinlistFunctionality
     {
+
+        #region Fields
         public ShoppinlistFunctionality(string _dest)
         {
             dest = _dest;
@@ -34,34 +36,45 @@ namespace FrontEnd2.Data
 
         HttpResponseMessage response = new HttpResponseMessage();
         HttpClient Http = new HttpClient();
+        #endregion
 
         #region FindPrice
 
+        /// <summary>
+        /// Finds the complete price for a product based on how many of them there is.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns>Complete price for one item</returns>
         public double FindSubtotal(Product item)
         {
-            double result;
-
-            result = item._price * item._amountleft;
-            result = Math.Round(result, 3);
-
-            return result;
+            return (double)item._price * (double)item._amountleft;
         }
 
+        /// <summary>
+        /// Finds the complete price for a list of products
+        /// </summary>
+        /// <returns>Complete price for the list</returns>
         public double CompletePrice()
         {
             double result = 0;
 
-            foreach (var item in CombinedList)
+            foreach (Product item in CombinedList)
             {
-                result += item._price * item._amountleft;
+                result += FindSubtotal(item);
             }
-            result = Math.Round(result, 3);
+
             return result;
         }
         #endregion
 
         #region Shoppinglist
 
+        /// <summary>
+        /// Loads the local storage into the shoppinglist.
+        /// This is used when the user is not logged in.
+        /// Is only done if the localstorage consists of any Products.
+        /// </summary>
+        /// <param name="LocalStorageList"></param>
         public void GetShoppinglistWhileNotLoggedIn(List<Product> LocalStorageList)
         {
             if (LocalStorageList.Count != 0)
@@ -71,6 +84,11 @@ namespace FrontEnd2.Data
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         public async Task<HttpResponseMessage> GetShoppinglistOnStart(string userId)
         {
             Email = userId;
@@ -129,6 +147,14 @@ namespace FrontEnd2.Data
 
             return uniqueList;
         }
+        public async void SaveShoppinglist()
+        {
+            var response = new HttpResponseMessage();
+
+            productString = JsonConvert.SerializeObject(CombinedList);
+
+            response = await SendToApi(productString);
+        }
 
         public async Task<HttpResponseMessage> QuickaddListToShoppinglist(List<Product> sentList)
         {
@@ -150,17 +176,6 @@ namespace FrontEnd2.Data
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
 
-        public async Task<HttpResponseMessage> AddListToShoppinglist(List<Product> sentList, string newDest)
-        {
-            productString = JsonConvert.SerializeObject(sentList);
-
-            sentList.Clear();
-
-            await SendToApi(productString, newDest);
-
-            return new HttpResponseMessage(HttpStatusCode.OK);
-        }
-
         #endregion
 
         #region Storage
@@ -171,6 +186,28 @@ namespace FrontEnd2.Data
             productString = await Http.GetStringAsync(connectionSettings.GetApiLink() + dest + "/" + userId);
 
             CombinedList = JsonConvert.DeserializeObject<List<Product>>(productString);
+
+            return new HttpResponseMessage(HttpStatusCode.OK);
+        }
+
+        public async void DeleteStorage()
+        {
+            CombinedList.Clear();
+            var response = new HttpResponseMessage();
+
+            productString = JsonConvert.SerializeObject(CombinedList);
+
+            await SendToApi(productString);
+        }
+        public async Task<HttpResponseMessage> ChangeItemInStorage(Product item)
+        {
+            string itemString;
+
+            itemString = JsonConvert.SerializeObject(item);
+
+            var content = new StringContent(itemString, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage responce = await Http.PutAsync(connectionSettings.GetApiLink() + Email, content);
 
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
@@ -218,13 +255,6 @@ namespace FrontEnd2.Data
             await SendToApi(productString, dest);
         }
 
-        public async void SaveStorage()
-        {
-            productString = JsonConvert.SerializeObject(CombinedList);
-
-            await SendToApi(productString);
-        }
-
         #endregion
 
         #region SendToApi
@@ -258,51 +288,5 @@ namespace FrontEnd2.Data
 
 
         #endregion
-
-        public async void AddFuncList()
-        {
-            var response = new HttpResponseMessage();
-
-            productString = JsonConvert.SerializeObject(CombinedList);
-
-            response = await SendToApi(productString);
-        }
-
-        public async void DeleteFuncList()
-        {
-            CombinedList.Clear();
-            var response = new HttpResponseMessage();
-
-            productString = JsonConvert.SerializeObject(CombinedList);
-
-            await SendToApi(productString);
-        }
-
-        public async Task<HttpResponseMessage> DeleteItem(string id)
-        {
-            var response = new HttpResponseMessage();
-
-            CombinedList.Remove(CombinedList.First(x => x._id == id));
-            productString = JsonConvert.SerializeObject(CombinedList);
-
-            await SendToApi(productString);
-
-            return new HttpResponseMessage(HttpStatusCode.OK);
-        }
-
-        public async Task<HttpResponseMessage> ChangeItem(Product item)
-        {
-            string itemString;
-
-            itemString = JsonConvert.SerializeObject(item);
-
-            var content = new StringContent(itemString, Encoding.UTF8, "application/json");
-            
-            HttpResponseMessage responce = await Http.PutAsync(connectionSettings.GetApiLink() + Email, content);
-
-            return new HttpResponseMessage(HttpStatusCode.OK);
-        }
-
-
-}
+    }
 }

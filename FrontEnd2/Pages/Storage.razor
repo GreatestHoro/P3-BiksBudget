@@ -86,7 +86,7 @@
                 <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>ListFunc.AddFuncList())">Save storage</button>
             </div>*@
             <div class="col-sm-4">
-                <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => ListFunc.DeleteFuncList())">Delete storage</button>
+                <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => ListFunc.DeleteStorage())">Delete storage</button>
             </div>
             <div class="col-sm-4">
                 <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => FindRecipies())">Empty my Fridge</button>
@@ -189,9 +189,9 @@ else
         <p>You need to be logged in to see your storage</p>
 }
 
-
 @code{
     ConnectionSettings connectionSettings = new ConnectionSettings();
+
     #region Fields
     string email, userId, recipeDescription, recipeName;
     int ID;
@@ -226,7 +226,7 @@ else
         int index = FindIdex(item);
         item._state = state;
 
-        await ListFunc.ChangeItem(ListFunc.CombinedList[index]);
+        await ListFunc.ChangeItemInStorage(ListFunc.CombinedList[index]);
     }
 
     public int FindIdex(Product item)
@@ -252,7 +252,7 @@ else
         }
         item._amountleft--;
 
-        await ListFunc.ChangeItem(item);
+        await ListFunc.ChangeItemInStorage(item);
     }
     #endregion
 
