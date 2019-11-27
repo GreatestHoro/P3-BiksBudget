@@ -176,7 +176,7 @@ namespace FrontEnd2.Data
         {
             productString = JsonConvert.SerializeObject(sentList);
 
-            await PutToApi(productString);
+            response =  await PutToApi(productString);
 
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
