@@ -234,7 +234,7 @@ else
     }
     #endregion
 
-    public async void AddItemToStorage(Product AddedItem)
+    public void AddItemToStorage(Product AddedItem)
     {
         remindToSave = true;
         ListFunc.AddItemToStorage(AddedItem, dest);
@@ -243,7 +243,7 @@ else
 
     }
 
-    public async void AddOneItemToStorage(Product AddedItem)
+    public void AddOneItemToStorage(Product AddedItem)
     {
         remindToSave = true;
         if (AddedItem._amountleft > 1)
