@@ -9,13 +9,12 @@ using BBCollection.StoreApi;
 using BBCollection.StoreApi.ApiNeeds;
 using BBCollection;
 using System.Threading.Tasks;
-using B3_BiksBudget.BBGatherer.Queries;
 
 namespace BBGatherer.Queries
 {
     public class RecipeQuery
     {
-        DatabaseConnect _dbConnect = new DatabaseConnect("localhost", "BiksBudgetDB", "root", "BiksBudget123");
+        DatabaseConnect _dbConnect = new DatabaseConnect();
         BearerAccessToken bearerAccessToken = new BearerAccessToken("a6f4495c-ace4-4c39-805c-46071dd536db");
         SallingAPILink _linkMaker = new SallingAPILink();
         Filter<SallingAPIProduct> _productFilter = new Filter<SallingAPIProduct>();

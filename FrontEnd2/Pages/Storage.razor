@@ -1,6 +1,7 @@
 ﻿@page "/storage"
 
 @using BBCollection.BBObjects;
+@using BBCollection.DBConncetion;
 @using Newtonsoft.Json;
 @using FrontEnd2.Data;
 
@@ -190,6 +191,7 @@ else
 
 
 @code{
+    ConnectionSettings connectionSettings = new ConnectionSettings();
     #region Fields
     string productString, newProduct, _headingText, email, userId, recipeDescription, recipeName;
     int testvalue,ID;
@@ -266,7 +268,6 @@ else
             {
                 Console.WriteLine($"Value for key {e.Key} changed from {e.OldValue} to {e.NewValue}");
             };
-
             userId = email;
             if (email != null)
             {
@@ -489,4 +490,3 @@ else
     }
     #endregion
 }
-

@@ -30,3 +30,16 @@ async function getCoordinates() {
 async function UpdateUserLocation(position) {
     await DotNet.invokeMethodAsync("FrontEnd2", "UpdateUserLocation", position.coords.latitude, position.coords.longitude);
 }
+
+// Remove On Focus on recipe search after click
+function onElementFocused() {
+    document.activeElement.blur();
+}
+
+function makeVisible(strId) {
+    document.getElementById(strId).style.display = 'block';
+}
+
+function makeInvisible(strId) {
+    document.getElementById(strId).style.display = 'none';
+}

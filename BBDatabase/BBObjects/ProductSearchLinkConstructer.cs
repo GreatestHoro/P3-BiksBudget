@@ -2,16 +2,18 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Web;
+using BBCollection.DBConncetion;
 
 namespace BBCollection.BBObjects
 {
     public class ProductSearchLinkConstructer
     {
+        ConnectionSettings connectionSettings = new ConnectionSettings();
         private string url;
         public ProductSearchLinkConstructer(String search, String keywordFilter, String storeFilter) 
         {
             search = HttpUtility.UrlEncode(search);
-            url = $"https://localhost:44325/api/Search?searchterm={search}&_keywordFilter={keywordFilter}&_storeFilter={storeFilter}";
+            url = connectionSettings.GetApiLink() + $"api/Search?searchterm={search}&_keywordFilter={keywordFilter}&_storeFilter={storeFilter}";
             
         }
 

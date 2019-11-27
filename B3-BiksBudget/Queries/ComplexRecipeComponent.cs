@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using BBCollection.BBObjects;
 
-namespace B3_BiksBudget.BBGatherer.Queries
+namespace BBGatherer.Queries
 {
     public class ComplexRecipeComponent
     {
