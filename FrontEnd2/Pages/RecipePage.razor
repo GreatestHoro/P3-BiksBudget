@@ -14,12 +14,12 @@
                         <i class="fa fa-search"></i>
                     </button>
                 </div>
-                @if (isSearching == true)
+                @*@if (isSearching == true)
                 {
                     <div class="center_div lds-roller">
                         <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
                     </div>
-                }
+                }*@
             </div>
         </div>
         <!-- #endregion -->
@@ -59,10 +59,11 @@
                             </div>
                         </div>
                     }
-                    <button class="btn btn-warning mb-5" style="display:none;" @onclick="LoadMore" id="LoadMore">Load More</button>
-                    <div id="loadMore-roller" style="display:none;" class="center_div">
-                        <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-                    </div>
+                    @if (complexRecipes.Count() % recipeQuery._productsPerLoad == 0)
+                    {
+                        <button class="btn btn-warning mb-5" @onclick="LoadMore" id="LoadMore">Load More</button>
+                    }
+
                 </div>
             </div>
         }
@@ -146,8 +147,6 @@
         if (args.Key == "Enter")
         {
             //await RemoveElementFocus("recipeSearchInput");
-            isSearching = true;
-            this.StateHasChanged();
             Search();
         }
     }
@@ -156,34 +155,35 @@
     {
         complexRecipes.Clear();
         recipeQuery._loadCount = -1;
-        await MakeInvisible("recipeListOverview");
-        await MakeInvisible("LoadMore");
-        await MakeVisible("unloaded-roller");
+        //await MakeInvisible("recipeListOverview");
+        //await MakeInvisible("LoadMore");
+        //await MakeVisible("unloaded-roller");
         complexRecipes = recipeQuery.CheapestCRecipes(searchTerm);
-        await MakeInvisible("unloaded-roller");
-        await MakeVisible("recipeListOverview");
-        if (complexRecipes.Count() % recipeQuery._productsPerLoad == 0)
-        {
-            await MakeVisible("LoadMore");
-        }
+        //await MakeInvisible("unloaded-roller");
+        //await MakeVisible("recipeListOverview");
+        //if (complexRecipes.Count() % recipeQuery._productsPerLoad == 0)
+        //{
+        //    await MakeVisible("LoadMore");
+        //}
+        viewRecipeList = true;
         this.StateHasChanged();
     }
 
-    private async void LoadMore()
+    private void LoadMore()
     {
-        MakeVisible("loadMore-roller");
+        //MakeVisible("loadMore-roller");
         complexRecipes.AddRange(recipeQuery.CheapestCRecipes(searchTerm));
-        MakeInvisible("loadMore-roller");
-        if (complexRecipes.Count() % recipeQuery._productsPerLoad != 0)
-        {
-            await MakeInvisible("LoadMore");
-        }
+        //MakeInvisible("loadMore-roller");
+        //if (complexRecipes.Count() % recipeQuery._productsPerLoad != 0)
+        //{
+        //    await MakeInvisible("LoadMore");
+        //}
     }
 
-    async Task RemoveElementFocus(string idStr)
-    {
-        await JsRuntime.InvokeVoidAsync(identifier: "onElementFocused",idStr);
-    }
+    //async Task RemoveElementFocus(string idStr)
+    //{
+    //    await JsRuntime.InvokeVoidAsync(identifier: "onElementFocused",idStr);
+    //}
 
     //async Task MakeVisible(string idStr)
     //{
@@ -195,7 +195,6 @@
     //    await JsRuntime.InvokeVoidAsync(identifier: "makeInvisible", idStr);
     //}
 
-    #endregion
 
 
 }
