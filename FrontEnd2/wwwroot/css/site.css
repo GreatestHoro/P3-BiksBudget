@@ -741,6 +741,7 @@ logo-header-wrapper {
     .main .top-row {
         display: none;
     }
+
     .top-nav {
         display: none;
     }
@@ -751,7 +752,8 @@ logo-header-wrapper {
         font-size: 1.1rem;
         padding-left: 0;
     }
-    .recipeSearchBtn{
+
+    .recipeSearchBtn {
         display: block;
     }
 
@@ -763,20 +765,21 @@ logo-header-wrapper {
         z-index: 999;
     }
 
-    .logo-header{
+    .logo-header {
         height: 50px;
     }
 
-    .top-row{
+    .top-row {
         max-height: 90px;
     }
-   /*.Log-btn{
+    /*.Log-btn{
        background-color:red;
    }*/
 
-   .miniBasket{
-       width:85%;
-   }
+    .miniBasket {
+        width: 85%;
+    }
+}
 
 @media (min-width: 768px) {
     app {
