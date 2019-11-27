@@ -10,8 +10,10 @@ namespace FrontEnd2.Data
     {
         public Recipe _recipie { get; set; }
         public int complexity { get; set; }
+        public float pMatch { get; set; }
         public int matchingIngrdientsNum { get; set; }
         public List<Ingredient> matchingIngrdient = new List<Ingredient>();
+        public List<string> custmomRef = new List<string>();
         public List<Product> products = new List<Product>();
 
         public WeightedRecipies(Recipe _recipie)
@@ -20,11 +22,68 @@ namespace FrontEnd2.Data
             complexity = _recipie._ingredientList.Count();
         }
 
-        public void MatchFound(Ingredient ingrdient, Product product)
+        public void MatchFound(Ingredient ingrdient, string customRef)
         {
             matchingIngrdient.Add(ingrdient);
-            this.products.Add(product);
+            custmomRef.Add(customRef);
             matchingIngrdientsNum = matchingIngrdient.Count();
+        }
+
+        /*public List<Ingredient> uniqeIngrdients(List<Ingredient> ingredients) 
+          {
+              List<Ingredient> uniqeList = new List<Ingredient>();
+              foreach (Ingredient i in ingredients) 
+              {
+                  if (!uniqeList.Contains(i)) 
+                  {
+                      uniqeList.Add(i);
+                  }
+              }
+              return uniqeList;
+          }*/
+        public void calculateP()
+        {
+            int matchs = 0,NonMatches = 0,allTested = 0;
+
+            foreach (Ingredient I in _recipie._ingredientList)
+            {
+                if (compareIngredientsWtihRefs(I, custmomRef))
+                {
+                    matchs++;
+                    allTested++;
+                }
+                else
+                {
+                    NonMatches++;
+                    allTested++;
+                }
+            }
+            if (matchs == 0)
+            {
+                pMatch = 0;
+            }
+            else if (NonMatches == 0)
+            {
+                pMatch = 100;
+            }
+            else 
+            {
+                pMatch = (float)matchs / (float)allTested;
+            }
+
+
+        }
+
+        private bool compareIngredientsWtihRefs(Ingredient ingredient, List<string> refs)
+        {
+            foreach (string _ref in refs)
+            {
+                if (ingredient._ingredientName.Contains(_ref))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }
