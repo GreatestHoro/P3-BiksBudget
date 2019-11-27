@@ -72,8 +72,6 @@ namespace BBGatherer
 
         public void TestCollection()
         {
-
-            string test = "sigh";
             foreach(Recipe r in dbConnect.GetRecipes("kakao"))
             {
                 Console.WriteLine(r._Name);

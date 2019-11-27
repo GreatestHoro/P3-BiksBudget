@@ -6,7 +6,6 @@
 @using FrontEnd2.Data;
 @using System.Diagnostics;
 @using BBGatherer.Queries;
-@using System.Diagnostics;
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 
 
@@ -135,7 +134,6 @@
     string printRecipe = " ";
     string searchTerm;
     string email;
-    int i = 0;
     int scalar = 1;
     int runCounter = 0;
 
@@ -147,9 +145,7 @@
 
         bool viewRecipeTitle = false;
         bool viewIngredients = false;
-        bool isSearching = false;
         bool viewProducts = false;
-        bool IsRun = false;
 
         //bool viewAddToshoppinglist = false;
 
@@ -269,7 +265,7 @@
             }
         }
 
-        public async void QuickAddToShoppinglist(List<Ingredient> ingredient)
+        public void QuickAddToShoppinglist(List<Ingredient> ingredient)
         {
             bool firstRun;
             Product temp = new Product();
