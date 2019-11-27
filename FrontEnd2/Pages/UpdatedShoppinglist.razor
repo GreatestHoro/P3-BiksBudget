@@ -48,7 +48,7 @@
                                             <div class="value-button" id="decrease" @onclick="(() => IncrementAmount(item))" value="Decrease @value"> + </div>
                                         </div>
                                     </td>
-                                    <td data-th="Subtotal" class="text-center">@ListFunc.FindSubtotal(item) kr</td>
+                                    <td data-th="Subtotal" class="text-center">@String.Format("{0:0.0}", ListFunc.FindSubtotal(item))kr</td>
                                     <td class="actions" data-th="">
                                         @if (!String.IsNullOrEmpty(email))
                                         {
@@ -90,7 +90,7 @@
                         </tbody>
                         <tfoot>
                             <tr class="visible-xs">
-                                <td class="text-center"><strong>Total @ListFunc.CompletePrice()</strong></td>
+                                <td class="text-center"><strong>Total @String.Format("{0:0.0}", ListFunc.CompletePrice())</strong></td>
                             </tr>
                         </tfoot>
                     </table>
