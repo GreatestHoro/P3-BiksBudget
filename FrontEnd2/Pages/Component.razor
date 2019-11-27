@@ -426,6 +426,11 @@
                 Console.WriteLine($"Value for key {e.Key} changed from {e.OldValue} to {e.NewValue}");
             };
 
+            if(!String.IsNullOrEmpty(email))
+            {
+                responseMessage = await ShopList.GetShoppinglistOnStart(email);
+            }
+
             StateHasChanged();
         }
     }
