@@ -41,7 +41,7 @@ namespace BBCollection.DBConncetion
                 "WHEN " + collumn + " like @itemNameSort3 then 3 " +
                 "WHEN " + collumn + " like @itemNameSort4 then 4 " +
                 "WHEN " + collumn + " like @itemNameSort5 then 5 " +
-                "ELSE 6 END LIMIT @LimitStart , LimitEnd;";
+                "ELSE 6 END LIMIT @LimitStart OFFSET @LimitEnd;";
 
             MySqlCommand msc = new MySqlCommand(recipesQuery);
             msc.Parameters.AddWithValue("@itemName", "%" + sortItem + "%");
