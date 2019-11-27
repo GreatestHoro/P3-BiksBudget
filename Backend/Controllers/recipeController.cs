@@ -108,7 +108,7 @@ namespace Backend.Controllers
         [HttpPost]
         public void Post()
         {
-            string buffer, buffer2;
+            string buffer;
 
             HttpRequest request = HttpContext.Request;
             Microsoft.AspNetCore.Http.HttpRequestRewindExtensions.EnableBuffering(request);

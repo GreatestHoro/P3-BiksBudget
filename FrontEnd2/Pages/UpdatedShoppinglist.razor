@@ -133,19 +133,14 @@
     List<Product> ToShoppinglist = new List<Product>();
     List<Product> ToStorageList = new List<Product>();
 
-    bool test = false;
     bool remindToSave = false;
     bool isLoggedIn = false;
 
     int value = 1;
-    int amount;
-    int currentValue;
 
     string email;
     string shopString;
-    string storageString;
     string productString;
-    string newProduct;
     string dest = "api/Storage";
     #endregion
 
@@ -207,7 +202,7 @@
             else if (!String.IsNullOrEmpty(shopString))
             {
                 ToShoppinglist = JsonConvert.DeserializeObject<List<Product>>(shopString);
-                responseMessage = await ListFunc.GetShoppinglistWhileNotLoggedIn(ToShoppinglist);
+                ListFunc.GetShoppinglistWhileNotLoggedIn(ToShoppinglist);
             }
 
             StateHasChanged();
@@ -242,21 +237,21 @@
         }
         else
         {
-            ListFunc.AddFuncList();
+            ListFunc.SaveShoppinglist();
         }
     }
 
     #endregion
 
     #region Storage
-    public async void AddListToStorage()
+    public void AddListToStorage()
     {
         remindToSave = true;
         ListFunc.AddShoppinlistToStorage(dest);
         ListFunc.CombinedList.Clear();
     }
 
-    public async void DeleteShoppinglist()
+    public void DeleteShoppinglist()
     {
         remindToSave = true;
         ListFunc.CombinedList.Clear();

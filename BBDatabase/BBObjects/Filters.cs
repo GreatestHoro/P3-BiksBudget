@@ -165,6 +165,7 @@ namespace BBCollection.BBObjects
                 throw new SystemException("bools and the length of options were not equal");
             }
         }
+
         public AppliedFiltersList(String[] filterName)
         {
             foreach (var s in filterName)
