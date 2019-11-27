@@ -78,29 +78,39 @@ h1 {
 }
 
 .miniBasket {
-    transform: translateZ(0),translate3d(0, 0, 0);
+    /*transform: translateZ(0),translate3d(0, 0, 0);
     backface-visibility: hidden;
-    perspective: 1000px;
-    font-family: "MetricLight","Helvetica","Arial",sans-serif;
+    perspective: 1000px;*/
     font-weight: 100;
     color: #3e3e3d;
-    width: 300px;
-    height: 100%;
+    width: 100%;
+    margin: 0 auto;
+    top: 20%;
+    height: 79%;
     position: fixed;
-    right: 0;
-    top: 0;
-    background-color: #fff;
-    z-index: 102;
-    box-shadow: -10px 0 20px -10px rgba(142,142,141,0.4);
+    background-color: lightgray;
+    z-index: 1;
+    /*box-shadow: -10px 0 20px -10px rgba(142,142,141,0.4);
     transition: transform 0.3s ease-in-out;
     transition-property: transform;
     transition-duration: 0.3s;
     transition-timing-function: ease-in-out;
     transition-delay: 0s;
-    transform: translateX(0);
+    transform: translateX(0);*/
 }
 
 .miniBasketHeader{
+    height: 20%;
+}
+
+.miniBasketBody {
+    height: 60%;
+}
+
+.miniBasketFooter {
+    position:absolute;
+    bottom: 0;
+    height: 20%;
 }
 
 .miniBasket-btn {
@@ -349,8 +359,7 @@ ul.fixed {
 }
 
 .recipeListDisplay{
-    min-width: 300px;
-    max-width: 400px;
+    width:inherit;
     max-height: 400px;
     min-height: 40px;
     overflow: hidden;
@@ -743,6 +752,10 @@ logo-header-wrapper {
    /*.Log-btn{
        background-color:red;
    }*/
+
+   .miniBasket{
+       width:85%;
+   }
 }
 
 @media (min-width: 768px) {
