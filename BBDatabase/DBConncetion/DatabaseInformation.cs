@@ -6,33 +6,21 @@ namespace BBCollection.DBConncetion
 {
     public class DatabaseInformation
     {
-        public string ServerName { get; }
-        public string DatabaseName { get; }
-        public string DatabaseUser { get; }
-        public string DatabasePassword { get; }
-
-        public DatabaseInformation(string sName, string dBName, string dBUser, string dBPw)
-        {
-            ServerName = sName;
-            DatabaseName = dBName;
-            DatabaseUser = dBUser;
-            DatabasePassword = dBPw;
-        }
 
         public DatabaseInformation GetConnect()
         {
-            return new DatabaseInformation(ServerName, DatabaseName, DatabaseUser, DatabasePassword);
+            return new DatabaseInformation();
         }
 
         public string ConnectionString(bool withDB)
         {
             if (withDB)
             {
-                return @"server=" + ServerName + ";database=" + DatabaseName + ";userid=" + DatabaseUser + ";password=" + DatabasePassword;
+                return new ConnectionSettings().GetDatabaseStrings().Item1;
             }
             else
             {
-                return @"server=" + ServerName + ";userid=" + DatabaseUser + ";password=" + DatabasePassword;
+                return new ConnectionSettings().GetDatabaseStrings().Item2;
             }
         }
     }

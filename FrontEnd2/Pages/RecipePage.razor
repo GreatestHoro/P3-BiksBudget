@@ -1,0 +1,201 @@
+﻿@page "/recipeDevelop"
+@using BBGatherer.Queries;
+@using BBCollection.BBObjects;
+@inject IJSRuntime JsRuntime
+
+
+    <div class="container-fluid">
+        <!-- #region Recipe search bar -->
+        <div class="row d-flex justify-content-center">
+            <div class="col-sm-10 col-md-8 col-lg-7 col-xl-5">
+                <div class="form-check-inline center_div recipe-search-bar mb-2">
+                    <input type="text" @bind="searchTerm" @onkeyup="OnKeyPress" class="form-control recipe-search-input" id="recipeSearchInput" placeholder="Search" />
+                    <button class="btn btn-success recipe-search-button" @onclick="(() => Search())">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </div>
+                @if (isSearching == true)
+                {
+                    <div class="center_div lds-roller">
+                        <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+                    </div>
+                }
+            </div>
+        </div>
+        <!-- #endregion -->
+        <!-- #region Recipe card lists -->
+        @if (viewRecipeList == true)
+        {
+            <div class="row d-flex justify-content-center top-margin">
+                <div class="col-sm-10 col-md-8 col-lg-7 col-xl-5">
+                    @foreach (ComplexRecipe complexRecipe in complexRecipes)
+                    {
+                        <div class="card w-100 " style="transform:rotate(0); margin-top:10px;">
+                            <a @onclick="(() => retriveInfo(complexRecipe._recipeID))" class="stretched-link"></a>
+                            <div class="card-header" style="padding-bottom: 0.25rem;">
+                                <div class="card-title w-100">
+                                    <h6 style="font-weight:bold;">
+                                        @complexRecipe._Name
+                                    </h6>
+                                </div>
+                            </div>
+                            <div class="card-body" style="padding-bottom: 0.25rem; padding-top: 0.60rem;">
+                                <div class="justify-content-between">
+                                    <button class="rounded btn-success">
+                                        @for (int i = 0; i < complexRecipe._PerPerson; i++)
+                                        {
+                                            if (i < 4)
+                                            {
+                                                <i class="oi oi-person"> </i>
+                                            }
+                                        }
+                                        @if (complexRecipe._PerPerson >= 4)
+                                        {
+                                            <i class="oi oi-plus"> </i>
+                                        }
+                                    </button>
+                                    <p class="d-inline-block float-right"> @complexRecipe._complexRecipeComponent._recipeCost kr.</p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    <button class="btn btn-warning mb-5" style="display:none;" @onclick="LoadMore" id="LoadMore">Load More</button>
+                    <div id="loadMore-roller" style="display:none;" class="center_div">
+                        <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+                    </div>
+                </div>
+            </div>
+        }
+        <!-- #endregion -->
+        @if (viewRecipes == true)
+        {
+            <div class="row d-flex justify-content-center">
+                <!-- #region Recipe view -->
+                <div class="col-sm-10 col-md-7 col-lg-8 col-xl-6 miniBasket mx-auto">
+                    <div class="miniBasketHeader justify-content-center">
+                        <button class="close float-right" @onclick="(() => toggle())"><i class="oi oi-x"></i> </button>
+                        <h2 class="text-center">@recipeName</h2> <hr />
+                    </div>
+                    <div class="miniBasketBody">
+                        @recipeDescription
+                    </div>
+                    <div class="miniBasketFooter justify-content-between">
+
+                    </div>
+                </div>
+                <!-- #endregion -->
+            </div>
+        }
+    </div>
+
+@code {
+    string searchTerm;
+    string recipeDescription = " ";
+    string recipeName = " ";
+
+    int recipePerPerson;
+
+    bool isSearching = false;
+    bool viewRecipes = false;
+    bool viewRecipeList = false;
+
+    List<ComplexRecipe> complexRecipes = new List<ComplexRecipe>();
+    List<Ingredient> ingredients = new List<Ingredient>();
+    RecipeQuery recipeQuery = new RecipeQuery();
+
+
+    void toggle()
+    {
+        viewRecipes = !viewRecipes;
+        viewRecipeList = !viewRecipeList;
+    }
+
+    void retriveInfo(int ID)
+    {
+        ComplexRecipe cr = complexRecipes.First(x => x._recipeID == ID);
+        recipeDescription = cr._description;
+        recipeName = cr._Name;
+        recipePerPerson = (int)cr._PerPerson;
+
+        if (cr._ingredientList == null)
+        {
+            foreach (var item in cr._ingredientList)
+            {
+                ingredients.Add(item);
+                //recipeAmount.Add(item._amount);
+            }
+        }
+        else
+        {
+            //clear();
+            foreach (var item in cr._ingredientList)
+            {
+                ingredients.Add(item);
+                //recipeAmount.Add(item._amount);
+            }
+        }
+        viewRecipes = true;
+        viewRecipeList = false;
+        //viewIngredients = true;
+        //viewProducts = false;
+        //viewAddToshoppinglist = true;
+    }
+
+    private void OnKeyPress(KeyboardEventArgs args)
+    {
+        if (args.Key == "Enter")
+        {
+            //await RemoveElementFocus("recipeSearchInput");
+            isSearching = true;
+            this.StateHasChanged();
+            Search();
+        }
+    }
+
+    private void Search()
+    {
+        complexRecipes.Clear();
+        recipeQuery._loadCount = -1;
+        await MakeInvisible("recipeListOverview");
+        await MakeInvisible("LoadMore");
+        await MakeVisible("unloaded-roller");
+        complexRecipes = recipeQuery.CheapestCRecipes(searchTerm);
+        await MakeInvisible("unloaded-roller");
+        await MakeVisible("recipeListOverview");
+        if (complexRecipes.Count() % recipeQuery._productsPerLoad == 0)
+        {
+            await MakeVisible("LoadMore");
+        }
+        this.StateHasChanged();
+    }
+
+    private async void LoadMore()
+    {
+        MakeVisible("loadMore-roller");
+        complexRecipes.AddRange(recipeQuery.CheapestCRecipes(searchTerm));
+        MakeInvisible("loadMore-roller");
+        if (complexRecipes.Count() % recipeQuery._productsPerLoad != 0)
+        {
+            await MakeInvisible("LoadMore");
+        }
+    }
+
+    async Task RemoveElementFocus(string idStr)
+    {
+        await JsRuntime.InvokeVoidAsync(identifier: "onElementFocused",idStr);
+    }
+
+    //async Task MakeVisible(string idStr)
+    //{
+    //    await JsRuntime.InvokeVoidAsync(identifier: "makeVisible", idStr);
+    //}
+
+    //async Task MakeInvisible(string idStr)
+    //{
+    //    await JsRuntime.InvokeVoidAsync(identifier: "makeInvisible", idStr);
+    //}
+
+    #endregion
+
+
+}

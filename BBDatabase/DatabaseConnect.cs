@@ -9,12 +9,7 @@ namespace BBCollection
 {
     public class DatabaseConnect
     {
-        DatabaseInformation databaseInformation = null;
-
-        public DatabaseConnect(string sName, string dBName, string dBUser, string dBPw)
-        {
-            databaseInformation = new DatabaseInformation(sName, dBName, dBUser, dBPw);
-        }
+        DatabaseInformation databaseInformation = new DatabaseInformation();
 
         /* In this section the initalization of the database will be handled */
 
@@ -47,14 +42,7 @@ namespace BBCollection
 
         public List<Product> GetProducts(string productName)
         {
-            ProductHandling productHandling = new ProductHandling();
-            List<Product> returnProducts = new List<Product>();
-            List<Product> products = productHandling.ListOfProductsFromName(productName, databaseInformation.GetConnect());
-            foreach (Product p in products)
-            {
-                returnProducts.Add(productHandling.GetProductWithReferenceFromId(p._id, databaseInformation));
-            }
-            return returnProducts;
+            return new ProductHandling().ListOfProductsFromName(productName, databaseInformation.GetConnect());
         }
 
         public void AddRecipe(Recipe recipe)
@@ -167,6 +155,16 @@ namespace BBCollection
         public List<Product> GetListOfProductsFromReference(string reference)
         {
             return new ProductHandling().GetProductsWhereReferenceIncludesString(reference, databaseInformation.GetConnect());
+        }
+
+        public List<Product> GetProductInterval(string name, int limit, int offset)
+        {
+            return new ProductHandling().GetProductsInterval(name, limit, offset, databaseInformation.GetConnect());
+        }
+
+        public List<Recipe> GetRecipesInterval(string name, int limit, int offset)
+        {
+            return new RetrieveFromDatabase().RetrieveRecipeListInterval(name, limit, offset, databaseInformation.GetConnect());
         }
 
     }

@@ -10,6 +10,26 @@ namespace BBCollection.DBHandling
 {
     public class ProductHandling
     {
+        public List<Product> GetProductsInterval(string productName, int limit, int offset, DatabaseInformation databaseInformation)
+        {
+            List<Product> productList = new List<Product>();
+            string table = "products";
+            string collumn = "productname";
+
+            DataSet ds = new SQLConnect().DynamicSimpleListSQL(new SqlQuerySort().SortMSCInterval(productName, table, collumn, limit, offset), databaseInformation);
+
+            if (ds.Tables.Count != 0)
+            {
+                foreach (DataRow r in ds.Tables[0].Rows)
+                {
+                    Product product = new Product((string)r[0], (string)r[1], (string)r[2], Convert.ToDouble(r[3]), (string)r[4], (string)r[5]);
+                    productList.Add(product);
+                }
+            }
+
+            return productList;
+        }
+
         public void UpdateStorage(string username, List<Product> products, DatabaseInformation databaseInformation)
         {
             RemoveStorageFromUsername(username, databaseInformation);
@@ -46,8 +66,16 @@ namespace BBCollection.DBHandling
             {
                 foreach (DataRow r in ds.Tables[0].Rows)
                 {
-                    Product product = new Product((string)r[0], (string)r[1], (string)r[2], Convert.ToDouble(r[3]), (string)r[4], (string)r[5]);
-                    productList.Add(product);
+                    if(r[6] != DBNull.Value)
+                    {
+                        Product product = new Product((string)r[0], (string)r[1], (string)r[2], Convert.ToDouble(r[3]), (string)r[4], (string)r[5], (string)r[6]);
+                        productList.Add(product);
+                    } else
+                    {
+                        Product product = new Product((string)r[0], (string)r[1], (string)r[2], Convert.ToDouble(r[3]), (string)r[4], (string)r[5]);
+                        productList.Add(product);
+                    }
+                    
                 }
             }
 
@@ -224,20 +252,40 @@ namespace BBCollection.DBHandling
                     string SLName = (string)ds.Tables[0].Rows[0][0];
                     foreach (DataRow r in ds.Tables[0].Rows)
                     {
-                        
-                        Product product = new Product((string)r[1], (string)r[2], (string)r[3], Convert.ToDouble(r[4]), (string)r[5], (string)r[6], (int)r[8],(string)r[7]);
+                        string reference = "";
+                        if(r[7] != DBNull.Value)
+                        {
+                            reference = (string) r[7];
+                            Product product = new Product((string)r[1], (string)r[2], (string)r[3], Convert.ToDouble(r[4]), (string)r[5], (string)r[6], (int)r[8],(string)r[7]);
+                            if (SLName == (string)r[0])
+                            {
+                                products.Add(product);
+                            }
+                            else
+                            {
+                                ShoppingLists.Add(new Shoppinglist(SLName, products));
+                                products = new List<Product>();
+                                products.Add(product);
+                            }
+                            SLName = (string)r[0];
+                        } else
+                        {
+                            Product product = new Product((string)r[1], (string)r[2], (string)r[3], Convert.ToDouble(r[4]), (string)r[5], (string)r[6], (int)r[8]);
+                            if (SLName == (string)r[0])
+                            {
+                                products.Add(product);
+                            }
+                            else
+                            {
+                                ShoppingLists.Add(new Shoppinglist(SLName, products));
+                                products = new List<Product>();
+                                products.Add(product);
+                            }
+                            SLName = (string)r[0];
 
-                        if (SLName == (string)r[0])
-                        {
-                            products.Add(product);
                         }
-                        else
-                        {
-                            ShoppingLists.Add(new Shoppinglist(SLName, products));
-                            products = new List<Product>();
-                            products.Add(product);
-                        }
-                        SLName = (string)r[0];
+
+                        
                     }
                     ShoppingLists.Add(new Shoppinglist(SLName, products));
                 }
@@ -360,8 +408,6 @@ namespace BBCollection.DBHandling
                         {
                             product = new Product((string)r[0], (string)r[1], (string)r[2], Convert.ToDouble(r[3]), (string)r[4], (string)r[5], (string)r[6]);
                         }
-
-                        
                     }
                 }
             }

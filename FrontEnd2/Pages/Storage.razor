@@ -1,6 +1,7 @@
 ﻿@page "/storage"
 
 @using BBCollection.BBObjects;
+@using BBCollection.DBConncetion;
 @using Newtonsoft.Json;
 @using FrontEnd2.Data;
 
@@ -85,10 +86,10 @@
                 <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>ListFunc.AddFuncList())">Save storage</button>
             </div>*@
             <div class="col-sm-4">
-                <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>ListFunc.DeleteFuncList())">Delete storage</button>
+                <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => ListFunc.DeleteStorage())">Delete storage</button>
             </div>
             <div class="col-sm-4">
-                <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => Search())">Empty my Fridge</button>
+                <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => FindRecipies())">Empty my Fridge</button>
             </div>
         </div>
     </div>
@@ -130,33 +131,36 @@
                     </thead>
                     <tbody>
                         @(found = true)
-                        @foreach (WeightedRecipies rep in recpies)
+                        @foreach (WeightedRecipies w in recpies)
                         {
-                            @if (found == true)
+                            if (w._recipie._recipeID == ID)
                             {
-                                @foreach (Product match in rep.products)
+
+                                @if (found == true)
                                 {
-                                    @for (int i = 0; i < ingredients.Count; i++)
+                                    @foreach (Ingredient I in w._recipie._ingredientList)
                                     {
                                         matchFound();
                                         <tr>
                                             <td>
-                                                @recipeAmount[i] @ingredients[i]._unit
+                                                @I._amount @I._unit
                                             </td>
 
-                                            @if (ingredients[i]._ingredientName.Contains(match._productName))
+                                            @if (compareIngredientsWtihRefs(I, w.custmomRef))
                                             {
-                                                <td style="background-color:green">@ingredients[i]._ingredientName</td>
+                                                <td style="background-color:green">@I._ingredientName</td>
                                             }
 
                                             else
                                             {
-                                                <td style="background-color:red"> @ingredients[i]._ingredientName</td>
+                                                <td style="background-color:red"> @I._ingredientName</td>
+
                                             }
                                         </tr>
                                     }
                                 }
                             }
+
 
                         }
                         <tr>
@@ -175,25 +179,28 @@
                 <h3> @recipeName </h3>
                 <p> @recipeDescription </p>
             </div>
-          }
+        }
         </div>
     </div>
     }
- }
-    else
-    {
+}
+else
+{
         <p>You need to be logged in to see your storage</p>
-    }
-
+}
 
 @code{
+    ConnectionSettings connectionSettings = new ConnectionSettings();
+
     #region Fields
-    string productString, newProduct, _headingText, email, userId, testvalue, recipeDescription, recipeName;
+    string email, userId, recipeDescription, recipeName;
+    int ID;
 
     float recipePerPerson;
 
     int value;
     int x;
+
 
     bool found = true;
     bool viewTitle = false;
@@ -212,15 +219,14 @@
     private delegate bool compareWR(WeightedRecipies r1, WeightedRecipies r2);
     #endregion
 
-    #region Storage_Methods
-    //Storage functionalities
+    #region StorageMethods
 
     public async void ChangeItemState(Product item, string state)
     {
         int index = FindIdex(item);
         item._state = state;
 
-        await ListFunc.ChangeItem(ListFunc.CombinedList[index]);
+        await ListFunc.ChangeItemInStorage(ListFunc.CombinedList[index]);
     }
 
     public int FindIdex(Product item)
@@ -246,30 +252,7 @@
         }
         item._amountleft--;
 
-        await ListFunc.ChangeItem(item);
-
-    }
-
-    private async void AddProduct()
-    {
-        if (newProduct != null)
-        {
-            Product newItem = new Product()
-            {
-                _productName = newProduct,
-                _amount = "",
-                _state = "Full",
-                _id = "2000000000045000",
-                _amountleft = 1,
-                _timeAdded = DateTime.Now.ToString()
-            };
-
-            newProduct = string.Empty;
-
-            ListFunc.itemList.Add(newItem);
-            //responseMessage = await ListFunc.AddProductItem(newItem, userId);
-        }
-
+        await ListFunc.ChangeItemInStorage(item);
     }
     #endregion
 
@@ -285,17 +268,11 @@
             {
                 Console.WriteLine($"Value for key {e.Key} changed from {e.OldValue} to {e.NewValue}");
             };
-
-            //if (email != null)
-            //{
-            //    gottenData = await Http.GetStringAsync("https://localhost:44325/api/Login/" + email + "S");
-            //}
             userId = email;
-            if(email != null)
+            if (email != null)
             {
                 responseMessage = await ListFunc.GetStorageOnStart(email);
             }
-
 
             StateHasChanged();
         }
@@ -334,6 +311,7 @@
     void retriveInfo(int ID)
     {
         Recipe show = _recpies.First(x => x._recipeID == ID);
+        this.ID = ID;
         recipeDescription = show._description;
         recipeName = show._Name;
         recipePerPerson = show._PerPerson;
@@ -394,98 +372,121 @@
     }
     #endregion
 
-    #region EmptyFridge_Methods
+    #region empty fridge
 
-
-    private async Task<List<WeightedRecipies>> FindValidRecipies()
+    private async Task FindRecipies()
     {
-        List<Recipe> ValidRecipies = new List<Recipe>();
-        bool breakFlag;
-        List<Product> storageInventory = ListFunc.CombinedList;
-        foreach (Recipe r in _recpies)
-        {
-            breakFlag = false;
-            //foreach (Product p in storageInventory)
-            foreach (Product p in storageInventory)
-            {
-                foreach (Ingredient i in r._ingredientList)
-                {
-                    if (compareIngrdientAndProduct(i, p))//kan godt være man bliver nødtil at lave en eller anden form for kryds referance
-                    {
-                        ValidRecipies.Add(r);
-                        breakFlag = true;
-                        break;
-                    }
-                }
-                if (breakFlag)
-                {
-                    break;
-                }
-            }
+        List<Recipe> allRecepies = await getRecepies();
+        List<Product> productsInStorage = ListFunc.CombinedList;
+        List<Recipe> relevantRecepies = GetRelevantRecpies(allRecepies,productsInStorage);
+        List<WeightedRecipies> weightedRecipies = GeneratWeighted(relevantRecepies, productsInStorage);
 
-        }
+        recpies = weightedRecipies;
 
-        return GenerateWeightedRecepies(ValidRecipies, storageInventory); ;
+        recpies = recpies.OrderByDescending(x => x.pMatch).ToList();
+
+        viewTitle = true;
     }
 
-    private List<WeightedRecipies> GenerateWeightedRecepies(List<Recipe> recipes, List<Product> storageInventory)
+    private async Task<List<Recipe>> getRecepies()
     {
-        List<WeightedRecipies> returnRecipies = new List<WeightedRecipies>();
-        foreach (Recipe r in recipes)
-        {
-            returnRecipies.Add(new WeightedRecipies(r));
-        }
-
-        foreach (WeightedRecipies w in returnRecipies)
-        {
-            //foreach (Product p in storageInventory)
-            foreach (Product p in storageInventory)
-            {
-                foreach (Ingredient i in w._recipie._ingredientList)
-                {
-                    if (compareIngrdientAndProduct(i, p))
-                    {
-                        w.MatchFound(i,p);
-                    }
-                }
-
-            }
-        }
-        return returnRecipies;
+        _recpies = JsonConvert.DeserializeObject<List<Recipe>>(await Http.GetStringAsync("https://localhost:44325/api/recipe?recipeTitle=" + " "));
+        List<Recipe> recepies = _recpies;
+        return recepies;
     }
 
-    private bool compareIngrdientAndProduct(Ingredient ingrdient, Product product)
+    private List<Recipe> GetRelevantRecpies(List<Recipe> allRecepies, List<Product> productsInStorage)
     {
-        List<String> searchterms = GetRefrencesFromCustomField(product._CustomReferenceField);
-        foreach (string s in searchterms)
+        List<List<string>> productRefs = GetAllProductRefs(productsInStorage);
+        List<Recipe> recipes = new List<Recipe>();
+        foreach (Recipe r in allRecepies)
         {
-            if (ingrdient._ingredientName.Contains(s)) 
+            foreach (Ingredient I in r._ingredientList)
+            {
+                foreach (List<string> sList in productRefs)
+                {
+                    foreach (string s in sList)
+                    {
+                        if (I._ingredientName.Contains(s))
+                        {
+                            recipes.Add(r);
+                            goto end;
+                        }
+                    }
+                }
+            }
+        end:;
+        }
+        return recipes;
+    }
+
+    private List<WeightedRecipies> GeneratWeighted(List<Recipe> relevantRecepies, List<Product> productsInStorage)
+    {
+        List<List<string>> allRefs = GetAllProductRefs(productsInStorage);
+        List<WeightedRecipies> weightedRecipies = new List<WeightedRecipies>();
+
+        foreach (Recipe r in relevantRecepies)
+        {
+            weightedRecipies.Add(new WeightedRecipies(r));
+        }
+
+        foreach(WeightedRecipies w in weightedRecipies)
+        {
+            foreach (Ingredient I in w._recipie._ingredientList)
+            {
+                foreach (List<string> sList in allRefs)
+                {
+                    foreach (string s in sList)
+                    {
+                        if (I._ingredientName.Contains(s))
+                        {
+                            w.MatchFound(I,s);
+                        }
+                    }
+                }
+            }
+            w.calculateP();
+        }
+        //weightedRecipies.ForEach(x => x.uniqeIngrdients(x.matchingIngrdient));
+
+        return weightedRecipies;
+    }
+
+    private List<List<string>> GetAllProductRefs(List<Product> products)
+    {
+        List<List<string>> allRefs = new List<List<string>>();
+        foreach (Product p in products)
+        {
+            allRefs.Add(GetCustomRefrences(p));
+        }
+        return allRefs;
+    }
+
+    private List<string> GetCustomRefrences(Product product)
+    {
+        List<string> ProductRefrence = product._CustomReferenceField.Split(",").ToList();
+        List<string> returnList = new List<string>();
+
+        foreach (string s in ProductRefrence)
+        {
+            if (!(s.Length < 2) && !string.IsNullOrWhiteSpace(s))
+            {
+                returnList.Add(s);
+            }
+        }
+        return returnList;
+    }
+
+    private bool compareIngredientsWtihRefs(Ingredient ingredient,List<string> refs)
+    {
+        foreach (string _ref in refs)
+        {
+            if (ingredient._ingredientName.Contains(_ref))
             {
                 return true;
             }
         }
         return false;
-    }
-
-    private List<string> GetRefrencesFromCustomField(string customfield)
-    {
-        return customfield.Split(",").ToList();
-    }
-
-    protected async Task Search()
-    {
-        string printRecipe;
-
-        printRecipe = await Http.GetStringAsync("https://localhost:44325/api/recipe?recipeTitle=" + " ");
-        _recpies = JsonConvert.DeserializeObject<List<Recipe>>(printRecipe);
-
-        //recpies = Sort(FindValidRecipies(ListFunc.itemList).Result, test1);
-        recpies = FindValidRecipies().Result;
-        foreach (WeightedRecipies wr in recpies)
-        {
-            testvalue = testvalue + wr._recipie._Name + " ? ";
-        }
-        viewTitle = true;
     }
     #endregion
 }

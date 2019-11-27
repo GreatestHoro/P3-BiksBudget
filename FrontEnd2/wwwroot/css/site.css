@@ -18,9 +18,29 @@ h1 {
     text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
     /*background-color: rgba(248, 249, 249, 0.5);*/
 }
+/*Check box in advanced search*/
+.locationCheckBox {
+    margin: auto;
+    /*display: block;*/
+}
+/*Text in advanced search*/
+.searchAdvancedText {
+    text-align:center;
+    display:block;
+}
 
 .invisibleBtn {
     opacity: 0.5;
+}
+
+.recipeSearch{
+    max-width: 90%;
+    margin: 10px;
+}
+
+.recipeSearchBtn{
+    max-width: 100px;
+    margin: 10px;
 }
 
 /*Floating Back-To-Top Button*/
@@ -32,7 +52,7 @@ h1 {
     font-size: 12px;
 }
 #search{
-    border: 0 1px 0 0; 
+    border: 0 1px 0 0;
 }
 /*When not using bootstrap flex*/
 .SearchField {
@@ -59,7 +79,7 @@ h1 {
 .gmap_canvas {
     overflow: hidden;
     background: none !important;
-    height: auto;   
+    height: auto;
     width: auto;
     border-color: salmon;
     border-width: 10px;
@@ -68,29 +88,39 @@ h1 {
 }
 
 .miniBasket {
-    transform: translateZ(0),translate3d(0, 0, 0);
+    /*transform: translateZ(0),translate3d(0, 0, 0);
     backface-visibility: hidden;
-    perspective: 1000px;
-    font-family: "MetricLight","Helvetica","Arial",sans-serif;
+    perspective: 1000px;*/
     font-weight: 100;
     color: #3e3e3d;
-    width: 300px;
-    height: 100%;
+    width: 100%;
+    margin: 0 auto;
+    top: 20%;
+    height: 79%;
     position: fixed;
-    right: 0;
-    top: 0;
-    background-color: #fff;
-    z-index: 102;
-    box-shadow: -10px 0 20px -10px rgba(142,142,141,0.4);
+    background-color: lightgray;
+    z-index: 1;
+    /*box-shadow: -10px 0 20px -10px rgba(142,142,141,0.4);
     transition: transform 0.3s ease-in-out;
     transition-property: transform;
     transition-duration: 0.3s;
     transition-timing-function: ease-in-out;
     transition-delay: 0s;
-    transform: translateX(0);
+    transform: translateX(0);*/
 }
 
 .miniBasketHeader{
+    height: 20%;
+}
+
+.miniBasketBody {
+    height: 60%;
+}
+
+.miniBasketFooter {
+    position:absolute;
+    bottom: 0;
+    height: 20%;
 }
 
 .miniBasket-btn {
@@ -197,9 +227,9 @@ card-store-img {
 }
 
 .top-nav-emilie-bar{
-   margin-top: 10px; 
+   margin-top: 10px;
 }
-    
+
 
 
 
@@ -339,8 +369,7 @@ ul.fixed {
 }
 
 .recipeListDisplay{
-    min-width: 300px;
-    max-width: 400px;
+    width:inherit;
     max-height: 400px;
     min-height: 40px;
     overflow: hidden;
@@ -444,13 +473,13 @@ app {
 .sidebar {
     background: linear-gradient(black, grey);
     /*background-color: #3e3e3d;*/
-    
+
 }
  /*.sidebar .top-row {
      height: 180px;
     }*/
 
-   
+
 .sidebar .navbar-brand {
     font-size: 1.1rem;
     text-shadow: none;
@@ -496,27 +525,188 @@ logo-header-wrapper {
     width:  160px;
     height: 100px;
 }
-    .nav-item a {
-    color: #d7d7d7;
-    border-radius: 4px;
-    height: 3rem;
+.nav-item a{
+    color:#d7d7d7;
+    border-radius:4px;
+    height:3rem;
     display: flex;
     align-items: center;
     line-height: 3rem;
     text-shadow: none;
     float:left;
-    /*font-size: 2vw;*/
 }
-
-.nav-item a.active {
-    background-color: rgba(255,255,255,0.25);
+.nav-item a:active {
+    background-color: rgba(255, 255, 255, 0.25);
     color: white;
-
 }
-
 .nav-item a:hover {
     background-color: rgba(255,255,255,0.1);
-    color: white;
+    color:white;
+}
+
+
+
+
+/*#form-buscar > .form-group > .input-group > .form-control {
+    height: 40px;
+}*/
+
+/*#form-buscar > .form-group > .input-group > .input-group-btn > .btn {
+    height: 40px;
+    font-size: 16px;
+    font-weight: 300;
+}*/
+
+.center_div {
+    margin: 0 auto !important;
+    width: 100%; /* value of your choice which suits your alignment */
+}
+
+.glyphicon {
+    margin-right: 12px;
+}
+
+.pull-left{
+    margin-right: 7px;
+}
+
+.recipe-search-bar {
+    border-width: 5px;
+    border-style: solid;
+    border-color: #0BA428;
+    border-radius: 7px;
+}
+
+.recipe-search-input {
+    border-radius: 0px;
+    border-bottom-right-radius: 0px;
+    padding:10px;
+}
+
+.recipe-search-input:focus {
+    box-shadow: 0 0 0 99999px rgba(0, 0, 0, .5);
+}
+
+.recipe-search-input:focus::placeholder {
+    color: transparent;
+}
+
+/* START lds-roller animation*/
+#unloaded-roller{
+    display:none;
+}
+
+.lds-roller {
+    display: block;
+    position: relative;
+    width: 80px;
+    height: 80px;
+    margin: 20% auto;
+}
+
+.lds-roller div {
+    animation: lds-roller 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+    transform-origin: 40px 40px;
+}
+
+    .lds-roller div:after {
+        content: " ";
+        display: block;
+        position: absolute;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #5cb85c;
+        margin: -4px 0 0 -4px;
+    }
+
+.lds-roller div:nth-child(1) {
+    animation-delay: -0.036s;
+}
+
+    .lds-roller div:nth-child(1):after {
+        top: 63px;
+        left: 63px;
+    }
+
+.lds-roller div:nth-child(2) {
+    animation-delay: -0.072s;
+}
+
+    .lds-roller div:nth-child(2):after {
+        top: 68px;
+        left: 56px;
+    }
+
+.lds-roller div:nth-child(3) {
+    animation-delay: -0.108s;
+}
+
+    .lds-roller div:nth-child(3):after {
+        top: 71px;
+        left: 48px;
+    }
+
+.lds-roller div:nth-child(4) {
+    animation-delay: -0.144s;
+}
+
+    .lds-roller div:nth-child(4):after {
+        top: 72px;
+        left: 40px;
+    }
+
+.lds-roller div:nth-child(5) {
+    animation-delay: -0.18s;
+}
+
+    .lds-roller div:nth-child(5):after {
+        top: 71px;
+        left: 32px;
+    }
+
+.lds-roller div:nth-child(6) {
+    animation-delay: -0.216s;
+}
+
+    .lds-roller div:nth-child(6):after {
+        top: 68px;
+        left: 24px;
+    }
+
+.lds-roller div:nth-child(7) {
+    animation-delay: -0.252s;
+}
+
+    .lds-roller div:nth-child(7):after {
+        top: 63px;
+        left: 17px;
+    }
+
+.lds-roller div:nth-child(8) {
+    animation-delay: -0.288s;
+}
+
+    .lds-roller div:nth-child(8):after {
+        top: 56px;
+        left: 12px;
+    }
+
+@keyframes lds-roller {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* END lds-roller*/
+
+.recipe-search-button {
+    border-radius: 0px;
 }
 
 .content {
@@ -543,24 +733,58 @@ logo-header-wrapper {
     padding-right: 0px;
     padding-bottom: 40px;
     padding-left: 10px;
-    /*text-align: center;*/
 }
-/*.logDesign {
-    height: 50%;
-}*/
+
+
 
 @media (max-width: 767.98px) {
     .main .top-row {
         display: none;
     }
-    /*.top-nav {
+    .top-nav {
         display: none;
-    }*/
-}
+    }
+    /*Log system on small screens*/
+    .Log-btn-design {
+        background: none;
+        border: 1px solid transparent;
+        font-size: 1.1rem;
+        padding-left: 0;
+    }
+    .recipeSearchBtn{
+        display: block;
+    }
+
+    .sidebar {
+        width: 100%;
+        min-height: 50px;
+        position: sticky;
+        top: 0;
+        z-index: 999;
+    }
+
+    .logo-header{
+        height: 50px;
+    }
+
+    .top-row{
+        max-height: 90px;
+    }
+   /*.Log-btn{
+       background-color:red;
+   }*/
+
+   .miniBasket{
+       width:85%;
+   }
 
 @media (min-width: 768px) {
     app {
         flex-direction: row;
+    }
+    /*Removes log buttons from Navmenu on big screens*/
+    .Log-btn {
+        display: none;
     }
 
     .sidebar {

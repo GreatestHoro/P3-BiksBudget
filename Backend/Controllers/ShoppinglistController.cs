@@ -19,7 +19,7 @@ namespace Backend.Controllers
     [ApiController]
     public class ShoppinglistController : ControllerBase
     {
-        DatabaseConnect dbConnect = new DatabaseConnect("localhost", "biksbudgetDB", "root", "BiksBudget123");
+        DatabaseConnect dbConnect = new DatabaseConnect();
         ControllerFuncionality funcionality = new ControllerFuncionality();
         List<Shoppinglist> shoppinglists = new List<Shoppinglist>();
         List<Shoppinglist> toSend = new List<Shoppinglist>();
@@ -129,8 +129,8 @@ namespace Backend.Controllers
                 {
                     toSend[0]._products.Add(item);
                 }
-                toSend[0]._products = funcionality.HandleDublicats(toSend[0]._products);
             }
+            toSend[0]._products = funcionality.HandleDublicats(toSend[0]._products);
 
             dbConnect.DeleteShoppingListFromName("Shoppinglist", Email);
             dbConnect.AddShoppingListsToDatabase(Email, toSend);

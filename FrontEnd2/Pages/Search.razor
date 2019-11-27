@@ -5,9 +5,9 @@
 @using Newtonsoft.Json
 
 @inject HttpClient Http
+@inject IJSRuntime JsRuntime
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 
-<h1> Find a product</h1>
 
 <div class="form-inline md-form mr-auto mb-4">
     <input type="text" class="form-control oi-underline" placeholder="Enter a product name.." @onkeyup="@KeyPressed" @bind="searchBox" />
@@ -16,15 +16,14 @@
 <div class="form-inline md-form mr-auto mb-4">
     <label class="text-muted">
         Advanced search
-        <input type="checkbox" value="viewAdvancedSearch" @onclick="toggleAdvancedCheckBox"/>
+        <input type="checkbox" value="viewAdvancedSearch" @onclick="toggleAdvancedCheckBox" />
     </label>
 </div>
 @*<button id="myBtn"><a href="search" style="color: white">Top</a></button>*@
 
 @if (viewAdvancedSearch)
 {
-    <h4> Select options:</h4>
-    <div class="d-flex flex-sm-row flex-column">
+    <div class="d-flex flex-sm-row flex-column searchAdvancedText">
         <div class="p-2">
             <div class="btn-group show-on-hover">
                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
@@ -89,62 +88,68 @@
             </div>
         </div>
         <div class="p-2">
-            <h5>Distance @(radius / 1000) Km</h5>
+            <h5>Distance @(radius / 1000) Km:</h5>
             <input type="range" min="0" max="5000" @bind="radius" step="1000" />
         </div>
         <div class="p-2">
-            <label for="minPriceB">Minimum Price</label>
+            <label for="minPriceB">Minimum Price:</label>
             <input type="number" class="form-control" placeholder="Min Price" @bind="minPrice" />
         </div>
         <div class="p-2">
-            <label for="maxPriceB">Maximum Price</label>
+            <label for="maxPriceB">Maximum Price:</label>
             <input type="number" class="form-control" placeholder="Max Price" @bind="maxPrice" />
+        </div>
+        <div class="p-2">
+            <p>Use Location:</p>
+            <input type="checkbox" class="locationCheckBox" bind="@IsLocationEnabled" @onclick="toggle"/>
         </div>
     </div>
 }
 
 @if (_viewProducts == true)
 {
-<div class="container">
-    <div class="row top-margin">
-        @foreach (Product p in itemList)
-        {
-            if (p._price > minPrice && p._price < maxPrice)
+    <div class="container">
+        <div class="row top-margin">
+            @foreach (Product p in itemList)
             {
-                <div class="col-12 col-sm-8 col-md-6 col-lg-4 top-margin">
-                    <div class="card w-100 h-100">
-                        <div class="card-header h-50 bg-white mx-auto text-center">
-                            @if (p._image.Length == 0)
-                            {
-                                <img style="width:280px; height:auto; " class="card-img-top " src="https://cdn.discordapp.com/attachments/509313911229513740/647326558813421637/normark-2009.png">
-                            }
-                            else
-                            {
-                                <img style="width: auto; height: auto; max-height:280px; max-width: 280px;"
-                                     class="card-img-top" src="@ProductImage(p._image)">
-                            }
-                        </div>
-                        <div class="card-body h-50 w-100 bg-light rounded mx-auto">
-                            <h5 class="card-title w-100">@p._productName</h5>
-                            <p class="card-text ">
-                                From @p._storeName <hr />
-                                @p._amount
-                            </p>
-                            <div class="buy d-flex justify-content-between align-items-center">
-                                <div class="price"><h5 class="mt-4">@p._price kr.</h5></div>
-                                <div class="amount">
-                                    <div class="valueClass text-center">
-                                        <p>@p._amountleft</p>
+                if (p._price > minPrice && p._price < maxPrice)
+                {
+                    <div class="col-12 col-sm-8 col-md-6 col-lg-4 top-margin">
+                        <div class="card w-100 h-100">
+                            <div class="card-header h-50 bg-white mx-auto text-center">
+                                @if (p._image.Length == 0)
+                                {
+                                    <img style="width:280px; height:auto; " class="card-img-top " src="https://cdn.discordapp.com/attachments/509313911229513740/647326558813421637/normark-2009.png">
+                                }
+                                else
+                                {
+                                    <img style="width: auto; height: auto; max-height:280px; max-width: 280px;"
+                                         class="card-img-top" src="@ProductImage(p._image)">
+                                }
+                            </div>
+                            <div class="card-body h-50 w-100 bg-light rounded mx-auto">
+                                <h5 class="card-title w-100">@p._productName</h5>
+                                <p class="card-text ">
+                                    From @p._storeName <hr />
+                                    @p._amount
+                                </p>
+                                <div class="buy d-flex justify-content-between align-items-center">
+                                    <div class="price"><h5 class="mt-4">@p._price kr.</h5></div>
+                                    <div class="amount">
+                                        <div class="valueClass text-center">
+                                            <p>@p._amountleft</p>
+                                        </div>
                                     </div>
+                                    <button @onclick="(() => AddProductToSL(p))" class="btn btn-success mt-3"><i class="oi oi-basket"></i> Add to cart</button>
                                 </div>
-                                <button @onclick="(() => AddProductToSL(p))" class="btn btn-success mt-3"><i class="oi oi-basket"></i> Add to cart</button>
                             </div>
                         </div>
                     </div>
-                </div>
+                }
+                
             }
         }
-    </div> 
+    </div>
     <!--Scroll to top button   -->
     <button  id="myBtn" class="btn btn-rounded btn-success"><a href="search" style="color: white">Top</a></button>
 </div>
@@ -172,7 +177,6 @@ else
     List<Product> ToShoppinglist = new List<Product>();
     List<Options> optionsList = new List<Options>();
 
-
     bool[] EnabledStores;
     bool[] EnabledKeywords;
 
@@ -180,8 +184,6 @@ else
     string shopString;
 
     bool viewAdvancedSearch = false;
-    bool storeBoolSetTo = true;
-    bool wordBoolSetTo = true;
     bool _viewProducts = false;
     bool IsLocationEnabled = false;
     bool FatalFalure = false;
@@ -189,6 +191,7 @@ else
     int value = 1;
     int radius = 1000;
     int amountAddedToSL = 1;
+    int lastRadius = 0;
 
     double _minPrice = 0;
     double _maxPrice = 5000;
@@ -198,19 +201,6 @@ else
     string email;
     string messageToUser = "Apply filters and press search to find products";
     string productString;
-    #endregion
-
-    #region Page_Methods
-    // Function to get salling products in high resolution
-    private string ProductImage(string prod_image)
-    {
-        return prod_image + "&imgSize=1080x1080";
-    }
-
-    void toggleAdvancedCheckBox()
-    {
-        viewAdvancedSearch = !viewAdvancedSearch;
-    }
 
     public double minPrice
     {
@@ -256,6 +246,14 @@ else
         }
     }
 
+    #endregion
+
+    #region ChangeFilterControl
+
+    void toggleAdvancedCheckBox()
+    {
+        viewAdvancedSearch = !viewAdvancedSearch;
+    }
 
     public void ChangeState(string name, List<FilterItem> list)
     {
@@ -318,52 +316,9 @@ else
         }
     }
 
-    #region Product Sort Filters
-    public async void SortByMostRelevant()
-    {
-        await SearchForProducts();
-    }
-
-    public void SortByPriceLH()
-    {
-        itemList.Sort((a, b) =>  a._price.CompareTo(b._price));
-    }
-
-    public void SortBypriceHL()
-    {
-        itemList.Sort((a, b) =>  b._price.CompareTo(a._price));
-    }
-
-    public void SortByStoreAZ()
-    {
-        itemList.Sort((a, b) =>  a._storeName.CompareTo(b._storeName));
-    }
-
-    public void SortByStoreZA()
-    {
-        itemList.Sort((a, b) =>  b._storeName.CompareTo(a._storeName));
-    }
-
-    public void SortByNameAZ()
-    {
-        itemList.Sort((a, b) =>  a._productName.CompareTo(b._productName));
-    }
-
-    public void SortByNameZA()
-    {
-        itemList.Sort((a, b) =>  b._productName.CompareTo(a._productName));
-    }
-    #endregion
-
     void toggle()
     {
         IsLocationEnabled = !IsLocationEnabled;
-    }
-
-    public void FindStoreFunc()
-    {
-        closeStore = new FindCloseStores(userGeoLocation, radius);
-        allStoresUnified = closeStore.GetStore();
     }
 
     public void SelectAll(List<FilterItem> list)
@@ -373,11 +328,47 @@ else
             item.IsEnabled = true;
         }
     }
+
     #endregion
 
-    #region Async_Methods
+    #region Product Sort Filters
+    public async void SortByMostRelevant()
+    {
+        await SearchForProducts();
+    }
 
+    public void SortByPriceLH()
+    {
+        itemList.Sort((a, b) => a._price.CompareTo(b._price));
+    }
 
+    public void SortBypriceHL()
+    {
+        itemList.Sort((a, b) => b._price.CompareTo(a._price));
+    }
+
+    public void SortByStoreAZ()
+    {
+        itemList.Sort((a, b) => a._storeName.CompareTo(b._storeName));
+    }
+
+    public void SortByStoreZA()
+    {
+        itemList.Sort((a, b) => b._storeName.CompareTo(a._storeName));
+    }
+
+    public void SortByNameAZ()
+    {
+        itemList.Sort((a, b) => a._productName.CompareTo(b._productName));
+    }
+
+    public void SortByNameZA()
+    {
+        itemList.Sort((a, b) => b._productName.CompareTo(a._productName));
+    }
+    #endregion
+
+    #region ProductToShoppinglistMethod
     public async void AddProductToSL(Product AddedItem)
     {
         AddedItem._amountleft++;
@@ -428,21 +419,15 @@ else
         }
         return uniqueList;
     }
+#endregion
 
-    private async Task KeyPressed(KeyboardEventArgs e)
-    {
-        if (e.Key == "Enter")
-        {
-            await SearchForProducts();
-            StateHasChanged();
-        }
-    }
-
+    #region SearchMethods
     private async Task SearchForProducts()
     {
-
         if (!String.IsNullOrEmpty(searchBox) && !String.IsNullOrWhiteSpace(searchBox))
         {
+            itemList.Clear();
+
             updateFilters();
 
             ProductSearchLinkConstructer link = new ProductSearchLinkConstructer(searchBox, ConvertBoolArrToStr(EnabledKeywords), ConvertBoolArrToStr(EnabledStores));
@@ -457,6 +442,11 @@ else
             itemList = JsonConvert.DeserializeObject<List<Product>>(productString);
             StateHasChanged();
 
+            if (itemList.Count == 0)
+            {
+                messageToUser = "No Products Found With These Filters";
+            }
+
             if (itemList.Count != 0)
             {
                 _viewProducts = true;
@@ -468,7 +458,24 @@ else
         }
     }
 
+    public void FindStoreFunc()
+    {
+        closeStore = new FindCloseStores(userGeoLocation, radius);
+        allStoresUnified = closeStore.GetStore();
+        lastRadius = radius;
+    }
 
+    private async Task KeyPressed(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await SearchForProducts();
+            StateHasChanged();
+        }
+    }
+    #endregion
+
+    #region OnStart
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         optionsList = sortOptions.GetList();
@@ -484,6 +491,13 @@ else
             storeList = storeFilters.GetStoreList();
             wordList = wordFIlters.GetStoreList();
             InitializeBoolArrays(storeList.Count, wordList.Count);
+
+            if (userGeoLocation._latitude == 0 && userGeoLocation._longitude == 0)
+            {
+                await GetUserLocation();
+                await tcsUserLocation.Task;
+            }
+
             if (!String.IsNullOrEmpty(email))
             {
                 await SLFunc.GetShoppinglistOnStart(email);
@@ -516,8 +530,7 @@ else
     }
     #endregion
 
-
-    #region Filter_Methods
+    #region BoolArrayMethods
     public string FindActiveSortFilter()
     {
         foreach (Options o in optionsList)
@@ -527,30 +540,34 @@ else
                 return o.filterName;
             }
         }
-        return "Price (Low to High)";
+        return "Most Relevant";
     }
 
     public void updateFilters()
     {
+        EnabledStores = updateEachFilter(storeFilters.GetStoreArray());
+        EnabledKeywords = updateEachFilter(wordFIlters.GetWordArray());
+
         if (IsLocationEnabled)
         {
-            try
+            if (radius != lastRadius)
             {
-                FindStoreFunc();
+                try
+                {
+                    FindStoreFunc();
+                }
+                catch (System.Exception)
+                {
+                    FatalFalure = true;
+                }
+
+                lastRadius = radius;
             }
-            catch (System.Exception)
-            {
-                FatalFalure = true;
-            }
+
 
             if (!FatalFalure)
             {
-                EnabledStores = updateEachFilter(storeFilters.GetStoreArray());
-                EnabledKeywords = updateEachFilter(wordFIlters.GetWordArray());
-
-
                 bool[] closeStoreBool = new bool[EnabledStores.Length];
-
 
                 closeStoreBool = SetAllFilters(closeStoreBool, false);
                 closeStoreBool = CompareBoolArr();
@@ -620,4 +637,27 @@ else
         return new string(returnChar);
     }
     #endregion
+
+    #region UserLocation
+    async Task GetUserLocation()
+    {
+        await JsRuntime.InvokeVoidAsync(identifier: "getCoordinates");
+    }
+
+    [JSInvokable]
+    public static void UpdateUserLocation(double latitude, double longitude)
+    {
+        userGeoLocation._latitude = latitude;
+        userGeoLocation._longitude = longitude;
+        if (!tcsUserLocation.Task.IsCompleted)
+        {
+            tcsUserLocation.SetResult(userGeoLocation);
+        }
+    }
+    #endregion
+
+    private string ProductImage(string prod_image)
+    {
+        return prod_image + "&imgSize=1080x1080";
+    }
 }
