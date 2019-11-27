@@ -73,9 +73,12 @@ namespace BBCollection.BBObjects
                 openHttp = new OpenHttp<SallingAPIProductSuggestions>(apiLink, bearerAccessToken.GetBearerToken());
                 productSuggestions = openHttp.ReadAndParseAPISingle();
 
-                foreach (SallingAPIProduct products in productSuggestions.Suggestions)
+                if (productSuggestions.Suggestions.Count != 0)
                 {
-                    returnList.Add(new Product(products.id, products.title, products.description, products.price, products.img, "Bilka"));
+                    foreach (SallingAPIProduct products in productSuggestions.Suggestions)
+                    {
+                        returnList.Add(new Product(products.id, products.title, products.description, products.price, products.img, "Bilka"));
+                    }
                 }
             }
             catch (WebException e)
