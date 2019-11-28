@@ -10,8 +10,8 @@
                 <div class="form-check-inline center_div recipe-search-bar mb-2">
                     <input type="text" @bind="searchTerm" @onkeyup="OnKeyPress" class="form-control recipe-search-input" id="recipeSearchInput" placeholder="Search" />
                     <button class="btn btn-success recipe-search-button" @onclick="(() => Search())">
-            <i class="fa fa-search"></i>
-        </button>
+                        <i class="fa fa-search"></i>
+                        </button>
                 </div>
                 @if (isSearching == true)
                 {
