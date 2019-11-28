@@ -46,7 +46,7 @@ namespace Backend.Controllers
         [HttpGet("{_email}")]
         public string Get(string _email)
         {
-            shoppinglists = dbConnect.GetShoppinglists(_email);
+            shoppinglists = dbConnect.Shoppinglist.GetList(_email);
 
             string jsonStorage = JsonConvert.SerializeObject(shoppinglists);
 
@@ -86,13 +86,13 @@ namespace Backend.Controllers
             if (newItems.Count == 0)
             {
                 // If an empty list is posted, the shoppinglist named "shoppinglist" is deleted.
-                dbConnect.DeleteShoppingListFromName("Shoppinglist", Email);
+                dbConnect.Shoppinglist.Delete("Shoppinglist", Email);
             }
             else
             {
                 // If there is a list to add to the shoppingst, the already existing shoppinglist is
                 // requested from the database.
-                toSend = dbConnect.GetShoppinglists(Email);
+                toSend = dbConnect.Shoppinglist.GetList(Email);
 
                 if (toSend.Count == 0)
                 {
@@ -110,8 +110,8 @@ namespace Backend.Controllers
                     } 
                 }
 
-                dbConnect.DeleteShoppingListFromName("Shoppinglist", Email);
-                dbConnect.AddShoppingListsToDatabase(Email, toSend);
+                dbConnect.Shoppinglist.Delete("Shoppinglist", Email);
+                dbConnect.Shoppinglist.AddList(Email, toSend);
                 
             }
 
@@ -150,7 +150,7 @@ namespace Backend.Controllers
             newItems = JsonConvert.DeserializeObject<List<Product>>(buffer);
 
             // The products already in the shoppinglist
-            toSend = dbConnect.GetShoppinglists(Email);
+            toSend = dbConnect.Shoppinglist.GetList(Email);
 
             if (toSend.Count == 0)
             {
@@ -169,8 +169,8 @@ namespace Backend.Controllers
             // The dublicats in the shoppinglist are sorted out
             toSend[0]._products = funcionality.HandleDublicats(toSend[0]._products);
 
-            dbConnect.DeleteShoppingListFromName("Shoppinglist", Email);
-            dbConnect.AddShoppingListsToDatabase(Email, toSend);
+            dbConnect.Shoppinglist.Delete("Shoppinglist", Email);
+            dbConnect.Shoppinglist.AddList(Email, toSend);
         }
     }
 }

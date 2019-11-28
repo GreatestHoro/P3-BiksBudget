@@ -19,7 +19,7 @@ namespace BBGatherer.Webcrawler
     class RecipeCrawl
     {
         #region Webcrawler
-        public async Task GetRecipes(int start_page, int Last_page, DatabaseConnect dbConnect)
+        public async Task GetRecipes(int start_page, int Last_page, DatabaseConnect dc)
         {
             AssistingClasses functionality = new AssistingClasses();
 
@@ -57,7 +57,7 @@ namespace BBGatherer.Webcrawler
                             if (!ind.InnerText.Contains(':'))
                             {
 
-                                Ingredient ingredient = CreateIngriedient(ind.InnerText, out fatalError, dbConnect, functionality);
+                                Ingredient ingredient = CreateIngriedient(ind.InnerText, out fatalError, dc, functionality);
                                 if (!ingredient._ingredientName.Equals("none"))
                                 {
                                     IngriedisensList.Add(ingredient);
@@ -68,7 +68,7 @@ namespace BBGatherer.Webcrawler
 
                         if (!fatalError)
                         {
-                            dbConnect.AddRecipe(new Recipe
+                            dc.Recipe.AddList(new Recipe
                             (i, name.ElementAt<HtmlNode>(0).InnerText,
                             Beskrivels.ElementAt<HtmlNode>(0).InnerText,
                             IngriedisensList,

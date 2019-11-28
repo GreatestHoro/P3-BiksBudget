@@ -13,6 +13,7 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
 {
     class CrossRefrenceFuntionality
     {
+        readonly DatabaseConnect dc = new DatabaseConnect();
         specialCombination _combo = new specialCombination();
         ProductRefrenceFuntionality _refs = new ProductRefrenceFuntionality();
         #region(Check if Indgredients)
@@ -70,7 +71,7 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
             {
                 newRefrence = _refs.UpdateProductRefrence(p._CustomReferenceField.Trim(), Searchterm);
                 newRefrence = _refs.InterpretAndEditProductRef(newRefrence);
-                productHandling.InsertIngredientReferenceFromId(newRefrence, p._id, new DatabaseInformation());
+                dc.Product.AddReference(newRefrence, p._id);
             }
 
             return ProductsWithRef.Count != 0 ? true : false;
@@ -97,7 +98,7 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
                 {
                     foreach (var p in productSuggestions.Suggestions)
                     {
-                        dbConnect.AddSallingProduct(new SallingProduct(p.title, p.id, p.prod_id, p.price, p.description, p.link, p.img));
+                        dc.Product.Add(new Product(p.title, p.id, p.prod_id, p.price, p.description, p.link, p.img));
                     }
                 }
 
