@@ -1,5 +1,8 @@
 ﻿namespace BBCollection.StoreApi.SallingApi
 {
+    /// <summary>
+    /// Class neeeded to pass a salling store opening hours using Newtonsoft.Json lib
+    /// </summary>
     class SallingAPIStoreHours
     {
         public string date { get; set; }

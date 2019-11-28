@@ -54,7 +54,7 @@
                                             <i class="oi oi-plus"> </i>
                                         }
                                     </button>
-                                    <p class="d-inline-block float-right"> @complexRecipe._complexRecipeComponent._recipeCost kr.</p>
+                                    <p class="d-inline-block float-right"> @complexRecipe._complexRecipeComponent.RecipeCost kr.</p>
                                 </div>
                             </div>
                         </div>
@@ -142,7 +142,7 @@
         //viewAddToshoppinglist = true;
     }
 
-    private void OnKeyPress(KeyboardEventArgs args)
+    private /*async*/ void OnKeyPress(KeyboardEventArgs args)
     {
         if (args.Key == "Enter")
         {
@@ -185,7 +185,7 @@
 
     //async Task RemoveElementFocus(string idStr)
     //{
-    //    await JsRuntime.InvokeVoidAsync(identifier: "onElementFocused",idStr);
+    //    await JsRuntime.InvokeVoidAsync(identifier: "onElementFocused", idStr);
     //}
 
     //async Task MakeVisible(string idStr)

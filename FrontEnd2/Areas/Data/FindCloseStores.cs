@@ -53,7 +53,15 @@ namespace FrontEnd2.Data
         }
         int _radiusInKM;
 
-
+        /// <summary>
+        /// Gets the stores closest to a given geoLocation
+        /// Step 1: set up the geoCoordinate from the userLocation
+        /// Step 2: Find Coop Stores
+        /// Step 3: Unify the coop stores 
+        /// Step 4: Find Salling Stores
+        /// Step 5: Unify salling stores
+        /// </summary>
+        /// <returns>a unified list of all coop or salling stores inside the radius at the geolocation</returns>
         public List<UnifiedAPIStore> GetStore()
         {
             GeoCoordinate geo = new GeoCoordinate(longitude, latitude);
@@ -71,11 +79,16 @@ namespace FrontEnd2.Data
 
             _unifiedAPIStores.AddRange(unifiedCoopStores);
 
-
             return _unifiedAPIStores;
         }
 
-        // get a CoopAPIStore and turn it into a list of unifiedstores
+
+        /// <summary>
+        /// get a CoopStoreAPI object and turn it into a list of unifiedstores
+        /// uses a LINQ expression to extract the necessary info to create a list of unifiedStores
+        /// </summary>
+        /// <param name="coopStores">a coopstore object with nearby stores</param>
+        /// <returns>a list of unified stores</returns>
         private List<UnifiedAPIStore> UnifiyCoopStores(CoopStoreApi coopStores)
         {
             List<UnifiedAPIStore> unifiedCoopStores = (from store in coopStores.Data
@@ -84,9 +97,14 @@ namespace FrontEnd2.Data
                                                           store.Zipcode.ToString(), store.City, store.Address, StoreChain.coopChain)).ToList();
 
             return unifiedCoopStores;
-
         }
 
+        /// <summary>
+        /// search for nearby salling stores and return them as unifiedStores
+        /// Uses standard api access to read and parse the nearby stores
+        /// uses a LINQ expression to extract the necessary info to create a list of unifiedStores
+        /// </summary>
+        /// <returns>a list of unified stores</returns>
         private List<UnifiedAPIStore> GetUnifiedSallingStores()
         {
             SallingAPILink linkMaker = new SallingAPILink();
