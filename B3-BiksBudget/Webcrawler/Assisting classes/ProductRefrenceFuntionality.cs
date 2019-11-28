@@ -10,6 +10,7 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
 {
     class ProductRefrenceFuntionality
     {
+        DatabaseConnect dc = new DatabaseConnect();
         #region Interpret
         public string InterpretAndEditProductRef(string _ref)
         {
@@ -80,20 +81,7 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
         #endregion
         public List<Product> GetProductWithRef(string Searchterm, DatabaseConnect dbConnect)
         {
-            List<Product> Products = dbConnect.GetProducts(Searchterm);
-            List<Product> ProductsWithRef = new List<Product>();
-            ProductHandling productHandling = new ProductHandling();
-
-            foreach (Product p in Products)
-            {
-                ProductsWithRef.Add(productHandling.GetProductWithReferenceFromId(p._id, new DatabaseInformation()));
-            }
-            foreach (Product p in ProductsWithRef)
-            {
-                string newRefrence = UpdateProductRefrence(p._CustomReferenceField, Searchterm);
-                productHandling.InsertIngredientReferenceFromId(newRefrence, p._id, new DatabaseInformation());
-            }
-            return ProductsWithRef;
+            return null;
         }
 
         public string UpdateProductRefrence(string CurrentRefrence, string searchterm)

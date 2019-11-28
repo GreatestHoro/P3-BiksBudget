@@ -6,7 +6,6 @@ namespace BBCollection.DBConncetion
 {
     public class DatabaseInformation
     {
-
         public DatabaseInformation GetConnect()
         {
             return new DatabaseInformation();

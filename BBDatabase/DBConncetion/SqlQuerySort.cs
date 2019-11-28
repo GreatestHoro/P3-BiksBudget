@@ -30,7 +30,6 @@ namespace BBCollection.DBConncetion
 
             return msc;
         }
-
         public MySqlCommand SortMSCInterval(string sortItem, string table, string collumn, int limit, int offset)
         {
             string recipesQuery =

@@ -27,64 +27,63 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (Product item in @*removeDublicates(*@ListFunc.CombinedList@*)*@)
+                            @foreach (Product item in ListFunc.CombinedList)
                             {
-                                    <tr>
-                                        <td data-th="Product">
-                                            <div class="row">
-                                                @*<div class="col-sm-2 hidden-xs"><img src="@ProductImage(item._image)" class="img-responsive" /></div>*@
-                                                <div class="col-sm-10">
-                                                    <h4 class="nomargin">@item._productName</h4>
-                                                    <p>@item._amount</p>
-                                                </div>
+                                <tr>
+                                    <td data-th="Product">
+                                        <div class="row">
+                                            @*<div class="col-sm-2 hidden-xs"><img src="@ProductImage(item._image)" class="img-responsive" /></div>*@
+                                            <div class="col-sm-10">
+                                                <h4 class="nomargin">@item._productName</h4>
+                                                <p>@item._amount</p>
                                             </div>
-                                        </td>
-                                    
-                                    <td data-th="Price">@item._price kr</td>
-                                    <td data-th="Quantity">
-                                        <div class="valueClass text-center">
-                                            <div class="value-button" id="increase" @onclick="(() => DecrementAmount(item))" value="Increase @value"> - </div>
-                                            <input type="number" id="number" value="@item._amountleft" />
-                                            <div class="value-button" id="decrease" @onclick="(() => IncrementAmount(item))" value="Decrease @value"> + </div>
                                         </div>
                                     </td>
-                                    <td data-th="Subtotal" class="text-center">@String.Format("{0:0.0}", ListFunc.FindSubtotal(item))kr</td>
-                                    <td class="actions" data-th="">
-                                        @if (!String.IsNullOrEmpty(email))
-                                        {
-                                            <button class="btn btn-info btn-sm" title="Add one @item._productName to your Storage" @onclick="(() => AddOneItemToStorage(item))"><i class="oi oi-basket"></i></button>
-                                        }
-                                        else
-                                        {
-                                            <button disabled class="btn btn-info btn-sm invisibleBtn" title="Log in to access storage"><i class="oi oi-basket"></i></button>
-                                        }
+                                    
+                                <td data-th="Price">@item._price kr</td>
+                                <td data-th="Quantity">
+                                    <div class="valueClass text-center">
+                                        <div class="value-button" id="increase" @onclick="(() => DecrementAmount(item))" value="Increase @value"> - </div>
+                                        <input type="number" id="number" value="@item._amountleft" />
+                                        <div class="value-button" id="decrease" @onclick="(() => IncrementAmount(item))" value="Decrease @value"> + </div>
+                                    </div>
+                                </td>
+                                <td data-th="Subtotal" class="text-center">@String.Format("{0:0.0}", ListFunc.FindSubtotal(item))kr</td>
+                                <td class="actions" data-th="">
+                                    @if (!String.IsNullOrEmpty(email))
+                                    {
+                                        <button class="btn btn-info btn-sm" title="Add one @item._productName to your Storage" @onclick="(() => AddOneItemToStorage(item))"><i class="oi oi-basket"></i></button>
+                                    }
+                                    else
+                                    {
+                                        <button disabled class="btn btn-info btn-sm invisibleBtn" title="Log in to access storage"><i class="oi oi-basket"></i></button>
+                                    }
 
-                                        @if (item._amountleft > 1 && !String.IsNullOrEmpty(email))
-                                        {
-                                            <button class="btn btn-info btn-sm addMore" title="Add @item._amountleft @item._productName to your Storage" @onclick="(() => AddItemToStorage(item))">
-                                                <i class="oi oi-basket">(All)</i>
-                                            </button>
-                                        }
-                                        else if (String.IsNullOrEmpty(email))
-                                        {
-                                            <button disabled class="btn btn-info btn-sm invisibleBtn" title="Log in to access storage"><i class="oi oi-basket">(All)</i></button>
-                                        }
-                                        else
-                                        {
-                                            <button disabled class="btn btn-info btn-sm invisibleBtn"><i class="oi oi-basket">(All)</i></button>
-                                        }
+                                    @if (item._amountleft > 1 && !String.IsNullOrEmpty(email))
+                                    {
+                                        <button class="btn btn-info btn-sm addMore" title="Add @item._amountleft @item._productName to your Storage" @onclick="(() => AddItemToStorage(item))">
+                                            <i class="oi oi-basket">(All)</i>
+                                        </button>
+                                    }
+                                    else if (String.IsNullOrEmpty(email))
+                                    {
+                                        <button disabled class="btn btn-info btn-sm invisibleBtn" title="Log in to access storage"><i class="oi oi-basket">(All)</i></button>
+                                    }
+                                    else
+                                    {
+                                        <button disabled class="btn btn-info btn-sm invisibleBtn"><i class="oi oi-basket">(All)</i></button>
+                                    }
 
-                                        <button class="btn btn-danger btn-sm" title="Delete one @item._productName from your shoppinglist" @onclick="(() => ChangeAmount(item))"><i class="oi oi-trash"></i></button>
-                                        @if (item._amountleft > 1)
-                                        {
-                                            <button class="btn btn-danger btn-sm" title="Delete @item._amountleft @item._productName from your shoppinglist" @onclick="(() => DeleteItem(item))"><i class="oi oi-trash"></i>(All)</button>
-                                        }
-                                        else
-                                        {
-                                            <button disabled class="btn btn-danger btn-sm addMore invisibleBtn"><i class="oi oi-trash"></i>(All)</button>
-                                        }
-                                    </td>
-                                
+                                    <button class="btn btn-danger btn-sm" title="Delete one @item._productName from your shoppinglist" @onclick="(() => ChangeAmount(item))"><i class="oi oi-trash"></i></button>
+                                    @if (item._amountleft > 1)
+                                    {
+                                        <button class="btn btn-danger btn-sm" title="Delete @item._amountleft @item._productName from your shoppinglist" @onclick="(() => DeleteItem(item))"><i class="oi oi-trash"></i>(All)</button>
+                                    }
+                                    else
+                                    {
+                                        <button disabled class="btn btn-danger btn-sm addMore invisibleBtn"><i class="oi oi-trash"></i>(All)</button>
+                                    }
+                                </td>
                             </tr>
                             }
                         </tbody>
@@ -141,7 +140,6 @@
     string email;
     string shopString;
     string productString;
-    string dest = "api/Storage";
     #endregion
 
     #region EditShoppintlistProducts
@@ -173,10 +171,12 @@
         remindToSave = true;
         if (item._amountleft == 1)
         {
+            // If there is only one left, delete it
             ListFunc.CombinedList.Remove(ListFunc.CombinedList.First(x => x._id == item._id));
         }
         else
         {
+            // Else count the amount left
             item._amountleft--;
         }
     }
@@ -184,6 +184,14 @@
     #endregion
 
     #region LocalStorage
+
+    /// <summary>
+    /// This method will check if the user is logged in.
+    /// If he is, his data will be called from the api.
+    /// If not the local storage will be used.
+    /// </summary>
+    /// <param name="firstRender"></param>
+    /// <returns></returns>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -194,22 +202,33 @@
                 Console.WriteLine($"Value for key {e.Key} changed from {e.OldValue} to {e.NewValue}");
             };
 
+            // If emain is found, the user is logged in
             if(!String.IsNullOrEmpty(email))
             {
                 isLoggedIn = true;
+
+                // THis means he has a shoppinglist, and this will be called throuhg the api
                 responseMessage = await ListFunc.GetShoppinglistOnStart(email);
             }
             else if (!String.IsNullOrEmpty(shopString))
             {
+                // If the user is not logged in, and there is products in the localstorage
+                // this will be put into the shoppinglist
                 ToShoppinglist = JsonConvert.DeserializeObject<List<Product>>(shopString);
                 ListFunc.GetShoppinglistWhileNotLoggedIn(ToShoppinglist);
             }
 
             StateHasChanged();
         }
-
     }
 
+    /// <summary>
+    /// If the user is logged in, the user email is found.
+    /// The email is used for storage and shoppinglist
+    /// If the user is not logged in the local storage will be used to
+    /// get a list of products instead. This list is the shoppinglist
+    /// </summary>
+    /// <returns></returns>
     async Task GetLocalSession()
     {
         email = await localStorage.GetItemAsync<string>("Email");
@@ -223,6 +242,13 @@
 
     #region Shoppinglist
 
+
+    /// <summary>
+    /// This method saves the shoppinglist.
+    /// This is done differently if the user is or is not logged in.
+    /// If he is logged in, the shoppinglist will be saved with the api
+    /// If not logged in the shoppinglist will be saved in local storage
+    /// </summary>
     public async void SaveShoppinglist()
     {
         remindToSave = false;
@@ -237,17 +263,23 @@
         }
         else
         {
-            ListFunc.SaveShoppinglist();
+            await ListFunc.SaveShoppinglist();
         }
     }
 
     #endregion
 
     #region Storage
+
+    /// <summary>
+    /// This method can only be called if logged in.
+    /// It reminds the user to save the shoppinglist before moving on.
+    /// Deletes the shoppinglist, and adds it to storage.
+    /// </summary>
     public void AddListToStorage()
     {
         remindToSave = true;
-        ListFunc.AddShoppinlistToStorage(dest);
+        ListFunc.AddShoppinlistToStorage();
         ListFunc.CombinedList.Clear();
     }
 
@@ -260,7 +292,7 @@
     public void AddItemToStorage(Product AddedItem)
     {
         remindToSave = true;
-        ListFunc.AddItemToStorage(AddedItem, dest);
+        ListFunc.AddItemToStorage(AddedItem);
 
         DeleteItem(AddedItem);
     }
@@ -270,45 +302,22 @@
         remindToSave = true;
         if (AddedItem._amountleft > 1)
         {
+            // If there is more than one left, the amount is decremented and one 
+            // product is added
             AddedItem._amountleft--;
-            ListFunc.AddOneItemToStorage(AddedItem, dest);
+            ListFunc.AddOneItemToStorage(AddedItem);
         }
         else
         {
+            // If there is only one left, the product is deleted in shoppinglist
+            // and added to storage.
             AddItemToStorage(AddedItem);
         }
     }
 
     #endregion
 
-    #region HandleDublicates
-    public List<Product> removeDublicates(List<Product> shoppingList)
-    {
-        Dictionary<string, Product> dict = new Dictionary<string, Product>();
-
-        foreach(Product p in shoppingList)
-        {
-            if (p._productName != null)
-            {
-                if (dict.ContainsKey(p._productName))
-                {
-                    dict[p._productName]._amountleft++;
-                }
-                else
-                {
-                    dict.Add(p._productName,p);
-                }
-            }
-        }
-
-        shoppingList.Clear();
-        foreach (KeyValuePair<string, Product> item in dict)
-        {
-            shoppingList.Add(dict[item.Key]);
-        }
-
-        return shoppingList;
-    }
+    #region Imagese
     // Function to get salling products in high resolution
     private string ProductImage(string prod_image)
     {

@@ -21,7 +21,7 @@ namespace BBGatherer.Webcrawler
         #region Webcrawler
         /// <summary>
         /// A webcrawler specefictly made to crawl the web site https://www.dk-kogebogen.dk/, i findes the diffrent elements of a recepie page,
-        /// such as name of the recipie, ingredients and the desribtion of the dish. 
+        /// such as name of the recipie, ingredients and the desribtion of the dish.
         /// It will also do some prossecing on each found element to clean them up and make them easier to workd with.
         /// </summary>
         /// <param name="start_page">The starting recepie on the website</param>
@@ -66,7 +66,7 @@ namespace BBGatherer.Webcrawler
                             if (!ind.InnerText.Contains(':'))
                             {
 
-                                Ingredient ingredient = CreateIngriedient(ind.InnerText, out fatalError, dbConnect, functionality);
+                                Ingredient ingredient = CreateIngriedient(ind.InnerText, out fatalError, dc, functionality);
                                 if (!ingredient._ingredientName.Equals("none"))
                                 {
                                     IngriedisensList.Add(ingredient);
@@ -77,7 +77,7 @@ namespace BBGatherer.Webcrawler
 
                         if (!fatalError)
                         {
-                            dbConnect.AddRecipe(new Recipe
+                            dc.Recipe.AddList(new Recipe
                             (i, name.ElementAt<HtmlNode>(0).InnerText,
                             Beskrivels.ElementAt<HtmlNode>(0).InnerText,
                             IngriedisensList,
@@ -101,7 +101,7 @@ namespace BBGatherer.Webcrawler
 
         #region ingredient Creation
         /// <summary>
-        /// This method Creates and instans of the ingredient object, 
+        /// This method Creates and instans of the ingredient object,
         /// it calls method from diffrent classe to attempts to intrepret and edit the names to become more clear.
         /// </summary>
         /// <param name="ind">The raw ingrdient string with no editing or crossrefresing done</param>
@@ -128,7 +128,7 @@ namespace BBGatherer.Webcrawler
         /// <param name="dbConnect">Instace of the database used to save and edit the database</param>
         /// <param name="functionality">A instance of a classe which contains many of the nessesary funtionalitys for the method</param>
         /// <returns>Returns a string that will be used as the ingrediient name</returns>
-        private string nameEditing_Evalution(string name,out bool fatalError,DatabaseConnect dbConnect, AssistingClasses functionality) 
+        private string nameEditing_Evalution(string name,out bool fatalError,DatabaseConnect dbConnect, AssistingClasses functionality)
         {
             if (!String.IsNullOrWhiteSpace(name.Trim()))
             {

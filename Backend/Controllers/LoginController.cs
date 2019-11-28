@@ -63,7 +63,7 @@ namespace Backend.Controllers
 
             user = JsonConvert.DeserializeObject<User>(buffer);
 
-            bool exist = dbConnect.CheckUser(user._userName, user._password);
+            bool exist = dbConnect.User.Verify(user._userName, user._password);
 
             
             if(exist == true)

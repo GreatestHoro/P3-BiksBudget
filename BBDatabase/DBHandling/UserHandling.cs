@@ -8,20 +8,19 @@ using MySql.Data.MySqlClient;
 
 namespace BBCollection.DBHandling
 {
-    class UserHandling
+    public class UserHandling
     {
-        public void InsertUser(string username, string password, DatabaseInformation dbInformation)
+        public void Add(string username, string password)
         {
-            InsertUserToDB(username, password, dbInformation);
+            InsertUserToDB(username, password);
         }
 
-        public bool VerifyUser(string username, string password, DatabaseInformation dbInformation)
+        public bool Verify(string username, string password)
         {
-
-            return CheckHashedPassword(password, GetHashedPWFromUsername(username, dbInformation));
+            return CheckHashedPassword(password, GetHashedPWFromUsername(username));
         }
 
-        private void InsertUserToDB(string username, string password, DatabaseInformation dbInformation)
+        private void InsertUserToDB(string username, string password)
         {
             string insertUserQuery =
                 "INSERT INTO `users`(`username`,`password`) VALUES(@Username,@Password)";
@@ -30,10 +29,10 @@ namespace BBCollection.DBHandling
             msc.Parameters.AddWithValue("@Username", username);
             msc.Parameters.AddWithValue("@Password", ConvertPasswordToHash(password));
             
-            new SQLConnect().NonQueryMSC(msc, dbInformation);
+            new SQLConnect().NonQueryMSC(msc);
         }
 
-        private string GetHashedPWFromUsername(string username, DatabaseInformation dbInformation)
+        private string GetHashedPWFromUsername(string username)
         {
             string password = null;
             string getPasswordQuery =
@@ -42,7 +41,7 @@ namespace BBCollection.DBHandling
             MySqlCommand msc = new MySqlCommand(getPasswordQuery);
             msc.Parameters.AddWithValue("@Username", username);
 
-            DataSet ds = new SQLConnect().DynamicSimpleListSQL(msc, dbInformation);
+            DataSet ds = new SQLConnect().DynamicSimpleListSQL(msc);
 
             if (ds.Tables[0].Rows.Count != 0)
             {

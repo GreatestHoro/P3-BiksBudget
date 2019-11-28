@@ -19,7 +19,7 @@ namespace BBCollection.BBObjects
         bool[] ToggleStoreFILters;
         FilterItem[] storeArray;
         FilterItem[] wordArray;
-        private DatabaseConnect dbConnect = new DatabaseConnect();
+        private DatabaseConnect dc = new DatabaseConnect();
 
         public Filters(bool[] _ToggleWordFilters, bool[] _ToggleStoreFILters)
         {
@@ -34,7 +34,7 @@ namespace BBCollection.BBObjects
             List<Product> FilteredList = new List<Product>();
             bool flag = false;
             int i = 0;
-            List<Product> searchedProducts = dbConnect.GetProducts(searchterm);
+            List<Product> searchedProducts = dc.Product.GetList(searchterm);
             AppliedFiltersList keyWordFilters = new AppliedFiltersList(ToggleWordFilters, wordArray);
             AppliedFiltersList storeNameFilters = new AppliedFiltersList(ToggleStoreFILters, storeArray);
 
@@ -49,7 +49,7 @@ namespace BBCollection.BBObjects
 
                 if (keyWordFilters.AppliedFilters.Count != 0)
                 {
-                    FilteredList = keyWorkFilters(FilteredList, keyWordFilters);
+                    FilteredList = KeyWorkFilters(FilteredList, keyWordFilters);
                 }
                 if (CheckList(FilteredList, out flag)) 
                 {
@@ -124,7 +124,7 @@ namespace BBCollection.BBObjects
             return false;
         }
 
-        private List<Product> keyWorkFilters(List<Product> products, AppliedFiltersList keywords)
+        private List<Product> KeyWorkFilters(List<Product> products, AppliedFiltersList keywords)
         {
             List<Product> returnProducts = new List<Product>();
             foreach (Product p in products)

@@ -27,33 +27,46 @@ namespace Backend.Controllers
 
         string buffer;
         string Email;
-        //DatabaseConnect dbConnect = new DatabaseConnect("localhost", "biksbudgetDB", "root", "BiksBudget123");
+
         // GET: api/Shoppinglist
         [HttpGet]
         public void Get()
         {
-
         }
 
+
+        /// <summary>
+        /// Requests the shoppinglist from a user
+        /// Returns it to the frontend as a string.
+        /// </summary>
+        /// <param name="_email"></param>
+        /// <returns></returns>
+
         // GET: api/Storage/5
-        [HttpGet("{id}")]
-        public string Get(string id)
+        [HttpGet("{_email}")]
+        public string Get(string _email)
         {
-            shoppinglists = dbConnect.GetShoppinglists(id);
+            shoppinglists = dbConnect.Shoppinglist.GetList(_email);
 
             string jsonStorage = JsonConvert.SerializeObject(shoppinglists);
 
             return jsonStorage;
         }
 
+        /// <summary>
+        /// The new shoppinglist to store in the database is send
+        /// and is stored in the user.
+        /// </summary>
+        /// <param name="_email">The name of the user</param>
+
         // POST: api/Shoppinglist
-        [HttpPost("{value}")]
-        public void Post(String value)
+        [HttpPost("{_email}")]
+        public void Post(String _email)
         {
             HttpRequest request = HttpContext.Request;
             Microsoft.AspNetCore.Http.HttpRequestRewindExtensions.EnableBuffering(request);
 
-            Email = value;
+            Email = _email;
 
             using (var sr = new StreamReader(request.Body))
             {
@@ -62,6 +75,9 @@ namespace Backend.Controllers
 
             if (buffer.Substring(0, 1) != "[")
             {
+                // If the buffer only contains one item it is not a list
+                // and cannot be converted to a list. If [] are added it
+                // is a list of one product.
                 buffer = "[" + buffer + "]";
             }
 
@@ -69,41 +85,53 @@ namespace Backend.Controllers
 
             if (newItems.Count == 0)
             {
-                dbConnect.DeleteShoppingListFromName("Shoppinglist", Email);
+                // If an empty list is posted, the shoppinglist named "shoppinglist" is deleted.
+                dbConnect.Shoppinglist.Delete("Shoppinglist", Email);
             }
             else
             {
-                toSend = dbConnect.GetShoppinglists(Email);
+                // If there is a list to add to the shoppingst, the already existing shoppinglist is
+                // requested from the database.
+                toSend = dbConnect.Shoppinglist.GetList(Email);
 
                 if (toSend.Count == 0)
                 {
+                    // If the shoppinglist in the database is emtpy, a new is created, and the input
+                    // list from frontend is added.
                     toSend.Add(new Shoppinglist("Shoppinglist", newItems));
                 }
                 else
                 {
+                    // If the shoppinglist exists the products are deleted and the new ones are deleted
                     toSend[0]._products.Clear();
                     foreach (var item in newItems)
                     {
                         toSend[0]._products.Add(item);
-
                     } 
                 }
 
-                dbConnect.DeleteShoppingListFromName("Shoppinglist", Email);
-                dbConnect.AddShoppingListsToDatabase(Email, toSend);
+                dbConnect.Shoppinglist.Delete("Shoppinglist", Email);
+                dbConnect.Shoppinglist.AddList(Email, toSend);
                 
             }
 
         }
 
+        /// <summary>
+        /// The put method is called when a list of products
+        /// or one product is added to the shoppinglist, 
+        /// rather than replaced.
+        /// </summary>
+        /// <param name="_email"></param>
+
         // PUT: api/Shoppinglist/5
-        [HttpPut("{id}")]
-        public void PutQuick(string id)
+        [HttpPut("{_email}")]
+        public void PutQuick(string _email)
         {
             HttpRequest request = HttpContext.Request;
             Microsoft.AspNetCore.Http.HttpRequestRewindExtensions.EnableBuffering(request);
 
-            Email = id;
+            Email = _email;
 
             using (var sr = new StreamReader(request.Body))
             {
@@ -112,28 +140,37 @@ namespace Backend.Controllers
 
             if (buffer.Substring(0, 1) != "[")
             {
+                // If the buffer only contains one item it is not a list
+                // and cannot be converted to a list. If [] are added it
+                // is a list of one product.
                 buffer = "[" + buffer + "]";
             }
 
+            // The products to add to shoppinglist
             newItems = JsonConvert.DeserializeObject<List<Product>>(buffer);
 
-            toSend = dbConnect.GetShoppinglists(Email);
+            // The products already in the shoppinglist
+            toSend = dbConnect.Shoppinglist.GetList(Email);
 
             if (toSend.Count == 0)
             {
+                // If there is no shoppinglist, all products are added to a new shoppinglist
                 toSend.Add(new Shoppinglist("Shoppinglist", newItems));
             }
             else
             {
+                // Else all products are added to the existing shoppinglist
                 foreach (Product item in newItems)
                 {
                     toSend[0]._products.Add(item);
                 }
             }
+
+            // The dublicats in the shoppinglist are sorted out
             toSend[0]._products = funcionality.HandleDublicats(toSend[0]._products);
 
-            dbConnect.DeleteShoppingListFromName("Shoppinglist", Email);
-            dbConnect.AddShoppingListsToDatabase(Email, toSend);
+            dbConnect.Shoppinglist.Delete("Shoppinglist", Email);
+            dbConnect.Shoppinglist.AddList(Email, toSend);
         }
     }
 }

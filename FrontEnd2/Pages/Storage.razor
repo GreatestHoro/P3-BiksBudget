@@ -221,25 +221,42 @@ else
 
     #region StorageMethods
 
+
+    /// <summary>
+    /// The state of an item is changed.
+    /// </summary>
+    /// <param name="item">The item of which the state shouold be changes</param>
+    /// <param name="state">The state to chaneg to</param>
     public async void ChangeItemState(Product item, string state)
     {
+        // Finds the index of the input item
         int index = FindIdex(item);
         item._state = state;
 
+        // Change the state in the storage list
         await ListFunc.ChangeItemInStorage(ListFunc.CombinedList[index]);
     }
 
     public int FindIdex(Product item)
     {
+        // Returns the index of the input item
         return ListFunc.CombinedList.FindIndex(ind => ind.Equals(item));
     }
 
     public void DeleteItem(Product item)
     {
+        // The amountleft is set to 1, and ChangeItemAmout is called, removing items where only 1 remains.
         item._amountleft = 1;
         ChangeItemAmout(item);
     }
 
+
+    /// <summary>
+    /// This method changes the amount of an item.
+    /// If there is only one left, it is deleted.
+    /// Else the amount left is decremented.
+    /// </summary>
+    /// <param name="item"></param>
     public async void ChangeItemAmout(Product item)
     {
         int index = FindIdex(item);
@@ -257,8 +274,13 @@ else
     #endregion
 
     #region OnInit_async_Method
-    // On start up
 
+    /// <summary>
+    /// If it is the first render, the email is requested form the local storage.
+    /// From this email, the storage from the user will be requested from the api.
+    /// </summary>
+    /// <param name="firstRender"></param>
+    /// <returns></returns>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -268,7 +290,7 @@ else
             {
                 Console.WriteLine($"Value for key {e.Key} changed from {e.OldValue} to {e.NewValue}");
             };
-            userId = email;
+
             if (email != null)
             {
                 responseMessage = await ListFunc.GetStorageOnStart(email);
@@ -281,6 +303,7 @@ else
 
     async Task GetLocalSession()
     {
+        // The email is requested fomr localstorage
         email = await localStorage.GetItemAsync<string>("Email");
     }
     #endregion
