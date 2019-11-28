@@ -1,5 +1,6 @@
 ﻿namespace FrontEnd2
 {
+    /// Class neeeded to pass a salling store address using Newtonsoft.Json lib
     class SallingAPIStoreAdress
     {
         public string city { get; set; }

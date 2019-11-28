@@ -12,14 +12,14 @@ using System.Net;
 namespace BBCollection.BBObjects
 {
     public class Filters
-    {   
+    {
         StoreFilterList stores = new StoreFilterList();
         WordFilterList keyWords = new WordFilterList();
         bool[] ToggleWordFilters;
         bool[] ToggleStoreFILters;
         FilterItem[] storeArray;
         FilterItem[] wordArray;
-        private DatabaseConnect dbConnect = new DatabaseConnect();
+        private DatabaseConnect dc = new DatabaseConnect();
 
         public Filters(bool[] _ToggleWordFilters, bool[] _ToggleStoreFILters)
         {
@@ -39,11 +39,7 @@ namespace BBCollection.BBObjects
             List<Product> FilteredProductList = new List<Product>();
             bool flag = false;
             int i = 0;
-
-            // All products in the database who match on the searchterm are loaded in
-            List<Product> searchedProducts = dbConnect.GetProducts(searchterm);
-
-            // Returns a list of strings of the storenames of stores enabled
+            List<Product> searchedProducts = dc.Product.GetList(searchterm);
             AppliedFiltersList keyWordFilters = new AppliedFiltersList(ToggleWordFilters, wordArray);
 
             // Returns a list of string of the keywords enabled
@@ -64,15 +60,15 @@ namespace BBCollection.BBObjects
                 }
 
                 // Returns all products who are in stores enabled
-                FilteredProductList = StoreFilter(searchedProducts, storeNameFilters); 
+                FilteredProductList = StoreFilter(searchedProducts, storeNameFilters);
 
                 if (keyWordFilters.AppliedFilters.Count != 0)
                 {
-                    // If there are any keyword filters enabled, this returns the products 
+                    // If there are any keyword filters enabled, this returns the products
                     FilteredProductList = keyWorkFilters(FilteredProductList, keyWordFilters);
                 }
 
-                if (CheckList(FilteredProductList, out flag)) 
+                if (CheckList(FilteredProductList, out flag))
                 {
                     // If the FilteredProductList contains products, it breaks.
                     // Otherwise the loop runs again to search in the Salling api.
@@ -115,7 +111,7 @@ namespace BBCollection.BBObjects
                 Console.WriteLine("This program is expected to throw WebException on successful run." +
                                   "\n\nException Message :" + e.Message);
             }
-            
+
             return returnList;
         }
 
@@ -127,7 +123,7 @@ namespace BBCollection.BBObjects
         /// <param name="products"></param>
         /// <param name="flag"></param>
         /// <returns></returns>
-        private bool CheckList(List<Product> products, out bool flag) 
+        private bool CheckList(List<Product> products, out bool flag)
         {
             flag = true;
             return (products.Count != 0) ? true : false;
@@ -215,7 +211,7 @@ namespace BBCollection.BBObjects
 
         /// <summary>
         /// The constructor to the AppliedFIltersList class. The class contains a list of AppliedFilters
-        /// which is a string. The list will be filled with the names of each Filteritem if it is 
+        /// which is a string. The list will be filled with the names of each Filteritem if it is
         /// enabled by the user.
         /// </summary>
         /// <param name="filterApplied">An array of bools to indicate each filter</param>
@@ -237,7 +233,7 @@ namespace BBCollection.BBObjects
                     }
                 }
             }
-            else 
+            else
             {
                 throw new SystemException("bools and the length of options were not equal");
             }
@@ -254,5 +250,3 @@ namespace BBCollection.BBObjects
         }
     }
 }
-
-

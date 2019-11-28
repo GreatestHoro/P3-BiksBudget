@@ -37,7 +37,7 @@ namespace Backend.Controllers
         [HttpGet("{_email}")]
         public string Get(string _email)
         {
-            List<Product> storageList = dbConnect.GetStorageFromUsername(_email);
+            List<Product> storageList = dbConnect.Storage.GetList(_email);
 
             string jsonStorage = JsonConvert.SerializeObject(storageList);
 
@@ -82,12 +82,12 @@ namespace Backend.Controllers
             if (newItem.Count == 0)
             {
                 // If the list of items to add is empty, storage is deleted
-                dbConnect.UpdateStorage(Email, newItem);
+                dbConnect.Storage.Update(Email, newItem);
             }
             else
             {
                 // Else the storage in the database is requested
-                Fromdb = dbConnect.GetStorageFromUsername(Email);
+                Fromdb = dbConnect.Storage.GetList(Email);
 
                 // The two lists from the database and the frontend are merged into one
                 newItem = newItem.Concat(Fromdb).ToList();
@@ -96,7 +96,7 @@ namespace Backend.Controllers
                 newItem = functionality.HandleDublicats(newItem);
 
                 // The updated list without dublicats are added to storage
-                dbConnect.UpdateStorage(Email, newItem);
+                dbConnect.Storage.Update(Email, newItem);
             }
         }
 
@@ -128,7 +128,7 @@ namespace Backend.Controllers
             }
 
             // The items in storage in the database is requested
-            storageList = dbConnect.GetStorageFromUsername(Email);
+            storageList = dbConnect.Storage.GetList(Email);
 
             // The item to change
             newItem = JsonConvert.DeserializeObject<Product>(buffer);
@@ -154,7 +154,7 @@ namespace Backend.Controllers
                 storageList.RemoveAt(i);
             }
 
-            dbConnect.UpdateStorage(Email, storageList);
+            dbConnect.Storage.Update(Email, storageList);
         }
     }
 }

@@ -13,18 +13,19 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
 {
     class CrossRefrenceFuntionality
     {
+        readonly DatabaseConnect dc = new DatabaseConnect();
         specialCombination _combo = new specialCombination();
         ProductRefrenceFuntionality _refs = new ProductRefrenceFuntionality();
         #region(Check if Indgredients)
-        public String CheckForValidIndgredients(String name, DatabaseConnect dbConnect, out bool fatalError)
+        public String CheckForValidIndgredients(String name, out bool fatalError)
         {
             fatalError = false;
             List<string> matches = new List<string>();
-            List<String> Combinations = _combo.GetAllCombinations(name, dbConnect);
+            List<String> Combinations = _combo.GetAllCombinations(name);
 
             if (Combinations.Count != 0)
             {
-                matches = CheckIngredientInDatabase(Combinations, dbConnect);
+                matches = CheckIngredientInDatabase(Combinations);
                 /*if (matches.Count == 0)
                 {
                     foreach (string Searchterm in Combinations)
@@ -47,12 +48,12 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
         }
 
         
-        private List<string> CheckIngredientInDatabase(List<string> Searchterms, DatabaseConnect dbConnect)
+        private List<string> CheckIngredientInDatabase(List<string> Searchterms)
         {
             List<string> results = new List<string>();
             foreach (string Searchterm in Searchterms)
             {
-                if (CheckCOOPProductsInDatabase(Searchterm.Trim(), dbConnect))
+                if (CheckCOOPProductsInDatabase(Searchterm.Trim()))
                 {
                     results.Add(Searchterm.Trim());
                 }
@@ -61,23 +62,22 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
             return results;
         }
 
-        private bool CheckCOOPProductsInDatabase(String Searchterm, DatabaseConnect dbConnect)
+        private bool CheckCOOPProductsInDatabase(String Searchterm)
         {
             string newRefrence;
-            ProductHandling productHandling = new ProductHandling();
-            List<Product> ProductsWithRef = _refs.GetProductWithRef(Searchterm, dbConnect);
+            List<Product> ProductsWithRef = dc.Product.GetList(Searchterm);
             foreach (Product p in ProductsWithRef)
             {
                 newRefrence = _refs.UpdateProductRefrence(p._CustomReferenceField.Trim(), Searchterm);
                 newRefrence = _refs.InterpretAndEditProductRef(newRefrence);
-                productHandling.InsertIngredientReferenceFromId(newRefrence, p._id, new DatabaseInformation());
+                dc.Product.AddReference(newRefrence, p._id);
             }
 
             return ProductsWithRef.Count != 0 ? true : false;
         }
  
 
-        private bool CheckIngredientsInApi(string Searchterm, DatabaseConnect dbConnect)
+        private bool CheckIngredientsInApi(string Searchterm)
         {
             System.Threading.Thread.Sleep(4000);
             BearerAccessToken bearerAccessToken = new BearerAccessToken("fc5aefca-c70f-4e59-aaaa-1c4603607df8");
@@ -97,7 +97,7 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
                 {
                     foreach (var p in productSuggestions.Suggestions)
                     {
-                        dbConnect.AddSallingProduct(new SallingProduct(p.title, p.id, p.prod_id, p.price, p.description, p.link, p.img));
+                        dc.Product.Add(new Product(p.title, p.id, p.prod_id, p.price, p.description, p.link, p.img));
                     }
                 }
 

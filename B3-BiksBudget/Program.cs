@@ -15,6 +15,7 @@ namespace BBGatherer
         {
             DataHandling dh = new DataHandling();
 
+            
 
             dh.GenerateDatabase();
             dh.GenerateData(false, true);
@@ -27,10 +28,7 @@ namespace BBGatherer
         public DatabaseConnect dbConnect = new DatabaseConnect();
         public void GenerateDatabase()
         {
-            dbConnect.InitializeDatabase();
-            dbConnect.InitializeUserDatabase();
-            dbConnect.InitializeStorageDatabase();
-            dbConnect.InitializeShoppinglistDatabase();
+            
         }
 
         public void GenerateData(bool coop, bool salling)
@@ -52,7 +50,7 @@ namespace BBGatherer
                 {
                     count++;
                     Console.WriteLine(count);
-                    dbConnect.AddProduct(new Product("B" + c.Ean, c.Navn, c.Navn2, c.Pris, "", "SuperBrugsen"));
+                    //dbConnect.AddProduct(new Product("B" + c.Ean, c.Navn, c.Navn2, c.Pris, "", "SuperBrugsen"));
                 }
             }
             //_test.UpdateProductTable(new DatabaseInformation("localhost", "biksbudgetDB", "root", "BiksBudget123"));
@@ -72,74 +70,7 @@ namespace BBGatherer
 
         public void TestCollection()
         {
-            foreach(Recipe r in dbConnect.GetRecipes("kakao"))
-            {
-                Console.WriteLine(r._Name);
-            }
 
-/*
-
-            //dbConnect.combineProductsAndIngredients();
-
-            dbConnect.AddUser("Test6", "Test");
-
-            dbConnect.DeleteShoppingListFromName("Shoppinglist", "Test6");
-
-            List<Product> testList = new List<Product>();
-
-            Product tProd1 = new Product(null, "TestCust", 5, "Full");
-            Product tProd2 = new Product(null, "TestCust2", 5, "Full");
-            Product tProd3 = new Product(null, "TestCust3", 5, "Full");
-
-            Product tProdid1 = new Product("B2000060000000", null, 5, "Full");
-            Product tProdid2 = new Product("B2000320000009", null, 5, "Full");
-            Product tProdid3 = new Product("B2000570000002", null, 5, "Full");
-
-
-
-            testList.Add(tProdid1);
-            testList.Add(tProdid2);
-            testList.Add(tProdid3);
-            testList.Add(tProd1);
-            testList.Add(tProd2);
-            testList.Add(tProd3);
-
-            dbConnect.AddListToStorage("Test6", testList);
-
-            List<Product> products = dbConnect.GetStorageFromUsername("Test6");
-
-            Console.WriteLine(products.Count);
-            foreach (Product p in products)
-            {
-                Console.WriteLine(p._customname);
-                Console.WriteLine(p._id);
-
-            }
-
-            Shoppinglist shoppinglist = new Shoppinglist("TestShoppingList", testList);
-
-            List<Shoppinglist> ShoppingList2 = new List<Shoppinglist>();
-            ShoppingList2.Add(shoppinglist);
-
-            dbConnect.AddShoppingListsToDatabase("Test6", ShoppingList2);
-
-            List<Shoppinglist> shoppinglists = dbConnect.GetShoppinglists("Test6");
-
-            List<Recipe> recipes = new List<Recipe>();
-
-
-
-            foreach (Shoppinglist sl in shoppinglists)
-            {
-                foreach (Product p in sl._products)
-                {
-                    Console.WriteLine("???");
-                    Console.WriteLine(p._productName + sl._name);
-
-                }
-            }
-
-            dbConnect.DeleteShoppingListFromName("", "Test6");*/
         }
     }
 }

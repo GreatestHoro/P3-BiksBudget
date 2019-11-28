@@ -1,5 +1,8 @@
 ﻿namespace FrontEnd2
 {
+    /// <summary>
+    /// Class neeeded to pass a salling store attributes using Newtonsoft.Json lib
+    /// </summary>
     class SallingAPIStoreAttributes
     {
         public bool garden { get; set; }
