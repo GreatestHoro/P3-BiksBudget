@@ -28,7 +28,7 @@ namespace BBGatherer.Webcrawler
         /// <param name="Last_page">The last recepie on the web site it should check</param>
         /// <param name="dbConnect">The database that should get the finished recipies loaded into</param>
         /// <returns></returns>
-        public async Task GetRecipes(int start_page, int Last_page, DatabaseConnect dbConnect)
+        public async Task GetRecipes(int start_page, int Last_page, DatabaseConnect dc)
         {
             AssistingClasses functionality = new AssistingClasses();
 

@@ -79,10 +79,6 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
             return retrunList;
         }
         #endregion
-        public List<Product> GetProductWithRef(string Searchterm, DatabaseConnect dbConnect)
-        {
-            return null;
-        }
 
         public string UpdateProductRefrence(string CurrentRefrence, string searchterm)
         {

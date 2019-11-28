@@ -65,8 +65,7 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
         private bool CheckCOOPProductsInDatabase(String Searchterm, DatabaseConnect dbConnect)
         {
             string newRefrence;
-            ProductHandling productHandling = new ProductHandling();
-            List<Product> ProductsWithRef = _refs.GetProductWithRef(Searchterm, dbConnect);
+            List<Product> ProductsWithRef = dbConnect.Product.GetList(Searchterm);
             foreach (Product p in ProductsWithRef)
             {
                 newRefrence = _refs.UpdateProductRefrence(p._CustomReferenceField.Trim(), Searchterm);
