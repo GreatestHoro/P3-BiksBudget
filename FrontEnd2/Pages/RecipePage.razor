@@ -11,8 +11,8 @@
                 <div class="form-check-inline center_div recipe-search-bar mb-2">
                     <input type="text" @bind="searchTerm" @onkeyup="OnKeyPress" class="form-control recipe-search-input" id="recipeSearchInput" placeholder="Search" />
                     <button class="btn btn-success recipe-search-button" @onclick="(() => Search())">
-            <i class="fa fa-search"></i>
-        </button>
+                        <i class="fa fa-search"></i>
+                        </button>
                 </div>
                 @if (isSearching == true)
                 {
@@ -142,13 +142,13 @@
         //viewAddToshoppinglist = true;
     }
 
-    private void OnKeyPress(KeyboardEventArgs args)
+    private async void OnKeyPress(KeyboardEventArgs args)
     {
         if (args.Key == "Enter")
         {
             //await RemoveElementFocus("recipeSearchInput");
             complexRecipes.Clear();
-            Search();
+            await Search();
         }
     }
 
