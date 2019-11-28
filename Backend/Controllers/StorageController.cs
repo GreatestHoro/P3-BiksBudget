@@ -27,29 +27,41 @@ namespace Backend.Controllers
         {
         }
 
+        /// <summary>
+        /// This method returns the storage for a specific user
+        /// </summary>
+        /// <param name="_email"></param>
+        /// <returns></returns>
+
         // GET: api/Storage/5
-        [HttpGet("{id}")]
-        public string Get(string id)
+        [HttpGet("{_email}")]
+        public string Get(string _email)
         {
-            List<Product> storageList = dbConnect.GetStorageFromUsername(id);
+            List<Product> storageList = dbConnect.Storage.GetList(_email);
 
             string jsonStorage = JsonConvert.SerializeObject(storageList);
 
             return jsonStorage;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="_email"></param>
+
         // POST: api/Storage
-        [HttpPost("{value}")]
-        public void Post(string value)
+        [HttpPost("{_email}")]
+        public void Post(string _email)
         {
-            string buffer;
             List<Product> newItem = new List<Product>();
             List<Product> Fromdb = new List<Product>();
+            
+            string buffer;
 
             HttpRequest request = HttpContext.Request;
             Microsoft.AspNetCore.Http.HttpRequestRewindExtensions.EnableBuffering(request);
 
-            Email = value;
+            Email = _email;
 
             using (var sr = new StreamReader(request.Body))
             {
@@ -58,45 +70,67 @@ namespace Backend.Controllers
 
             if (buffer.Substring(0, 1) != "[")
             {
+                // If the buffer only contains one item it is not a list
+                // and cannot be converted to a list. If [] are added it
+                // is a list of one product.
                 buffer = "[" + buffer + "]";
             }
 
+            // The list of products to add to storage
             newItem = JsonConvert.DeserializeObject<List<Product>>(buffer);
 
             if (newItem.Count == 0)
             {
-                dbConnect.UpdateStorage(Email, newItem);
+                // If the list of items to add is empty, storage is deleted
+                dbConnect.Storage.Update(Email, newItem);
             }
             else
             {
-                Fromdb = dbConnect.GetStorageFromUsername(Email);
+                // Else the storage in the database is requested
+                Fromdb = dbConnect.Storage.GetList(Email);
+
+                // The two lists from the database and the frontend are merged into one
                 newItem = newItem.Concat(Fromdb).ToList();
+
+                // Dublicats are handled
                 newItem = functionality.HandleDublicats(newItem);
-                dbConnect.UpdateStorage(Email, newItem);
+
+                // The updated list without dublicats are added to storage
+                dbConnect.Storage.Update(Email, newItem);
             }
         }
 
-
+        /// <summary>
+        /// This method is used when items in the storage are changed
+        /// in either amount or state
+        /// </summary>
+        /// <param name="_email"></param>
 
         // PUT: api/Storage/5
-        [HttpPut("{id}")]
-        public void Put(string id)
+        [HttpPut("{_email}")]
+        public void Put(string _email)
         {
             string buffer;
             Product newItem = new Product();
             List<Product> storageList = new List<Product>();
 
-            Email = id;
+            Email = _email;
 
             HttpRequest request = HttpContext.Request;
             Microsoft.AspNetCore.Http.HttpRequestRewindExtensions.EnableBuffering(request);
 
             using (var sr = new StreamReader(request.Body))
             {
+                // If the buffer only contains one item it is not a list
+                // and cannot be converted to a list. If [] are added it
+                // is a list of one product.
                 buffer = sr.ReadToEnd();
             }
 
-            storageList = dbConnect.GetStorageFromUsername(Email);
+            // The items in storage in the database is requested
+            storageList = dbConnect.Storage.GetList(Email);
+
+            // The item to change
             newItem = JsonConvert.DeserializeObject<Product>(buffer);
 
             if (newItem._amountleft != 0)
@@ -105,6 +139,7 @@ namespace Backend.Controllers
                 {
                     if (p._id == newItem._id)
                     {
+                        // On match, the new attributes are set
                         p._state = newItem._state;
                         p._amountleft = newItem._amountleft;
                         break;
@@ -113,20 +148,13 @@ namespace Backend.Controllers
             }
             else
             {
+                // If amountleft is zero, the item is deleted
                 newItem._amountleft = 1;
                 int i = functionality.FindIdex(storageList, newItem);
                 storageList.RemoveAt(i);
             }
 
-            dbConnect.UpdateStorage(Email, storageList);
-        }
-
-
-
-        // DELETE: api/ApiWithActions/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            dbConnect.Storage.Update(Email, storageList);
         }
     }
 }

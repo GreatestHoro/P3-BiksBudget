@@ -14,7 +14,7 @@ namespace BBGatherer.Queries
 {
     public class RecipeQuery
     {
-        DatabaseConnect _dbConnect = new DatabaseConnect();
+        DatabaseConnect _dc = new DatabaseConnect();
         BearerAccessToken bearerAccessToken = new BearerAccessToken("a6f4495c-ace4-4c39-805c-46071dd536db");
         SallingAPILink _linkMaker = new SallingAPILink();
         Filter<SallingAPIProduct> _productFilter = new Filter<SallingAPIProduct>();
@@ -117,7 +117,7 @@ namespace BBGatherer.Queries
         private List<Product> Products(string ingredient)
         {
             List<Product> resProducts = new List<Product>();
-            resProducts = _dbConnect.GetProductInterval(ingredient, _productsToMatch, 0);
+            resProducts = _dc.Product.GetRange(ingredient, _productsToMatch, 0);
             resProducts.Sort((a,b) => a._price.CompareTo(b._price));
 
             return resProducts;
@@ -143,7 +143,7 @@ namespace BBGatherer.Queries
                 _loadCount = 0;
                 _prevSearch = searchTerm;
             }
-            return await _dbConnect.GetRecipesInterval(searchTerm, _productsPerLoad, _productsPerLoad * _loadCount);
+            return await _dc.Recipe.GetRange(searchTerm, _productsPerLoad, _productsPerLoad * _loadCount);
         }
 
         /// <summary>

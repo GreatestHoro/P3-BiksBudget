@@ -4,46 +4,30 @@ using System;
 
 namespace BBCollection.DBHandling
 {
-    class InitializeDB
+    public class DatabaseHandling
     {
         ConnectionSettings connectionSettings = new ConnectionSettings();
-        public void start(DatabaseInformation databaseInformation)
+        public void Start()
         {
-            CreateDB(databaseInformation);
-            GenerateWebcrawelerDatabaseTables(databaseInformation);
-            GenerateAPIDatabaseTables(databaseInformation);
-            UpdateProductTable(databaseInformation);
+            CreateDB();
+            GenerateWebcrawelerDatabaseTables();
+            GenerateAPIDatabaseTables();
+            UpdateProductTable();
+            GenerateUserDatabaseTables();
+            GenerateSallingProductDB();
+            GenerateStorageTables();
+            GenerateShoppingListTables();
         }
-
-        public void CreateUserDB(DatabaseInformation databaseInformation)
-        {
-            GenerateUserDatabaseTables(databaseInformation);
-        }
-
-        public void CreateSallingProduct(DatabaseInformation databaseInformation)
-        {
-            GenerateSallingProductDB(databaseInformation);
-        }
-
-        public void CreateStorageDB(DatabaseInformation dbInformation)
-        {
-            GenerateStorageTables(dbInformation);
-        }
-
-        public void CreateSLTables(DatabaseInformation databaseInformation)
-        {
-            GenerateShoppingListTables(databaseInformation);
-        }
-
 
         /*
          Check if database exist, if it don't it will create it
         */
-        private void CreateDB(DatabaseInformation databaseInformation)
+        private void CreateDB()
         {
             MySqlConnection connection = null;
             try
             {
+                DatabaseInformation databaseInformation = new DatabaseInformation();
                 connection = new MySqlConnection(databaseInformation.ConnectionString(false));
                 connection.Open();
 
@@ -66,7 +50,7 @@ namespace BBCollection.DBHandling
             }
         }
 
-        private void GenerateWebcrawelerDatabaseTables(DatabaseInformation databaseInformation)
+        private void GenerateWebcrawelerDatabaseTables()
         {
             string recipeTable =
                 "CREATE TABLE IF NOT EXISTS `Recipes` (" +
@@ -92,12 +76,12 @@ namespace BBCollection.DBHandling
                 "FOREIGN KEY(recipeID) REFERENCES RECIPES(id)," +
                 "FOREIGN KEY(ingredientID) REFERENCES INGREDIENTS(id)); ";
 
-            new SQLConnect().NonQueryString(recipeTable, databaseInformation);
-            new SQLConnect().NonQueryString(ingredientTable, databaseInformation);
-            new SQLConnect().NonQueryString(ingredientInRecipeTable, databaseInformation);
+            new SQLConnect().NonQueryString(recipeTable);
+            new SQLConnect().NonQueryString(ingredientTable);
+            new SQLConnect().NonQueryString(ingredientInRecipeTable);
         }
 
-        private void GenerateAPIDatabaseTables(DatabaseInformation databaseInformation)
+        private void GenerateAPIDatabaseTables()
         {
             string productTable =
                 "CREATE TABLE IF NOT EXISTS `products` (" +
@@ -117,11 +101,11 @@ namespace BBCollection.DBHandling
                 "foreign key(product_id) references products(id))";
 
 
-            new SQLConnect().NonQueryString(productTable, databaseInformation);
-            new SQLConnect().NonQueryString(productInIngredientQuery, databaseInformation);
+            new SQLConnect().NonQueryString(productTable);
+            new SQLConnect().NonQueryString(productInIngredientQuery);
         }
 
-        private void GenerateUserDatabaseTables(DatabaseInformation databaseInformation)
+        private void GenerateUserDatabaseTables()
         {
             string userTable =
                 "CREATE TABLE IF NOT EXISTS `users` (" +
@@ -129,10 +113,10 @@ namespace BBCollection.DBHandling
                 "`password` VARCHAR(255), " +
                 "PRIMARY KEY(username));";
 
-            new SQLConnect().NonQueryString(userTable, databaseInformation);
+            new SQLConnect().NonQueryString(userTable);
         }
 
-        private void GenerateSallingProductDB(DatabaseInformation databaseInformation)
+        private void GenerateSallingProductDB()
         {
             string sallingTable =
                 "CREATE TABLE IF NOT EXISTS `sallingproducts` (" +
@@ -145,10 +129,10 @@ namespace BBCollection.DBHandling
                 "`img` VARCHAR(255), " +
                 "PRIMARY KEY(id));";
 
-            new SQLConnect().NonQueryString(sallingTable, databaseInformation);
+            new SQLConnect().NonQueryString(sallingTable);
         }
 
-        private void GenerateStorageTables(DatabaseInformation databaseInformation)
+        private void GenerateStorageTables()
         {
             string storageTable =
                 "CREATE TABLE IF NOT EXISTS `userstorage` (" +
@@ -161,10 +145,10 @@ namespace BBCollection.DBHandling
                 "foreign key(username) REFERENCES users(username), " +
                 "foreign key(prodid) REFERENCES products(id));";
 
-            new SQLConnect().NonQueryString(storageTable, databaseInformation);
+            new SQLConnect().NonQueryString(storageTable);
         }
 
-        private void GenerateShoppingListTables(DatabaseInformation databaseInformation)
+        private void GenerateShoppingListTables()
         {
             string shoppingListTables =
                 "CREATE TABLE IF NOT EXISTS `shoppinglists`( " +
@@ -177,22 +161,15 @@ namespace BBCollection.DBHandling
                 "foreign key(username) references users(username)," +
                 "foreign key(product_id) references products(id));";
 
-            new SQLConnect().NonQueryString(shoppingListTables, databaseInformation);
+            new SQLConnect().NonQueryString(shoppingListTables);
         }
 
-        private void UpdateProductTable(DatabaseInformation databaseInformation)
+        private void UpdateProductTable()
         {
             string newCollumnQuery =
                 "ALTER TABLE `products` ADD `ingredient_reference` varchar(255)";
 
-            new SQLConnect().NonQueryString(newCollumnQuery, databaseInformation);
-        }
-
-
-
-        private void GenerateCombineProductAndIngredient(DatabaseInformation databaseInformation)
-        {
-            
+            new SQLConnect().NonQueryString(newCollumnQuery);
         }
     }
 }
