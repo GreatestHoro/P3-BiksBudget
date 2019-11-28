@@ -8,14 +8,22 @@ namespace BBGatherer.Queries
     public class ComplexRecipeComponent
     {
         //member for the total price of the recipe
-        public double _recipeCost { get; set; }
+        private double _recipeCost;
+        
+        public double RecipeCost{
+            get => _recipeCost;
+            set
+            {
+                _recipeCost = Math.Round(value, 2);
+            } 
+        }
         //dictionary for looking up products for the recipe's ingredients by ingredient name
         public Dictionary<string, List<Product>> _products = new Dictionary<string, List<Product>>();
 
         //constructor for the class v.1
         public ComplexRecipeComponent(double recipeCost, Dictionary<string, List<Product>> products)
         {
-            _recipeCost = recipeCost;
+            RecipeCost = recipeCost;
             _products = products;
         }
         //constructur for the class v.2

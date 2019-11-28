@@ -1,5 +1,8 @@
 ﻿namespace FrontEnd2
 {
+    /// <summary>
+    /// Class to hold coordinate position by longitude and latitude
+    /// </summary>
     public class GeoCoordinate
     {
         public double _longitude { get; set; }
