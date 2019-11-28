@@ -11,15 +11,17 @@ using BBCollection.StoreApi.ApiNeeds;
 using BBCollection.StoreApi.SallingApi;
 using BBCollection.DBHandling;
 using BBCollection.DBConncetion;
+using B3_BiksBudget.Webcrawler.Assisting_classes;
 
 
 namespace BBGatherer.Webcrawler
 {
     class RecipeCrawl
     {
+        #region Webcrawler
         public async Task GetRecipes(int start_page, int Last_page, DatabaseConnect dbConnect)
         {
-            List<Recipe> opskrifter = new List<Recipe>(); //The list that holdes the recipies
+            AssistingClasses functionality = new AssistingClasses();
 
             for (int i = start_page; i <= Last_page; i++) //loop that goes from the first page to the last page
             {
@@ -55,7 +57,7 @@ namespace BBGatherer.Webcrawler
                             if (!ind.InnerText.Contains(':'))
                             {
 
-                                Ingredient ingredient = CreateIngriedient(ind.InnerText, out fatalError, dbConnect);
+                                Ingredient ingredient = CreateIngriedient(ind.InnerText, out fatalError, dbConnect, functionality);
                                 if (!ingredient._ingredientName.Equals("none"))
                                 {
                                     IngriedisensList.Add(ingredient);
@@ -70,7 +72,7 @@ namespace BBGatherer.Webcrawler
                             (i, name.ElementAt<HtmlNode>(0).InnerText,
                             Beskrivels.ElementAt<HtmlNode>(0).InnerText,
                             IngriedisensList,
-                            CleanUpPerPerson(PerPerson)));
+                            functionality.getCleanFunc().CleanUpPerPerson(PerPerson)));
                         }
                         else
                         {
@@ -88,23 +90,30 @@ namespace BBGatherer.Webcrawler
             Console.WriteLine("Procces finished");
 
         }
+        #endregion
 
-
-
-        private Ingredient CreateIngriedient(String ind,out bool fatalError, DatabaseConnect dbConnect)
+        #region ingrdient Creation
+        private Ingredient CreateIngriedient(String ind,out bool fatalError, DatabaseConnect dbConnect, AssistingClasses functionality)
         {
-            float amount = DeterminAmount(ind);
-            String unit = DeterminUnit(ind);
-            String name = DeterminName(ind).Trim();
-            name = NameCleanUp(name);
-            Console.WriteLine("INPUT: "+name);
+            float amount = functionality.getDetermin().DeterminAmount(ind);
+            String unit = functionality.getDetermin().DeterminUnit(ind);
+            String name = functionality.getDetermin().DeterminName(ind).Trim();
 
+            name = nameEditing_Evalution(name,out fatalError,dbConnect, functionality);
+
+            return new Ingredient(name.Trim(), unit, amount);
+        }
+
+        private string nameEditing_Evalution(string name,out bool fatalError,DatabaseConnect dbConnect, AssistingClasses functionality) 
+        {
             if (!String.IsNullOrWhiteSpace(name.Trim()))
             {
-                name = CheckForValidIndgredients(name, dbConnect, out fatalError);
+                name = functionality.getCleanFunc().NameCleanUp(name);
+                Console.WriteLine("INPUT: " + name);
+                name = functionality.getRefs().CheckForValidIndgredients(name, dbConnect, out fatalError);
                 if (!fatalError)
                 {
-                    name = EdgeCaseCleanUp(name);
+                    name = functionality.getCleanFunc().EdgeCaseCleanUp(name);
                     Console.WriteLine("OUTPUT: " + name);
                     fatalError = EvaluateName(name);
                 }
@@ -115,509 +124,7 @@ namespace BBGatherer.Webcrawler
                 name = "none";
             }
 
-            return new Ingredient(name.Trim(), unit, amount);
-        }
-        #region(Check if Indgredients)
-        private String CheckForValidIndgredients(String name, DatabaseConnect dbConnect, out bool fatalError)
-        {
-            fatalError = false;
-            List<string> matches = new List<string>();
-            List<String> Combinations = GetAllCombinations(name,dbConnect);
-
-            if (Combinations.Count != 0)
-            {
-                matches = CheckIngredientInDatabase(Combinations, dbConnect);
-                /*if (matches.Count == 0)
-                {
-                    foreach (string Searchterm in Combinations)
-                    {
-                        if (CheckIngredientsInApi(Searchterm, dbConnect))
-                        {
-                            matches = (CheckIngredientInDatabase(Combinations, dbConnect));
-                        }
-                    }
-                }*/
-            }
-
-            //lav en metode til at gemme det afviste svar
-            if (matches.Count() == 0 && !fatalError)
-            {
-                fatalError = true;
-            }
-
-            return Combinations[Combinations.Count - 1];
-        }
-
-        private List<String> GetAllCombinations(string name, DatabaseConnect dbConnect)
-        {
-            String[] str = name.Split(" ");
-            int CombinationSize = 1;
-            int Start = 0;
-            List<String> Combinations = new List<string>();
-
-            while (CombinationSize <= str.Length)
-            {
-                while (Start <= str.Length - CombinationSize)
-                {
-                    Combinations.Add(GetCombination(str, CombinationSize, Start++));
-                }
-                Start = 0;
-                CombinationSize++;
-            }
-            return Combinations;
-        }
-        private string GetCombination(string[] str, int size, int i)
-        {
-            String ReturnString = "";
-            foreach (String word in Combination(str, size, i))
-            {
-                ReturnString = ReturnString + " " + word;
-            }
-            return ReturnString.Trim(); ;
-        }
-        private List<String> Combination(string[] str, int size, int i)
-        {
-            List<String> Comb = new List<string>();
-            List<String> ReturnArray = new List<string>();
-            if (size == 0)
-            {
-                return ReturnArray;
-            }
-            else
-            {
-                ReturnArray.Add(str[i]);
-
-                Comb = Combination(str, --size, ++i);
-                foreach (String strList in Comb)
-                {
-                    ReturnArray.Add(strList);
-                }
-                return ReturnArray;
-
-            }
-        }
-        private List<string> CheckIngredientInDatabase(List<string> Searchterms, DatabaseConnect dbConnect)
-        {
-            List<string> results = new List<string>();
-            foreach (string Searchterm in Searchterms)
-            {
-                if (CheckCOOPProductsInDatabase(Searchterm.Trim(), dbConnect))
-                {
-                    results.Add(Searchterm.Trim());
-                }
-            }
-
-            return results;
-        }
-
-        private bool CheckCOOPProductsInDatabase(String Searchterm, DatabaseConnect dbConnect)
-        {
-            string newRefrence;
-            ProductHandling productHandling = new ProductHandling();
-            List<Product> ProductsWithRef = GetProductWithRef(Searchterm,dbConnect);
-            foreach (Product p in ProductsWithRef)
-            {
-                newRefrence = UpdateProductRefrence(p._CustomReferenceField.Trim(), Searchterm);
-                newRefrence = InterpretAndEditProductRef(newRefrence);
-                productHandling.InsertIngredientReferenceFromId(newRefrence,p._id, new DatabaseInformation());
-            }
-
-            return ProductsWithRef.Count != 0 ? true : false;
-        }
-        #region Interpret
-        private string InterpretAndEditProductRef(string _ref) 
-        {
-            string[] refs = _ref.Split(",");
-            List<string> newRef = new List<string>();
-            string returnRef = "";
-            refs.OrderByDescending(x => x.Length);
-            newRef.AddRange(GetBiggestStrings(refs,2));
-
-            foreach (string s in newRef)
-            {
-                returnRef += s + ",";
-            }
-            return returnRef;
-        }
-        private List<string> GetBiggestStrings(string[] sortedStrings,int Levels) 
-        {
-            List<string> returnList = new List<string>();
-            returnList.AddRange(GetBiggest(sortedStrings));
-            while (Levels-- > 0)
-            {
-                returnList = GetNextBiggest(sortedStrings, returnList.Last());
-            }
-            return returnList;
-        }
-        private List<string> GetBiggest(string[] strings) 
-        {
-            List<string> retrunList = new List<string>();
-            int biggestYet = strings.First().Length;
-            foreach (string s in strings) 
-            {
-                if (biggestYet == s.Length)
-                {
-                    retrunList.Add(s);
-                }
-                else 
-                {
-                    break;
-                }
-            }
-            return retrunList;
-        }
-
-        private List<string> GetNextBiggest(string[] strings, string StringList) 
-        {
-            List<string> retrunList = new List<string>();
-            bool flag = false;
-            int biggestYet = StringList.Length;
-
-            foreach (string s in strings)
-            {
-                if (biggestYet != s.Length && !flag)
-                {
-                    flag = true;
-                    biggestYet = s.Length;
-                }
-
-                if (flag && biggestYet == s.Length)
-                {
-                    retrunList.Add(s);
-                }
-                else
-                { 
-                }
-            }
-            return retrunList;
-        }
-        #endregion
-        private List<Product> GetProductWithRef(string Searchterm,DatabaseConnect dbConnect)
-        {
-            List<Product> Products = dbConnect.GetProducts(Searchterm);
-            List<Product> ProductsWithRef = new List<Product>();
-            ProductHandling productHandling = new ProductHandling();
-
-            foreach (Product p in Products) 
-            {
-                ProductsWithRef.Add(productHandling.GetProductWithReferenceFromId(p._id, new DatabaseInformation()));
-            }
-            foreach (Product p in ProductsWithRef) 
-            {
-                string newRefrence = UpdateProductRefrence(p._CustomReferenceField, Searchterm);
-                productHandling.InsertIngredientReferenceFromId(newRefrence,p._id, new DatabaseInformation());
-            }
-            return ProductsWithRef;
-        }
-
-        private string UpdateProductRefrence(string CurrentRefrence, string searchterm)
-        {
-            if (!String.IsNullOrWhiteSpace(CurrentRefrence))
-            {
-                if (!CurrentRefrence.Contains(searchterm+","))
-                {
-
-                    CurrentRefrence += searchterm+ ",";
-                }
-                return CurrentRefrence;
-            }
-            else
-            {
-                return searchterm+",";
-            }
-
-        }
-
-        private bool CheckIngredientsInApi(string Searchterm, DatabaseConnect dbConnect)
-        {
-            System.Threading.Thread.Sleep(4000);
-            BearerAccessToken bearerAccessToken = new BearerAccessToken("fc5aefca-c70f-4e59-aaaa-1c4603607df8");
-
-
-            SallingAPILink linkMaker = new SallingAPILink();
-            SallingAPIProductSuggestions productSuggestions = new SallingAPIProductSuggestions();
-            string apiLink = linkMaker.GetProductAPILink(Searchterm);
-            OpenHttp<SallingAPIProductSuggestions> openHttp;
-
-
-            try
-            {
-                openHttp = new OpenHttp<SallingAPIProductSuggestions>(apiLink, bearerAccessToken.GetBearerToken());
-                productSuggestions = openHttp.ReadAndParseAPISingle();
-                if(productSuggestions.Suggestions != null)
-                {
-                    foreach (var p in productSuggestions.Suggestions)
-                    {
-                        dbConnect.AddSallingProduct(new SallingProduct(p.title, p.id, p.prod_id, p.price, p.description, p.link, p.img));
-                    }
-                }
-
-            }
-
-            catch (System.Net.WebException)
-            {
-               Console.WriteLine("Exception found is being handled");
-               System.Threading.Thread.Sleep(30000);
-               Console.WriteLine("Exception resolved");
-                return false;
-            }
-
-            if (productSuggestions.Suggestions != null)
-            {
-                return productSuggestions.Suggestions.Count != 0 ? true : false;
-            }
-            else
-            {
-                return false;
-            }
-            }
-        #endregion
-
-        #region(Determin ingredient values)
-        private float DeterminAmount(String ingrediens)
-        {
-            String[] SplitString = ingrediens.Split(' ');
-            float Amount;
-            foreach (String part in SplitString)
-            {
-                if (float.TryParse(part, out Amount))
-                {
-                    return Amount;
-                }
-            }
-            return 0;
-        }
-
-        private String DeterminUnit(String ingrediens)
-        {
-            String[] SplitString = ingrediens.Split(' ');
-            return SplitString[1];
-        }
-
-        private String DeterminName(String ingrediens)
-        {
-            String[] SplitString = ingrediens.Split(' ');
-            String ReturnString = "";
-            for (int i = 2; i < SplitString.Length; i++)
-            {
-                ReturnString = ReturnString + " " + SplitString[i];
-
-            }
-            return ReturnString;
-        }
-        #endregion
-
-        #region(String Cleanups)
-        private String NameCleanUp(String name)
-        {
-            List<char> _char = new List<char>() {',', '.', '+', '-', '!', '?','&','%','–','"','*','(',')','/', '½'};
-            List<string> splitString = new List<string>() {"eller","i","med","gerne","fra","fx","ekstra","el","og"};
-            List<string> removeSub = new List<string>() { "l", "for","par","I","op","gr","et","de","a","à","á","i","let","på","dl","hel","der","er","kg","små","evt","ekstra","tsk","almindelig", "til", "el", "af", "stk", "ud", "g", "ca", "a", "pr", "sk", "hele","cm","nye","frisk","st","u","en","uden","ben","løse"};
-            List<string> removeIfFisrt = new List<string>() {"af " , "after "};
-            List<string> exeptions = new List<string>() {"æg","ål","øl","te"};
-
-            name = new String(name.Where(c => c != '-' && (c < '0' || c > '9')).ToArray());
-
-            name = RemoveInBetween(name,'(',')');
-            name = RemoveInBetween(name,'"','"');
-            foreach (string s in splitString)
-            {
-                name = RemoveEverythingAfter(name, s);
-            }
-            foreach (char c in _char)
-            {
-                name = RemoveCharFromString(name, c);
-            }
-            foreach (string s in removeSub)
-            {
-                name = RemoveSubstring(name, s);
-            }
-            foreach (string s in removeIfFisrt)
-            {
-                name = RemoveIfFirstInString(name,s);
-            }
-
-            name = removeSubstringOfLentgh(name,2, exeptions);
-
-            name = name.ToLower();
-
-            return name.Trim();
-
-        }
-
-        private String EdgeCaseCleanUp(String name)
-        {
-            name = new String(name.Where(c => c != '-' && (c < '0' || c > '9')).ToArray());
-            List<String> Substring = new List<string>() {"u","dl", "ca", "á", "g", "kg", "til"};
-            foreach (String s in Substring)
-            {
-                name = RemoveSubstring(name.Trim(), s);
-            }
-
-            if (name.Trim().Equals("i tern") || name.Trim().Equals("i") || name.Trim().Equals("med"))
-            {
-                name = "";
-            }
             return name;
-        }
-
-        private float CleanUpPerPerson(HtmlNodeCollection _PerPerson)
-        {
-
-            if (_PerPerson != null)
-            {
-                String PerPerson = _PerPerson.ElementAt<HtmlNode>(0).InnerText;
-                String cleanUp = "";
-                float numb;
-                String[] characters = PerPerson.Split(' ', '&', '-');
-                foreach (String c in characters)
-                {
-                    if (float.TryParse(c, out numb))
-                    {
-                        return numb;
-                    }
-                }
-                return float.Parse(cleanUp);
-            }
-            else
-            {
-                return 4;
-            }
-
-        }
-        #endregion
-
-        #region(remove)
-        private string removeSubstringOfLentgh(string name,int length,List<string> exceptions) 
-        {
-            bool flag = true;
-            string[] words = name.Split(" ");
-            string ReturnString = "";
-            foreach (string word in words)
-            {
-                if (word.Length < length)
-                {
-                    foreach (string sE in exceptions)
-                    {
-                        if (sE.Equals(name))
-                        {
-                            flag = true;
-                        }
-                    }
-                }
-                else
-                {
-                    flag = true;
-                }
-
-                if (flag)
-                {
-                    ReturnString += word + " ";
-                }
-            }
-            return ReturnString;
-        }
-
-        private string RemoveSubstring(String name,String substring)
-        {
-            String[] Words = name.Split(" ");
-            string ReturnString = "";
-            foreach (string w in Words)
-            {
-                if (!w.Equals(substring))
-                {
-                    ReturnString = ReturnString + w +" ";
-                }
-            }
-
-            return ReturnString;
-        }
-
-        private string RemoveEverythingAfter(string _string, string RemoveStart)
-        {
-            String[] Words = _string.Split(" ");
-            String _return = "";
-            bool KeyFlag = false;
-            foreach (String s in Words)
-            {
-                if (s.Equals(RemoveStart))
-                {
-                    KeyFlag = true;
-                }
-                if (!KeyFlag)
-                {
-                    _return = _return + s + " ";
-                }
-            }
-            return _return;
-        }
-
-        private String RemoveInBetween(string name,char a,char b)
-        {
-            char[] chars = name.ToCharArray();
-            bool ParenthesesFlag = false;
-            String _string = "";
-
-            foreach (char character in chars)
-            {
-                if (ParenthesesFlag)
-                {
-                    if (character.Equals(b))
-                    {
-                        ParenthesesFlag = false;
-                    }
-                }
-                else if (character.Equals(a))
-                {
-                    ParenthesesFlag = true;
-                }
-                else
-                {
-                    _string += character;
-                }
-            }
-            return _string;
-        }
-
-        private String RemoveCharFromString(string _string, char _char)
-        {
-            Char[] charArray = _string.ToCharArray();
-            string returnString = "";
-
-            foreach (Char c in charArray)
-            {
-                if (c != _char)
-                {
-                    returnString = returnString + c;
-                }
-            }
-
-            return returnString;
-        }
-
-        private String RemoveIfFirstInString(string name, string Remove)
-        {
-            char[] _name = name.Trim().ToCharArray();
-            char[] _Remove = Remove.ToCharArray();
-            int i = 0;
-
-            if (name.Contains(Remove))
-            {
-                foreach (char r in _Remove)
-                {
-                    i++;
-                    if (r == _name[i])
-                    {
-                        _name[i] = '*';
-                    }
-                    else
-                    {
-                        return name.Trim();
-                    }
-                }
-            }
-
-            return RemoveCharFromString(name, '*').Trim(); ;
         }
         #endregion
 
