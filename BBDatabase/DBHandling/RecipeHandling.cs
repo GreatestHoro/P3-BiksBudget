@@ -34,6 +34,7 @@ namespace BBCollection.DBHandling
             }
             return recipeList;
         }
+
         public Task<List<Recipe>> GetRange(string recipeName, int limit, int offset)
         {
             List<Recipe> recipeList = new List<Recipe>();
@@ -54,6 +55,7 @@ namespace BBCollection.DBHandling
             });
 
         }
+
         public List<Ingredient> GetIngredients(int recipeID)
         {
             List<Ingredient> ingredients = new List<Ingredient>();
@@ -81,6 +83,7 @@ namespace BBCollection.DBHandling
             AddIngredientsToDatabase(recipe._ingredientList);
             CombineRecipeAndIngredient(recipe);
         }
+
         private void AddRecipeToDatabase(Recipe recipe)
         {
             string recipeQuery = "INSERT INTO `Recipes`(`id`,`recipeName`,`amountPerson`,`recipeDesc`) VALUES(@RecipeID,@RecipeName,@RecipePersons,@RecipeDescription);";
@@ -93,6 +96,7 @@ namespace BBCollection.DBHandling
 
             new SQLConnect().NonQueryMSC(msc);
         }
+
         private void AddIngredientsToDatabase(List<Ingredient> ingredients)
         {
             foreach (Ingredient ingredient in ingredients)
@@ -103,6 +107,7 @@ namespace BBCollection.DBHandling
                 }
             }
         }
+
         private void AddIngredientToDatabase(Ingredient ingredient)
         {
             string IngredientToDatabase = "INSERT INTO `Ingredients` (`ingredientName`) VALUES (@Ingredient);";
@@ -112,6 +117,7 @@ namespace BBCollection.DBHandling
 
             new SQLConnect().NonQueryMSC(msc);
         }
+
         private bool IngredientExist(Ingredient ingredient)
         {
             string ingredientExist = "SELECT * FROM `id` WHERE `id` = @Id;";
