@@ -16,6 +16,15 @@ namespace Backend.Controllers
     [ApiController]
     public class SearchController : ControllerBase
     {
+
+        /// <summary>
+        /// Returns a list of products based on the filters applied.
+        /// </summary>
+        /// <param name="searchterm">The word the user serches for</param>
+        /// <param name="_keywordFilter">A string consisting of bool values for each keyword filter</param>
+        /// <param name="_storeFilter">A string consisting of bool values for each store filter</param>
+        /// <returns></returns> 
+
         // GET: api/Search?searchterm=øl&_keywordFilter=00&_storeFilter=111111111
         [HttpGet]
         public string GetProducts(string searchterm = "carlsberg",string _keywordFilter = "00",string _storeFilter="111111111")
@@ -27,9 +36,17 @@ namespace Backend.Controllers
             return JsonConvert.SerializeObject(filters.UseTogglefilters(searchterm));
         }
 
+
+        /// <summary>
+        /// Transforms the string input, which consists of bool values, to a bool array.
+        /// </summary>
+        /// <param name="filters"></param>
+        /// <returns></returns>
         public bool[] GetFilters(string filters)
         {
+            // converts the inputstring to a char array
             char[] chars = filters.ToCharArray();
+
             bool[] results = new bool[filters.Length];
             int i = 0;
 
@@ -47,7 +64,6 @@ namespace Backend.Controllers
                 {
                     throw new SystemException("Error in generated link(was not 0 or 1)");
                 }
-
             }
             return results;
         }

@@ -7,6 +7,9 @@ using System.Windows;
 
 namespace FrontEnd2.Data
 {
+    /// <summary>
+    /// Class to combine coop and salling store object to 1 type by the member fields in the class below
+    /// </summary>
     public class UnifiedAPIStore
     {
         public string _storeName { get; set; }
@@ -31,12 +34,20 @@ namespace FrontEnd2.Data
             _logoURL = LogoURL(brand);
             
         }
+
+        /// <summary>
+        /// gets the path to the logo given a brand
+        /// </summary>
+        /// <param name="brandName">name of a store brand</param>
+        /// <returns>a path to the logo given a brand</returns>
         public string LogoURL(string brandName)
         {
+            // removes redundant characters from the brand name, so it matches the Brand enum
             string processedBrandName = brandName.Replace("'", "");
             StoreBrand storeBrand;
             int storeBrandID;
 
+            // try to pass the brand name string to a Brand enum
             if (Enum.TryParse(processedBrandName, out storeBrand))
             {
                 storeBrandID = (int)storeBrand;
@@ -45,6 +56,7 @@ namespace FrontEnd2.Data
                 return "";
             }           
             
+            // checks and returns the relevant path
             switch (storeBrandID)
             {
                 case (int)StoreBrand.bilka:
@@ -70,12 +82,18 @@ namespace FrontEnd2.Data
             }
         }
     }
+    /// <summary>
+    /// enum to check which store chain it is
+    /// </summary>
     public enum StoreChain 
     { 
         sallingChain, 
         coopChain,
     }
 
+    /// <summary>
+    /// enum to check the brand name
+    /// </summary>
     public enum StoreBrand {
         Kvickly,
         SuperBrugsen,

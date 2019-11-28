@@ -581,6 +581,10 @@ logo-header-wrapper {
     background-color: rgba(255,255,255,0.1);
     color:white;
 }
+.nav-item a:focus {
+    background-color: rgba(255,255,2555,0.1);
+    color: white;
+}
 
 
 

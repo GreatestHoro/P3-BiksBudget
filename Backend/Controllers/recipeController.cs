@@ -88,7 +88,7 @@ namespace Backend.Controllers
             string jsonRecipes = JsonConvert.SerializeObject(recipeData);
 
             DatabaseConnect dbConnect = new DatabaseConnect();
-            var data = dbConnect.GetRecipes(recipeTitle);
+            var data = dbConnect.Recipe.GetList(recipeTitle);
             string jsonDBRecipes = JsonConvert.SerializeObject(data);
 
             return jsonDBRecipes;
@@ -100,7 +100,7 @@ namespace Backend.Controllers
         public string GetRecipes(string search)
         {
             DatabaseConnect Database = new DatabaseConnect();
-            return JsonConvert.SerializeObject(Database.GetRecipes(search));
+            return JsonConvert.SerializeObject(Database.Recipe.GetList(search));
         }
 
         // POST: api/recipe

@@ -7,12 +7,14 @@ namespace BBCollection.DBConncetion
 {
     public class SQLConnect
     {
-        public void NonQueryString(string sqlQuery, DatabaseInformation dbInformation)
+        DatabaseInformation databaseInformation = new DatabaseInformation();
+
+        public void NonQueryString(string sqlQuery)
         {
             MySqlConnection connection = null;
             try
             {
-                connection = new MySqlConnection(dbInformation.ConnectionString(true));
+                connection = new MySqlConnection(databaseInformation.ConnectionString(true));
                 connection.Open();
 
                 new MySqlCommand(sqlQuery, connection).ExecuteNonQuery();
@@ -30,14 +32,13 @@ namespace BBCollection.DBConncetion
             }
 
         }
-
-        public void NonQueryMSC(MySqlCommand msc, DatabaseInformation dbInformation)
+        public void NonQueryMSC(MySqlCommand msc)
         {
             MySqlConnection connection = null;
 
             try
             {
-                connection = new MySqlConnection(dbInformation.ConnectionString(true));
+                connection = new MySqlConnection(databaseInformation.ConnectionString(true));
                 connection.Open();
 
                 msc.Connection = connection;
@@ -56,15 +57,14 @@ namespace BBCollection.DBConncetion
                 }
             }
         }
-
-        public DataSet DynamicSimpleListSQL(MySqlCommand mscom, DatabaseInformation dbInformation)
+        public DataSet DynamicSimpleListSQL(MySqlCommand mscom)
         {
             MySqlConnection connection = null;
             DataSet ds = null;
 
             try
             {
-                connection = new MySqlConnection(dbInformation.ConnectionString(true));
+                connection = new MySqlConnection(databaseInformation.ConnectionString(true));
                 connection.Open();
 
                 mscom.Connection = connection;
@@ -98,8 +98,7 @@ namespace BBCollection.DBConncetion
 
             return ds;
         }
-
-        public bool CheckRecordExist(MySqlCommand msc, DatabaseInformation databaseInformation)
+        public bool CheckRecordExist(MySqlCommand msc)
         {
             bool exist = false;
             MySqlConnection connection = null;

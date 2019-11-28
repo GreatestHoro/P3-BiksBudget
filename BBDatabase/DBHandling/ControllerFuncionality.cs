@@ -13,26 +13,15 @@ namespace BBCollection.DBHandling
 {
     public class ControllerFuncionality
     {
-        //public string HandleInputstring(string productString, out string email)
-        //{
-        //    int pNum;
-
-        //    int indexNumber = productString.IndexOf("|");
-        //    int number = Convert.ToInt32(productString.Substring(0, indexNumber));
-        //    if (number >= 10)
-        //    {
-        //        pNum = 2;
-        //    }
-        //    else
-        //    {
-        //        pNum = 1;
-        //    }
-
-        //    email = productString.Substring(indexNumber.ToString().Length + pNum, number);
-        //    productString = productString.Remove(0, indexNumber.ToString().Length + number + pNum);
-
-        //    return productString;
-        //}
+        /// <summary>
+        /// The inputlist is split up in two lists.
+        /// One is the unique list.
+        /// And one is the dublicats list.
+        /// At the end the unique products are counted up
+        /// based on the dublicat list.
+        /// </summary>
+        /// <param name="inputList"></param>
+        /// <returns></returns>
 
         public List<Product> HandleDublicats(List<Product> inputList)
         {
@@ -47,6 +36,8 @@ namespace BBCollection.DBHandling
                 {
                     if (i._id == u._id)
                     {
+                        // If the product already exists, it is added 
+                        // to the dublicat list.
                         dublicateList.Add(i);
                         isFound = true;
                         break;
@@ -54,6 +45,8 @@ namespace BBCollection.DBHandling
                 }
                 if (isFound == false)
                 {
+                    // If the product is not found, it is added
+                    // to the unique list
                     uniqueList.Add(i);
                 }
             }
@@ -64,6 +57,7 @@ namespace BBCollection.DBHandling
                 {
                     if (d._id == i._id)
                     {
+                        // When the match is found, the amountLeft are added up.
                         i._amountleft += d._amountleft;
                         break;
                     }
@@ -71,7 +65,14 @@ namespace BBCollection.DBHandling
             }
 
             return uniqueList;
-                }
+        }
+
+        /// <summary>
+        /// Finds the index of a product in a list of products
+        /// </summary>
+        /// <param name="inputList"></param>
+        /// <param name="item"></param>
+        /// <returns></returns>
 
         public int FindIdex(List<Product> inputList, Product item)
         {
@@ -84,9 +85,6 @@ namespace BBCollection.DBHandling
             }
 
             return -1;
-            //int i = inputList.FindIndex(ind => ind.Equals(item));
-            //return i;
         }
-
     }
 }

@@ -2,6 +2,9 @@
 
 namespace BBCollection.StoreApi.SallingApi
 {
+    /// <summary>
+    /// Class needed to use newtonsoft.json to parse a salling store from their API
+    /// </summary>
     public class SallingAPIProduct
     {
         public string title { get; set; }
