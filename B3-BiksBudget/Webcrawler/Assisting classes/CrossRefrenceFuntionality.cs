@@ -17,15 +17,15 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
         specialCombination _combo = new specialCombination();
         ProductRefrenceFuntionality _refs = new ProductRefrenceFuntionality();
         #region(Check if Indgredients)
-        public String CheckForValidIndgredients(String name, DatabaseConnect dbConnect, out bool fatalError)
+        public String CheckForValidIndgredients(String name, out bool fatalError)
         {
             fatalError = false;
             List<string> matches = new List<string>();
-            List<String> Combinations = _combo.GetAllCombinations(name, dbConnect);
+            List<String> Combinations = _combo.GetAllCombinations(name);
 
             if (Combinations.Count != 0)
             {
-                matches = CheckIngredientInDatabase(Combinations, dbConnect);
+                matches = CheckIngredientInDatabase(Combinations);
                 /*if (matches.Count == 0)
                 {
                     foreach (string Searchterm in Combinations)
@@ -48,12 +48,12 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
         }
 
         
-        private List<string> CheckIngredientInDatabase(List<string> Searchterms, DatabaseConnect dbConnect)
+        private List<string> CheckIngredientInDatabase(List<string> Searchterms)
         {
             List<string> results = new List<string>();
             foreach (string Searchterm in Searchterms)
             {
-                if (CheckCOOPProductsInDatabase(Searchterm.Trim(), dbConnect))
+                if (CheckCOOPProductsInDatabase(Searchterm.Trim()))
                 {
                     results.Add(Searchterm.Trim());
                 }
@@ -62,10 +62,10 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
             return results;
         }
 
-        private bool CheckCOOPProductsInDatabase(String Searchterm, DatabaseConnect dbConnect)
+        private bool CheckCOOPProductsInDatabase(String Searchterm)
         {
             string newRefrence;
-            List<Product> ProductsWithRef = dbConnect.Product.GetList(Searchterm);
+            List<Product> ProductsWithRef = dc.Product.GetList(Searchterm);
             foreach (Product p in ProductsWithRef)
             {
                 newRefrence = _refs.UpdateProductRefrence(p._CustomReferenceField.Trim(), Searchterm);
@@ -77,7 +77,7 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
         }
  
 
-        private bool CheckIngredientsInApi(string Searchterm, DatabaseConnect dbConnect)
+        private bool CheckIngredientsInApi(string Searchterm)
         {
             System.Threading.Thread.Sleep(4000);
             BearerAccessToken bearerAccessToken = new BearerAccessToken("fc5aefca-c70f-4e59-aaaa-1c4603607df8");

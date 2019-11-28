@@ -7,7 +7,7 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
 {
     class specialCombination
     {
-        public List<string> GetAllCombinations(string name, DatabaseConnect dbConnect)
+        public List<string> GetAllCombinations(string name)
         {
             string[] str = name.Split(" ");
             int CombinationSize = 1;
