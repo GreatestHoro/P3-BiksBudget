@@ -7,9 +7,16 @@ namespace BBCollection.DBHandling
     public class DatabaseHandling
     {
         ConnectionSettings connectionSettings = new ConnectionSettings();
+
+        /// <summary>
+        /// In the start() method, every method in the DatabaseHandler
+        /// gets calls, this makes it easier to initialize the database,
+        /// since all the tables have to exist for the program to work 
+        /// perfectly.
+        /// </summary>
         public void Start()
         {
-            CreateDB();
+            CreateCoreDatabase();
             GenerateWebcrawelerDatabaseTables();
             GenerateAPIDatabaseTables();
             UpdateProductTable();
@@ -19,16 +26,18 @@ namespace BBCollection.DBHandling
             GenerateShoppingListTables();
         }
 
-        /*
-         Check if database exist, if it don't it will create it
-        */
-        private void CreateDB()
+        /// <summary>
+        /// CreateCoreDatabase() creates the database if it doesn't exist.
+        /// </summary>
+        private void CreateCoreDatabase()
         {
             MySqlConnection connection = null;
             try
             {
                 DatabaseInformation databaseInformation = new DatabaseInformation();
-                connection = new MySqlConnection(databaseInformation.ConnectionString(false));
+                // Because the parameter in ConnectionString is false, the connection string
+                // doesn't contain a database parameter.
+                connection = new MySqlConnection(databaseInformation.ConnectionString(false)); 
                 connection.Open();
 
                 string databaseExist = "CREATE DATABASE IF NOT EXISTS `"+ connectionSettings._DatabaseName +"`;";
@@ -50,6 +59,8 @@ namespace BBCollection.DBHandling
             }
         }
 
+        // The following methods contains the sql queries for the creation of the tables in the database.
+        #region Table queries
         private void GenerateWebcrawelerDatabaseTables()
         {
             string recipeTable =
@@ -171,5 +182,6 @@ namespace BBCollection.DBHandling
 
             new SQLConnect().NonQueryString(newCollumnQuery);
         }
+        #endregion
     }
 }

@@ -101,7 +101,12 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
             return retrunList;
         }
         #endregion
-
+        /// <summary>
+        /// Takes the current refrencs string a checks if the search terms is already present inside it
+        /// </summary>
+        /// <param name="CurrentRefrence">The current refrence string</param>
+        /// <param name="searchterm">a searchterm which have gone trough check to determin validity</param>
+        /// <returns>returns the new refrence string taht will get added to the database later</returns>
         public string UpdateProductRefrence(string CurrentRefrence, string searchterm)
         {
             if (!String.IsNullOrWhiteSpace(CurrentRefrence))

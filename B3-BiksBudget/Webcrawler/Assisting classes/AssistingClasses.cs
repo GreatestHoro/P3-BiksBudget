@@ -4,7 +4,7 @@ using System.Text;
 
 namespace B3_BiksBudget.Webcrawler.Assisting_classes
 {
-    class AssistingClasses
+    public class AssistingClasses
     {
     /// <summary>
     /// This class containes funtionality that another funtion can use.
