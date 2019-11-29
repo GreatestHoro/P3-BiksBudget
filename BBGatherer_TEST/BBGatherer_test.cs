@@ -2,6 +2,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using BBGatherer.Webcrawler;
 using B3_BiksBudget.Webcrawler.Assisting_classes;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BBGatherer_TEST
 {
@@ -47,6 +48,7 @@ namespace BBGatherer_TEST
 
             Assert.AreEqual(Expected, result);
         }
+
         #endregion
         #region remove tests
         [TestMethod]
@@ -57,9 +59,9 @@ namespace BBGatherer_TEST
             string testString = "Hi this is an simple example made to test the method";
 
             string Expected = "this simple example made test the method";
-            string result = SCF_TEST.removeSubstringOfLentgh(testString,2, exceptions);
+            string result = SCF_TEST.removeSubstringOfLentgh(testString,3, exceptions);
 
-            Assert.Equals(Expected, result);
+            Assert.AreEqual(Expected, result);
         }
         [TestMethod]
         public void StringStringCleanUpFuntionality_RemoveSubstring_TEST()
@@ -80,7 +82,7 @@ namespace BBGatherer_TEST
             string testString = "milk or bacon";
             string RemoveStrat = "or";
 
-            string Expected = "milk";
+            string Expected = "milk ";
             string result = SCF_TEST.RemoveEverythingAfter(testString,RemoveStrat);
 
             Assert.AreEqual(Expected, result);
@@ -124,6 +126,65 @@ namespace BBGatherer_TEST
             string result = SCF_TEST.RemoveIfFirstInString(testString,test);
 
             Assert.AreEqual(Expected, result);
+        }
+        #endregion
+        #region Comniation tests
+        [TestMethod]
+        public void specialCombination_GetAllCombinations_TEST()
+        {
+            specialCombination SC = new specialCombination();
+            bool expectedBool = true;
+            bool resultBool = true;
+            string testString = "how it going";
+            string[] expected = new List<string>() { "how", "it", "going", "how it", "it going", "how it going" }.ToArray();
+            string[] result = SC.GetAllCombinations(testString).ToArray();
+
+            for (int i = 0; i < result.Length-1; i++)
+            {
+                if (expected[i].Equals(result[i]))
+                {
+
+                }
+                else 
+                {
+                    resultBool = false;
+                    break;
+                }
+            }
+
+            Assert.AreEqual(expectedBool, resultBool);
+        }
+
+        #endregion
+        #region Ref generation tests
+        [TestMethod]
+        public void ProductRefrenceFuntionality_GetBiggestStrings_TEST()
+        {
+            ProductRefrenceFuntionality PRF = new ProductRefrenceFuntionality();
+            bool expectedBool = false;
+            bool resultBool = false;
+            List<string> testStrings = new List<string>() {"a","b","er","bøf","bacon","salat","bøffer"};
+
+            testStrings = testStrings.OrderByDescending(x => x.Length).ToList();
+
+            string[] expected = new List<string>() {"bøffer","bacon","salat"}.ToArray();
+            string[] result = PRF.GetBiggestStrings(testStrings.ToArray(),2).ToArray();
+
+            for (int i = 0; i < result.Length-1; i++)
+            {
+                if (expected[i].Equals(result[i])) 
+                {
+                    expectedBool = true;
+                    resultBool = true;
+                }
+                else
+                {
+                    resultBool = false;
+                    break;
+                }
+            }
+
+            Assert.AreEqual(expectedBool,resultBool);
         }
         #endregion
     }
