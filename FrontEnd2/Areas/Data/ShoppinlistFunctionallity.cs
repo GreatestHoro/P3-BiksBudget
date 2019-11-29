@@ -259,7 +259,7 @@ namespace FrontEnd2.Data
 
             var content = new StringContent(productString, Encoding.UTF8, "application/json");
 
-            response = await Http.PutAsync(connectionSettings.GetApiLink() + Email, content);
+            response = await Http.PutAsync(connectionSettings.GetApiLink() + "api/Storage/" + Email, content);
 
             return response;
         }
