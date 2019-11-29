@@ -10,6 +10,11 @@ namespace BBCollection.DBHandling
 {
     public class ProductHandling
     {
+        /// <summary>
+        /// This method adds the product variables to a INSERT sql query, that afterwards get send to the 
+        /// SQLConnect() class, where it is added to the Database.
+        /// </summary>
+        /// <param name="product"></param> The product object contains the variables that have to be added to the database.
         public void Add(Product product)
         {
             string addProductQuery = "INSERT INTO `products`(`id`,`productname`,`amount`,`price`,`image`, `store`)" +
@@ -26,6 +31,13 @@ namespace BBCollection.DBHandling
 
             new SQLConnect().NonQueryMSC(msc);
         }
+
+        /// <summary>
+        /// This method adds a ingredient reference and product id, to a UPDATE query, so that the reference can be connected to 
+        /// the product with that specific product id.
+        /// </summary>
+        /// <param name="reference"></param> Reference is a string, with the ingredient references.
+        /// <param name="prodid"></param> Prodid is a string that contains the ID of the object.
         public void AddReference(string reference, string prodid)
         {
             string insertQuery =
@@ -38,6 +50,12 @@ namespace BBCollection.DBHandling
 
             new SQLConnect().NonQueryMSC(msc);
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public Product Get(string id)
         {
             Product product = new Product();
@@ -73,6 +91,8 @@ namespace BBCollection.DBHandling
             }
             return product;
         }
+
+
         public List<Product> GetList(string productName)
         {
             List<Product> productList = new List<Product>();

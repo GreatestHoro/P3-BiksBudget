@@ -10,6 +10,8 @@ namespace BBCollection
 {
     public class DatabaseConnect
     {
+        // This class functions as class library, where each handler can be called
+        // in a convenient way, without having to memorize each handler's name.
         public DatabaseHandling Initialize = new DatabaseHandling();
         public ProductHandling Product = new ProductHandling();
         public RecipeHandling Recipe = new RecipeHandling();
