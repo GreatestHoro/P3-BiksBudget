@@ -7,7 +7,7 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
     /// <summary>
     /// classe containing method for finding diffrent parts of a ingredient
     /// </summary>
-    class Ingrdient_Determiner
+    public class Ingrdient_Determiner
     {
         /// <summary>
         /// Finding the amount needed in a raw ingredient string
