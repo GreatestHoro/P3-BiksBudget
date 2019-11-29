@@ -4,7 +4,7 @@ using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
-
+using System.Threading.Tasks;
 
 namespace BBCollection.DBHandling
 {
@@ -38,7 +38,7 @@ namespace BBCollection.DBHandling
         /// </summary>
         /// <param name="reference"></param> Reference is a string, with the ingredient references.
         /// <param name="prodid"></param> Prodid is a string that contains the ID of the object.
-        public void AddReference(string reference, string prodid)
+        public Task AddReference(string reference, string prodid)
         {
             string insertQuery =
                 "UPDATE `products` SET `ingredient_reference` = @Reference WHERE id = @Prodid";
@@ -48,55 +48,59 @@ namespace BBCollection.DBHandling
             msc.Parameters.AddWithValue("@Reference", reference);
             msc.Parameters.AddWithValue("@Prodid", prodid);
 
-            new SQLConnect().NonQueryMSC(msc);
+            return Task.Run(() => new SQLConnect().NonQueryMSC(msc));
         }
 
-        public List<Product> GetList(string productName)
+        public Task<List<Product>> GetList(string productName)
         {
             List<Product> productList = new List<Product>();
             string table = "products";
             string collumn = "productname";
 
-            DataSet ds = new SQLConnect().DynamicSimpleListSQL(new SqlQuerySort().SortMSC(productName, table, collumn));
+            return Task.Run(() => {
 
-            if (ds.Tables.Count != 0)
-            {
-                foreach (DataRow r in ds.Tables[0].Rows)
+                DataSet ds = new SQLConnect().DynamicSimpleListSQL(new SqlQuerySort().SortMSC(productName, table, collumn));
+
+                if (ds.Tables.Count != 0)
                 {
-                    if (r[6] != DBNull.Value)
+                    foreach (DataRow r in ds.Tables[0].Rows)
                     {
-                        Product product = new Product((string)r[0], (string)r[1], (string)r[2], Convert.ToDouble(r[3]), (string)r[4], (string)r[5], (string)r[6]);
-                        productList.Add(product);
+                        if (r[6] != DBNull.Value)
+                        {
+                            Product product = new Product((string)r[0], (string)r[1], (string)r[2], Convert.ToDouble(r[3]), (string)r[4], (string)r[5], (string)r[6]);
+                            productList.Add(product);
+                        }
+                        else
+                        {
+                            Product product = new Product((string)r[0], (string)r[1], (string)r[2], Convert.ToDouble(r[3]), (string)r[4], (string)r[5]);
+                            productList.Add(product);
+                        }
+
                     }
-                    else
+                }
+                return productList;
+            });
+        }
+        public Task<List<Product>> GetRange(string productName, int limit, int offset)
+        {
+            List<Product> productList = new List<Product>();
+            string table = "products";
+            string collumn = "productname";
+
+            return Task.Run(() =>
+            {
+                DataSet ds = new SQLConnect().DynamicSimpleListSQL(new SqlQuerySort().SortMSCInterval(productName, table, collumn, limit, offset));
+                if (ds.Tables.Count != 0)
+                {
+                    foreach (DataRow r in ds.Tables[0].Rows)
                     {
                         Product product = new Product((string)r[0], (string)r[1], (string)r[2], Convert.ToDouble(r[3]), (string)r[4], (string)r[5]);
                         productList.Add(product);
                     }
-
                 }
-            }
 
-            return productList;
-        }
-        public List<Product> GetRange(string productName, int limit, int offset)
-        {
-            List<Product> productList = new List<Product>();
-            string table = "products";
-            string collumn = "productname";
-
-            DataSet ds = new SQLConnect().DynamicSimpleListSQL(new SqlQuerySort().SortMSCInterval(productName, table, collumn, limit, offset));
-
-            if (ds.Tables.Count != 0)
-            {
-                foreach (DataRow r in ds.Tables[0].Rows)
-                {
-                    Product product = new Product((string)r[0], (string)r[1], (string)r[2], Convert.ToDouble(r[3]), (string)r[4], (string)r[5]);
-                    productList.Add(product);
-                }
-            }
-
-            return productList;
+                return productList;
+            });
         }
     }
 }
