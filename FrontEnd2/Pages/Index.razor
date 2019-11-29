@@ -1,17 +1,10 @@
 ﻿@page "/"
 
+@using BBCollection.BBObjects;
+@using Newtonsoft.Json;
+
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject NavigationManager NavigationManager
-
-@*@if (email != null)
-{
-    NavigationManager.NavigateTo("shoppinglist");
-}
-else
-{
-    
-    NavigationManager.NavigateTo("Login");
-}*@
 
 @code{
     string email;
@@ -21,13 +14,10 @@ else
         if (firstRender)
         {
             await GetLocalSession();
-            localStorage.Changed += (sender, e) =>
-            {
-                Console.WriteLine($"Value for key {e.Key} changed from {e.OldValue} to {e.NewValue}");
-            };
+
             if (email != null)
             {
-                 NavigationManager.NavigateTo("shoppinglist");
+                NavigationManager.NavigateTo("shoppinglist");
             }
             else
             {

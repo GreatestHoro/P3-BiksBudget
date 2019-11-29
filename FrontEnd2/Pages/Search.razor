@@ -1,6 +1,7 @@
 ﻿@page "/search"
 
 @using BBCollection.BBObjects;
+@using BBCollection.DBHandling;
 @using FrontEnd2.Data
 @using Newtonsoft.Json
 
@@ -195,6 +196,8 @@ else if (!isSearching && !_viewProducts)
         SortoptionsList sortOptions = new SortoptionsList();
         StoreFilterList storeFilters = new StoreFilterList();
         WordFilterList wordFIlters = new WordFilterList();
+        ControllerFuncionality dub = new ControllerFuncionality();
+
         FindCloseStores closeStore;
         ShoppinlistFunctionality SLFunc = new ShoppinlistFunctionality("api/Shoppinglist");
 
@@ -231,571 +234,548 @@ else if (!isSearching && !_viewProducts)
         string messageToUser = "Apply filters and press search to find products";
         string productString;
 
-public double minPrice
-    {
-        get => _minPrice;
-        set
+        public double minPrice
         {
-            if (value < 0)
+            get => _minPrice;
+            set
             {
-                _minPrice = 0;
-            }
-            else if (value > maxPrice)
-            {
-                _minPrice = maxPrice;
-            }
-            else
-            {
-                _minPrice = value;
-            }
-        }
-    }
-
-    public double maxPrice
-    {
-        get => _maxPrice;
-        set
-        {
-            if (value < 0)
-            {
-                _maxPrice = 0;
-            }
-            else if (value > priceLimit)
-            {
-                _maxPrice = priceLimit;
-            }
-            else if (value < minPrice)
-            {
-                _maxPrice = minPrice;
-            }
-            else
-            {
-                _maxPrice = value;
-            }
-        }
-    }
-
-    #endregion
-
-    #region ChangeFilterControl
-
-    void toggleAdvancedCheckBox()
-    {
-        viewAdvancedSearch = !viewAdvancedSearch;
-    }
-
-    public void ChangeState(string name, List<FilterItem> list)
-    {
-        foreach (var item in list)
-        {
-            if (item.FilterName == name)
-            {
-                // When clicked, the bool IsEnabled is set to the opposit.
-                item.IsEnabled = !item.IsEnabled;
-
-                break;
-            }
-        }
-
-    }
-
-    /// <summary>
-    /// Is called when deciding how the list should be sorted.
-    /// Only the one clicked on should be true, reste is set to false.
-    /// </summary>
-    /// <param name="name">The name of the filter to be true</param>
-    /// <param name="optionList"></param>
-
-    public void ChangeState(string name, List<Options> optionList)
-    {
-        foreach (Options o in optionList)
-        {
-            if (o.filterName == name)
-            {
-                o.isEnabled = true;
-
-                // This method is to find the right sorting algorithm
-                DecideOrderFilter(o.filterName);
-            }
-            else
-            {
-                o.isEnabled = false;
-            }
-        }
-    }
-
-    public void DecideOrderFilter(string filterName)
-    {
-        switch (filterName)
-        {
-            case "Most relevant":
-                SortByMostRelevant();
-                break;
-            case "Price (Low to High)":
-                SortByPriceLH();
-                break;
-            case "Price (High to Low)":
-                SortBypriceHL();
-                break;
-            case "Alphabetical order (A - Z)":
-                SortByNameAZ();
-                break;
-            case "Alphabetical order (Z - A)":
-                SortByNameZA();
-                break;
-            case "Store (A - Z)":
-                SortByStoreAZ();
-                break;
-            case "Store (Z - A":
-                SortByStoreZA();
-                break;
-
-        }
-    }
-
-    void toggle()
-    {
-        IsLocationEnabled = !IsLocationEnabled;
-    }
-
-    public void SelectAll(List<FilterItem> list)
-    {
-        foreach (var item in list)
-        {
-            item.IsEnabled = true;
-        }
-    }
-
-    #endregion
-
-    #region Product Sort Filters
-    public async void SortByMostRelevant()
-    {
-        // The only filter where the order cannot be found, is the most relevant filter.
-        // This one is set from the backend, and the search is therefore done again.
-        await SearchForProducts();
-    }
-
-    public void SortByPriceLH()
-    {
-        itemList.Sort((a, b) => a._price.CompareTo(b._price));
-    }
-
-    public void SortBypriceHL()
-    {
-        itemList.Sort((a, b) => b._price.CompareTo(a._price));
-    }
-
-    public void SortByStoreAZ()
-    {
-        itemList.Sort((a, b) => a._storeName.CompareTo(b._storeName));
-    }
-
-    public void SortByStoreZA()
-    {
-        itemList.Sort((a, b) => b._storeName.CompareTo(a._storeName));
-    }
-
-    public void SortByNameAZ()
-    {
-        itemList.Sort((a, b) => a._productName.CompareTo(b._productName));
-    }
-
-    public void SortByNameZA()
-    {
-        itemList.Sort((a, b) => b._productName.CompareTo(a._productName));
-    }
-    #endregion
-
-    #region ProductToShoppinglistMethod
-
-    /// <summary>
-    /// When a product is added to shoppinglist, there are two ways of doing so.
-    /// One is if the user is logged in, and it is sent to the database.
-    /// The other is when the user is not logged in, and the product is saved
-    /// in the local storage.
-    /// </summary>
-    /// <param name="AddedItem"></param>
-    public async void AddProductToSL(Product AddedItem)
-    {
-        AddedItem._amountleft++;
-
-        int actualAmout = AddedItem._amountleft;
-
-        if (String.IsNullOrEmpty(email))
-        {
-            ToShoppinglist.Add(AddedItem);
-
-            ToShoppinglist = HandleDublicats(ToShoppinglist);
-
-            await localStorage.RemoveItemAsync("ProductString");
-
-            shopString = JsonConvert.SerializeObject(ToShoppinglist);
-
-            await localStorage.SetItemAsync("ProductString", shopString);
-        }
-        else
-        {
-            AddedItem._amountleft = 1;
-            await SLFunc.QuickaddItemToShoppinglist(AddedItem, actualAmout);
-        }
-    }
-
-    public List<Product> HandleDublicats(List<Product> inputList)
-    {
-        bool isFound = false;
-        List<Product> uniqueList = new List<Product>();
-        List<Product> dublicateList = new List<Product>();
-
-        foreach (Product i in inputList)
-        {
-            isFound = false;
-            foreach (Product u in uniqueList)
-            {
-                if (i._id == u._id)
+                if (value < 0)
                 {
+                    _minPrice = 0;
+                }
+                else if (value > maxPrice)
+                {
+                    _minPrice = maxPrice;
+                }
+                else
+                {
+                    _minPrice = value;
+                }
+            }
+        }
+
+        public double maxPrice
+        {
+            get => _maxPrice;
+            set
+            {
+                if (value < 0)
+                {
+                    _maxPrice = 0;
+                }
+                else if (value > priceLimit)
+                {
+                    _maxPrice = priceLimit;
+                }
+                else if (value < minPrice)
+                {
+                    _maxPrice = minPrice;
+                }
+                else
+                {
+                    _maxPrice = value;
+                }
+            }
+        }
+
+        #endregion
+
+        #region ChangeFilterControl
+
+        void toggleAdvancedCheckBox()
+        {
+            viewAdvancedSearch = !viewAdvancedSearch;
+        }
+
+        public void ChangeState(string name, List<FilterItem> list)
+        {
+            foreach (var item in list)
+            {
+                if (item.FilterName == name)
+                {
+                    // When clicked, the bool IsEnabled is set to the opposit.
+                    item.IsEnabled = !item.IsEnabled;
+
                     break;
                 }
             }
-            if (isFound == false)
-            {
-                uniqueList.Add(i);
-            }
-        }
-        return uniqueList;
-    }
-    #endregion
-
-    #region SearchMethods
-
-    /// <summary>
-    /// This method applies the different filters, and sends a request to the database
-    /// for the relevant products.
-    /// </summary>
-    /// <returns></returns>
-
-    private async Task SearchForProducts()
-    {
-        if (!String.IsNullOrEmpty(searchBox) && !String.IsNullOrWhiteSpace(searchBox))
-        {
-            isSearching = true;
-            StateHasChanged();
-            itemList.Clear();
-
-            updateFilters();
-
-            ProductSearchLinkConstructer link = new ProductSearchLinkConstructer(searchBox, ConvertBoolArrToStr(EnabledKeywords), ConvertBoolArrToStr(EnabledStores));
-
-            productString = await Http.GetStringAsync(link.GetURL());
-
-            // This is done to save the applied search order.
-            // Should not be done if it is sorted by "most relevant"
-            //since that calls this method again.
-            if (!(FindActiveSortFilter() == "Most relevant"))
-            {
-                DecideOrderFilter(FindActiveSortFilter());
-            }
-
-            itemList = JsonConvert.DeserializeObject<List<Product>>(productString);
-
-            if (itemList.Count == 0)
-            {
-                messageToUser = "No Products Found With These Filters";
-            }
-
-            if (itemList.Count != 0)
-            {
-                _viewProducts = true;
-            }
-            else
-            {
-                _viewProducts = false;
-            }
-
-            isSearching = false;
-            StateHasChanged();
 
         }
-        else
+
+        /// <summary>
+        /// Is called when deciding how the list should be sorted.
+        /// Only the one clicked on should be true, reste is set to false.
+        /// </summary>
+        /// <param name="name">The name of the filter to be true</param>
+        /// <param name="optionList"></param>
+
+        public void ChangeState(string name, List<Options> optionList)
         {
-            messageToUser = "You Need To Write A Searhcword";
+            foreach (Options o in optionList)
+            {
+                if (o.filterName == name)
+                {
+                    o.isEnabled = true;
+
+                    // This method is to find the right sorting algorithm
+                    DecideOrderFilter(o.filterName);
+                }
+                else
+                {
+                    o.isEnabled = false;
+                }
+            }
         }
-    }
 
-    /// <summary>
-    /// Returns a list of all stores close based on geo location and radius
-    /// </summary>
-
-    public void FindStoreFunc()
-    {
-        closeStore = new FindCloseStores(userGeoLocation, radius);
-        allStoresUnified = closeStore.GetStore();
-        lastRadius = radius;
-    }
-
-    private async Task KeyPressed(KeyboardEventArgs e)
-    {
-        if (e.Key == "Enter")
+        public void DecideOrderFilter(string filterName)
         {
+            switch (filterName)
+            {
+                case "Most relevant":
+                    SortByMostRelevant();
+                    break;
+                case "Price (Low to High)":
+                    SortByPriceLH();
+                    break;
+                case "Price (High to Low)":
+                    SortBypriceHL();
+                    break;
+                case "Alphabetical order (A - Z)":
+                    SortByNameAZ();
+                    break;
+                case "Alphabetical order (Z - A)":
+                    SortByNameZA();
+                    break;
+                case "Store (A - Z)":
+                    SortByStoreAZ();
+                    break;
+                case "Store (Z - A":
+                    SortByStoreZA();
+                    break;
+
+            }
+        }
+
+        void toggle()
+        {
+            IsLocationEnabled = !IsLocationEnabled;
+        }
+
+        public void SelectAll(List<FilterItem> list)
+        {
+            foreach (var item in list)
+            {
+                item.IsEnabled = true;
+            }
+        }
+
+        #endregion
+
+        #region Product Sort Filters
+        public async void SortByMostRelevant()
+        {
+            // The only filter where the order cannot be found, is the most relevant filter.
+            // This one is set from the backend, and the search is therefore done again.
             await SearchForProducts();
         }
-    }
-    #endregion
 
-    #region OnStart
-
-    /// <summary>
-    /// On first render the getolocation is set, and it is decided whether or not the user
-    /// is logged in, to find out where to put products if they go to the shoppinglist.
-    /// The different filters are also initialized.
-    /// </summary>
-    /// <param name="firstRender"></param>
-    /// <returns></returns>
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        optionsList = sortOptions.GetList();
-
-        if (firstRender)
+        public void SortByPriceLH()
         {
-            await GetLocalSession();
-            localStorage.Changed += (sender, e) =>
-            {
-                Console.WriteLine($"Value for key {e.Key} changed from {e.OldValue} to {e.NewValue}");
-            };
+            itemList.Sort((a, b) => a._price.CompareTo(b._price));
+        }
 
-            storeList = storeFilters.GetStoreList();
-            wordList = wordFIlters.GetStoreList();
-            InitializeBoolArrays(storeList.Count, wordList.Count);
+        public void SortBypriceHL()
+        {
+            itemList.Sort((a, b) => b._price.CompareTo(a._price));
+        }
 
-            if (userGeoLocation._latitude == 0 && userGeoLocation._longitude == 0)
-            {
-                await GetUserLocation();
-                await tcsUserLocation.Task;
-            }
+        public void SortByStoreAZ()
+        {
+            itemList.Sort((a, b) => a._storeName.CompareTo(b._storeName));
+        }
 
-            if (!String.IsNullOrEmpty(email))
+        public void SortByStoreZA()
+        {
+            itemList.Sort((a, b) => b._storeName.CompareTo(a._storeName));
+        }
+
+        public void SortByNameAZ()
+        {
+            itemList.Sort((a, b) => a._productName.CompareTo(b._productName));
+        }
+
+        public void SortByNameZA()
+        {
+            itemList.Sort((a, b) => b._productName.CompareTo(a._productName));
+        }
+        #endregion
+
+        #region ProductToShoppinglistMethod
+
+        /// <summary>
+        /// When a product is added to shoppinglist, there are two ways of doing so.
+        /// One is if the user is logged in, and it is sent to the database.
+        /// The other is when the user is not logged in, and the product is saved
+        /// in the local storage.
+        /// </summary>
+        /// <param name="AddedItem"></param>
+        public async void AddProductToSL(Product AddedItem)
+        {
+            AddedItem._amountleft++;
+
+            int actualAmout = AddedItem._amountleft;
+
+            AddedItem._amountleft = 1;
+
+            if (String.IsNullOrEmpty(email))
             {
-                await SLFunc.GetShoppinglistOnStart(email);
+                ToShoppinglist.Add(AddedItem);
+
+                ToShoppinglist = dub.HandleDublicats(ToShoppinglist);
+
+                await localStorage.RemoveItemAsync("ProductString");
+
+                string test = await localStorage.GetItemAsync<string>("ProductString");
+
+                shopString = JsonConvert.SerializeObject(ToShoppinglist);
+
+                await localStorage.SetItemAsync("ProductString", shopString);
             }
             else
             {
-                shopString = await localStorage.GetItemAsync<string>("ProductString");
+                await SLFunc.QuickaddItemToShoppinglist(AddedItem, actualAmout);
+            }
 
-                if (!String.IsNullOrEmpty(shopString))
+            AddedItem._amountleft = actualAmout;
+            StateHasChanged();
+        }
+        #endregion
+
+        #region SearchMethods
+
+        /// <summary>
+        /// This method applies the different filters, and sends a request to the database
+        /// for the relevant products.
+        /// </summary>
+        /// <returns></returns>
+
+        private async Task SearchForProducts()
+        {
+            if (!String.IsNullOrEmpty(searchBox) && !String.IsNullOrWhiteSpace(searchBox))
+            {
+                isSearching = true;
+                StateHasChanged();
+                itemList.Clear();
+
+                updateFilters();
+
+                ProductSearchLinkConstructer link = new ProductSearchLinkConstructer(searchBox, ConvertBoolArrToStr(EnabledKeywords), ConvertBoolArrToStr(EnabledStores));
+
+                productString = await Http.GetStringAsync(link.GetURL());
+
+                // This is done to save the applied search order.
+                // Should not be done if it is sorted by "most relevant"
+                //since that calls this method again.
+                if (!(FindActiveSortFilter() == "Most relevant"))
                 {
-                    ToShoppinglist = JsonConvert.DeserializeObject<List<Product>>(shopString);
+                    DecideOrderFilter(FindActiveSortFilter());
+                }
+
+                itemList = JsonConvert.DeserializeObject<List<Product>>(productString);
+
+                if (itemList.Count == 0)
+                {
+                    messageToUser = "No Products Found With These Filters";
+                }
+
+                if (itemList.Count != 0)
+                {
+                    _viewProducts = true;
+                }
+                else
+                {
+                    _viewProducts = false;
+                }
+
+                isSearching = false;
+                StateHasChanged();
+
+            }
+            else
+            {
+                messageToUser = "You Need To Write A Searhcword";
+            }
+        }
+
+        /// <summary>
+        /// Returns a list of all stores close based on geo location and radius
+        /// </summary>
+
+        public void FindStoreFunc()
+        {
+            closeStore = new FindCloseStores(userGeoLocation, radius);
+            allStoresUnified = closeStore.GetStore();
+            lastRadius = radius;
+        }
+
+        private async Task KeyPressed(KeyboardEventArgs e)
+        {
+            if (e.Key == "Enter")
+            {
+                await SearchForProducts();
+            }
+        }
+        #endregion
+
+        #region OnStart
+
+        /// <summary>
+        /// On first render the getolocation is set, and it is decided whether or not the user
+        /// is logged in, to find out where to put products if they go to the shoppinglist.
+        /// The different filters are also initialized.
+        /// </summary>
+        /// <param name="firstRender"></param>
+        /// <returns></returns>
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            optionsList = sortOptions.GetList();
+
+            if (firstRender)
+            {
+                await GetLocalSession();
+
+                storeList = storeFilters.GetStoreList();
+                wordList = wordFIlters.GetStoreList();
+                InitializeBoolArrays(storeList.Count, wordList.Count);
+
+                if (userGeoLocation._latitude == 0 && userGeoLocation._longitude == 0)
+                {
+                    await GetUserLocation();
+                    await tcsUserLocation.Task;
+                }
+
+                if (!String.IsNullOrEmpty(email))
+                {
+                    await SLFunc.GetShoppinglistOnStart(email);
+                }
+                else
+                {
+                    shopString = await localStorage.GetItemAsync<string>("ProductString");
+
+                    if (!String.IsNullOrEmpty(shopString))
+                    {
+                        ToShoppinglist = JsonConvert.DeserializeObject<List<Product>>(shopString);
+                    }
+                }
+
+                this.StateHasChanged();
+            }
+
+        }
+
+        /// <summary>
+        /// email (if logged in) and shopString (if not logged in) is requested
+        /// to find out whether or not the user is logged in.
+        /// </summary>
+        /// <returns></returns>
+
+        async Task GetLocalSession()
+        {
+            email = await localStorage.GetItemAsync<string>("Email");
+            shopString = await localStorage.GetItemAsync<string>("ProductString");
+
+            if (!String.IsNullOrEmpty(shopString))
+            {
+                ToShoppinglist = JsonConvert.DeserializeObject<List<Product>>(shopString);
+            }
+        }
+        #endregion
+
+        #region BoolArrayMethods
+
+        /// <summary>
+        /// Finds out which sorting filter is active
+        /// Returns the "most relecant" if none are active
+        /// (although that is not possible) since that is how they
+        /// come from the database
+        /// </summary>
+        /// <returns></returns>
+
+        public string FindActiveSortFilter()
+        {
+            foreach (Options o in optionsList)
+            {
+                if (o.isEnabled)
+                {
+                    return o.filterName;
+                }
+            }
+            return "Most Relevant";
+        }
+
+        /// <summary>
+        /// When searching the filters are updated
+        /// The store filter is also compared to the stores which are
+        /// actually located close, if geo location is activated.
+        /// </summary>
+
+        public void updateFilters()
+        {
+            EnabledStores = updateEachFilter(storeFilters.GetStoreArray());
+            EnabledKeywords = updateEachFilter(wordFIlters.GetWordArray());
+
+            if (IsLocationEnabled)
+            {
+                // If the radius is the same as the last time there was a search
+                // the stores close are the same as before.
+                if (radius != lastRadius)
+                {
+                    try
+                    {
+                        FindStoreFunc();
+                    }
+                    catch (System.Exception)
+                    {
+                        FatalFalure = true;
+                    }
+
+                    lastRadius = radius;
+                }
+
+                // If the stores close cannot be found nothing this step is skipped.
+                if (!FatalFalure)
+                {
+                    bool[] closeStoreBool = new bool[EnabledStores.Length];
+
+                    closeStoreBool = SetAllFilters(closeStoreBool, false);
+                    closeStoreBool = CompareBoolArr();
+
+                    EnabledStores = closeStoreBool;
                 }
             }
 
-            this.StateHasChanged();
         }
 
-    }
+        /// <summary>
+        /// The filters are updated to how the user set them, and is returned.
+        /// This is done because we only need the boolean value when requesting the api,
+        /// and the filtername is irelevant.
+        /// </summary>
+        /// <param name="filterArray"></param>
+        /// <returns></returns>
 
-    /// <summary>
-    /// email (if logged in) and shopString (if not logged in) is requested
-    /// to find out whether or not the user is logged in.
-    /// </summary>
-    /// <returns></returns>
-
-    async Task GetLocalSession()
-    {
-        email = await localStorage.GetItemAsync<string>("Email");
-        shopString = await localStorage.GetItemAsync<string>("ProductString");
-
-        if (!String.IsNullOrEmpty(shopString))
+        public bool[] updateEachFilter(FilterItem[] filterArray)
         {
-            ToShoppinglist = JsonConvert.DeserializeObject<List<Product>>(shopString);
-        }
-    }
-    #endregion
-
-    #region BoolArrayMethods
-
-    /// <summary>
-    /// Finds out which sorting filter is active
-    /// Returns the "most relecant" if none are active
-    /// (although that is not possible) since that is how they
-    /// come from the database
-    /// </summary>
-    /// <returns></returns>
-
-    public string FindActiveSortFilter()
-    {
-        foreach (Options o in optionsList)
-        {
-            if (o.isEnabled)
+            bool[] resultFilterArr = new bool[filterArray.Length];
+            for (int i = 0; i < filterArray.Length; i++)
             {
-                return o.filterName;
+                resultFilterArr[i] = filterArray[i].IsEnabled;
             }
+
+            return resultFilterArr;
         }
-        return "Most Relevant";
-    }
 
-    /// <summary>
-    /// When searching the filters are updated
-    /// The store filter is also compared to the stores which are
-    /// actually located close, if geo location is activated.
-    /// </summary>
+        /// <summary>
+        /// This compares the stores the users wanted to see, and the stores actually
+        /// located close enought the the user (based on set radius) and returns
+        /// a bool array of cases where the close was close enough, and the user wanted
+        /// to see it.
+        /// </summary>
+        /// <returns></returns>
 
-    public void updateFilters()
-    {
-        EnabledStores = updateEachFilter(storeFilters.GetStoreArray());
-        EnabledKeywords = updateEachFilter(wordFIlters.GetWordArray());
-
-        if (IsLocationEnabled)
+        public bool[] CompareBoolArr()
         {
-            // If the radius is the same as the last time there was a search
-            // the stores close are the same as before.
-            if (radius != lastRadius)
+            bool[] arr = new bool[EnabledStores.Length];
+            arr = SetAllFilters(arr, false);
+
+            foreach (var item in allStoresUnified)
             {
-                try
+                for (int i = 0; i < storeFilters.GetStoreArray().Length; i++)
                 {
-                    FindStoreFunc();
-                }
-                catch (System.Exception)
-                {
-                    FatalFalure = true;
+                    if (item._brand.ToLower().Equals(storeFilters.GetStoreArray()[i].FilterName.ToLower()) && EnabledStores[i])
+                    {
+                        arr[i] = true;
+                        break;
+                    }
                 }
 
-                lastRadius = radius;
             }
+            return arr;
+        }
 
-            // If the stores close cannot be found nothing this step is skipped.
-            if (!FatalFalure)
+        /// <summary>
+        /// This method initializes the two different bool arrays, one for stores and one for keywords.
+        /// The input shows how long the arrays are.
+        /// At last all stores are set to true, and all keywords set to false.
+        /// </summary>
+        /// <param name="stores"></param>
+        /// <param name="words"></param>
+
+        public void InitializeBoolArrays(int stores, int words)
+        {
+            EnabledStores = new bool[stores];
+            EnabledKeywords = new bool[words];
+
+            EnabledStores = SetAllFilters(EnabledStores, true);
+            EnabledKeywords = SetAllFilters(EnabledKeywords, false);
+        }
+
+        /// <summary>
+        /// Sets all indexes in an array to the input bool value.
+        /// </summary>
+        /// <param name="arr">The array to set</param>
+        /// <param name="setTo">The bool all indexes should have</param>
+        /// <returns></returns>
+
+        public bool[] SetAllFilters(bool[] arr, bool setTo)
+        {
+            for (int i = 0; i < arr.Length; i++)
             {
-                bool[] closeStoreBool = new bool[EnabledStores.Length];
-
-                closeStoreBool = SetAllFilters(closeStoreBool, false);
-                closeStoreBool = CompareBoolArr();
-
-                EnabledStores = closeStoreBool;
+                arr[i] = setTo;
             }
+            return arr;
         }
 
-    }
+        /// <summary>
+        /// When the api is called, the url is created. The url cannot take a bool array as input
+        /// and therefore this array is converted to a string of 1 and 0.
+        /// </summary>
+        /// <param name="arr"></param>
+        /// <returns></returns>
 
-    /// <summary>
-    /// The filters are updated to how the user set them, and is returned.
-    /// This is done because we only need the boolean value when requesting the api,
-    /// and the filtername is irelevant.
-    /// </summary>
-    /// <param name="filterArray"></param>
-    /// <returns></returns>
-
-    public bool[] updateEachFilter(FilterItem[] filterArray)
-    {
-        bool[] resultFilterArr = new bool[filterArray.Length];
-        for (int i = 0; i < filterArray.Length; i++)
+        public string ConvertBoolArrToStr(bool[] arr)
         {
-            resultFilterArr[i] = filterArray[i].IsEnabled;
-        }
-
-        return resultFilterArr;
-    }
-
-    /// <summary>
-    /// This compares the stores the users wanted to see, and the stores actually
-    /// located close enought the the user (based on set radius) and returns
-    /// a bool array of cases where the close was close enough, and the user wanted
-    /// to see it.
-    /// </summary>
-    /// <returns></returns>
-
-    public bool[] CompareBoolArr()
-    {
-        bool[] arr = new bool[EnabledStores.Length];
-        arr = SetAllFilters(arr, false);
-
-        foreach (var item in allStoresUnified)
-        {
-            for (int i = 0; i < storeFilters.GetStoreArray().Length; i++)
+            char[] returnChar = new char[arr.Length];
+            for (int i = 0; i < arr.Length; i++)
             {
-                if (item._brand.ToLower().Equals(storeFilters.GetStoreArray()[i].FilterName.ToLower()) && EnabledStores[i])
-                {
-                    arr[i] = true;
-                    break;
-                }
+                returnChar[i] = arr[i] ? '1' : '0';
             }
-
+            return new string(returnChar);
         }
-        return arr;
-    }
+        #endregion
 
-    /// <summary>
-    /// This method initializes the two different bool arrays, one for stores and one for keywords.
-    /// The input shows how long the arrays are.
-    /// At last all stores are set to true, and all keywords set to false.
-    /// </summary>
-    /// <param name="stores"></param>
-    /// <param name="words"></param>
-
-    public void InitializeBoolArrays(int stores, int words)
-    {
-        EnabledStores = new bool[stores];
-        EnabledKeywords = new bool[words];
-
-        EnabledStores = SetAllFilters(EnabledStores, true);
-        EnabledKeywords = SetAllFilters(EnabledKeywords, false);
-    }
-
-    /// <summary>
-    /// Sets all indexes in an array to the input bool value.
-    /// </summary>
-    /// <param name="arr">The array to set</param>
-    /// <param name="setTo">The bool all indexes should have</param>
-    /// <returns></returns>
-
-    public bool[] SetAllFilters(bool[] arr, bool setTo)
-    {
-        for (int i = 0; i < arr.Length; i++)
+        #region UserLocation
+        async Task GetUserLocation()
         {
-            arr[i] = setTo;
+            await JsRuntime.InvokeVoidAsync(identifier: "getCoordinates");
         }
-        return arr;
-    }
 
-    /// <summary>
-    /// When the api is called, the url is created. The url cannot take a bool array as input
-    /// and therefore this array is converted to a string of 1 and 0.
-    /// </summary>
-    /// <param name="arr"></param>
-    /// <returns></returns>
-
-    public string ConvertBoolArrToStr(bool[] arr)
-    {
-        char[] returnChar = new char[arr.Length];
-        for (int i = 0; i < arr.Length; i++)
+        [JSInvokable]
+        public static void UpdateUserLocation(double latitude, double longitude)
         {
-            returnChar[i] = arr[i] ? '1' : '0';
+            userGeoLocation._latitude = latitude;
+            userGeoLocation._longitude = longitude;
+            if (!tcsUserLocation.Task.IsCompleted)
+            {
+                // This ensures the page waits to continue before the userlocation is set.
+                // It is only run on the first render.
+                tcsUserLocation.SetResult(userGeoLocation);
+            }
         }
-        return new string(returnChar);
-    }
-    #endregion
+        #endregion
 
-    #region UserLocation
-    async Task GetUserLocation()
-    {
-        await JsRuntime.InvokeVoidAsync(identifier: "getCoordinates");
-    }
-
-    [JSInvokable]
-    public static void UpdateUserLocation(double latitude, double longitude)
-    {
-        userGeoLocation._latitude = latitude;
-        userGeoLocation._longitude = longitude;
-        if (!tcsUserLocation.Task.IsCompleted)
+        private string ProductImage(string prod_image)
         {
-            // This ensures the page waits to continue before the userlocation is set.
-            // It is only run on the first render.
-            tcsUserLocation.SetResult(userGeoLocation);
+            return prod_image + "&imgSize=1080x1080";
         }
-    }
-    #endregion
-
-    private string ProductImage(string prod_image)
-    {
-        return prod_image + "&imgSize=1080x1080";
-    }
     }

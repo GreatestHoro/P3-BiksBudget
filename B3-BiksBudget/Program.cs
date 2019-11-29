@@ -3,9 +3,11 @@ using BBGatherer.Webcrawler;
 using BBCollection;
 using BBCollection.BBObjects;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using BBCollection.DBConncetion;
 using BBCollection.DBHandling;
+using B3_BiksBudget.Webcrawler.Assisting_classes;
 
 namespace BBGatherer
 {
@@ -14,11 +16,15 @@ namespace BBGatherer
         static void Main(string[] args)
         {
             DataHandling dh = new DataHandling();
+            ProductRefrenceFuntionality PRF = new ProductRefrenceFuntionality();
+            List<string> testStrings = new List<string>() { "yeet","a", "b", "er", "bøf", "bacon", "salat", "bøffer" };
 
-            
+            testStrings = testStrings.OrderByDescending(x => x.Length).ToList();
 
-            dh.GenerateDatabase();
-            dh.GenerateData(false, true);
+            List<string> expected = new List<string>() { "" };
+            List<string> result = PRF.GetBiggestStrings(testStrings.ToArray(), 2);
+            //dh.GenerateDatabase();
+            //dh.GenerateData(false, true);
             //dh.TestCollection();
         }
     }
