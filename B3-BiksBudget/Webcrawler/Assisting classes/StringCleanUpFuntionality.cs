@@ -210,7 +210,13 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
             }
             return _return;
         }
-
+        /// <summary>
+        /// Removes everything in between two charaters
+        /// </summary>
+        /// <param name="name">string</param>
+        /// <param name="a">frist charater</param>
+        /// <param name="b">end charater</param>
+        /// <returns></returns>
         public String RemoveInBetween(string name, char a, char b)
         {
             char[] chars = name.ToCharArray();
@@ -237,7 +243,12 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
             }
             return _string;
         }
-
+        /// <summary>
+        /// Rmoves a specific charater from a string
+        /// </summary>
+        /// <param name="_string">string</param>
+        /// <param name="_char">char to remove</param>
+        /// <returns></returns>
         public String RemoveCharFromString(string _string, char _char)
         {
             Char[] charArray = _string.ToCharArray();
@@ -253,7 +264,12 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
 
             return returnString;
         }
-
+        /// <summary>
+        /// removes a substring only if its comes first in the string
+        /// </summary>
+        /// <param name="name">string</param>
+        /// <param name="Remove">substring</param>
+        /// <returns></returns>
         public String RemoveIfFirstInString(string name, string Remove)
         {
             char[] _name = name.Trim().ToCharArray();
