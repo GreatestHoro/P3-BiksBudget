@@ -112,6 +112,19 @@ namespace BBGatherer_TEST
 
             Assert.AreEqual(Expected, result);
         }
+
+        [TestMethod]
+        public void StringStringCleanUpFuntionality_RemoveIfFirstInString_TEST()
+        {
+            StringCleanUpFuntionality SCF_TEST = new StringCleanUpFuntionality();
+            string testString = "en banana";
+            string test = "en";
+
+            string Expected = "banana";
+            string result = SCF_TEST.RemoveIfFirstInString(testString,test);
+
+            Assert.AreEqual(Expected, result);
+        }
         #endregion
     }
 }
