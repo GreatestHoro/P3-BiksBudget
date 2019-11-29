@@ -218,10 +218,6 @@
         if (firstRender)
         {
             await GetLocalSession();
-            localStorage.Changed += (sender, e) =>
-            {
-                Console.WriteLine($"Value for key {e.Key} changed from {e.OldValue} to {e.NewValue}");
-            };
 
             // If emain is found, the user is logged in
             if(!String.IsNullOrEmpty(email))

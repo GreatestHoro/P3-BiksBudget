@@ -44,6 +44,8 @@
     string userString;
     bool isLogginIn = false;
     ConnectionSettings connectionSettings = new ConnectionSettings();
+    HttpResponseMessage response = new HttpResponseMessage();
+
 
     private async Task OnKeyPress(KeyboardEventArgs args)
     {
@@ -57,16 +59,8 @@
     {
         isLogginIn = true;
         StateHasChanged();
-        await localStorage.RemoveItemAsync("ProductString");
-
-        var response = new HttpResponseMessage();
 
         User user = new User(email, password);
-
-        List<Product> shoppingList = new List<Product>();
-        Product[] shoppinglistArray = new Product[10];
-
-        string ShopString = JsonConvert.SerializeObject(shoppingList);
 
         userString = JsonConvert.SerializeObject(user);
 
@@ -76,33 +70,25 @@
 
         if (response.IsSuccessStatusCode)
         {
-
             await localStorage.SetItemAsync("Email", email);
-            await localStorage.SetItemAsync("ProductString", ShopString);
+            await localStorage.RemoveItemAsync("ProductString");
             NavigationManager.NavigateTo("shoppinglist");
         }
-        else
-        {
-            Debug.WriteLine("Testing Remove");
-            await localStorage.RemoveItemAsync("Email");
-        }
+
         isLogginIn = false;
         StateHasChanged();
     }
-
-
-
-
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
             await GetLocalSession();
-            localStorage.Changed += (sender, e) =>
+
+            if (email != null)
             {
-                Console.WriteLine($"Value for key {e.Key} changed from {e.OldValue} to {e.NewValue}");
-            };
+                 NavigationManager.NavigateTo("shoppinglist");
+            }
 
             StateHasChanged();
         }
