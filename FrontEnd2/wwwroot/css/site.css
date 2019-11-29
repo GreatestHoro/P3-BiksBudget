@@ -124,9 +124,10 @@ h1 {
 .miniBasket {
     backface-visibility: hidden;
     font-weight: 500;
-    width: 100%;
+    width: 50%;
     margin: 0 auto;
     top: 25%;
+    right: 20%;
     height: 70%;
     background: linear-gradient(to bottom, f5f7fa, #c3cfe2 );
     position: fixed;
@@ -348,7 +349,7 @@ ul.fixed {
 }
 
 .ingredientsTable{
-    height:auto;
+    height:200px;
     overflow: hidden;
     overflow-y: scroll;
 }
@@ -423,7 +424,6 @@ ul.fixed {
 
 
 .recipeDescription {
-    width: 50%;
     height: auto;
     text-align: left;
 }
@@ -806,7 +806,7 @@ logo-header-wrapper {
     }
     .recipeTitle{
         font-weight:bold;
-        font-size: small;
+        font-size: medium;
     }
 
     .miniBasketHeader{
@@ -839,9 +839,22 @@ logo-header-wrapper {
     /*.Log-btn{
        background-color:red;
    }*/
+    .productTable{
+        height: 200px;
+        overflow: hidden;
+        overflow-y: scroll;
+    }
 
     .miniBasket {
         width: 85%;
+        height: auto;
+        right: auto;
+        backface-visibility: hidden;
+        height: 70%;
+        background: linear-gradient(to bottom, f5f7fa, #c3cfe2 );
+        position: absolute;
+        z-index: 1;
+        box-shadow: 0 0 100px -10px rgba(142,142,141,0.4);
     }
 }
 

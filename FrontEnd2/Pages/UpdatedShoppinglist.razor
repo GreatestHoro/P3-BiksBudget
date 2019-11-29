@@ -32,8 +32,17 @@
                                 <tr>
                                     <td data-th="Product">
                                         <div class="row">
-                                            @*<div class="col-sm-2 hidden-xs"><img src="@ProductImage(item._image)" class="img-responsive" /></div>*@
+                                            
                                             <div class="col-sm-10">
+                                                @if (item._image.Length == 0)
+                                                {
+                                                    <img style="width:100px; height:auto; " class="card-img-top " src="https://cdn.discordapp.com/attachments/519096261408718908/649685312083197973/coopdicoop.jpg">
+                                                }
+                                                else
+                                                {
+                                                    <img style="width: auto; height: auto; max-height:100px; max-width: 100px;"
+                                                         class="card-img-top" src="@ProductImage(item._image)">
+                                                }
                                                 <h4 class="nomargin">@item._productName</h4>
                                                 <p>@item._amount</p>
                                             </div>
