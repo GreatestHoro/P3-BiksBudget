@@ -3,8 +3,14 @@ using System.Web;
 
 namespace BBCollection.StoreApi.SallingApi
 {
+    /// <summary>
+    /// Enumeration to hold the brand/store name of the stores available
+    /// </summary>
     public enum Brand { bilka, foetex, netto, salling, br, carlsjr, starbucks };
-
+    /// <summary>
+    /// The concrete class for a sallingAPILink of a APILink
+    /// Has the needed methods and flexibilities to call their product API and store API through multiple ways
+    /// </summary>
     public class SallingAPILink : APILink
     {
         #region Properties
@@ -74,6 +80,7 @@ namespace BBCollection.StoreApi.SallingApi
         }
         #endregion
 
+        #region Constructors
         public SallingAPILink()
         {
             _productSuggestionsBaseLink = "https://api.sallinggroup.com/v1-beta/product-suggestions/relevant-products?query=";
@@ -91,15 +98,25 @@ namespace BBCollection.StoreApi.SallingApi
             _perPageCount = 10;
             _radius = 10;
         }
+        #endregion
 
         #region Public Functions
+        /// <summary>
+        /// Generates a salling api product search link
+        /// </summary>
+        /// <param name="searchWord">the product being search</param>
+        /// <returns>returns a salling api product search link</returns>
         public string GetProductAPILink(string searchWord)
         {
             string encodedSearchWord = HttpUtility.UrlEncode(searchWord.ToLower());
 
             return _productSuggestionsBaseLink + encodedSearchWord;
         }
-
+        /// <summary>
+        /// Generates a salling api link to search for a single store by its id
+        /// </summary>
+        /// <param name="storeId">the specific salling stor ID</param>
+        /// <returns>returns a salling api link to search for a single store by its id</returns>
         public string GetSingleStoreAPILink(string storeId)
         {
             return _singleStoreBaseLink + storeId;
@@ -141,16 +158,33 @@ namespace BBCollection.StoreApi.SallingApi
         #endregion
 
         #region MultiStore GeoPosition Search Functions
+        /// <summary>
+        /// Generates a link to search for multiple salling stores by geoPosition allowing to filter by radius and brand
+        /// </summary>
+        /// <param name="geoPosition">geoLocation of the user/position to search for stores from</param>
+        /// <param name="radiusLimit">the max distance to store in km</param>
+        /// <param name="brand">a salling store brand name to only return results matching the specific brand</param>
+        /// <returns>a a link to search for multiple salling stores by geoPosition allowing to filter by radius and brand</returns>
         public string GetMultiStoreAPILink(GeoCoordinate geoPosition, int radiusLimit, Brand brand)
         {
             return GetMultiStoreAPILink(geoPosition, radiusLimit) + MultiStoreBrandURLPart(brand);
         }
 
+        /// <summary>
+        /// Generates a link to search for multiple salling stores by geoPosition allowing to filter by radius
+        /// </summary>
+        /// <param name="geoPosition">geoLocation of the user/position to search for stores from</param>
+        /// <param name="radiusLimit">the max distance to store in km</param>
+        /// <returns>a link to search for multiple salling stores by geoPosition allowing to filter by radius</returns>
         public string GetMultiStoreAPILink(GeoCoordinate geoPosition, int radiusLimit)
         {
             return GetMultiStoreAPILink(geoPosition) + MultiStoreRadiusURLPart(radiusLimit);
         }
-
+        /// <summary>
+        /// Generates a link to search for multiple salling stores by geoPosition by using the default filter of 5 km
+        /// </summary>
+        /// <param name="geoPosition">geoLocation of the user/position to search for stores from</param>
+        /// <returns>a link to search for multiple salling stores by geoPosition allowing to filter by radius</returns>
         public string GetMultiStoreAPILink(GeoCoordinate geoPosition)
         {
             return MultiStoreBaseURL() + MultiStoreGeoURLPart(geoPosition);
@@ -158,6 +192,9 @@ namespace BBCollection.StoreApi.SallingApi
         #endregion
 
         #region Page Count And Adjustment Functions
+        /// <summary>
+        /// The functions in this region are for manipulating/adjusting the page being searched in the API
+        /// </summary>
         public void NextMultiStorePage()
         {
             _pageCount++;
@@ -176,7 +213,10 @@ namespace BBCollection.StoreApi.SallingApi
         #endregion
 
         #region Private Functions
-
+        /// <summary>
+        /// The Functions below alow for various ways to filter/search for multiple stores such as by geoLocation, radius, city or zip number
+        /// </summary>
+        /// <returns>Each returns the filtering part of the sallin api link to search for salling store with its applied filters</returns>
         private string MultiStoreBaseURL()
         {
             return _multiStoreBaseLink + MultiStorePageURLPart();

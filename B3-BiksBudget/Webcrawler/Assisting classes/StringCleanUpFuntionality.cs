@@ -7,7 +7,10 @@ using HtmlAgilityPack;
 
 namespace B3_BiksBudget.Webcrawler.Assisting_classes
 {
-    class StringCleanUpFuntionality
+    /// <summary>
+    /// Class containing asn handeling many of the string editing methods mainly used for name cleanup and to remove problematic elements
+    /// </summary>
+    public class StringCleanUpFuntionality
     {
         string options;
         List<char> customCharList = new List<char>();
@@ -17,11 +20,14 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
         List<string> CustomException = new List<string>();
 
         CleanUpOptions CleanUpValues = new CleanUpOptions();
+
+        //Default consturcter: will use all the defualt values
         public StringCleanUpFuntionality() 
         {
             options = "default";
         }
 
+        //option: custom or addetiv this contructor require lists for each of the required parameters
         public StringCleanUpFuntionality(string option,List<char> customCharList,List<string> CustomStringSplit,List<string> CustomSubStringToRemove,List<string> CustomRemoveIfFirst, List<string> CustomException)
         {
             options = option;
@@ -29,9 +35,15 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
             this.CustomStringSplit = CustomStringSplit;
             this.CustomSubStringToRemove = CustomSubStringToRemove;
             this.CustomRemoveIfFirst = CustomRemoveIfFirst;
+            this.CustomException = CustomException;
         }
 
         #region stringCleanup
+        /// <summary>
+        /// Method containing the other clean up and remove methods for a general clean up
+        /// </summary>
+        /// <param name="name">The string to clean</param>
+        /// <returns>A string</returns>
         public String NameCleanUp(String name)
         {
             List<char> _char = CleanUpValues.CleanUpOptionsChar(options, customCharList);
@@ -69,6 +81,7 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
 
         }
 
+        //OUTDATED REMOVE
         public String EdgeCaseCleanUp(String name)
         {
             name = new String(name.Where(c => c != '-' && (c < '0' || c > '9')).ToArray());
@@ -85,6 +98,11 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
             return name;
         }
 
+        /// <summary>
+        /// Taks the html element and find the pr.person for a recepie
+        /// </summary>
+        /// <param name="_PerPerson">htmlnode containing perperson</param>
+        /// <returns>returns a float</returns>
         public float CleanUpPerPerson(HtmlNodeCollection _PerPerson)
         {
 
@@ -105,14 +123,21 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
             }
             else
             {
-                return 4;
+                return 4; //4 because all the unreadable recepies by default is 4 on the website
             }
 
         }
         #endregion
 
         #region(remove)
-        private string removeSubstringOfLentgh(string name, int length, List<string> exceptions)
+        /// <summary>
+        /// Remove substring in a string of given length
+        /// </summary>
+        /// <param name="name">String to edit</param>
+        /// <param name="length">The desired lentgh</param>
+        /// <param name="exceptions">Words that should ignore the condition and get passed along anyway</param>
+        /// <returns></returns>
+        public string removeSubstringOfLentgh(string name, int length, List<string> exceptions)
         {
             bool flag = true;
             string[] words = name.Split(" ");
@@ -141,8 +166,13 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
             }
             return ReturnString;
         }
-
-        private string RemoveSubstring(String name, String substring)
+        /// <summary>
+        /// Removes a substring from a string
+        /// </summary>
+        /// <param name="name">string</param>
+        /// <param name="substring">substring to remove</param>
+        /// <returns></returns>
+        public string RemoveSubstring(String name, String substring)
         {
             String[] Words = name.Split(" ");
             string ReturnString = "";
@@ -156,8 +186,13 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
 
             return ReturnString;
         }
-
-        private string RemoveEverythingAfter(string _string, string RemoveStart)
+        /// <summary>
+        /// Remove everything in the string after a given substring
+        /// </summary>
+        /// <param name="_string"> string</param>
+        /// <param name="RemoveStart"> substring</param>
+        /// <returns></returns>
+        public string RemoveEverythingAfter(string _string, string RemoveStart)
         {
             String[] Words = _string.Split(" ");
             String _return = "";
@@ -175,8 +210,14 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
             }
             return _return;
         }
-
-        private String RemoveInBetween(string name, char a, char b)
+        /// <summary>
+        /// Removes everything in between two charaters
+        /// </summary>
+        /// <param name="name">string</param>
+        /// <param name="a">frist charater</param>
+        /// <param name="b">end charater</param>
+        /// <returns></returns>
+        public String RemoveInBetween(string name, char a, char b)
         {
             char[] chars = name.ToCharArray();
             bool ParenthesesFlag = false;
@@ -202,8 +243,13 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
             }
             return _string;
         }
-
-        private String RemoveCharFromString(string _string, char _char)
+        /// <summary>
+        /// Rmoves a specific charater from a string
+        /// </summary>
+        /// <param name="_string">string</param>
+        /// <param name="_char">char to remove</param>
+        /// <returns></returns>
+        public String RemoveCharFromString(string _string, char _char)
         {
             Char[] charArray = _string.ToCharArray();
             string returnString = "";
@@ -218,8 +264,13 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
 
             return returnString;
         }
-
-        private String RemoveIfFirstInString(string name, string Remove)
+        /// <summary>
+        /// removes a substring only if its comes first in the string
+        /// </summary>
+        /// <param name="name">string</param>
+        /// <param name="Remove">substring</param>
+        /// <returns></returns>
+        public String RemoveIfFirstInString(string name, string Remove)
         {
             char[] _name = name.Trim().ToCharArray();
             char[] _Remove = Remove.ToCharArray();

@@ -26,8 +26,8 @@ namespace BBGatherer.Webcrawler
         /// </summary>
         /// <param name="start_page">The starting recepie on the website</param>
         /// <param name="Last_page">The last recepie on the web site it should check</param>
-        /// <param name="dbConnect">The database that should get the finished recipies loaded into</param>
-        /// <returns></returns>
+        /// <param name="dc">The database that should get the finished recipies loaded into</param>
+        /// <returns>It just returns a task as everything is inputed directly into the database while it runs</returns>
         public async Task GetRecipes(int start_page, int Last_page, DatabaseConnect dc)
         {
             AssistingClasses functionality = new AssistingClasses();
@@ -134,7 +134,7 @@ namespace BBGatherer.Webcrawler
             {
                 name = functionality.getCleanFunc().NameCleanUp(name);
                 Console.WriteLine("INPUT: " + name);
-                name = functionality.getRefs().CheckForValidIndgredients(name, dbConnect, out fatalError);
+                name = functionality.getRefs().CheckForValidIndgredients(name, out fatalError);
                 if (!fatalError)
                 {
                     name = functionality.getCleanFunc().EdgeCaseCleanUp(name);

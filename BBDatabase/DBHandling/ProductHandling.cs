@@ -51,48 +51,6 @@ namespace BBCollection.DBHandling
             new SQLConnect().NonQueryMSC(msc);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public Product Get(string id)
-        {
-            Product product = new Product();
-            ProductHandling handle = new ProductHandling();
-            string getProductQuery =
-                "SELECT * FROM products WHERE id = @ProdId";
-
-            MySqlCommand msc = new MySqlCommand(getProductQuery);
-
-            msc.Parameters.AddWithValue("@ProdId", id);
-
-            DataSet ds = new SQLConnect().DynamicSimpleListSQL(msc);
-
-            if (ds.Tables.Count != 0)
-            {
-                if (ds.Tables[0].Rows.Count != 0)
-                {
-                    foreach (DataRow r in ds.Tables[0].Rows)
-                    {
-                        string reference = "";
-
-                        if (r[6] == DBNull.Value)
-                        {
-                            reference = "";
-                            product = new Product((string)r[0], (string)r[1], (string)r[2], Convert.ToDouble(r[3]), (string)r[4], (string)r[5], reference);
-                        }
-                        else
-                        {
-                            product = new Product((string)r[0], (string)r[1], (string)r[2], Convert.ToDouble(r[3]), (string)r[4], (string)r[5], (string)r[6]);
-                        }
-                    }
-                }
-            }
-            return product;
-        }
-
-
         public List<Product> GetList(string productName)
         {
             List<Product> productList = new List<Product>();
@@ -116,30 +74,6 @@ namespace BBCollection.DBHandling
                         productList.Add(product);
                     }
 
-                }
-            }
-
-            return productList;
-        }
-        public List<Product> GetReferences(string reference)
-        {
-            List<Product> productList = new List<Product>();
-
-            string getListQuery =
-                "SELECT * FROM products WHERE reference LIKE = @Reference";
-
-            MySqlCommand msc = new MySqlCommand(getListQuery);
-
-            msc.Parameters.AddWithValue("@Reference", "%" + reference + "%");
-
-            DataSet ds = new SQLConnect().DynamicSimpleListSQL(msc);
-
-            if (ds.Tables.Count != 0)
-            {
-                foreach (DataRow r in ds.Tables[0].Rows)
-                {
-                    Product product = new Product((string)r[0], (string)r[1], (string)r[2], Convert.ToDouble(r[3]), (string)r[4], (string)r[5], (string)r[6]);
-                    productList.Add(product);
                 }
             }
 
