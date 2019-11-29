@@ -126,7 +126,7 @@ h1 {
     font-weight: 500;
     width: 50%;
     margin: 0 auto;
-    top: 25%;
+    top: 30%;
     right: 20%;
     height: 70%;
     background: linear-gradient(to bottom, f5f7fa, #c3cfe2 );
@@ -617,6 +617,8 @@ logo-header-wrapper {
     border-style: solid;
     border-color: #0BA428;
     border-radius: 7px;
+    z-index: 3;
+    position: absolute; 
 }
 
 .recipe-search-input {
@@ -849,6 +851,7 @@ logo-header-wrapper {
         width: 85%;
         height: auto;
         right: auto;
+        top: 150%;
         backface-visibility: hidden;
         height: 70%;
         background: linear-gradient(to bottom, f5f7fa, #c3cfe2 );

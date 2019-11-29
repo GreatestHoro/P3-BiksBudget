@@ -12,7 +12,7 @@
     <div class="row d-flex justify-content-center">
         <div class="col-sm-10 col-md-8 col-lg-7 col-xl-5">
             <div class="form-check-inline center_div recipe-search-bar mb-2">
-                <input type="text" @bind="searchTerm" @onkeyup="OnKeyPress" class="form-control recipe-search-input" id="recipeSearchInput" placeholder="Search" />
+                <input type="text" @bind="searchTerm" @onkeyup="OnKeyPress" disabled="@viewRecipes" class="form-control recipe-search-input" id="recipeSearchInput" placeholder="Search" />
                 <button class="btn btn-success recipe-search-button" @onclick="(() => Search())">
                     <i class="fa fa-search"></i>
                 </button>
@@ -101,12 +101,20 @@
                         <div class="input-group-prepend">
                             <label class="input-group-text" for="inputGroupSelect01"> For:</label>
                         </div>
-                        <select class="custom-select">
+                        <select class="custom-select" @onchange="AssignScalar">
                             <option selected> @recipePerPerson</option>
-                            @foreach (int number in perpersonvalues)
-                            {
-                                <option value="@scalar">@number</option>
-                            }
+                            <!-- #region Options -->
+                            <option value="@TempScalar"> 1 </option>
+                            <option value="@TempScalar"> 2 </option>
+                            <option value="@TempScalar"> 3 </option>
+                            <option value="@TempScalar"> 4 </option>
+                            <option value="@TempScalar"> 5 </option>
+                            <option value="@TempScalar"> 6 </option>
+                            <option value="@TempScalar"> 7 </option>
+                            <option value="@TempScalar"> 8 </option>
+                            <option value="@TempScalar"> 9 </option>
+                            <option value="@TempScalar"> 10 </option>
+                            <!-- #endregion -->
                         </select>
                         @*<div class="input-group-append">
                     <label class="input-group-text" for="inputGroupSelect01"> Persons</label>
@@ -168,49 +176,45 @@
                     @if (viewDescription == true)
                     {
                         <p class="recipeDescription">@recipeDescription</p>
+                    <hr />
                     }
                 </div>
+
                 <!-- #endregion -->
                 <!-- #region Ingredients table -->
                 <div class="col-sm-4">
                     @if (viewIngredients == true)
                     {
-                        <div class="mr-auto">
-                            <table class="table-hover border-0 ingredientsTable">
-                                <colgroup>
-                                    <col style="width:150px" />
-                                    <col style="width:150px" />
-                                </colgroup>
-                                <thead>
-                                    <tr>
-                                        <td style="font-weight:bold;"> Amount </td>
-                                        <td style="font-weight:bold;"> Name </td>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (Ingredient ing in ingredients)
+                    <div style="max-height:400px; min-height:40px; overflow:auto; overflow-y:scroll;">
+                        <table class="table-hover border-0 ingredientsTable">
+                            <colgroup>
+                                <col style="width:150px" />
+                                <col style="width:150px" />
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <td style="font-weight:bold;"> Amount </td>
+                                    <td style="font-weight:bold;"> Name </td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (Ingredient ing in ingredients)
+                                {
+                                    if (runCounter <= ingredients.Count) //comback and fix
                                     {
-                                        if (runCounter <= ingredients.Count) //comback and fix
-                                        {
-                                            runCounter++;
-                                            scalar = recipePerPerson;
-                                        }
-
-                                        <tr>
-                                            <td>@(String.Format("{0:0.0}", (ing._amount / recipePerPerson) * scalar)) @ing._unit</td>
-                                            <td><button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => retriveIngredient(ing))">@ing._ingredientName</button></td>
-                                        </tr>
+                                        runCounter++;
+                                        scalar = recipePerPerson;
                                     }
+
                                     <tr>
-                                        <td colspan="2" class="text-sm-center">
-                                            <div class="value-button" @onclick="incrementAmount" value="Increase @value"> + </div>
-                                            <input type="number" id="number" value="@(scalar)" />
-                                            <div class="value-button" @onclick="decrementAmount" value="Decrease @value"> - </div>
-                                        </td>
+                                        <td>@(String.Format("{0:0.0}", (ing._amount / recipePerPerson) * scalar)) @ing._unit</td>
+                                        <td><button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => retriveIngredient(ing))">@ing._ingredientName</button></td>
                                     </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <hr />
                     }
                 </div>
                 <!-- #endregion -->
@@ -218,11 +222,12 @@
                 <div class="col-sm-4">
                     @if (viewProducts == true)
                     {
+                        <div style="max-height:400px; min-height:40px; overflow:auto; overflow-y:scroll; ">
                         <table class="table-hover border-0 productTable">
                             <colgroup>
                                 <col style="width:200px" />
                                 <col style="width:60px" />
-                                <col style="width:20px"/>
+                                <col style="width:20px" />
                             </colgroup>
                             <thead>
                                 <tr>
@@ -251,6 +256,8 @@
                                 }
                             </tbody>
                         </table>
+                        </div>
+                    <hr />
                     }
                 </div>
                 <!-- #endregion -->
@@ -271,6 +278,8 @@
 
     int recipePerPerson;
     int scalar = 1;
+    int numb = 0;
+    string TempScalar;
     int runCounter = 0;
     int value;
 
@@ -434,15 +443,6 @@
 
     #region Recipe Methods
 
-    private void setPerPersonValues()
-    {
-        int numb = 0;
-        for (int i = 0; i < recipePerPerson; i++)
-        {
-            numb += 1;
-            perpersonvalues.Add(numb);
-        }
-    }
 
     private void toggleRecipeDescription()
     {
@@ -457,6 +457,13 @@
     private void toggleRecipeProducts()
     {
         viewProducts = !viewProducts;
+    }
+    private void AssignScalar(ChangeEventArgs e)
+    {
+        if(int.TryParse(e.Value.ToString(), out int result))
+        {
+            scalar = result;
+        }
     }
 
     private void incrementAmount()
@@ -597,7 +604,6 @@
         }
         viewRecipes = true;
         viewRecipeList = false;
-        setPerPersonValues();
     }
     #endregion
 
