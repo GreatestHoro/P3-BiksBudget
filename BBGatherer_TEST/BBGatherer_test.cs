@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace BBGatherer_TEST
 {
     [TestClass]
-    public class UnitTest1
+    public class BBGatherer_test
     {
         #region Cross ref tests
         [TestMethod]
