@@ -8,7 +8,7 @@ using BBCollection.DBConncetion;
 
 namespace B3_BiksBudget.Webcrawler.Assisting_classes
 {
-    public class ProductRefrenceFuntionality
+    class ProductRefrenceFuntionality
     {
         #region Interpret
         /// <summary>
@@ -21,7 +21,7 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
             string[] refs = _ref.Split(",");
             List<string> newRef = new List<string>();
             string returnRef = "";
-            refs = refs.OrderByDescending(x => x.Length).ToArray();
+            refs.OrderByDescending(x => x.Length);
             newRef.AddRange(GetBiggestStrings(refs, 2));
 
             foreach (string s in newRef)
@@ -38,13 +38,13 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
         /// <returns>The output is the a string list only containing the largest string based on the levels 
         /// example: level 1 will return all the string of the largest string length, 
         /// level 2 would then also return the strings of the next biggiest length</returns>
-        public List<string> GetBiggestStrings(string[] sortedStrings, int Levels)
+        private List<string> GetBiggestStrings(string[] sortedStrings, int Levels)
         {
             List<string> returnList = new List<string>();
             returnList.AddRange(GetBiggest(sortedStrings));
-            while (--Levels > 0)
+            while (Levels-- > 0)
             {
-                returnList.AddRange(GetNextBiggest(sortedStrings, returnList.Last()));
+                returnList = GetNextBiggest(sortedStrings, returnList.Last());
             }
             return returnList;
         }

@@ -152,10 +152,6 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
                         {
                             flag = true;
                         }
-                        else 
-                        {
-                            flag = false;
-                        }
                     }
                 }
                 else
@@ -168,7 +164,7 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
                     ReturnString += word + " ";
                 }
             }
-            return ReturnString.Trim();
+            return ReturnString;
         }
         /// <summary>
         /// Removes a substring from a string
@@ -188,7 +184,7 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
                 }
             }
 
-            return ReturnString.Trim();
+            return ReturnString;
         }
         /// <summary>
         /// Remove everything in the string after a given substring
@@ -276,22 +272,27 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
         /// <returns></returns>
         public String RemoveIfFirstInString(string name, string Remove)
         {
-            string[] Array = name.Split(" ");
-            string returnString = "";
+            char[] _name = name.Trim().ToCharArray();
+            char[] _Remove = Remove.ToCharArray();
+            int i = 0;
 
-            if (Array[0].Equals(Remove))
+            if (name.Contains(Remove))
             {
-                for (int i = 1; i < Array.Length; i++)
+                foreach (char r in _Remove)
                 {
-                    returnString += Array[i];
+                    i++;
+                    if (r == _name[i])
+                    {
+                        _name[i] = '*';
+                    }
+                    else
+                    {
+                        return name.Trim();
+                    }
                 }
             }
-            else 
-            {
-                returnString = name;
-            }
 
-            return returnString;
+            return RemoveCharFromString(name, '*').Trim(); ;
         }
     }
     #endregion

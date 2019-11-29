@@ -26,8 +26,22 @@ namespace Backend.Controllers
 
         // GET: api/Login/5
         [HttpGet("{id}")]
-        public void Get(string id)
+        public string Get(string id)
         {
+            char test = id[id.Length-1];
+
+            if (test.Equals('S') == true)
+            {
+                return "This is the Storage";
+            }
+            else if(test.Equals('L') == true)
+            {
+                return "This is the Shoppinnlist:";
+            }
+            else
+            {
+                return "ERROR";
+            }
         }
 
         // POST: api/Login
