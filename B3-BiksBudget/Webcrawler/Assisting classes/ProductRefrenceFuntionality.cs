@@ -24,6 +24,7 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
             refs = refs.OrderByDescending(x => x.Length).ToArray();
             newRef.AddRange(GetBiggestStrings(refs, 2));
 
+
             foreach (string s in newRef)
             {
                 returnRef += s + ",";
@@ -35,8 +36,8 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
         /// </summary>
         /// <param name="sortedStrings">The sorted string where the biggiest strings are first</param>
         /// <param name="Levels">The input to determin how many diffrent dtring lengs are outputtet</param>
-        /// <returns>The output is the a string list only containing the largest string based on the levels 
-        /// example: level 1 will return all the string of the largest string length, 
+        /// <returns>The output is the a string list only containing the largest string based on the levels
+        /// example: level 1 will return all the string of the largest string length,
         /// level 2 would then also return the strings of the next biggiest length</returns>
         public List<string> GetBiggestStrings(string[] sortedStrings, int Levels)
         {
@@ -123,6 +124,21 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
                 return searchterm + ",";
             }
 
+        }
+
+        public string CheckRefrenceContent(string CurrentRefrence)
+        {
+            string[] _ref = CurrentRefrence.Split(",");
+            string returnString = "";
+            foreach (string s in _ref)
+            {
+                if (!string.IsNullOrEmpty(s) && !string.IsNullOrWhiteSpace(s))
+                {
+                    returnString += s + ",";
+                }
+            }
+
+            return returnString;
         }
     }
 }
