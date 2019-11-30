@@ -22,7 +22,9 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
             List<string> newRef = new List<string>();
             string returnRef = "";
             refs.OrderByDescending(x => x.Length);
+
             newRef.AddRange(GetBiggestStrings(refs, 2));
+            
 
             foreach (string s in newRef)
             {
@@ -123,6 +125,21 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
                 return searchterm + ",";
             }
 
+        }
+
+        public string CheckRefrenceContent(string CurrentRefrence) 
+        {
+            string[] _ref = CurrentRefrence.Split(",");
+            string returnString = "";
+            foreach (string s in _ref) 
+            {
+                if (!string.IsNullOrEmpty(s) && !string.IsNullOrWhiteSpace(s)) 
+                {
+                    returnString += s + ",";
+                }
+            }
+
+            return returnString;
         }
     }
 }
