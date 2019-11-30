@@ -87,7 +87,7 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
                 foreach (Product p in ProductsWithRef)
                 {
                     newRefrence = _refs.CheckRefrenceContent(p._CustomReferenceField);
-                    newRefrence = _refs.UpdateProductRefrence(p._CustomReferenceField.Trim(), Searchterm);
+                    newRefrence = _refs.UpdateProductRefrence(newRefrence, Searchterm);
                     newRefrence = _refs.InterpretAndEditProductRef(newRefrence);
                     dc.Product.AddReference(newRefrence, p._id);
                 }
