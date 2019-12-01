@@ -40,6 +40,9 @@ html, body {
 h1 {
     text-align: center;
 }
+.textForTable{
+    text-align: center;
+}
 /*Search field on search page*/
 .SearchBar {
     width: 200px;

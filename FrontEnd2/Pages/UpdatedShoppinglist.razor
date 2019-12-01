@@ -20,9 +20,9 @@
                         <thead>
                             <tr>
                                 <th style="width:48%">Product</th>
-                                <th style="width:10%">Price</th>
-                                <th style="width:20%">Quantity</th>
-                                <th style="width:10%" class="text-center">Subtotal</th>
+                                <th style="width:10%" class="textForTable">Price</th>
+                                <th style="width:20%"class="textForTable">Quantity</th>
+                                <th style="width:10%" class="textForTable">Subtotal</th>
                                 <th style="width:12%"></th>
                             </tr>
                         </thead>
@@ -49,7 +49,7 @@
                                         </div>
                                     </td>
                                     
-                                <td data-th="Price">@item._price kr</td>
+                                <td data-th="Price" class="textForTable">@item._price kr</td>
                                 <td data-th="Quantity">
                                     <div class="valueClass text-center">
                                         <div class="value-button" id="increase" @onclick="(() => DecrementAmount(item))" value="Increase @value"> - </div>
@@ -122,11 +122,11 @@
                 <div class="col-sm-4">
                     @if (remindToSave)
                     {
-                        <button class="btn btn-block btn-danger recipeDivDisplay rounded-0" @onclick="(() =>SaveShoppinglist())">Save shoppinlist</button>
+                        <button class="btn btn-block btn-danger recipeDivDisplay rounded-0" @onclick="(() =>SaveShoppinglist())">Save shoppinglist</button>
                     }
                     else
                     {
-                        <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>SaveShoppinglist())">Save shoppinlist</button>
+                        <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>SaveShoppinglist())">Save shoppinglist</button>
                     }
                 </div>
                 <div class="col-sm-4">
