@@ -203,9 +203,9 @@ namespace FrontEnd2.Data
 
             item._amountleft = actualAmout;
 
-            await PutToApi(productString);
+            response = await PutToApi(productString);
 
-            return new HttpResponseMessage(HttpStatusCode.OK);
+            return response;
         }
 
         #endregion
@@ -259,7 +259,7 @@ namespace FrontEnd2.Data
 
             var content = new StringContent(productString, Encoding.UTF8, "application/json");
 
-            response = await Http.PutAsync(connectionSettings.GetApiLink() + "api/Storage/" + Email, content);
+            response = await Http.PutAsync(connectionSettings.GetApiLink() + dest + Email, content);
 
             return response;
         }
@@ -343,8 +343,6 @@ namespace FrontEnd2.Data
         {
             var content = new StringContent(productString, Encoding.UTF8, "application/json");
             response = await Http.PostAsync(connectionSettings.GetApiLink() + dest + "/" + Email, content);
-
-            newProduct = string.Empty;
 
             return response;
         }
