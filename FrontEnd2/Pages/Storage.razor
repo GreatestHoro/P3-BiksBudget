@@ -454,6 +454,7 @@ else
 
         foreach(WeightedRecipies w in weightedRecipies)
         {
+            w._recipie.deleteDuplicates();
             foreach (Ingredient I in w._recipie._ingredientList)
             {
                 foreach (List<string> sList in allRefs)
@@ -465,6 +466,7 @@ else
                             w.MatchFound(I,s);
                         }
                     }
+                
                 }
             }
             w.calculateP();
