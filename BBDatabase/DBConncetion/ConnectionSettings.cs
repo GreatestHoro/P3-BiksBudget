@@ -7,8 +7,8 @@ namespace BBCollection.DBConncetion
     public class ConnectionSettings
     {
         public string _DatabaseName;
-        private bool _onlineDB = true;
-        private bool _onlineAPI = true;
+        private bool _onlineDB = false;
+        private bool _onlineAPI = false;
 
         // Server = biksbudgetdb.mysql.database.azure.com, Database = BiksBudgetDB, User id = BBAdmin@biksbudgetdb, Password = BiksBudget1
         // Database connection strings for online use

@@ -46,7 +46,7 @@ namespace Backend.Controllers
 
         // POST: api/Login
         [HttpPost]
-        public IActionResult Post(string value)
+        public async Task<IActionResult> Post(string value)
         {
             string buffer;
             DatabaseConnect dbConnect = new DatabaseConnect();
@@ -63,7 +63,7 @@ namespace Backend.Controllers
 
             user = JsonConvert.DeserializeObject<User>(buffer);
 
-            bool exist = dbConnect.User.Verify(user._userName, user._password);
+            bool exist = await dbConnect.User.Verify(user._userName, user._password);
 
             
             if(exist == true)

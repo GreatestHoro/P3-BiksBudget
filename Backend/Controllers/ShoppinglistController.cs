@@ -44,9 +44,9 @@ namespace Backend.Controllers
 
         // GET: api/Storage/5
         [HttpGet("{_email}")]
-        public string Get(string _email)
+        public async Task<string> Get(string _email)
         {
-            shoppinglists = dbConnect.Shoppinglist.GetList(_email);
+            shoppinglists = await dbConnect.Shoppinglist.GetList(_email);
 
             string jsonStorage = JsonConvert.SerializeObject(shoppinglists);
 
@@ -61,7 +61,7 @@ namespace Backend.Controllers
 
         // POST: api/Shoppinglist
         [HttpPost("{_email}")]
-        public void Post(String _email)
+        public async void Post(String _email)
         {
             HttpRequest request = HttpContext.Request;
             Microsoft.AspNetCore.Http.HttpRequestRewindExtensions.EnableBuffering(request);
@@ -92,7 +92,7 @@ namespace Backend.Controllers
             {
                 // If there is a list to add to the shoppingst, the already existing shoppinglist is
                 // requested from the database.
-                toSend = dbConnect.Shoppinglist.GetList(Email);
+                toSend = await dbConnect.Shoppinglist.GetList(Email);
 
                 if (toSend.Count == 0)
                 {
@@ -126,7 +126,7 @@ namespace Backend.Controllers
 
         // PUT: api/Shoppinglist/5
         [HttpPut("{_email}")]
-        public void PutQuick(string _email)
+        public async void PutQuick(string _email)
         {
             HttpRequest request = HttpContext.Request;
             Microsoft.AspNetCore.Http.HttpRequestRewindExtensions.EnableBuffering(request);
@@ -150,7 +150,7 @@ namespace Backend.Controllers
             newItems = JsonConvert.DeserializeObject<List<Product>>(buffer);
 
             // The products already in the shoppinglist
-            toSend = dbConnect.Shoppinglist.GetList(Email);
+            toSend = await dbConnect.Shoppinglist.GetList(Email);
 
             if (toSend.Count == 0)
             {
