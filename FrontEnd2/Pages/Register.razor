@@ -99,10 +99,10 @@ else
 
         if (response.IsSuccessStatusCode)
         {
-
+            //await localStorage.SetItemAsync("ProductString", ShopString);
+            await localStorage.RemoveItemAsync("Email");
+            await localStorage.RemoveItemAsync("ProductString");
             await localStorage.SetItemAsync("Email", addEmail);
-            await localStorage.SetItemAsync("Shoppinglist", shoppingList);
-            await localStorage.SetItemAsync("ProductString", ShopString);
             StateHasChanged();
             NavigationManager.NavigateTo("shoppinglist");
         }

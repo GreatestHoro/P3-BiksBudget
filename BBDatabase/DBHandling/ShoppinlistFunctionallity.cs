@@ -270,13 +270,15 @@ namespace BBCollection.DBHandling
         /// This method adds all amounts of one product.
         /// </summary>
         /// <param name="p">The product to add</param>
-        public async void AddItemToStorage(Product p)
+        public async Task<HttpResponseMessage> AddItemToStorage(Product p)
         {
             p = HelpToAdd(p);
 
             productString = JsonConvert.SerializeObject(p);
 
-            await SendToApi(productString, "api/Storage");
+            response = await SendToApi(productString, "api/Storage");
+
+            return response;
         }
 
         /// <summary>

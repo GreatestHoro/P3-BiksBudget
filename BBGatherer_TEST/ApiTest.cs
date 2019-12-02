@@ -15,13 +15,15 @@ namespace BBGatherer_TEST
     {
         ShoppinlistFunctionality slFunc = new ShoppinlistFunctionality("api/Shoppinglist");
         ShoppinlistFunctionality stFunc = new ShoppinlistFunctionality("api/Storage");
+        ControllerFuncionality cFunc = new ControllerFuncionality();
+        TestData testList = new TestData();
 
         HttpResponseMessage response = new HttpResponseMessage();
 
         #region API
 
         #region Shoppinglist
-        public async Task<HttpResponseMessage> HeloGetShoppinglist()
+        public async Task<HttpResponseMessage> HelpGetShoppinglist()
         {
             response = await stFunc.GetStorageOnStart("USERID");
 
@@ -29,21 +31,24 @@ namespace BBGatherer_TEST
         }
 
         [TestMethod]
-        public void GetShoppinglist()
+        public async void GetShoppinglist()
         {
+            response = await HelpGetShoppinglist();
 
+            Assert.IsTrue(response.IsSuccessStatusCode);
         }
 
+        // This method tests SendToApi(string productString)
         [TestMethod]
-        public void PostShoppinglist()
+        public async void PostShoppinglistToStorage()
         {
+            response = await HelpGetShoppinglist();
 
-        }
+            Product toSend = testList.dummyProductOne;
 
-        [TestMethod]
-        public void PutShoppinglist()
-        {
+            response = await slFunc.AddItemToStorage(toSend);
 
+            Assert.IsTrue(response.IsSuccessStatusCode);
         }
         #endregion
 
@@ -56,6 +61,7 @@ namespace BBGatherer_TEST
             return response;
         }
 
+        // This method tests GetStorageOnStart(string userId)
         [TestMethod]
         public async void GetStorage()
         {
@@ -64,12 +70,29 @@ namespace BBGatherer_TEST
             Assert.IsTrue(response.IsSuccessStatusCode);
         }
 
+        // This method tests PutToApi(string productString)
         [TestMethod]
-        public async void PostStorage()
+        public async void PutStorage()
         {
+            await HelpGetStorage();
 
+            Product toTest = testList.dummyProductOne;
 
-            //response = await slFunc.;
+            toTest._amount = "Full";
+            toTest._timeAdded = DateTime.Now.ToString();
+
+            response = await stFunc.ChangeItemInStorage(toTest);
+
+            Assert.IsTrue(response.IsSuccessStatusCode);
+        }
+
+        // This method tests DeleteStorage()
+        [TestMethod]
+        public async void TestDeleteStorage()
+        {
+            await HelpGetStorage();
+
+            response = await stFunc.DeleteStorage();
 
             Assert.IsTrue(response.IsSuccessStatusCode);
         }
@@ -101,9 +124,6 @@ namespace BBGatherer_TEST
         [TestMethod]
         public void HandleListOfOneDublicat()
         {
-            ControllerFuncionality cFunc = new ControllerFuncionality();
-            TestData testList = new TestData();
-
             string test = JsonConvert.SerializeObject(cFunc.HandleDublicats(testList.GetInputlistDublicat()));
             string result = JsonConvert.SerializeObject(testList.GetOutputlist(testList.GetInputlistDublicat().Count));
 
@@ -113,9 +133,6 @@ namespace BBGatherer_TEST
         [TestMethod]
         public void HandleListOfTwoDublicats()
         {
-            ControllerFuncionality cFunc = new ControllerFuncionality();
-            TestData testList = new TestData();
-
             string test = JsonConvert.SerializeObject(cFunc.HandleDublicats(testList.GetInputlistDublicat()));
             string result = JsonConvert.SerializeObject(testList.GetOutputlist(testList.GetInputlistDublicat().Count));
 
