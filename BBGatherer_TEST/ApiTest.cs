@@ -1,6 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using BBCollection.DBHandling;
 using BBCollection.BBObjects;
+using BBCollection.StoreApi.ApiNeeds;
+using BBCollection.StoreApi.CoopApi;
+using BBCollection.StoreApi.SallingApi;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -15,18 +18,18 @@ namespace BBGatherer_TEST
     {
         ShoppinlistFunctionality slFunc = new ShoppinlistFunctionality("api/Shoppinglist");
         ShoppinlistFunctionality stFunc = new ShoppinlistFunctionality("api/Storage");
-
         ControllerFuncionality cFunc = new ControllerFuncionality();
+        Filters sallingSearch = new Filters();
         TestData testList = new TestData();
+
+        List<CoopProduct> coopProduct = new List<CoopProduct>();
+        List<Product> sallingProduct = new List<Product>();
 
         HttpResponseMessage response = new HttpResponseMessage();
 
         #region API
 
         #region GetOnStart
-
-
-
         public async Task<HttpResponseMessage> HelpGetShoppinglist()
         {
             response = await stFunc.GetStorageOnStart("apiTestUser");
@@ -91,33 +94,42 @@ namespace BBGatherer_TEST
             Assert.IsTrue(response.IsSuccessStatusCode);
         }
 
-        [TestMethod]
-        public async Task SendWithDoubleParameters()
-        {
-            await HelpGetShoppinglist();
+        //[TestMethod]
+        //public async Task SendWithDoubleParameters()
+        //{
+        //    await HelpGetShoppinglist();
 
-            response = await slFunc.AddOneItemToStorage(testList.dummyProductOne);
+        //    response = await slFunc.AddOneItemToStorage(testList.dummyProductOne);
 
-            Assert.IsTrue(response.IsSuccessStatusCode);
-        }
+        //    Assert.IsTrue(response.IsSuccessStatusCode);
+        //}
 
         #endregion
 
         #region Salling
+
+        //Calls the Salling API and checks whether or not an products are returned
         [TestMethod]
         public void TestSalling()
         {
+            sallingProduct = sallingSearch.SearchForProducts("mælk");
 
+            Assert.IsTrue(sallingProduct.Count > 1);
         }
 
         #endregion
 
         #region Coop
 
+        //Calls the Coop API and checks whether or not an products are returned
         [TestMethod]
         public void TestCoop()
         {
+            CoopDoStuff coop = new CoopDoStuff("f0cabde6bb8d4bd78c28270ee203253f");
 
+            coopProduct = coop.CoopFindEverythingInStore("24073");
+
+            Assert.IsTrue(coopProduct.Count > 1);
         }
 
         #endregion
@@ -126,6 +138,7 @@ namespace BBGatherer_TEST
 
         #region HandleDublicats
 
+        // The HandleDublicat method is called to see if can handle a list only containg dublicats
         [TestMethod]
         public void HandleListOfOneDublicat()
         {
@@ -135,6 +148,7 @@ namespace BBGatherer_TEST
             Assert.AreEqual(result, test);
         }
 
+        // The HandleDublicat method is called to see if it can handle a list containing two objects in a random order
         [TestMethod]
         public void HandleListOfTwoDublicats()
         {
@@ -146,6 +160,8 @@ namespace BBGatherer_TEST
 
         #endregion
     }
+
+    #region TestDataClass
     class TestData
     {
         public Product dummyProductOne = new Product(
@@ -159,14 +175,14 @@ namespace BBGatherer_TEST
                 "carlsberg,carls");
 
         public Product dummyProductTwo = new Product(
-        "S84107100101",
-        "Carlsberg Elephant Dåse Test",
-        "elephant ds. carlsberg Test",
-        16.99,
-        "https://image.prod.iposeninfra.com/bilkaimg.php?pid=18641&imgType=jpeg",
-        "Bilka Test",
-        1,
-        "carlsberg,carls");
+            "S84107100101",
+            "Carlsberg Elephant Dåse Test",
+            "elephant ds. carlsberg Test",
+            16.99,
+            "https://image.prod.iposeninfra.com/bilkaimg.php?pid=18641&imgType=jpeg",
+            "Bilka Test",
+            1,
+            "carlsberg,carls");
 
         List<Product> inputList;
         List<Product> outputList;
@@ -229,4 +245,5 @@ namespace BBGatherer_TEST
             return outputList;
         }
     }
+    #endregion
 }

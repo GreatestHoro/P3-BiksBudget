@@ -97,7 +97,7 @@ namespace BBCollection.BBObjects
             return FilteredProductList;
         }
 
-        private List<Product> SearchForProducts(String searchterm)
+        public List<Product> SearchForProducts(String searchterm)
         {
             BearerAccessToken bearerAccessToken = new BearerAccessToken("fc5aefca-c70f-4e59-aaaa-1c4603607df8");
             SallingAPILink linkMaker = new SallingAPILink();

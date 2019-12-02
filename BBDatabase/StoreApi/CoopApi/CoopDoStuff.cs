@@ -38,13 +38,13 @@ namespace BBCollection.StoreApi.CoopApi
             CoopStoreApi stuff = openHttp.ReadAndParseAPISingle();
 
             // Create list for StoreId in the different stores found inside the radius
-            List<int> storId = new List<int>();
+            //List<int> storId = new List<int>();
 
             // Fill the StoreId list with Kardex (storeid) for the different stores
-            foreach (var product in stuff.Data)
-            {
-                storId.Add(product.Kardex);
-            }
+            //foreach (var product in stuff.Data)
+            //{
+            //    storId.Add(product.Kardex);
+            //}
 
             //foreach (var store in stuff.Data)
             //{
