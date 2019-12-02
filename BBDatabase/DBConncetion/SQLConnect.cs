@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Threading.Tasks;
 
 namespace BBCollection.DBConncetion
 {
@@ -9,7 +10,7 @@ namespace BBCollection.DBConncetion
     {
         DatabaseInformation databaseInformation = new DatabaseInformation();
 
-        public void NonQueryString(string sqlQuery)
+        public async void NonQueryString(string sqlQuery)
         {
             MySqlConnection connection = null;
             try

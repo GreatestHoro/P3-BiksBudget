@@ -4,6 +4,7 @@ using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace BBCollection.DBHandling
@@ -11,43 +12,46 @@ namespace BBCollection.DBHandling
     public class RecipeHandling
     {
         #region Functions handling GetRecipe and GetIngredient.
-        public List<Recipe> GetList(string recipeName)
+        public async Task<List<Recipe>> GetList(string recipeName)
         {
             List<Recipe> recipeList = new List<Recipe>();
             string table = "recipes";
             string collumn = "recipename";
 
-            MySqlCommand msc = new SqlQuerySort().SortMSC(recipeName, table, collumn);
-            try
+            return await Task.Run(async () =>
             {
-                foreach (DataRow r in new SQLConnect().DynamicSimpleListSQL(msc).Tables[0].Rows)
+                MySqlCommand msc = new SqlQuerySort().SortMSC(recipeName, table, collumn);
+                try
                 {
+                    foreach (DataRow r in new SQLConnect().DynamicSimpleListSQL(msc).Tables[0].Rows)
+                    {
 
-                    Recipe recipe = new Recipe((int)r[0], (string)r[1], (string)r[3], GetIngredients((int)r[0]), Convert.ToSingle(r[2]));
+                        Recipe recipe = new Recipe((int)r[0], (string)r[1], (string)r[3], await GetIngredients((int)r[0]), Convert.ToSingle(r[2]));
 
-                    recipeList.Add(recipe);
+                        recipeList.Add(recipe);
+                    }
                 }
-            }
-            catch (NullReferenceException e)
-            {
-                Console.WriteLine(e);
-            }
-            return recipeList;
+                catch (NullReferenceException e)
+                {
+                    Console.WriteLine(e);
+                }
+                return recipeList;
+            });
         }
 
-        public Task<List<Recipe>> GetRange(string recipeName, int limit, int offset)
+        public async Task<List<Recipe>> GetRange(string recipeName, int limit, int offset)
         {
             List<Recipe> recipeList = new List<Recipe>();
             string table = "recipes";
             string collumn = "recipename";
 
-            return Task.Run(() =>
+            return await Task.Run(async() =>
             {
                 MySqlCommand msc = new SqlQuerySort().SortMSCInterval(recipeName, table, collumn, limit, offset);
                 foreach (DataRow r in new SQLConnect().DynamicSimpleListSQL(msc).Tables[0].Rows)
                 {
 
-                    Recipe recipe = new Recipe((int)r[0], (string)r[1], (string)r[3], GetIngredients((int)r[0]), Convert.ToSingle(r[2]));
+                    Recipe recipe = new Recipe((int)r[0], (string)r[1], (string)r[3], await GetIngredients((int)r[0]), Convert.ToSingle(r[2])); ;
 
                     recipeList.Add(recipe);
                 }
@@ -56,7 +60,7 @@ namespace BBCollection.DBHandling
 
         }
 
-        public List<Ingredient> GetIngredients(int recipeID)
+        public async Task<List<Ingredient>> GetIngredients(int recipeID)
         {
             List<Ingredient> ingredients = new List<Ingredient>();
             string ingredientsToRecipeQuery = "SELECT ingredients.ingredientName, ingredientsinrecipe.unit, ingredientsinrecipe.amount " +
@@ -65,26 +69,31 @@ namespace BBCollection.DBHandling
 
             MySqlCommand msc = new MySqlCommand(ingredientsToRecipeQuery);
             msc.Parameters.AddWithValue("@RecipeID", recipeID);
-
-            foreach (DataRow r in new SQLConnect().DynamicSimpleListSQL(msc).Tables[0].Rows)
+            return await Task.Run(() =>
             {
-                Ingredient ingredient = new Ingredient((string)r[0], (string)r[1], (int)r[2]);
-                ingredients.Add(ingredient);
-            }
+                foreach (DataRow r in new SQLConnect().DynamicSimpleListSQL(msc).Tables[0].Rows)
+                {
+                    Ingredient ingredient = new Ingredient((string)r[0], (string)r[1], (int)r[2]);
+                    ingredients.Add(ingredient);
+                }
 
-            return ingredients;
+                return ingredients;
+            });
         }
         #endregion
 
         #region Functions handling AddRecipe
-        public void AddList(Recipe recipe)
+        public async void AddList(Recipe recipe)
         {
-            AddRecipeToDatabase(recipe);
-            AddIngredientsToDatabase(recipe._ingredientList);
-            CombineRecipeAndIngredient(recipe);
+            await Task.Run(() =>
+            {
+                AddRecipeToDatabase(recipe);
+                AddIngredientsToDatabase(recipe._ingredientList);
+                CombineRecipeAndIngredient(recipe);
+            });
         }
 
-        private void AddRecipeToDatabase(Recipe recipe)
+        private async void AddRecipeToDatabase(Recipe recipe)
         {
             string recipeQuery = "INSERT INTO `Recipes`(`id`,`recipeName`,`amountPerson`,`recipeDesc`) VALUES(@RecipeID,@RecipeName,@RecipePersons,@RecipeDescription);";
             MySqlCommand msc = new MySqlCommand(recipeQuery);
@@ -93,62 +102,77 @@ namespace BBCollection.DBHandling
             msc.Parameters.AddWithValue("@RecipeName", recipe._Name);
             msc.Parameters.AddWithValue("@RecipePersons", recipe._PerPerson);
             msc.Parameters.AddWithValue("@RecipeDescription", recipe._description);
-
-            new SQLConnect().NonQueryMSC(msc);
-        }
-
-        private void AddIngredientsToDatabase(List<Ingredient> ingredients)
-        {
-            foreach (Ingredient ingredient in ingredients)
+            
+            await Task.Run(() =>
             {
-                if (!IngredientExist(ingredient))
-                {
-                    AddIngredientToDatabase(ingredient);
-                }
-            }
+                new SQLConnect().NonQueryMSC(msc);
+            });
         }
 
-        private void AddIngredientToDatabase(Ingredient ingredient)
+        private async void AddIngredientsToDatabase(List<Ingredient> ingredients)
+        {
+            await Task.Run(async() =>
+            {
+                foreach (Ingredient ingredient in ingredients)
+                {
+                    if (!await IngredientExist(ingredient))
+                    {
+                        AddIngredientToDatabase(ingredient);
+                    }
+                }
+            });
+        }
+
+        private async void AddIngredientToDatabase(Ingredient ingredient)
         {
             string IngredientToDatabase = "INSERT INTO `Ingredients` (`ingredientName`) VALUES (@Ingredient);";
             MySqlCommand msc = new MySqlCommand(IngredientToDatabase);
 
             msc.Parameters.AddWithValue("@Ingredient", ingredient._ingredientName);
 
-            new SQLConnect().NonQueryMSC(msc);
+            await Task.Run(() =>
+            {
+                new SQLConnect().NonQueryMSC(msc);
+            });
         }
 
-        private bool IngredientExist(Ingredient ingredient)
+        private async Task<bool> IngredientExist(Ingredient ingredient)
         {
             string ingredientExist = "SELECT * FROM `id` WHERE `id` = @Id;";
             MySqlCommand msc = new MySqlCommand(ingredientExist);
 
             msc.Parameters.AddWithValue("@Id", ingredient._id);
 
-            return new SQLConnect().CheckRecordExist(msc);
-        }
-
-        private void CombineRecipeAndIngredient(Recipe recipe)
-        {
-            foreach (Ingredient ingredient in recipe._ingredientList)
+            return await Task.Run(() =>
             {
-                string addIngredientReferance = "INSERT INTO `IngredientsInRecipe` (`recipeID`,`ingredientID`,`amount`,`unit`)" +
-                                                "VALUES(@RecipeID," +
-                                                "@IngredientID" +
-                                                ",@Amount,@Unit)";
-
-                MySqlCommand msc = new MySqlCommand(addIngredientReferance);
-
-                msc.Parameters.AddWithValue("@RecipeID", recipe._recipeID);
-                msc.Parameters.AddWithValue("@IngredientID", getIngredientFromName(ingredient._ingredientName));
-                msc.Parameters.AddWithValue("@Amount", ingredient._amount);
-                msc.Parameters.AddWithValue("@Unit", ingredient._unit);
-
-                new SQLConnect().NonQueryMSC(msc);
-            }
+                return new SQLConnect().CheckRecordExist(msc);
+            });
         }
 
-        private int getIngredientFromName(string ingredientName)
+        private async void CombineRecipeAndIngredient(Recipe recipe)
+        {
+            await Task.Run(() =>
+            {
+                foreach (Ingredient ingredient in recipe._ingredientList)
+                {
+                    string addIngredientReferance = "INSERT INTO `IngredientsInRecipe` (`recipeID`,`ingredientID`,`amount`,`unit`)" +
+                                                    "VALUES(@RecipeID," +
+                                                    "@IngredientID" +
+                                                    ",@Amount,@Unit)";
+
+                    MySqlCommand msc = new MySqlCommand(addIngredientReferance);
+
+                    msc.Parameters.AddWithValue("@RecipeID", recipe._recipeID);
+                    msc.Parameters.AddWithValue("@IngredientID", getIngredientFromName(ingredient._ingredientName));
+                    msc.Parameters.AddWithValue("@Amount", ingredient._amount);
+                    msc.Parameters.AddWithValue("@Unit", ingredient._unit);
+
+                    new SQLConnect().NonQueryMSC(msc);
+                }
+            });
+        }
+
+        private async Task<int> getIngredientFromName(string ingredientName)
         {
             int ingredientID = -1;
 
@@ -159,22 +183,24 @@ namespace BBCollection.DBHandling
 
             msc.Parameters.AddWithValue("@IngredientName", ingredientName);
 
-            DataSet ds = new SQLConnect().DynamicSimpleListSQL(msc);
+            return await Task.Run(() =>
+            {
+                DataSet ds = new SQLConnect().DynamicSimpleListSQL(msc);
+                try
+                {
+                    ingredientID = (int)ds.Tables[0].Rows[0][0];
+                }
+                catch (IndexOutOfRangeException indexOutOfRangeException)
+                {
+                    Console.WriteLine("Index not found: " + indexOutOfRangeException);
+                }
+                catch (NullReferenceException nullReferenceException)
+                {
+                    Console.WriteLine("NullException: " + nullReferenceException);
+                }
 
-            try
-            {
-                ingredientID = (int)ds.Tables[0].Rows[0][0];
-            }
-            catch (IndexOutOfRangeException indexOutOfRangeException)
-            {
-                Console.WriteLine("Index not found: " + indexOutOfRangeException);
-            }
-            catch (NullReferenceException nullReferenceException)
-            {
-                Console.WriteLine("NullException: " + nullReferenceException);
-            }
-
-            return ingredientID;
+                return ingredientID;
+            });
         }
         #endregion
     }

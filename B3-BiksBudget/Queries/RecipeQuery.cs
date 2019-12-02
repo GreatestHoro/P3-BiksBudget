@@ -41,7 +41,7 @@ namespace BBGatherer.Queries
             //Func products matching to the ingredients
             //want to make it multithreaded later
             //Find x sallingAPIProducts per distinct ingredient
-            Dictionary<string, List<Product>> productsDict = MatchingProducts(distinctIngredients);
+            Dictionary<string, List<Product>> productsDict = await MatchingProducts(distinctIngredients);
             //Turns the dictionary into a hashtable
             Hashtable productsHashtable = new Hashtable(productsDict);
 
@@ -98,13 +98,13 @@ namespace BBGatherer.Queries
         /// </summary>
         /// <param name="distinctIngredients">Gets the list of the distinct ingredients</param>
         /// <returns>Return a dictionary with keys being the distinct ingreient names, and the value being a list of matching products</returns>
-        private Dictionary<string, List<Product>> MatchingProducts(List<string> distinctIngredients)
+        private async Task<Dictionary<string, List<Product>>> MatchingProducts(List<string> distinctIngredients)
         {
             Dictionary<string, List<Product>> resDictionary = new Dictionary<string, List<Product>>();
 
             foreach(string ingredient in distinctIngredients)
             {                
-                resDictionary.Add(ingredient, Products(ingredient));
+                resDictionary.Add(ingredient, await Products(ingredient));
             }
             return resDictionary;
         }
@@ -114,10 +114,10 @@ namespace BBGatherer.Queries
         /// </summary>
         /// <param name="ingredient">ingredient name to search products for</param>
         /// <returns>the list of matching products searched in the products database with size of _productsToMatch and always at 0 offset</returns>
-        private List<Product> Products(string ingredient)
+        private async Task<List<Product>> Products(string ingredient)
         {
             List<Product> resProducts = new List<Product>();
-            resProducts = _dc.Product.GetRange(ingredient, _productsToMatch, 0);
+            resProducts = await _dc.Product.GetRange(ingredient, _productsToMatch, 0);
             resProducts.Sort((a,b) => a._price.CompareTo(b._price));
 
             return resProducts;

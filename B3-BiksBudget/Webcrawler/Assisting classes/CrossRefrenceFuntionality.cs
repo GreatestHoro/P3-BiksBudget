@@ -80,8 +80,8 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
         private bool CheckCOOPProductsInDatabase(String Searchterm)
         {
             string newRefrence;
-            List<Product> ProductsWithRef = new List<Product>();
-            if (!string.IsNullOrWhiteSpace(Searchterm))
+            List<Product> ProductsWithRef = dc.Product.GetListSync(Searchterm);
+            foreach (Product p in ProductsWithRef)
             {
                 ProductsWithRef = dc.Product.GetList(Searchterm);
                 foreach (Product p in ProductsWithRef)

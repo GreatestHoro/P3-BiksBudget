@@ -8,6 +8,7 @@ using BBCollection.StoreApi.SallingApi;
 using BBCollection.DBHandling;
 using BBCollection.DBConncetion;
 using System.Net;
+using System.Threading.Tasks;
 
 namespace BBCollection.BBObjects
 {
@@ -34,12 +35,12 @@ namespace BBCollection.BBObjects
         /// </summary>
         /// <param name="searchterm"></param>
         /// <returns></returns>
-        public List<Product> UseTogglefilters(string searchterm)
+        public async Task<List<Product>> UseTogglefilters(string searchterm)
         {
             List<Product> FilteredProductList = new List<Product>();
             bool flag = false;
             int i = 0;
-            List<Product> searchedProducts = dc.Product.GetList(searchterm);
+            List<Product> searchedProducts = await dc.Product.GetList(searchterm);
             AppliedFiltersList keyWordFilters = new AppliedFiltersList(ToggleWordFilters, wordArray);
 
             // Returns a list of string of the keywords enabled
