@@ -170,7 +170,7 @@
                                         <p>@p._amountleft</p>
                                     </div>
                                 </div>
-                                <button @onclick="(() => AddProductToSL(p))" class="btn btn-success mt-3"><i class="oi oi-basket"></i> Add to cart</button>
+                                <button @onclick="(() => AddProductToSL(p))" class="btn btn-success mt-3"><i class="oi oi-cart"></i> Shopping list</button>
                             </div>
                         </div>
                     </div>
@@ -191,7 +191,7 @@
         </div>
     }    
     <!--Scroll to top button   -->
-    <button id="myBtn" class="btn btn-rounded btn-success"><a href="search" style="color: white">Top</a></button>
+    <button id="myBtn" class="btn btn-rounded btn-success"><a href="search" style="color: white; font-size:12px;">Top</a></button>
 </div>
 }
 else if (!isSearching && !_viewProducts)
