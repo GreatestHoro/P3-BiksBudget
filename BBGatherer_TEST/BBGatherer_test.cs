@@ -128,7 +128,7 @@ namespace BBGatherer_TEST
         }
         #endregion
 
-        #region Comniation tests
+        #region Combination tests
         [TestMethod]
         public void specialCombination_GetAllCombinations_TEST()
         {
