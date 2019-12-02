@@ -21,10 +21,10 @@ namespace BBCollection.DBHandling
         /// in his or her storage.
         public async Task Update(string username, List<Product> products)
         {
-            await Task.Run(() =>
+            await Task.Run(async () =>
             {
-                Delete(username);
-                AddList(username, products);
+                await Delete(username);
+                await AddList(username, products);
             });
         }
 
@@ -153,7 +153,7 @@ namespace BBCollection.DBHandling
                         msc.Parameters.AddWithValue("@CustomName", p._customname);
                         msc.Parameters.AddWithValue("@AmountStored", p._amountleft);
                         msc.Parameters.AddWithValue("@State", p._state);
-                        new SQLConnect().NonQueryMSC(msc);
+                        await new SQLConnect().NonQueryMSC(msc);
                     }
                 }
             });
@@ -172,9 +172,9 @@ namespace BBCollection.DBHandling
 
             msc.Parameters.AddWithValue("@Username", username);
 
-            await Task.Run(() =>
+            await Task.Run(async () =>
             {
-                new SQLConnect().NonQueryMSC(msc);
+                await new SQLConnect().NonQueryMSC(msc);
             });
         }
     }

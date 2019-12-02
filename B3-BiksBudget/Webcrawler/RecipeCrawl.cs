@@ -77,7 +77,7 @@ namespace BBGatherer.Webcrawler
 
                         if (!fatalError)
                         {
-                            dc.Recipe.AddList(new Recipe
+                            await dc.Recipe.AddList(new Recipe
                             (i, name.ElementAt<HtmlNode>(0).InnerText,
                             Beskrivels.ElementAt<HtmlNode>(0).InnerText,
                             IngriedisensList,

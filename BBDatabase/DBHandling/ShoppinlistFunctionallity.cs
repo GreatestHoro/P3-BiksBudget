@@ -169,6 +169,11 @@ namespace BBCollection.DBHandling
 
             productString = JsonConvert.SerializeObject(CombinedList);
 
+            if (String.IsNullOrEmpty(productString))
+            {
+                productString = "[]";
+            }
+
             response = await SendToApi(productString);
 
             return response;
@@ -257,9 +262,7 @@ namespace BBCollection.DBHandling
         {
             productString = JsonConvert.SerializeObject(p);
 
-            var content = new StringContent(productString, Encoding.UTF8, "application/json");
-
-            response = await Http.PutAsync(connectionSettings.GetApiLink() + dest + Email, content);
+            response = await PutToApi(productString);
 
             return response;
         }
@@ -287,7 +290,7 @@ namespace BBCollection.DBHandling
         /// This method will only add one of the selected item.
         /// </summary>
         /// <param name="p"></param>
-        public async void AddOneItemToStorage(Product p)
+        public async Task<HttpResponseMessage> AddOneItemToStorage(Product p)
         {
             int realAmountLeft = p._amountleft;
 
@@ -299,7 +302,9 @@ namespace BBCollection.DBHandling
 
             p._amountleft = realAmountLeft;
 
-            await SendToApi(productString, "api/Storage");
+            response = await SendToApi(productString, "api/Storage");
+
+            return response;
         }
 
         /// <summary>

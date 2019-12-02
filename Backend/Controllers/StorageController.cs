@@ -154,7 +154,10 @@ namespace Backend.Controllers
                 storageList.RemoveAt(i);
             }
 
-            await dbConnect.Storage.Update(Email, storageList);
+            if (storageList.Count != 0)
+            {
+                await dbConnect.Storage.Update(Email, storageList);
+            }
         }
     }
 }

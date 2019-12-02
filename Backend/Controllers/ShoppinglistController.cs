@@ -61,7 +61,7 @@ namespace Backend.Controllers
 
         // POST: api/Shoppinglist
         [HttpPost("{_email}")]
-        public async Task Post(String _email)
+        public async void Post(String _email)
         {
             HttpRequest request = HttpContext.Request;
             Microsoft.AspNetCore.Http.HttpRequestRewindExtensions.EnableBuffering(request);
@@ -86,7 +86,7 @@ namespace Backend.Controllers
             if (newItems.Count == 0)
             {
                 // If an empty list is posted, the shoppinglist named "shoppinglist" is deleted.
-                dbConnect.Shoppinglist.Delete("Shoppinglist", Email);
+                await dbConnect.Shoppinglist.Delete("Shoppinglist", Email);
             }
             else
             {
@@ -110,8 +110,8 @@ namespace Backend.Controllers
                     } 
                 }
 
-                dbConnect.Shoppinglist.Delete("Shoppinglist", Email);
-                dbConnect.Shoppinglist.AddList(Email, toSend);
+                await dbConnect.Shoppinglist.Delete("Shoppinglist", Email);
+                await dbConnect.Shoppinglist.AddList(Email, toSend);
             }
         }
 
@@ -124,7 +124,7 @@ namespace Backend.Controllers
 
         // PUT: api/Shoppinglist/5
         [HttpPut("{_email}")]
-        public async Task PutQuick(string _email)
+        public async void PutQuick(string _email)
         {
             HttpRequest request = HttpContext.Request;
             Microsoft.AspNetCore.Http.HttpRequestRewindExtensions.EnableBuffering(request);
@@ -167,8 +167,8 @@ namespace Backend.Controllers
             // The dublicats in the shoppinglist are sorted out
             toSend[0]._products = funcionality.HandleDublicats(toSend[0]._products);
 
-            dbConnect.Shoppinglist.Delete("Shoppinglist", Email);
-            dbConnect.Shoppinglist.AddList(Email, toSend);
+            await dbConnect.Shoppinglist.Delete("Shoppinglist", Email);
+            await dbConnect.Shoppinglist.AddList(Email, toSend);
         }
     }
 }

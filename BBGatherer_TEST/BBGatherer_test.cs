@@ -18,9 +18,9 @@ namespace BBGatherer_TEST
             bool fatalError;
 
             string Expected = "lam";
-            string result = _RefTEST.CheckForValidIndgredients(testString,out fatalError);
+            string result = _RefTEST.CheckForValidIndgredients(testString, out fatalError);
 
-            Assert.AreEqual(Expected,result);
+            Assert.AreEqual(Expected, result);
         }
         [TestMethod]
         public void CrossRefrenceFuntionality_Pair_TEST()
@@ -54,11 +54,11 @@ namespace BBGatherer_TEST
         public void StringStringCleanUpFuntionality_RemoveStringOfLentgh_TEST()
         {
             StringCleanUpFuntionality SCF_TEST = new StringCleanUpFuntionality();
-            List<string> exceptions = new List<string>() {"Hi"};
+            List<string> exceptions = new List<string>() { "Hi" };
             string testString = "Hi this is an simple example made to test the method";
 
             string Expected = "this simple example made test the method";
-            string result = SCF_TEST.removeSubstringOfLentgh(testString,3, exceptions);
+            string result = SCF_TEST.removeSubstringOfLentgh(testString, 3, exceptions);
 
             Assert.AreEqual(Expected, result);
         }
@@ -82,7 +82,7 @@ namespace BBGatherer_TEST
             string RemoveStrat = "or";
 
             string Expected = "milk ";
-            string result = SCF_TEST.RemoveEverythingAfter(testString,RemoveStrat);
+            string result = SCF_TEST.RemoveEverythingAfter(testString, RemoveStrat);
 
             Assert.AreEqual(Expected, result);
         }
@@ -96,7 +96,7 @@ namespace BBGatherer_TEST
             char b = ')';
 
             string Expected = "hi this is  a test";
-            string result = SCF_TEST.RemoveInBetween(testString,a,b);
+            string result = SCF_TEST.RemoveInBetween(testString, a, b);
 
             Assert.AreEqual(Expected, result);
         }
@@ -122,7 +122,7 @@ namespace BBGatherer_TEST
             string test = "en";
 
             string Expected = "banana";
-            string result = SCF_TEST.RemoveIfFirstInString(testString,test);
+            string result = SCF_TEST.RemoveIfFirstInString(testString, test);
 
             Assert.AreEqual(Expected, result);
         }

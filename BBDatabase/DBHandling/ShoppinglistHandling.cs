@@ -11,13 +11,13 @@ namespace BBCollection.DBHandling
 {
     public class ShoppinglistHandling
     {
-        public async void AddList(string username, List<Shoppinglist> shoppinglists)
+        public async Task AddList(string username, List<Shoppinglist> shoppinglists)
         {
             string addQuery =
                 "INSERT INTO `shoppinglists`(`username`, `shoppinglist_name`,`product_id`,`amount`) " +
                 "VALUES(@Username,@ShoppinglistName,@ProductID,@Amount)";
 
-            await Task.Run(() =>
+            await Task.Run(async () =>
             {
                 foreach (Shoppinglist sl in shoppinglists)
                 {
@@ -30,7 +30,7 @@ namespace BBCollection.DBHandling
                         msc.Parameters.AddWithValue("@ProductID", p._id);
                         msc.Parameters.AddWithValue("@Amount", p._amountleft);
 
-                        new SQLConnect().NonQueryMSC(msc);
+                        await new SQLConnect().NonQueryMSC(msc);
                     }
                 }
             });
@@ -105,7 +105,7 @@ namespace BBCollection.DBHandling
         }
 
 
-        public async void Delete(string slName, string username)
+        public async Task Delete(string slName, string username)
         {
             string sLQuery =
                 "DELETE FROM `shoppinglists` WHERE `shoppinglist_name` = @SLName AND username = @Username";
@@ -116,9 +116,9 @@ namespace BBCollection.DBHandling
 
             msc.Parameters.AddWithValue("@Username", username);
 
-            await Task.Run(() =>
+            await Task.Run(async () =>
             {
-                new SQLConnect().NonQueryMSC(msc);
+                await new SQLConnect().NonQueryMSC(msc);
             });
         }
     }

@@ -88,11 +88,11 @@ namespace BBCollection.DBHandling
         #region Functions handling AddRecipe
         public async Task AddList(Recipe recipe)
         {
-            await Task.Run(() =>
+            await Task.Run(async() =>
             {
-                AddRecipeToDatabase(recipe);
-                AddIngredientsToDatabase(recipe._ingredientList);
-                CombineRecipeAndIngredient(recipe);
+                await AddRecipeToDatabase(recipe);
+                await AddIngredientsToDatabase(recipe._ingredientList);
+                await CombineRecipeAndIngredient(recipe);
             });
         }
 
@@ -106,9 +106,9 @@ namespace BBCollection.DBHandling
             msc.Parameters.AddWithValue("@RecipePersons", recipe._PerPerson);
             msc.Parameters.AddWithValue("@RecipeDescription", recipe._description);
             
-            await Task.Run(() =>
+            await Task.Run(async() =>
             {
-                new SQLConnect().NonQueryMSC(msc);
+                await new SQLConnect().NonQueryMSC(msc);
             });
         }
 
@@ -120,7 +120,7 @@ namespace BBCollection.DBHandling
                 {
                     if (!await IngredientExist(ingredient))
                     {
-                        AddIngredientToDatabase(ingredient);
+                        await AddIngredientToDatabase(ingredient);
                     }
                 }
             });
@@ -133,9 +133,9 @@ namespace BBCollection.DBHandling
 
             msc.Parameters.AddWithValue("@Ingredient", ingredient._ingredientName);
 
-            await Task.Run(() =>
+            await Task.Run(async() =>
             {
-                new SQLConnect().NonQueryMSC(msc);
+                await new SQLConnect().NonQueryMSC(msc);
             });
         }
 
@@ -154,7 +154,7 @@ namespace BBCollection.DBHandling
 
         private async Task CombineRecipeAndIngredient(Recipe recipe)
         {
-            await Task.Run(() =>
+            await Task.Run(async() =>
             {
                 foreach (Ingredient ingredient in recipe._ingredientList)
                 {
@@ -170,7 +170,7 @@ namespace BBCollection.DBHandling
                     msc.Parameters.AddWithValue("@Amount", ingredient._amount);
                     msc.Parameters.AddWithValue("@Unit", ingredient._unit);
 
-                    new SQLConnect().NonQueryMSC(msc);
+                    await new SQLConnect().NonQueryMSC(msc);
                 }
             });
         }

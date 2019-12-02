@@ -1,6 +1,7 @@
 ﻿using BBCollection.DBConncetion;
 using MySql.Data.MySqlClient;
 using System;
+using System.Threading.Tasks;
 
 namespace BBCollection.DBHandling
 {
@@ -14,16 +15,16 @@ namespace BBCollection.DBHandling
         /// since all the tables have to exist for the program to work 
         /// perfectly.
         /// </summary>
-        public void Start()
+        public async Task Start()
         {
             CreateCoreDatabase();
-            GenerateWebcrawelerDatabaseTables();
-            GenerateAPIDatabaseTables();
-            UpdateProductTable();
-            GenerateUserDatabaseTables();
-            GenerateSallingProductDB();
-            GenerateStorageTables();
-            GenerateShoppingListTables();
+            await GenerateWebcrawelerDatabaseTables();
+            await GenerateAPIDatabaseTables();
+            await UpdateProductTable();
+            await GenerateUserDatabaseTables();
+            await GenerateSallingProductDB();
+            await GenerateStorageTables();
+            await GenerateShoppingListTables();
         }
 
         /// <summary>
@@ -61,7 +62,7 @@ namespace BBCollection.DBHandling
 
         // The following methods contains the sql queries for the creation of the tables in the database.
         #region Table queries
-        private void GenerateWebcrawelerDatabaseTables()
+        private async Task GenerateWebcrawelerDatabaseTables()
         {
             string recipeTable =
                 "CREATE TABLE IF NOT EXISTS `Recipes` (" +
@@ -87,12 +88,12 @@ namespace BBCollection.DBHandling
                 "FOREIGN KEY(recipeID) REFERENCES RECIPES(id)," +
                 "FOREIGN KEY(ingredientID) REFERENCES INGREDIENTS(id)); ";
 
-            new SQLConnect().NonQueryString(recipeTable);
-            new SQLConnect().NonQueryString(ingredientTable);
-            new SQLConnect().NonQueryString(ingredientInRecipeTable);
+            await new SQLConnect().NonQueryString(recipeTable);
+            await new SQLConnect().NonQueryString(ingredientTable);
+            await new SQLConnect().NonQueryString(ingredientInRecipeTable);
         }
 
-        private void GenerateAPIDatabaseTables()
+        private async Task GenerateAPIDatabaseTables()
         {
             string productTable =
                 "CREATE TABLE IF NOT EXISTS `products` (" +
@@ -112,11 +113,11 @@ namespace BBCollection.DBHandling
                 "foreign key(product_id) references products(id))";
 
 
-            new SQLConnect().NonQueryString(productTable);
-            new SQLConnect().NonQueryString(productInIngredientQuery);
+            await new SQLConnect().NonQueryString(productTable);
+            await new SQLConnect().NonQueryString(productInIngredientQuery);
         }
 
-        private void GenerateUserDatabaseTables()
+        private async Task GenerateUserDatabaseTables()
         {
             string userTable =
                 "CREATE TABLE IF NOT EXISTS `users` (" +
@@ -124,10 +125,10 @@ namespace BBCollection.DBHandling
                 "`password` VARCHAR(255), " +
                 "PRIMARY KEY(username));";
 
-            new SQLConnect().NonQueryString(userTable);
+            await new SQLConnect().NonQueryString(userTable);
         }
 
-        private void GenerateSallingProductDB()
+        private async Task GenerateSallingProductDB()
         {
             string sallingTable =
                 "CREATE TABLE IF NOT EXISTS `sallingproducts` (" +
@@ -140,10 +141,10 @@ namespace BBCollection.DBHandling
                 "`img` VARCHAR(255), " +
                 "PRIMARY KEY(id));";
 
-            new SQLConnect().NonQueryString(sallingTable);
+            await new SQLConnect().NonQueryString(sallingTable);
         }
 
-        private void GenerateStorageTables()
+        private async Task GenerateStorageTables()
         {
             string storageTable =
                 "CREATE TABLE IF NOT EXISTS `userstorage` (" +
@@ -156,10 +157,10 @@ namespace BBCollection.DBHandling
                 "foreign key(username) REFERENCES users(username), " +
                 "foreign key(prodid) REFERENCES products(id));";
 
-            new SQLConnect().NonQueryString(storageTable);
+            await new SQLConnect().NonQueryString(storageTable);
         }
 
-        private void GenerateShoppingListTables()
+        private async Task GenerateShoppingListTables()
         {
             string shoppingListTables =
                 "CREATE TABLE IF NOT EXISTS `shoppinglists`( " +
@@ -172,15 +173,15 @@ namespace BBCollection.DBHandling
                 "foreign key(username) references users(username)," +
                 "foreign key(product_id) references products(id));";
 
-            new SQLConnect().NonQueryString(shoppingListTables);
+            await new SQLConnect().NonQueryString(shoppingListTables);
         }
 
-        private void UpdateProductTable()
+        private async Task UpdateProductTable()
         {
             string newCollumnQuery =
                 "ALTER TABLE `products` ADD `ingredient_reference` varchar(255)";
 
-            new SQLConnect().NonQueryString(newCollumnQuery);
+            await new SQLConnect().NonQueryString(newCollumnQuery);
         }
         #endregion
     }
