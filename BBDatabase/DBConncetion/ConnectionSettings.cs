@@ -36,6 +36,7 @@ namespace BBCollection.DBConncetion
             _MySqlLocalWithDB = @"server=localhost;database="+ _DatabaseName +";userid=root;password=BiksBudget123";
             _MySqlLocalWithoutDB = @"server=localhost;userid=root;password=BiksBudget123";
 
+            //Backend20191127044711 
             _AzureApiLink = "https://backend20191127044711.azurewebsites.net/";
             _LocalApiLink = "https://localhost:44325/";
         }

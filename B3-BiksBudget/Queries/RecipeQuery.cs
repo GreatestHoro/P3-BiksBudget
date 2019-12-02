@@ -25,7 +25,7 @@ namespace BBGatherer.Queries
 
         int _productsPerIngredient { get; set; } = 3;
 
-        /// <summary> 
+        /// <summary>
         /// Calculates at batch of _productsPerLoad of recipes sorted by price, where the prie for each is calculated
         /// </summary>
         /// <param name="searchTerm">The recipe title searched on</param>
@@ -41,7 +41,7 @@ namespace BBGatherer.Queries
             //Func products matching to the ingredients
             //want to make it multithreaded later
             //Find x sallingAPIProducts per distinct ingredient
-            Dictionary<string, List<Product>> productsDict = MatchingProducts(distinctIngredients);
+            Dictionary<string, List<Product>> productsDict = await MatchingProducts(distinctIngredients);
             //Turns the dictionary into a hashtable
             Hashtable productsHashtable = new Hashtable(productsDict);
 
@@ -69,7 +69,7 @@ namespace BBGatherer.Queries
         /// <param name="recipe">the recipe to perform the calculation upon</param>
         /// <returns>returns a new ComplexRecipecComponent which has the total recipeCost and a dictionary of products</returns>
         private ComplexRecipeComponent RecipeCost(Hashtable productsHashtable, Recipe recipe)
-        {            
+        {
             double totalCost = 0;
             // CRP = ComplexRecipeComponent
             //ComplexRecipeComponent CRP = new ComplexRecipeComponent();
@@ -98,13 +98,13 @@ namespace BBGatherer.Queries
         /// </summary>
         /// <param name="distinctIngredients">Gets the list of the distinct ingredients</param>
         /// <returns>Return a dictionary with keys being the distinct ingreient names, and the value being a list of matching products</returns>
-        private Dictionary<string, List<Product>> MatchingProducts(List<string> distinctIngredients)
+        private async Task<Dictionary<string, List<Product>>> MatchingProducts(List<string> distinctIngredients)
         {
             Dictionary<string, List<Product>> resDictionary = new Dictionary<string, List<Product>>();
 
             foreach(string ingredient in distinctIngredients)
-            {                
-                resDictionary.Add(ingredient, Products(ingredient));
+            {
+                resDictionary.Add(ingredient, await Products(ingredient));
             }
             return resDictionary;
         }
@@ -114,10 +114,11 @@ namespace BBGatherer.Queries
         /// </summary>
         /// <param name="ingredient">ingredient name to search products for</param>
         /// <returns>the list of matching products searched in the products database with size of _productsToMatch and always at 0 offset</returns>
-        private List<Product> Products(string ingredient)
+        private async Task<List<Product>> Products(string ingredient)
         {
             List<Product> resProducts = new List<Product>();
-            resProducts = _dc.Product.GetRange(ingredient, _productsToMatch, 0);
+            resProducts = await _dc.Product.GetRange(ingredient, _productsToMatch, _loadCount);
+
             resProducts.Sort((a,b) => a._price.CompareTo(b._price));
 
             return resProducts;
@@ -129,20 +130,20 @@ namespace BBGatherer.Queries
         /// <para>It checks if the previous serach is the same as the current. If true it it increments the offset to the next un-discovered batch</para>
         /// <para>If not it sets the offset back to zero and resets the _prevsearch to the current search term</para>
         /// </summary>
-        /// 
+        ///
         /// <param name="searchTerm">The recipe title searched for</param>
         /// <returns>Returns a list of size  _productsPerLoad at the given offsett</returns>
         private async Task<List<Recipe>> Recipes(string searchTerm)
         {
-            if (_prevSearch == searchTerm)
-            {
-                _loadCount++;
-            } 
-            else
-            {
-                _loadCount = 0;
-                _prevSearch = searchTerm;
-            }
+            //if (_prevSearch == searchTerm)
+            //{
+            //    _loadCount++;
+            //}
+            //else
+            //{
+            //    _loadCount = 0;
+            //    _prevSearch = searchTerm;
+            //}
             return await _dc.Recipe.GetRange(searchTerm, _productsPerLoad, _productsPerLoad * _loadCount);
         }
 
@@ -159,12 +160,12 @@ namespace BBGatherer.Queries
             foreach (Recipe recipe in recipeList)
             {
                 //procject List of Ingredient objects to a list of their name
-                //Add that range ^^ to resIngredients 
+                //Add that range ^^ to resIngredients
                 resIngredients.AddRange(recipe._ingredientList.Select((ingredient) => ingredient._ingredientName));
             }
             // return distinct ingredients
             List<string> distinctIngredients = resIngredients.Distinct().ToList();
-        
+
             return distinctIngredients;
         }
     }

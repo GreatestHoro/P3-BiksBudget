@@ -57,7 +57,7 @@ namespace BBGatherer
             if (salling == true)
             {
                 RecipeCrawl WebRunner = new RecipeCrawl();
-                _ = WebRunner.GetRecipes(75, 30000, dbConnect);
+                _ = WebRunner.GetRecipes(2883, 2884, dbConnect);
 
                 Console.WriteLine("web runner begins... fear its power");
                 Console.ReadLine();
