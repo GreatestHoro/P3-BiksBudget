@@ -64,11 +64,6 @@ namespace BBCollection.StoreApi.CoopApi
 
             List<CoopProduct> coopProducts = openHttpStore.ReadAndParseAPI();
 
-            //foreach(var item in coopProducts)
-            //{
-            //    Console.WriteLine(item.Navn + " - " + item.Pris);
-            //}
-
             return coopProducts;
         }
 

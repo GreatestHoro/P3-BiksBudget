@@ -112,9 +112,7 @@ namespace Backend.Controllers
 
                 dbConnect.Shoppinglist.Delete("Shoppinglist", Email);
                 dbConnect.Shoppinglist.AddList(Email, toSend);
-                
             }
-
         }
 
         /// <summary>

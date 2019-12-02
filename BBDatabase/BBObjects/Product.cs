@@ -92,6 +92,24 @@
             _state = state;
         }
 
+        public Product(string id, int amountLeft)
+        {
+            _id = id;
+            _amountleft = amountLeft;
+        }
+
+        public Product(Product p)
+        {
+            _id = p._id;
+            _productName = p._productName;
+            _amount = p._amount;
+            _price = p._price;
+            _image = p._image;
+            _storeName = p._storeName;
+            _amountleft = p._amountleft;
+            _CustomReferenceField = p._CustomReferenceField;
+        }
+
         public Product() { }
 
     }

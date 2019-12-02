@@ -55,15 +55,11 @@ namespace Backend.Controllers
             if(exist == true)
             {
                 return Ok(ModelState);
-                //response = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
-            } else
+            } 
+            else
             {
                 return BadRequest(ModelState);
-                //var message = string.Format("Product with email " + user._userName + "was not found");
-                //response = new HttpResponseMessage(System.Net.HttpStatusCode.NotFound);
             }
-
-            //return response;
         }
 
         // PUT: api/Login/5
