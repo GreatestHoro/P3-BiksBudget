@@ -23,7 +23,8 @@ namespace BBCollection.DBHandling
                 MySqlCommand msc = new SqlQuerySort().SortMSC(recipeName, table, collumn);
                 try
                 {
-                    foreach (DataRow r in new SQLConnect().DynamicSimpleListSQL(msc).Tables[0].Rows)
+                    DataSet ds = await new SQLConnect().DynamicSimpleListSQL(msc);
+                    foreach (DataRow r in ds.Tables[0].Rows)
                     {
 
                         Recipe recipe = new Recipe((int)r[0], (string)r[1], (string)r[3], await GetIngredients((int)r[0]), Convert.ToSingle(r[2]));
@@ -48,7 +49,8 @@ namespace BBCollection.DBHandling
             return await Task.Run(async() =>
             {
                 MySqlCommand msc = new SqlQuerySort().SortMSCInterval(recipeName, table, collumn, limit, offset);
-                foreach (DataRow r in new SQLConnect().DynamicSimpleListSQL(msc).Tables[0].Rows)
+                DataSet ds = await new SQLConnect().DynamicSimpleListSQL(msc);
+                foreach (DataRow r in ds.Tables[0].Rows)
                 {
 
                     Recipe recipe = new Recipe((int)r[0], (string)r[1], (string)r[3], await GetIngredients((int)r[0]), Convert.ToSingle(r[2])); ;
@@ -69,9 +71,10 @@ namespace BBCollection.DBHandling
 
             MySqlCommand msc = new MySqlCommand(ingredientsToRecipeQuery);
             msc.Parameters.AddWithValue("@RecipeID", recipeID);
-            return await Task.Run(() =>
+            return await Task.Run(async() =>
             {
-                foreach (DataRow r in new SQLConnect().DynamicSimpleListSQL(msc).Tables[0].Rows)
+                DataSet ds = await new SQLConnect().DynamicSimpleListSQL(msc);
+                foreach (DataRow r in ds.Tables[0].Rows)
                 {
                     Ingredient ingredient = new Ingredient((string)r[0], (string)r[1], (int)r[2]);
                     ingredients.Add(ingredient);
@@ -83,7 +86,7 @@ namespace BBCollection.DBHandling
         #endregion
 
         #region Functions handling AddRecipe
-        public async void AddList(Recipe recipe)
+        public async Task AddList(Recipe recipe)
         {
             await Task.Run(() =>
             {
@@ -93,7 +96,7 @@ namespace BBCollection.DBHandling
             });
         }
 
-        private async void AddRecipeToDatabase(Recipe recipe)
+        private async Task AddRecipeToDatabase(Recipe recipe)
         {
             string recipeQuery = "INSERT INTO `Recipes`(`id`,`recipeName`,`amountPerson`,`recipeDesc`) VALUES(@RecipeID,@RecipeName,@RecipePersons,@RecipeDescription);";
             MySqlCommand msc = new MySqlCommand(recipeQuery);
@@ -109,7 +112,7 @@ namespace BBCollection.DBHandling
             });
         }
 
-        private async void AddIngredientsToDatabase(List<Ingredient> ingredients)
+        private async Task AddIngredientsToDatabase(List<Ingredient> ingredients)
         {
             await Task.Run(async() =>
             {
@@ -123,7 +126,7 @@ namespace BBCollection.DBHandling
             });
         }
 
-        private async void AddIngredientToDatabase(Ingredient ingredient)
+        private async Task AddIngredientToDatabase(Ingredient ingredient)
         {
             string IngredientToDatabase = "INSERT INTO `Ingredients` (`ingredientName`) VALUES (@Ingredient);";
             MySqlCommand msc = new MySqlCommand(IngredientToDatabase);
@@ -149,7 +152,7 @@ namespace BBCollection.DBHandling
             });
         }
 
-        private async void CombineRecipeAndIngredient(Recipe recipe)
+        private async Task CombineRecipeAndIngredient(Recipe recipe)
         {
             await Task.Run(() =>
             {
@@ -183,9 +186,9 @@ namespace BBCollection.DBHandling
 
             msc.Parameters.AddWithValue("@IngredientName", ingredientName);
 
-            return await Task.Run(() =>
+            return await Task.Run(async () =>
             {
-                DataSet ds = new SQLConnect().DynamicSimpleListSQL(msc);
+                DataSet ds = await new SQLConnect().DynamicSimpleListSQL(msc);
                 try
                 {
                     ingredientID = (int)ds.Tables[0].Rows[0][0];

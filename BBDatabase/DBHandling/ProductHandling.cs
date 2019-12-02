@@ -15,7 +15,7 @@ namespace BBCollection.DBHandling
         /// SQLConnect() class, where it is added to the Database.
         /// </summary>
         /// <param name="product"></param> The product object contains the variables that have to be added to the database.
-        public async void Add(Product product)
+        public async Task Add(Product product)
         {
             string addProductQuery = "INSERT INTO `products`(`id`,`productname`,`amount`,`price`,`image`, `store`)" +
                                      "VALUES(@Id,@ProductName,@Amount,@Price,@Image,@Store);";
@@ -38,7 +38,7 @@ namespace BBCollection.DBHandling
         /// </summary>
         /// <param name="reference"></param> Reference is a string, with the ingredient references.
         /// <param name="prodid"></param> Prodid is a string that contains the ID of the object.
-        public async void AddReference(string reference, string prodid)
+        public async Task AddReference(string reference, string prodid)
         {
             string insertQuery =
                 "UPDATE `products` SET `ingredient_reference` = @Reference WHERE id = @Prodid";
@@ -57,9 +57,9 @@ namespace BBCollection.DBHandling
             string table = "products";
             string collumn = "productname";
 
-            return await Task.Run(() => {
+            return await Task.Run(async () => {
 
-                DataSet ds = new SQLConnect().DynamicSimpleListSQL(new SqlQuerySort().SortMSC(productName, table, collumn));
+                DataSet ds = await new SQLConnect().DynamicSimpleListSQL(new SqlQuerySort().SortMSC(productName, table, collumn));
 
                 if (ds.Tables.Count != 0)
                 {
@@ -82,13 +82,13 @@ namespace BBCollection.DBHandling
             });
         }
 
-        public List<Product> GetListSync(string productName)
+        public List<Product> GetListSyncAsync(string productName)
         {
             List<Product> productList = new List<Product>();
             string table = "products";
             string collumn = "productname";
 
-                DataSet ds = new SQLConnect().DynamicSimpleListSQL(new SqlQuerySort().SortMSC(productName, table, collumn));
+                DataSet ds = new SQLConnect().DynamicSimpleListSQLSync(new SqlQuerySort().SortMSC(productName, table, collumn));
 
                 if (ds.Tables.Count != 0)
                 {
@@ -116,9 +116,9 @@ namespace BBCollection.DBHandling
             string table = "products";
             string collumn = "productname";
 
-            return await Task.Run(() =>
+            return await Task.Run(async () =>
             {
-                DataSet ds = new SQLConnect().DynamicSimpleListSQL(new SqlQuerySort().SortMSCInterval(productName, table, collumn, limit, offset));
+                DataSet ds = await new SQLConnect().DynamicSimpleListSQL(new SqlQuerySort().SortMSCInterval(productName, table, collumn, limit, offset));
                 if (ds.Tables.Count != 0)
                 {
                     foreach (DataRow r in ds.Tables[0].Rows)

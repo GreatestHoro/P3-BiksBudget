@@ -19,7 +19,7 @@ namespace BBCollection.DBHandling
         /// <param name="username"></param> The username, is the string of the user that are logged in.
         /// <param name="products"></param> The products is the list of the new products that have the user is going to have
         /// in his or her storage.
-        public async void Update(string username, List<Product> products)
+        public async Task Update(string username, List<Product> products)
         {
             await Task.Run(() =>
             {
@@ -59,9 +59,9 @@ namespace BBCollection.DBHandling
 
             // After this we have two if statements equal to eachother, one where the custom name null 
             // and one where it is not. 
-            return await Task.Run(() =>
+            return await Task.Run(async () =>
             {
-                if (new SQLConnect().CheckRecordExist(prodmsc))
+                if (await new SQLConnect().CheckRecordExist(prodmsc))
                 {
                     // We first make the storageQuery, where we select collumns from both the products and userstorage tables,
                     // we do that by joining the tables together with a INNER JOIN, with foreign key 'userstorage.prodid' from userstorage linked with the product 
@@ -75,7 +75,7 @@ namespace BBCollection.DBHandling
                     // and inserts it in a dataset. We do that with the DynamicSimpleListSQL method from the SQLConnect class.
                     MySqlCommand msc = new MySqlCommand(storageQuery);
                     msc.Parameters.AddWithValue("@Username", username);
-                    DataSet ds = new SQLConnect().DynamicSimpleListSQL(msc);
+                    DataSet ds = await new SQLConnect().DynamicSimpleListSQL(msc);
 
                     // Afterwards we loop through the dataset and add the products to the productList.
                     if (ds.Tables.Count != 0)
@@ -87,7 +87,7 @@ namespace BBCollection.DBHandling
                         }
                     }
                 }
-                if (new SQLConnect().CheckRecordExist(custmsc))
+                if (await new SQLConnect().CheckRecordExist(custmsc))
                 {
                     // The steps from the previous if statement is repeated, just without a inner join.
                     storageQuery =
@@ -96,7 +96,7 @@ namespace BBCollection.DBHandling
                         "WHERE username = @Username AND custom_name IS NOT NULL;";
                     MySqlCommand msc = new MySqlCommand(storageQuery);
                     msc.Parameters.AddWithValue("@Username", username);
-                    DataSet ds = new SQLConnect().DynamicSimpleListSQL(msc);
+                    DataSet ds = await new SQLConnect().DynamicSimpleListSQL(msc);
 
 
                     if (ds.Tables.Count != 0)
@@ -121,9 +121,9 @@ namespace BBCollection.DBHandling
         /// </summary>
         /// <param name="username"></param>
         /// <param name="storage"></param>
-        public async void AddList(string username, List<Product> storage)
+        public async Task AddList(string username, List<Product> storage)
         {
-            await Task.Run(() =>
+            await Task.Run(async () =>
             {
                 foreach (Product p in storage)
                 {
@@ -143,7 +143,7 @@ namespace BBCollection.DBHandling
                     exist.Parameters.AddWithValue("@Username", username);
 
                     //If the product doesn't exist, the product is added to the user's storage.
-                    if (!new SQLConnect().CheckRecordExist(exist))
+                    if (!await new SQLConnect().CheckRecordExist(exist))
                     {
 
                         MySqlCommand msc = new MySqlCommand(productQuery);
@@ -164,7 +164,7 @@ namespace BBCollection.DBHandling
         /// Then it deletes everything in the user's storage.
         /// </summary>
         /// <param name="username"></param> The username string parameter, is the user that are logged in.
-        public async void Delete(string username)
+        public async Task Delete(string username)
         {
             string removeQuery = "DELETE FROM `userstorage` WHERE `username` = @Username";
 

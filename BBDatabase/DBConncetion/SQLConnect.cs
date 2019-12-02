@@ -10,59 +10,99 @@ namespace BBCollection.DBConncetion
     {
         DatabaseInformation databaseInformation = new DatabaseInformation();
 
-        public async void NonQueryString(string sqlQuery)
-        {
-            MySqlConnection connection = null;
-            try
-            {
-                connection = new MySqlConnection(databaseInformation.ConnectionString(true));
-                connection.Open();
-
-                new MySqlCommand(sqlQuery, connection).ExecuteNonQuery();
-            }
-            catch (MySqlException e)
-            {
-                Console.WriteLine(e);
-            }
-            finally
-            {
-                if (connection != null)
-                {
-                    connection.Close();
-                }
-            }
-
-        }
-        public void NonQueryMSC(MySqlCommand msc)
+        public async Task NonQueryString(string sqlQuery)
         {
             MySqlConnection connection = null;
 
-            try
+            await Task.Run(() =>
             {
-                connection = new MySqlConnection(databaseInformation.ConnectionString(true));
-                connection.Open();
-
-                msc.Connection = connection;
-
-                msc.ExecuteNonQuery();
-            }
-            catch (MySqlException e)
-            {
-                Console.Write(e);
-            }
-            finally
-            {
-                if (connection != null)
+                try
                 {
-                    connection.Close();
+                    connection = new MySqlConnection(databaseInformation.ConnectionString(true));
+                    connection.Open();
+
+                    new MySqlCommand(sqlQuery, connection).ExecuteNonQuery();
                 }
-            }
+                catch (MySqlException e)
+                {
+                    Console.WriteLine(e);
+                }
+                finally
+                {
+                    if (connection != null)
+                    {
+                        connection.Close();
+                    }
+                }
+            });
+
         }
-        public DataSet DynamicSimpleListSQL(MySqlCommand mscom)
+        public async Task NonQueryMSC(MySqlCommand msc)
+        {
+            MySqlConnection connection = null;
+
+            await Task.Run(() =>
+            {
+                try
+                {
+                    connection = new MySqlConnection(databaseInformation.ConnectionString(true));
+                    connection.Open();
+
+                    msc.Connection = connection;
+
+                    msc.ExecuteNonQuery();
+                }
+                catch (MySqlException e)
+                {
+                    Console.Write(e);
+                }
+                finally
+                {
+                    if (connection != null)
+                    {
+                        connection.Close();
+                    }
+                }
+            });
+        }
+
+        public async Task<DataSet> DynamicSimpleListSQL(MySqlCommand mscom)
         {
             MySqlConnection connection = null;
             DataSet ds = null;
 
+            return await Task.Run(() =>
+           {
+               try
+               {
+                   connection = new MySqlConnection(databaseInformation.ConnectionString(true));
+                   connection.Open();
+
+                   mscom.Connection = connection;
+
+                   MySqlDataAdapter msda = new MySqlDataAdapter(mscom);
+
+                   msda.Fill(ds = new DataSet());
+               }
+               catch (MySqlException e)
+               {
+                   Console.WriteLine(e);
+               }
+               finally
+               {
+                   if (connection != null)
+                   {
+                       connection.Close();
+                   }
+               }
+               return ds;
+           });
+        }
+
+        public DataSet DynamicSimpleListSQLSync(MySqlCommand mscom)
+        {
+            MySqlConnection connection = null;
+            DataSet ds = null;
             try
             {
                 connection = new MySqlConnection(databaseInformation.ConnectionString(true));
@@ -73,61 +113,56 @@ namespace BBCollection.DBConncetion
                 MySqlDataAdapter msda = new MySqlDataAdapter(mscom);
 
                 msda.Fill(ds = new DataSet());
-
-                /*string ingredientsToRecipeQuery = "SELECT * FROM IngredientsInRecipe WHERE recipeID = @RecipeID";
-                MySqlCommand msc = new MySqlCommand(ingredientsToRecipeQuery, connection);
-                msc.Parameters.AddWithValue("@RecipeID", recipeID);
-                MySqlDataReader msdr = msc.ExecuteReader();
-
-                while (msdr.Read())
-                {
-                    Ingredient ingredient = new Ingredient(msdr.GetString("ingredientName"), msdr.GetString("unit"), msdr.GetInt32("amount"));
-                    ingredients.Add(ingredient);
-                }*/
             }
-            catch(MySqlException e)
+            catch (MySqlException e)
             {
                 Console.WriteLine(e);
             }
             finally
             {
-                if(connection != null)
+                if (connection != null)
                 {
                     connection.Close();
                 }
             }
-
             return ds;
         }
-        public bool CheckRecordExist(MySqlCommand msc)
+
+        public async Task<bool> CheckRecordExist(MySqlCommand msc)
         {
             bool exist = false;
             MySqlConnection connection = null;
-            try
+
+            return await Task.Run(() =>
             {
-                connection = new MySqlConnection(databaseInformation.ConnectionString(true));
-                connection.Open();
-
-                msc.Connection = connection;
-
-                int amountOfObjects = Convert.ToInt32(msc.ExecuteScalar());
-
-                if(amountOfObjects > 0)
+                try
                 {
-                    exist = true;
-                }
+                    connection = new MySqlConnection(databaseInformation.ConnectionString(true));
+                    connection.Open();
 
-            } catch(MySqlException e)
-            {
-                Console.WriteLine(e);
-            } finally
-            {
-                if(connection != null)
-                {
-                    connection.Close();
+                    msc.Connection = connection;
+
+                    int amountOfObjects = Convert.ToInt32(msc.ExecuteScalar());
+
+                    if (amountOfObjects > 0)
+                    {
+                        exist = true;
+                    }
+
                 }
-            }
-            return exist;
+                catch (MySqlException e)
+                {
+                    Console.WriteLine(e);
+                }
+                finally
+                {
+                    if (connection != null)
+                    {
+                        connection.Close();
+                    }
+                }
+                return exist;
+            });
         }
     }
 }
