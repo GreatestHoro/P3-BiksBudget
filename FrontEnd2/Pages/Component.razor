@@ -2,6 +2,7 @@
 
 @using BBCollection.BBObjects;
 @using BBCollection.DBConncetion;
+@using BBCollection.DBHandling;
 @using Newtonsoft.Json;
 @using FrontEnd2.Data;
 @using System.Diagnostics;
@@ -57,7 +58,7 @@
                             }
 
                             <tr>
-                                <td>@(String.Format("{0:0.0}", (ing._amount/recipePerPerson)*scalar)) @ing._unit</td>
+                                <td>@(String.Format("{0:0.0}", (ing._amount / recipePerPerson) * scalar)) @ing._unit</td>
                                 <td><button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => retriveIngredient(ing))">@ing._ingredientName</button></td>
                             </tr>
                         }
@@ -126,7 +127,7 @@
 
 
 @code{
-        #region Fields
+    #region Fields
 
     ConnectionSettings connectionSettings = new ConnectionSettings();
     string recipeDescription = " ";
@@ -137,93 +138,68 @@
     int scalar = 1;
     int runCounter = 0;
 
-        int recipePerPerson;
+    int recipePerPerson;
 
-        int value;
+    int value;
 
-        string tempIngredientName = " ";
+    string tempIngredientName = " ";
 
-        bool viewRecipeTitle = false;
-        bool viewIngredients = false;
-        bool viewProducts = false;
+    bool viewRecipeTitle = false;
+    bool viewIngredients = false;
+    bool viewProducts = false;
 
-        //bool viewAddToshoppinglist = false;
+    //bool viewAddToshoppinglist = false;
 
-        List<float> recipeAmount = new List<float>();
-        List<Ingredient> ingredients = new List<Ingredient>();
-        List<Recipe> recipeData = new List<Recipe>();
-        List<ComplexRecipe> complexRecipes = new List<ComplexRecipe>();
-        List<Product> products = new List<Product>();
-        List<int> sum = new List<int>();
-        List<string> values = new List<string>();
+    List<float> recipeAmount = new List<float>();
+    List<Ingredient> ingredients = new List<Ingredient>();
+    List<Recipe> recipeData = new List<Recipe>();
+    List<ComplexRecipe> complexRecipes = new List<ComplexRecipe>();
+    List<Product> products = new List<Product>();
+    List<int> sum = new List<int>();
+    List<string> values = new List<string>();
 
-        //exsperimental
-        List<Product> ToShoppinglist = new List<Product>();
-        List<Product> QuickList = new List<Product>();
-        List<List<Product>> returnList = new List<List<Product>>();
-        string shopString;
+    //exsperimental
+    List<Product> ToShoppinglist = new List<Product>();
+    List<Product> QuickList = new List<Product>();
+    List<List<Product>> returnList = new List<List<Product>>();
+    string shopString;
 
-        HttpResponseMessage responseMessage = new HttpResponseMessage();
-        ShoppinlistFunctionality ShopList = new ShoppinlistFunctionality("api/Shoppinglist");
-        #endregion
+    HttpResponseMessage responseMessage = new HttpResponseMessage();
+    ShoppinlistFunctionality ShopList = new ShoppinlistFunctionality("api/Shoppinglist");
+    #endregion
 
-        #region Recipe_Methods
-        void addtoMinibox()
+    #region Recipe_Methods
+    void addtoMinibox()
+    {
+
+    }
+
+    void retriveIngredient(Ingredient ID)
+    {
+        viewProducts = true;
+        Ingredient ing = ingredients.First(x => x._ingredientName == ID._ingredientName);
+        tempIngredientName = ing._ingredientName;
+        getIngredientProducts();
+    }
+
+    void getIngredientProducts()
+    {
+        if (products == null)
         {
-
-        }
-
-        void retriveIngredient(Ingredient ID)
-        {
-            viewProducts = true;
-            Ingredient ing = ingredients.First(x => x._ingredientName == ID._ingredientName);
-            tempIngredientName = ing._ingredientName;
-            getIngredientProducts();
-        }
-
-        void getIngredientProducts()
-        {
-            if (products == null)
+            foreach (ComplexRecipe com in complexRecipes)
             {
-                foreach (ComplexRecipe com in complexRecipes)
+                foreach (string s in com._complexRecipeComponent._products.Keys)
                 {
-                    foreach (string s in com._complexRecipeComponent._products.Keys)
+                    if (s.Contains(tempIngredientName))
                     {
-                        if (s.Contains(tempIngredientName))
+                        foreach (List<Product> pro in com._complexRecipeComponent._products.Values)
                         {
-                            foreach (List<Product> pro in com._complexRecipeComponent._products.Values)
+                            foreach (Product p in pro)
                             {
-                                foreach (Product p in pro)
+                                if (p._productName.Contains(tempIngredientName) && !products.Contains(p))
                                 {
-                                    if (p._productName.Contains(tempIngredientName) && !products.Contains(p))
-                                    {
-                                        products.Add(p);
-                                        QuickList.Add(p);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            else
-            {
-                products.Clear();
-                foreach (ComplexRecipe com in complexRecipes)
-                {
-                    foreach (string s in com._complexRecipeComponent._products.Keys)
-                    {
-                        if (s.Contains(tempIngredientName))
-                        {
-                            foreach (List<Product> pro in com._complexRecipeComponent._products.Values)
-                            {
-                                foreach (Product p in pro)
-                                {
-                                    if (p._productName.Contains(tempIngredientName) && !products.Contains(p))
-                                    {
-                                        products.Add(p);
-                                        QuickList.Add(p);
-                                    }
+                                    products.Add(p);
+                                    QuickList.Add(p);
                                 }
                             }
                         }
@@ -231,184 +207,209 @@
                 }
             }
         }
-
-        //async void AddToShoppinglist()
-        //{
-        //    List<Product> listToSend = new List<Product>();
-
-        //    foreach (var item in ingredients)
-        //    {
-        //        listToSend.Add(new Product() { _id = item._id.ToString(), _amount = item._amount + item._unit, _productName = item._ingredientName });
-        //    }
-
-        //    await ShopList.AddListToShoppinglist(listToSend);
-        //}
-
-        public async void AddProductToSL(Product AddedItem)
+        else
         {
-            int actualAmount = AddedItem._amountleft;
-
-            if (String.IsNullOrEmpty(email))
+            products.Clear();
+            foreach (ComplexRecipe com in complexRecipes)
             {
-                AddedItem._amountleft = 1;
-
-                ToShoppinglist.Add(AddedItem);
-
-                shopString = JsonConvert.SerializeObject(ToShoppinglist);
-
-                await localStorage.SetItemAsync("ProductString", shopString);
-            }
-            else
-            {
-                AddedItem._amountleft = 1;
-                await ShopList.QuickaddItemToShoppinglist(AddedItem, actualAmount);
-            }
-        }
-
-        public void QuickAddToShoppinglist(List<Ingredient> ingredient)
-        {
-            bool firstRun;
-            Product temp = new Product();
-            List<Product> productsToAddSL = new List<Product>();
-            GetProductLists(ingredient);
-
-            foreach (List<Product> pro in returnList)
-            {
-                if (pro.Count != 0)
+                foreach (string s in com._complexRecipeComponent._products.Keys)
                 {
-                    firstRun = true;
-                    foreach (Product p in pro)
+                    if (s.Contains(tempIngredientName))
                     {
-                        if (temp._price > p._price || firstRun)
+                        foreach (List<Product> pro in com._complexRecipeComponent._products.Values)
                         {
-                            temp = p;
-                            firstRun = false;
+                            foreach (Product p in pro)
+                            {
+                                if (p._productName.Contains(tempIngredientName) && !products.Contains(p))
+                                {
+                                    products.Add(p);
+                                    QuickList.Add(p);
+                                }
+                            }
                         }
                     }
-                    productsToAddSL.Add(temp);
                 }
             }
-
-            if (String.IsNullOrEmpty(email))
-            {
-                QuickaddListToLocalStorage(productsToAddSL);
-            }
-            else
-            {
-                QuickAddListToSL(productsToAddSL);
-            }
-            returnList.Clear();
         }
+    }
 
-        public async void QuickAddListToSL(List<Product> ingredientList)
+    //async void AddToShoppinglist()
+    //{
+    //    List<Product> listToSend = new List<Product>();
+
+    //    foreach (var item in ingredients)
+    //    {
+    //        listToSend.Add(new Product() { _id = item._id.ToString(), _amount = item._amount + item._unit, _productName = item._ingredientName });
+    //    }
+
+    //    await ShopList.AddListToShoppinglist(listToSend);
+    //}
+
+    public async void AddProductToSL(Product AddedItem)
+    {
+        int actualAmount = AddedItem._amountleft;
+
+        if (String.IsNullOrEmpty(email))
         {
-            if (!String.IsNullOrEmpty(email))
-            {
-                foreach (Product p in ingredientList)
-                {
-                    p._amountleft = 1;
-                }
-                await ShopList.QuickaddListToShoppinglist(ingredientList);
-            }
-        }
+            AddedItem._amountleft = 1;
 
-        public async void QuickaddListToLocalStorage(List<Product> ingredientList)
-        {
-            foreach (Product p in ingredientList)
-            {
-                p._amountleft = 1;
-                ToShoppinglist.Add(p);
-            }
-
-            await localStorage.RemoveItemAsync("ProductString");
+            ToShoppinglist.Add(AddedItem);
 
             shopString = JsonConvert.SerializeObject(ToShoppinglist);
 
             await localStorage.SetItemAsync("ProductString", shopString);
         }
-
-        public void GetProductLists(List<Ingredient> ingredients)
+        else
         {
-            //List<Product> test = new List<Product>();
-            foreach (Ingredient ind in ingredients)
+            AddedItem._amountleft = 1;
+            await ShopList.QuickaddItemToShoppinglist(AddedItem, actualAmount);
+        }
+    }
+
+    public void QuickAddToShoppinglist(List<Ingredient> ingredient)
+    {
+        bool firstRun;
+        Product temp = new Product();
+        List<Product> productsToAddSL = new List<Product>();
+        GetProductLists(ingredient);
+
+        foreach (List<Product> pro in returnList)
+        {
+            if (pro.Count != 0)
             {
-                retriveIngredient(ind);
-
-                returnList.Add(new List<Product>(QuickList));
-                QuickList.Clear();
-            }
-
-        }
-
-        void incrementRecipeAmount()
-        {
-            scalar++;
-        }
-
-
-        void decrementRecipeAmount()
-        {
-            scalar--;
-        }
-
-
-        void clear()
-        {
-            ingredients.Clear();
-        }
-
-        void retriveInfo(int ID)
-        {
-            scalar = 1;
-            runCounter = 0;
-            Recipe show = recipeData.First(x => x._recipeID == ID);
-            recipeDescription = show._description;
-            recipeName = show._Name;
-            recipePerPerson = (int)show._PerPerson;
-
-            if (show._ingredientList == null)
-            {
-                foreach (var item in show._ingredientList)
+                firstRun = true;
+                foreach (Product p in pro)
                 {
-                    ingredients.Add(item);
-                    recipeAmount.Add(item._amount);
+                    if (temp._price > p._price || firstRun)
+                    {
+                        temp = p;
+                        firstRun = false;
+                    }
                 }
+                productsToAddSL.Add(temp);
             }
-            else
-            {
-                clear();
-                foreach (var item in show._ingredientList)
-                {
-                    ingredients.Add(item);
-                    recipeAmount.Add(item._amount);
-                }
-            }
-            viewIngredients = true;
-            viewProducts = false;
-            //viewAddToshoppinglist = true;
         }
 
-
-        #endregion
-
-        #region Recipe_async_Methods
-        public async Task Search()
+        if (String.IsNullOrEmpty(email))
         {
+            QuickaddListToLocalStorage(productsToAddSL);
+        }
+        else
+        {
+            QuickAddListToSL(productsToAddSL);
+        }
+        returnList.Clear();
+    }
+
+    public async void QuickAddListToSL(List<Product> ingredientList)
+    {
+        if (!String.IsNullOrEmpty(email))
+        {
+            foreach (Product p in ingredientList)
+            {
+                p._amountleft = 1;
+            }
+            await ShopList.QuickaddListToShoppinglist(ingredientList);
+        }
+    }
+
+    public async void QuickaddListToLocalStorage(List<Product> ingredientList)
+    {
+        foreach (Product p in ingredientList)
+        {
+            p._amountleft = 1;
+            ToShoppinglist.Add(p);
+        }
+
+        await localStorage.RemoveItemAsync("ProductString");
+
+        shopString = JsonConvert.SerializeObject(ToShoppinglist);
+
+        await localStorage.SetItemAsync("ProductString", shopString);
+    }
+
+    public void GetProductLists(List<Ingredient> ingredients)
+    {
+        //List<Product> test = new List<Product>();
+        foreach (Ingredient ind in ingredients)
+        {
+            retriveIngredient(ind);
+
+            returnList.Add(new List<Product>(QuickList));
+            QuickList.Clear();
+        }
+
+    }
+
+    void incrementRecipeAmount()
+    {
+        scalar++;
+    }
+
+
+    void decrementRecipeAmount()
+    {
+        scalar--;
+    }
+
+
+    void clear()
+    {
+        ingredients.Clear();
+    }
+
+    void retriveInfo(int ID)
+    {
+        scalar = 1;
+        runCounter = 0;
+        Recipe show = recipeData.First(x => x._recipeID == ID);
+        recipeDescription = show._description;
+        recipeName = show._Name;
+        recipePerPerson = (int)show._PerPerson;
+
+        if (show._ingredientList == null)
+        {
+            foreach (var item in show._ingredientList)
+            {
+                ingredients.Add(item);
+                recipeAmount.Add(item._amount);
+            }
+        }
+        else
+        {
+            clear();
+            foreach (var item in show._ingredientList)
+            {
+                ingredients.Add(item);
+                recipeAmount.Add(item._amount);
+            }
+        }
+        viewIngredients = true;
+        viewProducts = false;
+        //viewAddToshoppinglist = true;
+    }
+
+
+    #endregion
+
+    #region Recipe_async_Methods
+    public async Task Search()
+    {
         printRecipe = await Http.GetStringAsync(connectionSettings.GetApiLink() + "api/recipe?recipeTitle=" + searchTerm);
         recipeData = JsonConvert.DeserializeObject<List<Recipe>>(printRecipe);
         viewRecipeTitle = true;
         RecipeQuery recipeQuery = new RecipeQuery();
         complexRecipes = await recipeQuery.CheapestCRecipes(searchTerm);
-        }
+    }
 
-        private async void OnKeyPress(KeyboardEventArgs args)
+    private async void OnKeyPress(KeyboardEventArgs args)
+    {
+        if (args.Key == "Enter")
         {
-            if (args.Key == "Enter")
-            {
-                await Search();
-                StateHasChanged();
-            }
+            await Search();
+            StateHasChanged();
         }
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -421,7 +422,7 @@
                 Console.WriteLine($"Value for key {e.Key} changed from {e.OldValue} to {e.NewValue}");
             };
 
-            if(!String.IsNullOrEmpty(email))
+            if (!String.IsNullOrEmpty(email))
             {
                 responseMessage = await ShopList.GetShoppinglistOnStart(email);
             }

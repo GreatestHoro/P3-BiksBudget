@@ -12,7 +12,7 @@ using BBCollection.DBConncetion;
 
 namespace BBCollection.DBHandling
 {
-    class ShoppinlistFunctionality
+    public class ShoppinlistFunctionality
     {
 
         #region Fields
@@ -317,7 +317,7 @@ namespace BBCollection.DBHandling
         /// <summary>
         /// Adds the entire shoppinglist to storage
         /// </summary>
-        public async void AddShoppinlistToStorage()
+        public async Task<HttpResponseMessage> AddShoppinlistToStorage()
         {
             foreach (Product p in CombinedList)
             {
@@ -327,7 +327,9 @@ namespace BBCollection.DBHandling
 
             productString = JsonConvert.SerializeObject(CombinedList);
 
-            await SendToApi(productString, "api/Storage");
+            response = await SendToApi(productString, "api/Storage");
+
+            return response;
         }
 
         #endregion
