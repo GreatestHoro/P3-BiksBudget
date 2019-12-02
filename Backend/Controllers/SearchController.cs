@@ -16,7 +16,7 @@ namespace Backend.Controllers
     [ApiController]
     public class SearchController : ControllerBase
     {
-
+        Filters filters = new Filters();
         /// <summary>
         /// Returns a list of products based on the filters applied.
         /// </summary>
@@ -25,17 +25,16 @@ namespace Backend.Controllers
         /// <param name="_storeFilter">A string consisting of bool values for each store filter</param>
         /// <returns></returns> 
 
-        // GET: api/Search?searchterm=øl&_keywordFilter=00&_storeFilter=111111111
+        // GET: api/Search?searchterm=øl&_keywordFilter=00&_storeFilter=111111111&_loadCount=0
         [HttpGet]
-        public string GetProducts(string searchterm = "carlsberg",string _keywordFilter = "00",string _storeFilter="111111111")
+        public async Task<string> GetProducts(string searchterm = "carlsberg",string _keywordFilter = "00",string _storeFilter="111111111", int _loadCount = 0)
         {
             bool[] keywordFilter = GetFilters(_keywordFilter);
             bool[] storeFilter = GetFilters(_storeFilter);
-            Filters filters = new Filters(keywordFilter, storeFilter);
-
-            return JsonConvert.SerializeObject(filters.UseTogglefilters(searchterm));
+            filters.UpdateFilters(keywordFilter, storeFilter);
+            filters._loadCount = _loadCount;
+            return JsonConvert.SerializeObject(await filters.UseTogglefilters(searchterm));
         }
-
 
         /// <summary>
         /// Transforms the string input, which consists of bool values, to a bool array.
