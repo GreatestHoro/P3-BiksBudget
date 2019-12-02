@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
+using System.Reflection.Metadata.Ecma335;
 using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,12 +21,9 @@ namespace BBCollection.DBHandling
         /// <param name="username"></param> Username is a string containing the user's name.
         /// <param name="password"></param> The password gets parsed as a string as well, and contains
         /// the raw password that will be hashed and salted, later in the process.
-        public async void Add(string username, string password)
+        public async Task Add(string username, string password)
         {
-            await Task.Run(() =>
-            {
-                InsertUserToDB(username, password);
-            });
+            await InsertUserToDB(username, password);
         }
 
         /// <summary>
@@ -37,10 +36,9 @@ namespace BBCollection.DBHandling
         /// <returns></returns>
         public async Task<bool> Verify(string username, string password)
         {
-            return await Task.Run(async() =>
-            {
-                return await CheckHashedPassword(password, await GetHashedPWFromUsername(username));
-            });
+            string hashpw = await GetHashedPWFromUsername(username);
+            
+            return await CheckHashedPassword(password, hashpw);
         }
 
         /// <summary>
@@ -52,19 +50,16 @@ namespace BBCollection.DBHandling
         /// </summary>
         /// <param name="username"></param> The username parameter is the username that the user inserted in the register page.
         /// <param name="password"></param> The password parameter, is the hashed version of the password that the user inserted in the register page.
-        private async void InsertUserToDB(string username, string password)
+        private async Task InsertUserToDB(string username, string password)
         {
             string insertUserQuery =
                 "INSERT INTO `users`(`username`,`password`) VALUES(@Username,@Password)";
             MySqlCommand msc = new MySqlCommand(insertUserQuery);
 
             msc.Parameters.AddWithValue("@Username", username);
-            msc.Parameters.AddWithValue("@Password", ConvertPasswordToHash(password));
+            msc.Parameters.AddWithValue("@Password", await ConvertPasswordToHash(password));
 
-            await Task.Run(() =>
-            {
-                new SQLConnect().NonQueryMSC(msc);
-            });
+            await new SQLConnect().NonQueryMSC(msc);
         }
 
         /// <summary>
@@ -91,17 +86,15 @@ namespace BBCollection.DBHandling
             // create and return a Dataset. We store this dataset in DS and then we add the first element in the
             // dataset in our password string and return it. We can do this because the username is unique, so the amount
             // of rows that get returned, will always be 1 or 0.
-            return await Task.Run(() =>
-            {
-                DataSet ds = new SQLConnect().DynamicSimpleListSQL(msc);
+            
+                DataSet ds = await new SQLConnect().DynamicSimpleListSQL(msc);
 
                 if (ds.Tables[0].Rows.Count != 0)
                 {
                     password = (string)ds.Tables[0].Rows[0]["password"];
                 }
+            return password;
 
-                return password;
-            });
         }
 
         /// <summary>
@@ -114,9 +107,12 @@ namespace BBCollection.DBHandling
         /// <returns></returns>
         private async Task<bool> CheckHashedPassword(string password, string hashedPassword)
         {
-            return await Task.Run(() =>
+            var result = await Task.Run(() =>
             {
-                if (new PasswordHasher().VerifyHashedPassword(hashedPassword, password) == PasswordVerificationResult.Success)
+                PasswordHasher pw = new PasswordHasher();
+                return pw.VerifyHashedPassword(hashedPassword, password);
+            });
+                if (result == PasswordVerificationResult.Success)
                 {
                     return true;
                 }
@@ -124,7 +120,6 @@ namespace BBCollection.DBHandling
                 {
                     return false;
                 }
-            });
         }
 
         /// <summary>

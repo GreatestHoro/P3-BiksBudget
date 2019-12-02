@@ -37,9 +37,11 @@ namespace Backend.Controllers
             string username = user._userName;
             string password = user._password;
 
-            dbConnect.User.Add(username, password);
+            await dbConnect.User.Add(username, password);
 
-            if (await dbConnect.User.Verify(user._userName, user._password))
+            var result = await dbConnect.User.Verify(user._userName, user._password);
+
+            if (result)
             {
                 return Ok(ModelState);
                 //response = new HttpResponseMessage(System.Net.HttpStatusCode.OK);

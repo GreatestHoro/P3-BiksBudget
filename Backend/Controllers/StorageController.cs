@@ -51,7 +51,7 @@ namespace Backend.Controllers
 
         // POST: api/Storage
         [HttpPost("{_email}")]
-        public async void Post(string _email)
+        public async Task Post(string _email)
         {
             List<Product> newItem = new List<Product>();
             List<Product> Fromdb = new List<Product>();
@@ -82,7 +82,7 @@ namespace Backend.Controllers
             if (newItem.Count == 0)
             {
                 // If the list of items to add is empty, storage is deleted
-                dbConnect.Storage.Update(Email, newItem);
+                await dbConnect.Storage.Update(Email, newItem);
             }
             else
             {
@@ -96,7 +96,7 @@ namespace Backend.Controllers
                 newItem = functionality.HandleDublicats(newItem);
 
                 // The updated list without dublicats are added to storage
-                dbConnect.Storage.Update(Email, newItem);
+                await dbConnect.Storage.Update(Email, newItem);
             }
         }
 
@@ -108,7 +108,7 @@ namespace Backend.Controllers
 
         // PUT: api/Storage/5
         [HttpPut("{_email}")]
-        public async void Put(string _email)
+        public async Task Put(string _email)
         {
             string buffer;
             Product newItem = new Product();
@@ -154,7 +154,7 @@ namespace Backend.Controllers
                 storageList.RemoveAt(i);
             }
 
-            dbConnect.Storage.Update(Email, storageList);
+            await dbConnect.Storage.Update(Email, storageList);
         }
     }
 }
