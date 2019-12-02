@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace BBCollection.BBObjects
 {
@@ -25,5 +26,18 @@ namespace BBCollection.BBObjects
             _PerPerson = PerPerson;
         }
         public Recipe() { }
+
+        public void deleteDuplicates() 
+        {
+            IDictionary<string, Ingredient> dict = new Dictionary<string, Ingredient>();
+            foreach (Ingredient ind in _ingredientList) 
+            {
+                if (!dict.ContainsKey(ind._ingredientName)) 
+                {
+                    dict.Add(ind._ingredientName, ind);
+                }
+            }
+            _ingredientList = dict.Values.ToList();
+        }
     }
 }

@@ -17,7 +17,7 @@ namespace Backend.Controllers
     {
         [Route("Register")]
         [HttpPost]
-        public IActionResult Register(string value)
+        public async Task<IActionResult> Register(string value)
         {
             string buffer;
             DatabaseConnect dbConnect = new DatabaseConnect();
@@ -39,7 +39,7 @@ namespace Backend.Controllers
 
             dbConnect.User.Add(username, password);
 
-            if (dbConnect.User.Verify(user._userName, user._password))
+            if (await dbConnect.User.Verify(user._userName, user._password))
             {
                 return Ok(ModelState);
                 //response = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
