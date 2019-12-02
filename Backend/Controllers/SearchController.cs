@@ -27,13 +27,13 @@ namespace Backend.Controllers
 
         // GET: api/Search?searchterm=øl&_keywordFilter=00&_storeFilter=111111111&_loadCount=0
         [HttpGet]
-        public string GetProducts(string searchterm = "carlsberg",string _keywordFilter = "00",string _storeFilter="111111111", int _loadCount = 0)
+        public async Task<string> GetProducts(string searchterm = "carlsberg",string _keywordFilter = "00",string _storeFilter="111111111", int _loadCount = 0)
         {
             bool[] keywordFilter = GetFilters(_keywordFilter);
             bool[] storeFilter = GetFilters(_storeFilter);
             filters.UpdateFilters(keywordFilter, storeFilter);
             filters._loadCount = _loadCount;
-            return JsonConvert.SerializeObject(filters.UseTogglefilters(searchterm));
+            return JsonConvert.SerializeObject(await filters.UseTogglefilters(searchterm));
         }
 
         /// <summary>
