@@ -117,7 +117,8 @@ namespace BBGatherer.Queries
         private List<Product> Products(string ingredient)
         {
             List<Product> resProducts = new List<Product>();
-            resProducts = _dc.Product.GetRange(ingredient, _productsToMatch, 0);
+            resProducts = _dc.Product.GetRange(ingredient, _productsToMatch, _loadCount);
+
             resProducts.Sort((a,b) => a._price.CompareTo(b._price));
 
             return resProducts;
@@ -134,15 +135,15 @@ namespace BBGatherer.Queries
         /// <returns>Returns a list of size  _productsPerLoad at the given offsett</returns>
         private async Task<List<Recipe>> Recipes(string searchTerm)
         {
-            if (_prevSearch == searchTerm)
-            {
-                _loadCount++;
-            } 
-            else
-            {
-                _loadCount = 0;
-                _prevSearch = searchTerm;
-            }
+            //if (_prevSearch == searchTerm)
+            //{
+            //    _loadCount++;
+            //} 
+            //else
+            //{
+            //    _loadCount = 0;
+            //    _prevSearch = searchTerm;
+            //}
             return await _dc.Recipe.GetRange(searchTerm, _productsPerLoad, _productsPerLoad * _loadCount);
         }
 

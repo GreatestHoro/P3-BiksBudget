@@ -19,9 +19,25 @@ namespace BBCollection.BBObjects
         bool[] ToggleStoreFILters;
         FilterItem[] storeArray;
         FilterItem[] wordArray;
+        public int _productsToMatch { get; set; } = 9;
+        string _prevSearch { get; set; }
+        public int _loadCount { get; set; } = 0;
         private DatabaseConnect dc = new DatabaseConnect();
 
         public Filters(bool[] _ToggleWordFilters, bool[] _ToggleStoreFILters)
+        {
+            ToggleWordFilters = _ToggleWordFilters;
+            ToggleStoreFILters = _ToggleStoreFILters;
+            storeArray = stores.GetStoreArray();
+            wordArray = keyWords.GetWordArray();
+        }
+
+        public Filters()
+        {
+
+        }
+
+        public void UpdateFilters(bool[] _ToggleWordFilters, bool[] _ToggleStoreFILters)
         {
             ToggleWordFilters = _ToggleWordFilters;
             ToggleStoreFILters = _ToggleStoreFILters;
@@ -39,7 +55,18 @@ namespace BBCollection.BBObjects
             List<Product> FilteredProductList = new List<Product>();
             bool flag = false;
             int i = 0;
-            List<Product> searchedProducts = dc.Product.GetList(searchterm);
+            // check if the same products is being loaded again
+            //if (_prevSearch == searchterm)
+            //{
+            //    _loadCount++;
+            //}
+            //else
+            //{
+            //    _loadCount = 0;
+            //    _prevSearch = searchterm;
+            //}
+
+            List<Product> searchedProducts = dc.Product.GetRange(searchterm, _productsToMatch, _productsToMatch * _loadCount); /*dc.Product.GetList(searchterm);*/
             AppliedFiltersList keyWordFilters = new AppliedFiltersList(ToggleWordFilters, wordArray);
 
             // Returns a list of string of the keywords enabled
