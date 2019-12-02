@@ -68,6 +68,7 @@ h1 {
 
 .invisibleBtn {
     opacity: 0.5;
+    cursor: not-allowed;
 }
 
 .recipeSearch{
@@ -78,6 +79,10 @@ h1 {
 .recipeSearchBtn{
     max-width: 100px;
     margin: 10px;
+}
+
+.btn-padding{
+    margin-bottom:3px;
 }
 
 /*Floating Back-To-Top Button*/

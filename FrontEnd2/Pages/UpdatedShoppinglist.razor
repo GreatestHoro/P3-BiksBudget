@@ -13,135 +13,137 @@
     }
     else
     {
-        <div class="container">
-            <div class="row">
-                <div class="col-sm-12">
-                    <table id="cart" class="table table-hover table-condensed">
-                        <thead>
-                            <tr>
-                                <th style="width:48%">Product</th>
-                                <th style="width:10%" class="textForTable">Price</th>
-                                <th style="width:20%"class="textForTable">Quantity</th>
-                                <th style="width:10%" class="textForTable">Subtotal</th>
-                                <th style="width:12%"></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (Product item in ListFunc.CombinedList)
-                            {
-                                <tr>
-                                    <td data-th="Product">
-                                        <div class="row">
-                                            
-                                            <div class="col-sm-10">
-                                                @if (item._image.Length == 0)
-                                                {
-                                                    <img style="width:100px; height:auto; " class="card-img-top " src="https://cdn.discordapp.com/attachments/519096261408718908/649685312083197973/coopdicoop.jpg">
-                                                }
-                                                else
-                                                {
-                                                    <img style="width: auto; height: auto; max-height:100px; max-width: 100px;"
-                                                         class="card-img-top" src="@ProductImage(item._image)">
-                                                }
-                                                <h4 class="nomargin">@item._productName</h4>
-                                                <p>@item._amount</p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    
-                                <td data-th="Price" class="textForTable">@item._price kr</td>
-                                <td data-th="Quantity">
-                                    <div class="valueClass text-center">
-                                        <div class="value-button" id="increase" @onclick="(() => DecrementAmount(item))" value="Increase @value"> - </div>
-                                        <input type="number" id="number" value="@item._amountleft" />
-                                        <div class="value-button" id="decrease" @onclick="(() => IncrementAmount(item))" value="Decrease @value"> + </div>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <table id="cart" class="table table-hover table-condensed">
+                <thead>
+                    <tr>
+                        <th style="width:40%">Product</th>
+                        <th style="width:18%" class="textForTable">Price</th>
+                        <th style="width:20%" class="textForTable">Quantity</th>
+                        <th style="width:10%" class="textForTable">Subtotal</th>
+                        <th style="width:12%"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (Product item in ListFunc.CombinedList)
+                    {
+                        <tr>
+                            <td data-th="Product">
+                                <div class="row">
+
+                                    <div class="col-sm-10">
+                                        @if (item._image.Length == 0)
+                                        {
+                                            <img style="width:100px; height:auto; " class="card-img-top " src="https://cdn.discordapp.com/attachments/519096261408718908/649685312083197973/coopdicoop.jpg">
+                                        }
+                                        else
+                                        {
+                                            <img style="width: auto; height: auto; max-height:100px; max-width: 100px;"
+                                                 class="card-img-top" src="@ProductImage(item._image)">
+                                        }
+                                        <h6 class="nomargin">@item._productName</h6>
+                                        <p>@item._amount</p>
                                     </div>
-                                </td>
-                                <td data-th="Subtotal" class="text-center">@String.Format("{0:0.0}", ListFunc.FindSubtotal(item))kr</td>
-                                <td class="actions" data-th="">
-                                    @if (!String.IsNullOrEmpty(email))
-                                    {
-                                        <button class="btn btn-info btn-sm" title="Add one @item._productName to your Storage" @onclick="(() => AddOneItemToStorage(item))"><i class="oi oi-basket"></i></button>
-                                    }
-                                    else
-                                    {
-                                        <button disabled class="btn btn-info btn-sm invisibleBtn" title="Log in to access storage"><i class="oi oi-basket"></i></button>
-                                    }
+                                </div>
+                            </td>
 
-                                    @if (item._amountleft > 1 && !String.IsNullOrEmpty(email))
-                                    {
-                                        <button class="btn btn-info btn-sm addMore" title="Add @item._amountleft @item._productName to your Storage" @onclick="(() => AddItemToStorage(item))">
-                                            <i class="oi oi-basket">(All)</i>
-                                        </button>
-                                    }
-                                    else if (String.IsNullOrEmpty(email))
-                                    {
-                                        <button disabled class="btn btn-info btn-sm invisibleBtn" title="Log in to access storage"><i class="oi oi-basket">(All)</i></button>
-                                    }
-                                    else
-                                    {
-                                        <button disabled class="btn btn-info btn-sm invisibleBtn"><i class="oi oi-basket">(All)</i></button>
-                                    }
+                            <td data-th="Price" class="textForTable">@item._price kr. per unit</td>
+                            <td data-th="Quantity">
+                                <div class="valueClass text-center">
+                                    <div class="value-button" id="increase" @onclick="(() => DecrementAmount(item))" value="Increase @value"> - </div>
+                                    <input type="number" id="number" value="@item._amountleft" />
+                                    <div class="value-button" id="decrease" @onclick="(() => IncrementAmount(item))" value="Decrease @value"> + </div>
+                                </div>
+                            </td>
+                            <td data-th="Subtotal" class="text-center">@String.Format("{0:0.00}", ListFunc.FindSubtotal(item)) kr.</td>
+                            <td class="actions textForTable" data-th="">
+                                @if (!String.IsNullOrEmpty(email))
+                                {
+                                    <button class="btn btn-rounded btn-success btn-padding btn-sm" title="Add one @item._productName to your Storage" @onclick="(() => AddOneItemToStorage(item))"><i class="oi oi-box"></i></button>
+                                }
+                                else
+                                {
+                                    <button disabled class="btn btn-rounded btn-success btn-padding btn-sm invisibleBtn" title="Log in to access storage"><i class="oi oi-box"></i></button>
+                                }
 
-                                    <button class="btn btn-danger btn-sm" title="Delete one @item._productName from your shoppinglist" @onclick="(() => ChangeAmount(item))"><i class="oi oi-trash"></i></button>
-                                    @if (item._amountleft > 1)
-                                    {
-                                        <button class="btn btn-danger btn-sm" title="Delete @item._amountleft @item._productName from your shoppinglist" @onclick="(() => DeleteItem(item))"><i class="oi oi-trash"></i>(All)</button>
-                                    }
-                                    else
-                                    {
-                                        <button disabled class="btn btn-danger btn-sm addMore invisibleBtn"><i class="oi oi-trash"></i>(All)</button>
-                                    }
-                                </td>
-                            </tr>
-                             }
-                        </tbody>
-                        <tfoot>
-                            <tr class="visible-xs">
-                                <td class="text-center"><strong>Total @String.Format("{0:0.0}", ListFunc.CompletePrice())</strong></td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-4">
-                    @if (ListFunc.CombinedList.Count == 0 && isLoggedIn)
-                    {
-                    <button disabled class="btn btn-block btn-light recipeDivDisplay rounded-0" title="You Cannot Add an Empty Shoppinglist to Storage">Add to storage</button>
-                    }
-                    else if (isLoggedIn)
-                    {
-                        <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>AddListToStorage())">Add to storage</button>
-                    }
-                    else
-                    {
-                        <button disabled class="btn btn-block btn-light recipeDivDisplay rounded-0" title="Log in to access storage">Add to storage</button>
-                    }
-                </div>
-                <div class="col-sm-4">
-                    @if (remindToSave)
-                    {
-                        <button class="btn btn-block btn-danger recipeDivDisplay rounded-0" @onclick="(() =>SaveShoppinglist())">Save shoppinglist</button>
-                    }
-                    else
-                    {
-                        <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>SaveShoppinglist())">Save shoppinglist</button>
-                    }
-                </div>
-                <div class="col-sm-4">
-                    @if (ListFunc.CombinedList.Count == 0)
-                    {
-                        <button class="btn btn-block btn-light recipeDivDisplay rounded-0" disabled title="You Cannot Delete an Empty Shoppinglist">Delete shoppinglist</button>
+                                @if (item._amountleft > 1 && !String.IsNullOrEmpty(email))
+                                {
+                                    <button class="btn btn-rounded btn-success btn-padding btn-sm addMore" title="Add @item._amountleft @item._productName to your Storage" @onclick="(() => AddItemToStorage(item))">
+                                        <i class="oi oi-box"></i> (All)
+                                    </button>
+                                }
+                                else if (String.IsNullOrEmpty(email))
+                                {
+                                    <button disabled class="btn btn-rounded btn-success btn-padding btn-sm invisibleBtn" title="Log in to access storage"><i class="oi oi-box"></i> (All)</button>
+                                }
+                                else
+                                {
+                                    <button disabled class="btn btn-rounded btn-success btn-padding btn-sm invisibleBtn"><i class="oi oi-box"></i> (All)</button>
+                                }
 
+                                <button class="btn btn-rounded btn-danger btn-padding btn-sm" title="Delete one @item._productName from your shopping list" @onclick="(() => ChangeAmount(item))"><i class="oi oi-trash"></i></button>
+                                @if (item._amountleft > 1)
+                                {
+                                    <button class="btn btn-rounded btn-danger btn-padding btn-sm" title="Delete @item._amountleft @item._productName from your shopping list" @onclick="(() => DeleteItem(item))"><i class="oi oi-trash"></i> (All)</button>
+                                }
+                                else
+                                {
+                                    <button disabled class="btn btn-rounded btn-danger btn-padding btn-sm addMore invisibleBtn"><i class="oi oi-trash"></i> (All)</button>
+                                }
+                            </td>
+                        </tr>
                     }
-                    else
-                    {
-                        <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>DeleteShoppinglist())">Delete shoppinglist</button>
-                    }
-                </div>
-            </div>
+                </tbody>
+                <tfoot>
+                    <tr class="visible-xs">
+                        <td class="text-center"><strong>Total @String.Format("{0:0.0}", ListFunc.CompletePrice())</strong></td>
+                    </tr>
+                </tfoot>
+            </table>
         </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-4">
+            @if (ListFunc.CombinedList.Count == 0 && isLoggedIn)
+            {
+                <button disabled class="btn btn-block btn-light recipeDivDisplay rounded-0" title="You Cannot Add an Empty Shopping list to Storage">Add to storage</button>
+            }
+            else if (isLoggedIn)
+            {
+                <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>AddListToStorage())">Add to storage</button>
+            }
+            else
+            {
+                <button disabled class="btn btn-block btn-light recipeDivDisplay rounded-0" title="Log in to access storage">Add to storage</button>
+            }
+        </div>
+        <div class="col-sm-4">
+            @if (remindToSave)
+            {
+                <button class="btn btn-block btn-danger recipeDivDisplay rounded-0" @onclick="(() =>SaveShoppinglist())">Save shopping list</button>
+            }
+            else
+            {
+                <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>SaveShoppinglist())">Save shopping list</button>
+            }
+        </div>
+        <div class="col-sm-4">
+            @if (ListFunc.CombinedList.Count == 0)
+            {
+                <button class="btn btn-block btn-light recipeDivDisplay rounded-0" disabled title="You Cannot Delete an Empty Shopping list">Delete shopping list</button>
+
+            }
+            else
+            {
+                <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>DeleteShoppinglist())">Delete shopping list</button>
+            }
+        </div>
+    </div>
+    <!--Scroll to top button   -->
+    <button id="myBtn" class="btn btn-rounded btn-success"><a href="shoppinglist" style="color: white; font-size:12px;">Top</a></button>
+</div>
     }
 
 @code {
