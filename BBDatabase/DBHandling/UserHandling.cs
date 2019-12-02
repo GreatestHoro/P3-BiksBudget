@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Runtime.ExceptionServices;
 using System.Text;
+using System.Threading.Tasks;
 using BBCollection.DBConncetion;
 using Microsoft.AspNet.Identity;
 using MySql.Data.MySqlClient;
@@ -18,9 +19,12 @@ namespace BBCollection.DBHandling
         /// <param name="username"></param> Username is a string containing the user's name.
         /// <param name="password"></param> The password gets parsed as a string as well, and contains
         /// the raw password that will be hashed and salted, later in the process.
-        public void Add(string username, string password)
+        public async void Add(string username, string password)
         {
-            InsertUserToDB(username, password);
+            await Task.Run(() =>
+            {
+                InsertUserToDB(username, password);
+            });
         }
 
         /// <summary>
@@ -31,9 +35,12 @@ namespace BBCollection.DBHandling
         /// <param name="username"></param> A string of the username, that the user inserts in the login.
         /// <param name="password"></param> A string of the password, that the user inserts in the login.
         /// <returns></returns>
-        public bool Verify(string username, string password)
+        public async Task<bool> Verify(string username, string password)
         {
-            return CheckHashedPassword(password, GetHashedPWFromUsername(username));
+            return await Task.Run(async() =>
+            {
+                return await CheckHashedPassword(password, await GetHashedPWFromUsername(username));
+            });
         }
 
         /// <summary>
@@ -45,7 +52,7 @@ namespace BBCollection.DBHandling
         /// </summary>
         /// <param name="username"></param> The username parameter is the username that the user inserted in the register page.
         /// <param name="password"></param> The password parameter, is the hashed version of the password that the user inserted in the register page.
-        private void InsertUserToDB(string username, string password)
+        private async void InsertUserToDB(string username, string password)
         {
             string insertUserQuery =
                 "INSERT INTO `users`(`username`,`password`) VALUES(@Username,@Password)";
@@ -53,8 +60,11 @@ namespace BBCollection.DBHandling
 
             msc.Parameters.AddWithValue("@Username", username);
             msc.Parameters.AddWithValue("@Password", ConvertPasswordToHash(password));
-            
-            new SQLConnect().NonQueryMSC(msc);
+
+            await Task.Run(() =>
+            {
+                new SQLConnect().NonQueryMSC(msc);
+            });
         }
 
         /// <summary>
@@ -62,7 +72,7 @@ namespace BBCollection.DBHandling
         /// </summary>
         /// <param name="username"></param> The username parameter is the username string the user inserted in the login view.
         /// <returns></returns>
-        private string GetHashedPWFromUsername(string username)
+        private async Task<string> GetHashedPWFromUsername(string username)
         {
             // First the password gets initiated with null, to have something to store the password 
             // from the database in. Then the select query gets made, that will select the password
@@ -81,14 +91,17 @@ namespace BBCollection.DBHandling
             // create and return a Dataset. We store this dataset in DS and then we add the first element in the
             // dataset in our password string and return it. We can do this because the username is unique, so the amount
             // of rows that get returned, will always be 1 or 0.
-            DataSet ds = new SQLConnect().DynamicSimpleListSQL(msc);
-
-            if (ds.Tables[0].Rows.Count != 0)
+            return await Task.Run(() =>
             {
-                password = (string)ds.Tables[0].Rows[0]["password"];
-            }
+                DataSet ds = new SQLConnect().DynamicSimpleListSQL(msc);
 
-            return password;
+                if (ds.Tables[0].Rows.Count != 0)
+                {
+                    password = (string)ds.Tables[0].Rows[0]["password"];
+                }
+
+                return password;
+            });
         }
 
         /// <summary>
@@ -99,16 +112,19 @@ namespace BBCollection.DBHandling
         /// <param name="password"></param> the password parameter, is the string the the user inserted in the login page.
         /// <param name="hashedPassword"></param> the hashedpassword parameter, is the password that was retrieved from the database.
         /// <returns></returns>
-        private bool CheckHashedPassword(string password, string hashedPassword)
+        private async Task<bool> CheckHashedPassword(string password, string hashedPassword)
         {
-            if (new PasswordHasher().VerifyHashedPassword(hashedPassword, password) == PasswordVerificationResult.Success)
+            return await Task.Run(() =>
             {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+                if (new PasswordHasher().VerifyHashedPassword(hashedPassword, password) == PasswordVerificationResult.Success)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            });
         }
 
         /// <summary>
@@ -117,9 +133,12 @@ namespace BBCollection.DBHandling
         /// </summary>
         /// <param name="password"></param> The password that the user inserted in the register page.
         /// <returns></returns>
-        private string ConvertPasswordToHash(string password)
+        private async Task<string> ConvertPasswordToHash(string password)
         {
-            return new PasswordHasher().HashPassword(password);
+            return await Task.Run(() =>
+            {
+                return new PasswordHasher().HashPassword(password);
+            });
         }
     }
 }

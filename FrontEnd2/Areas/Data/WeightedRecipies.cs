@@ -29,18 +29,6 @@ namespace FrontEnd2.Data
             matchingIngrdientsNum = matchingIngrdient.Count();
         }
 
-        /*public List<Ingredient> uniqeIngrdients(List<Ingredient> ingredients) 
-          {
-              List<Ingredient> uniqeList = new List<Ingredient>();
-              foreach (Ingredient i in ingredients) 
-              {
-                  if (!uniqeList.Contains(i)) 
-                  {
-                      uniqeList.Add(i);
-                  }
-              }
-              return uniqeList;
-          }*/
         public void calculateP()
         {
             int matchs = 0,NonMatches = 0,allTested = 0;
