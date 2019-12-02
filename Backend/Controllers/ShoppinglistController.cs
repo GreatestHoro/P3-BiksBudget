@@ -61,7 +61,7 @@ namespace Backend.Controllers
 
         // POST: api/Shoppinglist
         [HttpPost("{_email}")]
-        public async void Post(String _email)
+        public async Task Post(String _email)
         {
             HttpRequest request = HttpContext.Request;
             Microsoft.AspNetCore.Http.HttpRequestRewindExtensions.EnableBuffering(request);
@@ -126,7 +126,7 @@ namespace Backend.Controllers
 
         // PUT: api/Shoppinglist/5
         [HttpPut("{_email}")]
-        public async void PutQuick(string _email)
+        public async Task PutQuick(string _email)
         {
             HttpRequest request = HttpContext.Request;
             Microsoft.AspNetCore.Http.HttpRequestRewindExtensions.EnableBuffering(request);

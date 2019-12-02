@@ -48,9 +48,9 @@ namespace BBCollection.DBHandling
             MySqlCommand msc = new MySqlCommand(getSLQuery);
             msc.Parameters.AddWithValue("@Username", username);
 
-            return await Task.Run(() =>
+            return await Task.Run(async () =>
             {
-                DataSet ds = new SQLConnect().DynamicSimpleListSQL(msc);
+                DataSet ds = await new SQLConnect().DynamicSimpleListSQL(msc);
 
                 if (ds.Tables.Count != 0)
                 {
