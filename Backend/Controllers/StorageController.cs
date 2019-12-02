@@ -35,9 +35,9 @@ namespace Backend.Controllers
 
         // GET: api/Storage/5
         [HttpGet("{_email}")]
-        public string Get(string _email)
+        public async Task<string> Get(string _email)
         {
-            List<Product> storageList = dbConnect.Storage.GetList(_email);
+            List<Product> storageList = await dbConnect.Storage.GetList(_email);
 
             string jsonStorage = JsonConvert.SerializeObject(storageList);
 
@@ -51,7 +51,7 @@ namespace Backend.Controllers
 
         // POST: api/Storage
         [HttpPost("{_email}")]
-        public void Post(string _email)
+        public async void Post(string _email)
         {
             List<Product> newItem = new List<Product>();
             List<Product> Fromdb = new List<Product>();
@@ -87,7 +87,7 @@ namespace Backend.Controllers
             else
             {
                 // Else the storage in the database is requested
-                Fromdb = dbConnect.Storage.GetList(Email);
+                Fromdb = await dbConnect.Storage.GetList(Email);
 
                 // The two lists from the database and the frontend are merged into one
                 newItem = newItem.Concat(Fromdb).ToList();
@@ -108,7 +108,7 @@ namespace Backend.Controllers
 
         // PUT: api/Storage/5
         [HttpPut("{_email}")]
-        public void Put(string _email)
+        public async void Put(string _email)
         {
             string buffer;
             Product newItem = new Product();
@@ -128,7 +128,7 @@ namespace Backend.Controllers
             }
 
             // The items in storage in the database is requested
-            storageList = dbConnect.Storage.GetList(Email);
+            storageList = await dbConnect.Storage.GetList(Email);
 
             // The item to change
             newItem = JsonConvert.DeserializeObject<Product>(buffer);
