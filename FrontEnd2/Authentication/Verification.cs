@@ -14,31 +14,31 @@ namespace FrontEnd2.Authentication
         {
             if (password.Length < 6 || password.Length > 50)
             {
-                return Tuple.Create(false, "Størrelsen på dit password er ikke accepteret.");
+                return Tuple.Create(false, "Please use between 6 and 50 characters.");
             }
             else if (password.Contains(" "))
             {
-                return Tuple.Create(false, "Undgå mellemrum i dit password.");
+                return Tuple.Create(false, "Please refrain from using a 'space'.");
             }
             else if (!password.Any(char.IsUpper))
             {
-                return Tuple.Create(false, "Pynt dit password med nogle store bogstaver.");
+                return Tuple.Create(false, "Please use an upper case letter.");
             }
             else if (!password.Any(char.IsLower))
             {
-                return Tuple.Create(false, "Brug nogle små bogstaver, småt er godt.");
+                return Tuple.Create(false, "Please use an lower case letter.");
             }
             else if (new Regex("^[a-zA-Z0-9 ]*$").IsMatch(password))
             {
-                return Tuple.Create(false, "Et symbol i passwordet, holder tyven for døren.");
+                return Tuple.Create(false, "Please use at least one symbol.");
             }
             else if (password != repPassword)
             {
-                return Tuple.Create(false, "Der skal to ens password's til at danse tango.");
+                return Tuple.Create(false, "The passwords are not the same.");
             }
             else
             {
-                return Tuple.Create(true, "Perfekt!");
+                return Tuple.Create(true, "Perfect!");
             }
         }
 
@@ -46,15 +46,15 @@ namespace FrontEnd2.Authentication
         {
             if (username.Length < 6 || username.Length > 50)
             {
-                return Tuple.Create(false, "Størrelsen på dit username er ikke accepteret.");
+                return Tuple.Create(false, "Please use between 6 and 50 characters.");
             }
             else if (username.Contains(" "))
             {
-                return Tuple.Create(false, "Undgå mellemrum i dit username.");
+                return Tuple.Create(false, "Please refrain from using a 'space'.");
             }
             else if (!new Regex("^[a-zA-Z0-9 ]*$").IsMatch(username))
             {
-                return Tuple.Create(false, "Lad os nu ikke være aaaalt for kreative, INGEN symboler.");
+                return Tuple.Create(false, "Please refrain from using symbols.");
             }
             else
             {
