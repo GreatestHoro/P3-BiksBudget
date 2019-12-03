@@ -15,59 +15,9 @@
 <div class="main">
 
     <div class="top-nav">
-        <div>
-            <div>
-                @*<input type="text" placeholder="Search..">*@
-            </div>
-            <div>
-                <LoginDisplay />
-            </div>
-        </div>
-        @*<div class="row">
-                <div class="col-sm-1 offset-11">
-                    <button @onclick="(() => changeBasketState())"><i class="oi oi-cart"></i> </button>
-                </div>
-            </div>*@
+        <LoginDisplay />
     </div>
 
-    @if (openMiniBasket == true)
-    {
-        <div class="miniBasket container">
-            <div class="miniBasketTopHeader row">
-                <div class="col-12">
-                    <button class="close float-left" @onclick="(() => closeMiniBasket())"><i class="oi oi-x"></i> </button>
-                </div>
-            </div>
-            <div class="miniBasketHeader row no-gutters">
-                <div class="col-sm-12">
-                    <NavLink href="shoppinglist">
-                        <button type="button" class="miniBasket-btn btn-outline-dark btn-link" @onclick="(() => closeMiniBasket())">Go to shoppinglist</button>
-                    </NavLink>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-12">
-                    <table class="table table-hover table-condensed">
-                        <colgroup>
-                            <col style="width:50%" />
-                            <col style="width:20%" />
-                            <col style="width:30%" />
-                        </colgroup>
-                        <tbody>
-                            @foreach (var item in shopFunc.itemList)
-                            {
-                                <tr>
-                                    <td>@item._productName</td>
-                                    <td>@item._amountleft</td>
-                                    <td>@item._price</td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    }
     <div class="content px-4">
         @Body
     </div>
