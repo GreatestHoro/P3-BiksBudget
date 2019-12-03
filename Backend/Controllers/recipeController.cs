@@ -7,6 +7,7 @@ using System.IO;
 using Microsoft.AspNetCore.Http;
 using System;
 using BBGatherer.Queries;
+using System.Threading.Tasks;
 
 namespace Backend.Controllers
 {
@@ -44,7 +45,7 @@ namespace Backend.Controllers
         // GET: api/recipe
         //[Route("api/recipe/recipeTitle=laks?filter=keto")]
         [HttpGet]
-        public string GetRecipes(string recipeTitle = "kaffe", string filter = "all")
+        public async Task<string> GetRecipes(string recipeTitle = "kaffe", string filter = "all")
         {
             string res = "";
             switch (recipeTitle)
@@ -88,7 +89,7 @@ namespace Backend.Controllers
             string jsonRecipes = JsonConvert.SerializeObject(recipeData);
 
             DatabaseConnect dbConnect = new DatabaseConnect();
-            var data = dbConnect.Recipe.GetList(recipeTitle);
+            var data = await dbConnect.Recipe.GetList(recipeTitle);
             string jsonDBRecipes = JsonConvert.SerializeObject(data);
 
             return jsonDBRecipes;
@@ -97,10 +98,13 @@ namespace Backend.Controllers
         // GET: api/recipe/5
         [Route("api/recipe/{search}")]
         [HttpGet]
-        public string GetRecipes(string search)
+        public async Task<string> GetRecipes(string search)
         {
             DatabaseConnect Database = new DatabaseConnect();
-            return JsonConvert.SerializeObject(Database.Recipe.GetList(search));
+
+            List<Recipe> recipes = await Database.Recipe.GetList(search);
+
+            return JsonConvert.SerializeObject(recipes);
         }
 
         // POST: api/recipe
