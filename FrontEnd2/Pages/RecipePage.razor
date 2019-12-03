@@ -65,7 +65,7 @@
                         </div>
                     </div>
                 }
-                @if (complexRecipes.Count() % recipeQuery._productsPerLoad == 0)
+                @if (complexRecipes.Count() % recipeQuery._productsPerLoad == 0 && complexRecipes.Count() != 0)
                 {
                     <button class="btn btn-warning mb-5" @onclick="LoadMore" id="LoadMore">Load More</button>
                 }
@@ -632,7 +632,7 @@
     {
         isSearching = true;
         StateHasChanged();
-        recipeQuery._loadCount = -1;
+        recipeQuery._loadCount = 0;
         complexRecipes = await recipeQuery.CheapestCRecipes(searchTerm);
 
         viewRecipeList = true;
@@ -643,6 +643,7 @@
     private async Task LoadMore()
     {
         complexRecipes.AddRange(await recipeQuery.CheapestCRecipes(searchTerm));
+        StateHasChanged();
     }
     #endregion
 }

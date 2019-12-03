@@ -20,20 +20,37 @@
     <input class="SearchField SearchBar" type="password" placeholder="Repeat" @bind="@repPassword" />
     <button class="btn btn-rounded btn-outline-success" @onclick="CheckInputs">Register</button>
     <label>@verificationText</label>*@
-    <div class="d-flex flex-column bd-highlight mb-3">
-        <div class="p-2">
-            <input class="SearchField SearchBar" placeholder="Username" @bind="@tempEmail" />
-        </div>
-        <div class="p-2">
-            <input class="SearchField SearchBar" type="password" placeholder="Password" @bind="@password" />
-        </div>
-        <div class="p-2">
-            <input class="SearchField SearchBar" type="password" placeholder="Repeat password" @bind="@repPassword" />
-        </div>
-        <div class="p-2">
-            <button class="btn btn-rounded btn-outline-success" @onclick="CheckInputs">Register</button>
-        </div>
+<div class="d-flex flex-column mb-3">
+    <div class="p-2">
+        <input class="SearchField SearchBar" placeholder="Username or e-mail" @bind="@tempEmail" />
     </div>
+    <div class="p-2">
+        <p>
+            Please use 6 or more characters. <br />
+            Please refrain from using a 'space'. <br />
+            Please refrain from using symbols (æ,ø,å is also considered a symbol). <br />
+        </p>
+    </div>
+    <div class="d-sm-flex flex-row mb-3">
+    <div class="p-2">
+        <input class="SearchField SearchBar" type="password" placeholder="Password" @bind="@password" />
+    </div>
+    <div class="p-2">
+        <input class="SearchField SearchBar" type="password" placeholder="Confirm password" @bind="@repPassword" />
+    </div>
+    </div>
+    <div class="p-2">
+        <p>
+            Please use 6 or more characters. <br />
+            Please include atleast one upper and lower case letter. <br />
+            Please refrain from using a 'space'. <br />
+            Please use at least one symbol (æ,ø,å is also considered a symbol). <br />
+        </p>
+    </div>
+    <div class="p-2">
+        <button class="btn btn-rounded btn-outline-success" @onclick="CheckInputs">Register</button>
+    </div>
+</div>
     <label>@verificationText</label>
 }
 else

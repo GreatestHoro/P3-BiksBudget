@@ -93,6 +93,8 @@
                 </div>
             </div>
         </div>
+    }
+</div>
 
         @* Recipe display *@
         <div class="container-fluid top-margin">
@@ -208,7 +210,10 @@ else
     bool found = true;
     bool viewTitle = false;
     bool viewIngredients = false;
+
     bool changeState = false;
+
+    bool _viewEmptyFridgeLoadSpinner = false;
 
     ShoppinlistFunctionality ListFunc = new ShoppinlistFunctionality("api/Storage");
     HttpResponseMessage responseMessage = new HttpResponseMessage();
@@ -404,6 +409,8 @@ else
 
     private async Task FindRecipies()
     {
+        _viewEmptyFridgeLoadSpinner = true;
+        this.StateHasChanged();
         List<Recipe> allRecepies = await getRecepies();
         List<Product> productsInStorage = ListFunc.CombinedList;
         List<Recipe> relevantRecepies = GetRelevantRecpies(allRecepies, productsInStorage);
@@ -413,7 +420,9 @@ else
 
         recpies = recpies.OrderByDescending(x => x.pMatch).ToList();
 
+        _viewEmptyFridgeLoadSpinner = false;
         viewTitle = true;
+        this.StateHasChanged();
     }
 
     private async Task<List<Recipe>> getRecepies()

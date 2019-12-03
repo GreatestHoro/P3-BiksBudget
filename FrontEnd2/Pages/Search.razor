@@ -156,7 +156,7 @@
 @if (_viewProducts)
 {
     <div class="container">
-        <div class="row top-margin">
+        <div class="row top-margin mb-3">
             @foreach (Product p in itemList)
             {
                 if (p._price > minPrice && p._price < maxPrice)
@@ -522,7 +522,13 @@ else if (!isSearching && !_viewProducts)
         if (itemList.Count != 0)
         {
             _viewProducts = true;
-            _viewLoadMore = true;
+            if (itemList.Count() % _productsToMatch == 0)
+            {
+                _viewLoadMore = true;
+            } else
+            {
+                _viewLoadMore = false;
+            }
         }
         else
         {
