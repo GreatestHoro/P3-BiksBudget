@@ -16,14 +16,6 @@ namespace BBGatherer_TEST
         DatabaseConnect databaseConnect = new DatabaseConnect();
         SQLConnect sqlConnect = new SQLConnect();
 
-        #region Setup_Test_Environment 
-        [TestInitialize]
-        public async Task Initialize_Test()
-        {
-            await databaseConnect.Initialize.Start();
-        }
-        #endregion
-
         #region Product_Test
         [TestMethod]
         public async Task GetProductsNull_Test()
@@ -103,6 +95,34 @@ namespace BBGatherer_TEST
 
             List<Product> products = new List<Product>();
             products = await databaseConnect.Product.GetList("test");
+
+            Assert.IsTrue(products.Count > 0);
+            CollectionAssert.AllItemsAreUnique(products);
+        }
+
+        [TestMethod]
+        public async Task GetReference_Test()
+        {
+            List<Product> products = new List<Product>();
+            string testString = "mælk";
+
+            products = await databaseConnect.Product.ReferencesAsync(testString);
+
+            Assert.IsTrue(products.Count > 0);
+            CollectionAssert.AllItemsAreUnique(products);
+        }
+
+        [TestMethod]
+        public async Task MultipleReferences_Test()
+        {
+            List<Product> products = new List<Product>();
+            List<string> testList = new List<string>();
+
+            string testString = "mælk"; string testString2 = "let";
+
+            testList.Add(testString); testList.Add(testString2);
+
+            products = await databaseConnect.Product.MultipleReferencesAsync(testList);
 
             Assert.IsTrue(products.Count > 0);
             CollectionAssert.AllItemsAreUnique(products);

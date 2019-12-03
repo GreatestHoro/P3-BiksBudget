@@ -57,8 +57,6 @@ namespace BBCollection.DBHandling
             string table = "products";
             string collumn = "productname";
 
-            return await Task.Run(async () => {
-
                 DataSet ds = await new SQLConnect().DynamicSimpleListSQL(new SqlQuerySort().SortMSC(productName, table, collumn));
 
                 if (ds.Tables.Count != 0)
@@ -79,7 +77,6 @@ namespace BBCollection.DBHandling
                     }
                 }
                 return productList;
-            });
         }
 
         public List<Product> GetListSyncAsync(string productName)
@@ -116,9 +113,7 @@ namespace BBCollection.DBHandling
             string table = "products";
             string collumn = "productname";
 
-            return await Task.Run(async () =>
-            {
-                DataSet ds = await new SQLConnect().DynamicSimpleListSQL(new SqlQuerySort().SortMSCInterval(productName, table, collumn, limit, offset));
+             DataSet ds = await new SQLConnect().DynamicSimpleListSQL(new SqlQuerySort().SortMSCInterval(productName, table, collumn, limit, offset));
                 if (ds.Tables.Count != 0)
                 {
                     foreach (DataRow r in ds.Tables[0].Rows)
@@ -129,7 +124,76 @@ namespace BBCollection.DBHandling
                 }
 
                 return productList;
-            });
+        }
+
+        public async Task<List<Product>> ReferencesAsync(string reference)
+        {
+            List<Product> products = new List<Product>();
+            string query =
+                "SELECT * FROM products WHERE ingredient_reference like @reference";
+
+            MySqlCommand msc = new MySqlCommand(query);
+            msc.Parameters.AddWithValue("@reference", "%"+reference+"%");
+
+                DataSet ds = await new SQLConnect().DynamicSimpleListSQL(msc);
+                if (ds.Tables.Count != 0)
+                {
+                    foreach (DataRow r in ds.Tables[0].Rows)
+                    {
+                    
+                        Product product = new Product((string)r[0], (string)r[1], (string)r[2], Convert.ToDouble(r[3]), (string)r[6]);
+                        products.Add(product);
+                    }
+                }
+                return products;
+        }
+
+        public async Task<List<Product>> MultipleReferencesAsync(List<string> references)
+        {
+            int count = 0;
+            List<Product> products = new List<Product>();
+            List<Tuple<string,string>> combinations = new List<Tuple<string, string>>();
+            string query = "SELECT * FROM products WHERE ingredient_reference";
+            foreach (string reference in references)
+            {
+                string parameter = "@parameter" + count;
+                count++;
+
+                if (query.Contains("like"))
+                {
+                    query = query + " and ingredient_reference like " + parameter;
+                } else
+                {
+                    query = query + " like " + parameter;
+                }
+
+                
+
+                combinations.Add(new Tuple<string, string>(parameter,reference));
+            }
+
+            MySqlCommand msc = new MySqlCommand(query);
+
+            foreach (Tuple<string,string> combination in combinations)
+            {
+                msc.Parameters.AddWithValue(combination.Item1, "%" + combination.Item2 + "%");
+            }
+            
+            Console.WriteLine(query);
+
+
+
+            DataSet ds = await new SQLConnect().DynamicSimpleListSQL(msc);
+            if (ds.Tables.Count != 0)
+            {
+                foreach (DataRow r in ds.Tables[0].Rows)
+                {
+
+                    Product product = new Product((string)r[0], (string)r[1], (string)r[2], Convert.ToDouble(r[3]), (string)r[6]);
+                    products.Add(product);
+                }
+            }
+            return products;
         }
     }
 }

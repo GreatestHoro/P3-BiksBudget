@@ -110,6 +110,15 @@
             _CustomReferenceField = p._CustomReferenceField;
         }
 
+        public Product(string id, string productName, string amount, double price, string customReferenceField)
+        {
+            _id = id;
+            _productName = productName;
+            _amount = amount;
+            _price = price;
+            _CustomReferenceField = customReferenceField;
+        }
+
         public Product() { }
 
     }

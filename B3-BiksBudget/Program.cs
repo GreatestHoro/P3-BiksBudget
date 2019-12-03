@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using BBCollection.DBConncetion;
 using BBCollection.DBHandling;
+using System.Threading.Tasks;
 
 namespace BBGatherer
 {
@@ -13,13 +14,19 @@ namespace BBGatherer
     {
         static void Main(string[] args)
         {
-            DataHandling dh = new DataHandling();
-
             
+            DataHandling dh = new DataHandling();
+            //dh.GenerateDatabase();
+            //dh.GenerateData(true,true);
 
-            dh.GenerateDatabase();
-            dh.GenerateData(false, true);
-            //dh.TestCollection();
+            try
+            {
+                dh.TestCollection().Wait();
+            } catch(Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            
         }
     }
 
@@ -68,9 +75,18 @@ namespace BBGatherer
 
         }
 
-        public void TestCollection()
+        public async Task TestCollection()
         {
+            List<Product> products = new List<Product>();
+            List<string> testList = new List<string>();
 
+            string testString = "mælk"; string testString2 = "let";
+
+            testList.Add(testString); testList.Add(testString2);
+
+            products = await dbConnect.Product.MultipleReferencesAsync(testList);
+
+            Console.WriteLine(products.Count);
         }
     }
 }
