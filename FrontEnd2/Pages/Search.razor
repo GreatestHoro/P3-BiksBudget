@@ -91,20 +91,22 @@
             </ul>
         </div>*@
 
-            <tr>
-                <td data-th="Amount remaining">
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                        </div>
-                        <select class="custom-select" @onchange="((e)=>AssignScalar(e))">
-                            @foreach (FilterItem filter in storeList)
-                            {
-                                <option value="@filter"> @filter.FilterName </option>
-                            }
-                        </select>
-                    </div>
-                </td>
-            </tr>
+            <div class="input-group">
+                <select class="custom-select" @onchange="((e)=>AssignScalar(e, storeList))">
+                    <option disabled="disabled" selected="selected">Select Store</option>
+                    @foreach (FilterItem f in storeList)
+                    {
+                        if (f.IsEnabled == true)
+                        {
+                            <option style="color:green" value="@f.FilterName"> @f.FilterName </option>
+                        }
+                        else
+                        {
+                            <option style="color:red" value="@f.FilterName"> @f.FilterName </option>
+                        }
+                    }
+                </select>
+            </div>
 
         </div>
         <div class="p-2">
@@ -187,7 +189,15 @@
                                             <p>@p._amountleft</p>
                                         </div>
                                     </div>
-                                    <button @onclick="(() => AddProductToSL(p))" class="btn btn-success mt-3"><i class="oi oi-cart"></i> Shopping list</button>
+                                    @if (!disableButton)
+                                    {
+                                        <button @onclick="(() => AddProductToSL(p))" class="btn btn-success mt-3"><i class="oi oi-cart"></i> Shopping list</button>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn btn-success mt-3"><i class="oi oi-cart"></i> Shopping list</button>
+
+                                    }
                                 </div>
                             </div>
                         </div>
@@ -247,6 +257,7 @@ else if (!isSearching && !_viewProducts)
     bool isSearching = false;
     bool _viewLoadMore = false;
     bool _viewLoadMoreSpinner = false;
+    bool disableButton = false;
 
     int value = 1;
     int radius = 1000;
@@ -261,7 +272,7 @@ else if (!isSearching && !_viewProducts)
 
     string searchBox;
     string email;
-    string messageToUser = "Apply filters and press search to find products";
+    string messageToUser;
     string productString;
 
     public double minPrice
@@ -312,9 +323,11 @@ else if (!isSearching && !_viewProducts)
 
     #region ChangeFilterControl
 
-    private void AssignScalar(ChangeEventArgs e)
+    private void AssignScalar(ChangeEventArgs e, List<FilterItem> filterList)
     {
         string test = e.Value.ToString();
+
+        ChangeState(test, filterList);
     }
 
     void toggleAdvancedCheckBox()
@@ -456,6 +469,9 @@ else if (!isSearching && !_viewProducts)
     /// <param name="AddedItem"></param>
     public async void AddProductToSL(Product AddedItem)
     {
+        disableButton = true;
+        StateHasChanged();
+
         AddedItem._amountleft++;
 
         int actualAmout = AddedItem._amountleft;
@@ -477,6 +493,15 @@ else if (!isSearching && !_viewProducts)
             AddedItem._amountleft = 1;
             await SLFunc.QuickaddItemToShoppinglist(AddedItem, actualAmout);
         }
+
+        disableButton = await AwaitButton();
+        StateHasChanged();
+    }
+
+    public async Task<bool> AwaitButton()
+    {
+        await Task.Delay(20);
+        return false;
     }
 
     public List<Product> HandleDublicats(List<Product> inputList)
@@ -688,7 +713,6 @@ else if (!isSearching && !_viewProducts)
     /// come from the database
     /// </summary>
     /// <returns></returns>
-
     public string FindActiveSortFilter()
     {
         foreach (Options o in optionsList)
@@ -706,7 +730,6 @@ else if (!isSearching && !_viewProducts)
     /// The store filter is also compared to the stores which are
     /// actually located close, if geo location is activated.
     /// </summary>
-
     public void updateFilters()
     {
         EnabledStores = updateEachFilter(storeFilters.GetStoreArray());

@@ -112,7 +112,7 @@
             {
                 <button disabled class="btn btn-block btn-light recipeDivDisplay rounded-0" title="You Cannot Add an Empty Shopping list to Storage">Add to storage</button>
             }
-            else if (isLoggedIn)
+            else if (isLoggedIn && ListFunc.CombinedList.Count > 2)
             {
                 <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>AddListToStorage())">Add to storage</button>
             }
@@ -197,7 +197,14 @@
         if (item._amountleft == 1)
         {
             // If there is only one left, delete it
-            ListFunc.CombinedList.Remove(ListFunc.CombinedList.First(x => x._id == item._id));
+            try
+            {
+                ListFunc.CombinedList.Remove(ListFunc.CombinedList.First(x => x._id == item._id));
+            }
+            catch (System.InvalidOperationException)
+            {
+                Console.WriteLine("Invalid operation in the shoppinglist");
+            }
         }
         else
         {
@@ -313,9 +320,10 @@
     public async void AddItemToStorage(Product AddedItem)
     {
         remindToSave = true;
-        await ListFunc.AddItemToStorage(AddedItem);
 
+        await ListFunc.AddItemToStorage(AddedItem);
         DeleteItem(AddedItem);
+        StateHasChanged();
     }
 
     public async void AddOneItemToStorage(Product AddedItem)
