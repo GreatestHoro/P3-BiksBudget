@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Net.Http;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
+using Blazored.Modal;
 
 namespace FrontEnd2
 {
@@ -28,6 +29,7 @@ namespace FrontEnd2
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddBlazoredModal();
             services.AddHotKeys();
             services.AddBlazoredLocalStorage();
             services.AddDbContext<ApplicationDbContext>(options =>
@@ -71,5 +73,7 @@ namespace FrontEnd2
                 endpoints.MapFallbackToPage("/_Host");
             });
         }
+
+
     }
 }

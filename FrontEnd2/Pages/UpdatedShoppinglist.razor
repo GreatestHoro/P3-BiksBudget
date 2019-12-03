@@ -8,6 +8,7 @@
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject HttpClient Http
 
+<h1>Shopping List</h1>
     @if (ListFunc.CombinedList == null)
     {
         <p><em> Loading list .. </em></p>
@@ -296,10 +297,10 @@
     /// It reminds the user to save the shoppinglist before moving on.
     /// Deletes the shoppinglist, and adds it to storage.
     /// </summary>
-    public void AddListToStorage()
+    public async void AddListToStorage()
     {
         remindToSave = true;
-        ListFunc.AddShoppinlistToStorage();
+        await ListFunc.AddShoppinlistToStorage();
         ListFunc.CombinedList.Clear();
     }
 
@@ -309,15 +310,15 @@
         ListFunc.CombinedList.Clear();
     }
 
-    public void AddItemToStorage(Product AddedItem)
+    public async void AddItemToStorage(Product AddedItem)
     {
         remindToSave = true;
-        ListFunc.AddItemToStorage(AddedItem);
+        await ListFunc.AddItemToStorage(AddedItem);
 
         DeleteItem(AddedItem);
     }
 
-    public void AddOneItemToStorage(Product AddedItem)
+    public async void AddOneItemToStorage(Product AddedItem)
     {
         remindToSave = true;
         if (AddedItem._amountleft > 1)
@@ -325,7 +326,7 @@
             // If there is more than one left, the amount is decremented and one 
             // product is added
             AddedItem._amountleft--;
-            ListFunc.AddOneItemToStorage(AddedItem);
+            await ListFunc.AddOneItemToStorage(AddedItem);
         }
         else
         {
