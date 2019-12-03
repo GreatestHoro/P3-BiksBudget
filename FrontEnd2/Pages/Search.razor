@@ -536,8 +536,8 @@ else if (!isSearching && !_viewProducts)
         itemList.Clear();
         isSearching = true;
         this.StateHasChanged();
+        _loadCount   = 0;
         itemList = await SearchForProducts();
-        _loadCount = 0;
 
         if (itemList.Count == 0)
         {

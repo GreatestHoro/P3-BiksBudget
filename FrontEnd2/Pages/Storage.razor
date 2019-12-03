@@ -30,11 +30,11 @@
                     <table class="table table-hover table-condensed">
                         <thead>
                             <tr>
-                                <th style="width:30%">Product</th>
-                                <th style="width:20%">Amount</th>
-                                <th style="width:10%">Amount remaining</th>
-                                <th style="width:10%">Date added</th>
-                                <th style="width:10%">Delete</th>
+                                <th style="width:35%">Product</th>
+                                <th style="width:10%" class="textForTable">Quantity</th>
+                                <th style="width:15%" class="textForTable">Amount remaining</th>
+                                <th style="width:10%" class="textForTable">Date added</th>
+                                <th style="width:10%" class="textForTable">Delete</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -42,11 +42,11 @@
                             {
                                 <tr>
                                     <td data-th="Product">@p._productName</td>
-                                    <td data-th="Amount">
+                                    <td data-th="Amount" class="textForTable">
                                         <input type="number" id="number" value="@p._amountleft" />
-                                        @p._amount
+                                        @*@p._amount*@
                                     </td>
-                                    <td data-th="Amount remaining">
+                                    <td data-th="Amount remaining" class="textForTable">
                                         <div class="input-group">
                                             <div class="input-group-prepend">
                                             </div>
@@ -59,8 +59,8 @@
                                             </select>
                                         </div>
                                     </td>
-                                    <td data-th="Date added">@p._timeAdded</td>
-                                    <td data-th="Delete">
+                                    <td data-th="Date added" class="textForTable">@p._timeAdded</td>
+                                    <td data-th="Delete" class="textForTable">
                                         <div>
                                             <button class="btn btn-rounded btn-danger btn-sm" title="Delete one @p._productName from storage" @onclick="(() => ChangeItemAmout(p))"><i class="oi oi-trash"></i></button>
                                             @if (p._amountleft > 1)
@@ -74,6 +74,7 @@
                                         </div>
                                     </td>
                                 </tr>
+                                <br />
                             }
                         </tbody>
                     </table>
