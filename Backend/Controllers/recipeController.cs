@@ -98,10 +98,13 @@ namespace Backend.Controllers
         // GET: api/recipe/5
         [Route("api/recipe/{search}")]
         [HttpGet]
-        public string GetRecipes(string search)
+        public async Task<string> GetRecipes(string search)
         {
             DatabaseConnect Database = new DatabaseConnect();
-            return JsonConvert.SerializeObject(Database.Recipe.GetList(search));
+
+            List<Recipe> recipes = await Database.Recipe.GetList(search);
+
+            return JsonConvert.SerializeObject(recipes);
         }
 
         // POST: api/recipe
