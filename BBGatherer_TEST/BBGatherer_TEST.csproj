@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\B3-BiksBudget\BBGatherer.csproj" />
+    <ProjectReference Include="..\BBDatabase\BBCollection.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,16 +1,15 @@
-﻿using BBCollection;
-using BBCollection.BBObjects;
-using BBCollection.DBConncetion;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MySql.Data.MySqlClient;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using BBCollection.DBHandling;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using BBCollection.DBConncetion;
 using System.Threading.Tasks;
+using BBCollection.BBObjects;
 
-namespace BBGatherer_TEST
+namespace BBCollection.DBHandling.Tests
 {
-    [TestClass]
+    [TestClass()]
     public class BBCollection_test
     {
         DatabaseConnect databaseConnect = new DatabaseConnect();
@@ -22,7 +21,7 @@ namespace BBGatherer_TEST
         {
             List<Product> products = new List<Product>();
             string nullString = null;
-            
+
             products = await databaseConnect.Product.GetList(nullString);
 
             Assert.IsTrue(products.Count > 0);
@@ -101,6 +100,17 @@ namespace BBGatherer_TEST
         }
 
         [TestMethod]
+        public async Task GetRange_Test()
+        {
+            List<Product> products = new List<Product>();
+
+            products = await databaseConnect.Product.GetRange("mælk", 10, 0);
+
+            Assert.IsTrue(products.Count == 10);
+            CollectionAssert.AllItemsAreUnique(products);
+        }
+
+        [TestMethod]
         public async Task GetReference_Test()
         {
             List<Product> products = new List<Product>();
@@ -130,17 +140,93 @@ namespace BBGatherer_TEST
         #endregion
 
         #region Recipe_Test
+        [TestMethod()]
+        public void GetListTest()
+        {
+            Assert.Fail();
+        }
+
+        [TestMethod()]
+        public void GetRangeTest()
+        {
+            Assert.Fail();
+        }
+
+        [TestMethod()]
+        public void GetIngredientsTest()
+        {
+            Assert.Fail();
+        }
+
+        [TestMethod()]
+        public void AddListTest()
+        {
+            Assert.Fail();
+        }
+
         #endregion
 
         #region Shoppinglist_Test
+        [TestMethod()]
+        public void AddListTest1()
+        {
+            Assert.Fail();
+        }
+
+        [TestMethod()]
+        public void GetListTest1()
+        {
+            Assert.Fail();
+        }
+
+        [TestMethod()]
+        public void DeleteTest()
+        {
+            Assert.Fail();
+        }
+
+
         #endregion
 
         #region Storage_Test
+        [TestMethod()]
+        public void UpdateTest()
+        {
+            Assert.Fail();
+        }
+
+        [TestMethod()]
+        public void GetListTest2()
+        {
+            Assert.Fail();
+        }
+
+        [TestMethod()]
+        public void AddListTest2()
+        {
+            Assert.Fail();
+        }
+
+        [TestMethod()]
+        public void DeleteTest1()
+        {
+            Assert.Fail();
+        }
         #endregion
 
         #region User_Test
-        #endregion
+        [TestMethod()]
+        public void AddTest()
+        {
+            Assert.Fail();
+        }
 
+        [TestMethod()]
+        public void VerifyTest()
+        {
+            Assert.Fail();
+        }
+        #endregion
 
     }
 }
