@@ -57,6 +57,10 @@ namespace BBCollection.DBHandling
 
                     recipeList.Add(recipe);
                 }
+                foreach (Recipe r in recipeList)
+                {
+                    r.deleteDuplicates();
+                }
                 return recipeList;
             });
 
