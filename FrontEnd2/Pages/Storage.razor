@@ -11,7 +11,7 @@
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 
 
-<h1>My fridge</h1>
+<h1>Storage</h1>
 
 @if (email != null)
 {
@@ -24,186 +24,183 @@
     else
     {
         @* Storage table *@
-<div class="container">
-    <div class="row">
-        <div class="col-sm-12">
-            <table class="table table-hover table-condensed">
-                <thead>
-                    <tr>
-                        <th style="width:30%">Product</th>
-                        <th style="width:20%">Amount</th>
-                        <th style="width:10%">Amount remaining</th>
-                        <th style="width:10%">Date added</th>
-                        <th style="width:10%">Delete</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var items in ListFunc.CombinedList)
-                    {
-                        <tr>
-                            <td data-th="Product">@items._productName</td>
-                            <td data-th="Amount">
-                                <input type="number" id="number" value="@items._amountleft" />
-                                @items._amount
-                            </td>
-                            <td data-th="Amount remaining">
-                                <div class="btn-group show-on-hover">
-                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                                        @items._state <span class="caret"></span>
-                                    </button>
-                                    <ul class="dropdown-menu" role="menu">
-                                        @foreach (var State in ItemState)
-                                        {
-                                            <li><button class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(() => ChangeItemState(items, State))">@State</button></li>
-                                        }
-                                    </ul>
-                                </div>
-                            </td>
-                            <td data-th="Date added">@items._timeAdded</td>
-                            <td data-th="Delete">
-                                <div>
-                                    <button class="btn btn-rounded btn-danger btn-sm" title="Delete one @items._productName from storage" @onclick="(() => ChangeItemAmout(items))"><i class="oi oi-trash"></i></button>
-                                    @if (items._amountleft > 1)
-                                    {
-                                        <button class="btn btn-rounded btn-danger btn-sm" title="Delete all @items._amountleft @items._productName from storage" @onclick="(() => DeleteItem(items))"><i class="oi oi-trash"></i>(All)</button>
-                                    }
-                                    else
-                                    {
-                                        <button disabled class="btn btn-rounded btn-danger btn-sm invisibleBtn"><i class="oi oi-trash"></i>(All)</button>
-                                    }
-                                </div>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-    </div>
-    @* Buttons *@
-    <div class="row">
-
-        @*<div class="col-sm-4 of">
-                <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>ListFunc.AddFuncList())">Save storage</button>
-            </div>*@
-        <div class="col-sm-4">
-            <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => ListFunc.DeleteStorage())">Delete storage</button>
-        </div>
-        <div class="col-sm-4">
-            <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => FindRecipies())">Empty my Fridge</button>
-        </div>
-    </div>
-    @if (_viewEmptyFridgeLoadSpinner)
-    {
-        <div class="row d-flex justify-content-center">
-            <div class="center_div lds-roller">
-                <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-            </div>
-        </div>
-    }
-</div>
-
-        @* Recipe display *@
-        <div class="container-fluid top-margin">
-            @if (recpies == null)
-            {
-                <p>Sorry, you dont have enough products</p>
-            }
+        <div class="container">
             <div class="row">
-                <div class="col-3">
-                    @if (viewTitle == true)
-                    {
-                        <h3> You can make the following </h3>
-                        <button class="close float-left" @onclick="(() => closeRecipies())"><i class="oi oi-x"></i> </button>
-                        <ul class="recipeListDisplay">
-                            @foreach (var rep in recpies)
+                <div class="col-sm-12">
+                    <table class="table table-hover table-condensed">
+                        <thead>
+                            <tr>
+                                <th style="width:35%">Product</th>
+                                <th style="width:10%" class="textForTable">Quantity</th>
+                                <th style="width:15%" class="textForTable">Amount remaining</th>
+                                <th style="width:10%" class="textForTable">Date added</th>
+                                <th style="width:10%" class="textForTable">Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (Product p in ListFunc.CombinedList)
                             {
-                                <li class="no-bullets"> <button type="button" class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => retriveInfo(rep._recipie._recipeID))"> @rep._recipie._Name </button> </li>
-                            }
-                        </ul>
-                    }
-                </div>
-                @if (viewIngredients == true)
-                {
-                    <div class="col-2 offset-2">
-
-                        <table class="table-bordered ingredientsTable">
-                            <colgroup>
-                                <col style="width: 100px" />
-                                <col style="width: 150px" />
-                            </colgroup>
-                            <thead>
                                 <tr>
-                                    <th> Amount </th>
-                                    <th> Name </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @(found = true)
-                                @foreach (WeightedRecipies w in recpies)
-                                {
-                                    if (w._recipie._recipeID == ID)
-                                    {
-
-                                        @if (found == true)
-                                        {
-                                            @foreach (Ingredient I in w._recipie._ingredientList)
+                                    <td data-th="Product">@p._productName</td>
+                                    <td data-th="Amount" class="textForTable">
+                                        <input type="number" id="number" value="@p._amountleft" />
+                                        @*@p._amount*@
+                                    </td>
+                                    <td data-th="Amount remaining" class="textForTable">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                            </div>
+                                            <select class="custom-select" @onchange="((e)=>AssignScalar(e, p))">
+                                                <option value="@p._state">@p._state</option>
+                                                @foreach (string state in ItemState)
+                                                {
+                                                    <option value="@state"> @state </option>
+                                                }
+                                            </select>
+                                        </div>
+                                    </td>
+                                    <td data-th="Date added" class="textForTable">@p._timeAdded</td>
+                                    <td data-th="Delete" class="textForTable">
+                                        <div>
+                                            <button class="btn btn-rounded btn-danger btn-sm" title="Delete one @p._productName from storage" @onclick="(() => ChangeItemAmout(p))"><i class="oi oi-trash"></i></button>
+                                            @if (p._amountleft > 1)
                                             {
-                                                matchFound();
-                                                <tr>
-                                                    <td>
-                                                        @I._amount @I._unit
-                                                    </td>
-
-                                                    @if (compareIngredientsWtihRefs(I, w.custmomRef))
-                                                    {
-                                                        <td style="background-color:green">@I._ingredientName</td>
-                                                    }
-
-                                                    else
-                                                    {
-                                                        <td style="background-color:red"> @I._ingredientName</td>
-
-                                                    }
-                                                </tr>
+                                                <button class="btn btn-rounded btn-danger btn-sm" title="Delete all @p._amountleft @p._productName from storage" @onclick="(() => DeleteItem(p))"><i class="oi oi-trash"></i>(All)</button>
                                             }
-                                        }
-                                    }
-
-
-                                }
-                                <tr>
-                                    <td colspan="2" class="text-sm-center">
-                                        <div class="valueClass text-center">
-                                            <div class="value-button" id="increase" @onclick="(() => decrementRecipeAmount())" value="Increase @value"> - </div>
-                                            <input type="number" id="number" value="@recipePerPerson" />
-                                            <div class="value-button" id="decrease" @onclick="(() => incrementRecipeAmount())" value="Decrease @value"> + </div>
+                                            else
+                                            {
+                                                <button disabled class="btn btn-rounded btn-danger btn-sm invisibleBtn"><i class="oi oi-trash"></i>(All)</button>
+                                            }
                                         </div>
                                     </td>
                                 </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="col-4">
-                        <h3> @recipeName </h3>
-                        <p> @recipeDescription </p>
-                    </div>
-                }
+                                <br />
+                            }
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <!--Scroll to top button   -->
-            <button id="myBtn" class="btn btn-rounded btn-success"><a href="storage" style="color: white; font-size:12px;">Top</a></button>
+            @* Buttons *@
+            <div class="row">
+
+                @*<div class="col-sm-4 of">
+                        <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>ListFunc.AddFuncList())">Save storage</button>
+                    </div>*@
+                <div class="col-sm-4">
+                    <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => ListFunc.DeleteStorage())">Delete storage</button>
+                </div>
+                <div class="col-sm-4">
+                    <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => FindRecipies())">Empty my Fridge</button>
+                </div>
+            </div>
         </div>
     }
+    @*</div>*@
+
+    @* Recipe display *@
+    <div class="container-fluid top-margin">
+        @if (recpies == null)
+        {
+            <p>Sorry, you dont have enough products</p>
+        }
+        <div class="row">
+            <div class="col-3">
+                @if (viewTitle == true)
+                {
+                    <h3> You can make the following </h3>
+                    <button class="close float-left" @onclick="(() => closeRecipies())"><i class="oi oi-x"></i> </button>
+                    <ul class="recipeListDisplay">
+                        @foreach (var rep in recpies)
+                        {
+                            <li class="no-bullets"> <button type="button" class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => retriveInfo(rep._recipie._recipeID))"> @rep._recipie._Name </button> </li>
+                        }
+
+                    </ul>
+                }
+            </div>
+            @if (viewIngredients == true)
+            {
+                <div class="col-2 offset-2">
+
+                    <table class="table-bordered ingredientsTable">
+                        <colgroup>
+                            <col style="width: 100px" />
+                            <col style="width: 150px" />
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th> Amount </th>
+                                <th> Name </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @(found = true)
+                            @foreach (WeightedRecipies w in recpies)
+                            {
+                                if (w._recipie._recipeID == ID)
+                                {
+
+                                    @if (found == true)
+                                    {
+                                        @foreach (Ingredient I in w._recipie._ingredientList)
+                                        {
+                                            matchFound();
+                                            <tr>
+                                                <td>
+                                                    @I._amount @I._unit
+                                                </td>
+
+                                                @if (compareIngredientsWtihRefs(I, w.custmomRef))
+                                                {
+                                                    <td style="background-color:green">@I._ingredientName</td>
+                                                }
+
+                                                else
+                                                {
+                                                    <td style="background-color:red"> @I._ingredientName</td>
+
+                                                }
+                                            </tr>
+                                        }
+                                    }
+                                }
+
+
+                            }
+                            <tr>
+                                <td colspan="2" class="text-sm-center">
+                                    <div class="valueClass text-center">
+                                        <div class="value-button" id="increase" @onclick="(() => decrementRecipeAmount())" value="Increase @value"> - </div>
+                                        <input type="number" id="number" value="@recipePerPerson" />
+                                        <div class="value-button" id="decrease" @onclick="(() => incrementRecipeAmount())" value="Decrease @value"> + </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-4">
+                    <h3> @recipeName </h3>
+                    <p> @recipeDescription </p>
+                </div>
+            }
+        </div>
+        <!--Scroll to top button   -->
+        <button id="myBtn" class="btn btn-rounded btn-success"><a href="storage" style="color: white; font-size:12px;">Top</a></button>
+    </div>
 }
 else
 {
     <p>You need to be logged in to see your storage</p>
 }
 
+
 @code{
     ConnectionSettings connectionSettings = new ConnectionSettings();
 
     #region Fields
     string email, userId, recipeDescription, recipeName;
+    string tempState;
     int ID;
 
     float recipePerPerson;
@@ -211,14 +208,17 @@ else
     int value;
     int x;
 
-
     bool found = true;
     bool viewTitle = false;
     bool viewIngredients = false;
+
+    bool changeState = false;
+
     bool _viewEmptyFridgeLoadSpinner = false;
 
     ShoppinlistFunctionality ListFunc = new ShoppinlistFunctionality("api/Storage");
     HttpResponseMessage responseMessage = new HttpResponseMessage();
+    Product tempProduct = new Product();
 
 
     List<float> recipeAmount = new List<float>();
@@ -529,4 +529,9 @@ else
         return false;
     }
     #endregion
+
+    private void AssignScalar(ChangeEventArgs e, Product p)
+    {
+        ChangeItemState(p, e.Value.ToString());
+    }
 }

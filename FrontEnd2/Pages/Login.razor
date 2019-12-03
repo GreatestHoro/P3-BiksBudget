@@ -17,15 +17,14 @@
 <input class="SearchField SearchBar" type="password" placeholder="Password" @bind="@password" />
 <button class="btn btn-rounded btn-outline-success" @onclick="AutorizeLogin">Login</button>*@
 
-<div class="d-flex flex-column bd-highlight mb-3">
+<div class="d-flex flex-column mb-3">
     <div class="p-2">
-        <input class="SearchField SearchBar" placeholder="Email" @onkeyup="@OnKeyPress" @bind="@email" />
+        <input class="SearchField SearchBar" placeholder="Username or e-mail" @onkeyup="@OnKeyPress" @bind="@email" />
     </div>
     <div class="p-2">
         <input class="SearchField SearchBar" type="password" placeholder="Password" @onkeyup="@OnKeyPress" @bind="@password" />
     </div>
     <div class="p-2">
-        @*<button class="btn btn-rounded btn-outline-success" @onclick="AutorizeLogin">Login</button>*@
         @if (isLogginIn)
         {
             <button class="btn btn-rounded btn-outline-success search disabled" disabled><span class='fa-left fas fa-sync-alt spinning'></span>Logging in...</button>
@@ -35,8 +34,13 @@
             <button class="btn btn-rounded btn-outline-success search" @onclick="(() => AutorizeLogin())">Login</button>
         }
     </div>
+    <div class="p-2">
+        <p>If you have not yet created an account, please press the button below.</p>
+    </div>
+    <div class="p-2">
+        <a class="btn btn-rounded btn-success" href="Register"><i class="oi oi-person"></i>&nbsp; Register</a>
+    </div>
 </div>
-
 
 @code{
     string email;
