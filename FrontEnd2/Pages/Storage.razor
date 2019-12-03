@@ -11,7 +11,7 @@
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 
 
-<h1>My fridge</h1>
+<h1>Storage</h1>
 
 @if (email != null)
 {
@@ -94,105 +94,105 @@
             </div>
         </div>
     }
-@*</div>*@
+    @*</div>*@
 
-        @* Recipe display *@
-        <div class="container-fluid top-margin">
-            @if (recpies == null)
-            {
-                <p>Sorry, you dont have enough products</p>
-            }
-            <div class="row">
-                <div class="col-3">
-                    @if (viewTitle == true)
-                    {
-                        <h3> You can make the following </h3>
-                        <button class="close float-left" @onclick="(() => closeRecipies())"><i class="oi oi-x"></i> </button>
-                        <ul class="recipeListDisplay">
-                            @foreach (var rep in recpies)
-                            {
-                                <li class="no-bullets"> <button type="button" class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => retriveInfo(rep._recipie._recipeID))"> @rep._recipie._Name </button> </li>
-                            }
-
-                        </ul>
-                    }
-                </div>
-                @if (viewIngredients == true)
+    @* Recipe display *@
+    <div class="container-fluid top-margin">
+        @if (recpies == null)
+        {
+            <p>Sorry, you dont have enough products</p>
+        }
+        <div class="row">
+            <div class="col-3">
+                @if (viewTitle == true)
                 {
-                    <div class="col-2 offset-2">
+                    <h3> You can make the following </h3>
+                    <button class="close float-left" @onclick="(() => closeRecipies())"><i class="oi oi-x"></i> </button>
+                    <ul class="recipeListDisplay">
+                        @foreach (var rep in recpies)
+                        {
+                            <li class="no-bullets"> <button type="button" class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => retriveInfo(rep._recipie._recipeID))"> @rep._recipie._Name </button> </li>
+                        }
 
-                        <table class="table-bordered ingredientsTable">
-                            <colgroup>
-                                <col style="width: 100px" />
-                                <col style="width: 150px" />
-                            </colgroup>
-                            <thead>
-                                <tr>
-                                    <th> Amount </th>
-                                    <th> Name </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @(found = true)
-                                @foreach (WeightedRecipies w in recpies)
-                                {
-                                    if (w._recipie._recipeID == ID)
-                                    {
-
-                                        @if (found == true)
-                                        {
-                                            @foreach (Ingredient I in w._recipie._ingredientList)
-                                            {
-                                                matchFound();
-                                                <tr>
-                                                    <td>
-                                                        @I._amount @I._unit
-                                                    </td>
-
-                                                    @if (compareIngredientsWtihRefs(I, w.custmomRef))
-                                                    {
-                                                        <td style="background-color:green">@I._ingredientName</td>
-                                                    }
-
-                                                    else
-                                                    {
-                                                        <td style="background-color:red"> @I._ingredientName</td>
-
-                                                    }
-                                                </tr>
-                                            }
-                                        }
-                                    }
-
-
-                                }
-                                <tr>
-                                    <td colspan="2" class="text-sm-center">
-                                        <div class="valueClass text-center">
-                                            <div class="value-button" id="increase" @onclick="(() => decrementRecipeAmount())" value="Increase @value"> - </div>
-                                            <input type="number" id="number" value="@recipePerPerson" />
-                                            <div class="value-button" id="decrease" @onclick="(() => incrementRecipeAmount())" value="Decrease @value"> + </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="col-4">
-                        <h3> @recipeName </h3>
-                        <p> @recipeDescription </p>
-                    </div>
+                    </ul>
                 }
             </div>
-            <!--Scroll to top button   -->
-            <button id="myBtn" class="btn btn-rounded btn-success"><a href="storage" style="color: white; font-size:12px;">Top</a></button>
+            @if (viewIngredients == true)
+            {
+                <div class="col-2 offset-2">
+
+                    <table class="table-bordered ingredientsTable">
+                        <colgroup>
+                            <col style="width: 100px" />
+                            <col style="width: 150px" />
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th> Amount </th>
+                                <th> Name </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @(found = true)
+                            @foreach (WeightedRecipies w in recpies)
+                            {
+                                if (w._recipie._recipeID == ID)
+                                {
+
+                                    @if (found == true)
+                                    {
+                                        @foreach (Ingredient I in w._recipie._ingredientList)
+                                        {
+                                            matchFound();
+                                            <tr>
+                                                <td>
+                                                    @I._amount @I._unit
+                                                </td>
+
+                                                @if (compareIngredientsWtihRefs(I, w.custmomRef))
+                                                {
+                                                    <td style="background-color:green">@I._ingredientName</td>
+                                                }
+
+                                                else
+                                                {
+                                                    <td style="background-color:red"> @I._ingredientName</td>
+
+                                                }
+                                            </tr>
+                                        }
+                                    }
+                                }
+
+
+                            }
+                            <tr>
+                                <td colspan="2" class="text-sm-center">
+                                    <div class="valueClass text-center">
+                                        <div class="value-button" id="increase" @onclick="(() => decrementRecipeAmount())" value="Increase @value"> - </div>
+                                        <input type="number" id="number" value="@recipePerPerson" />
+                                        <div class="value-button" id="decrease" @onclick="(() => incrementRecipeAmount())" value="Decrease @value"> + </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-4">
+                    <h3> @recipeName </h3>
+                    <p> @recipeDescription </p>
+                </div>
+            }
         </div>
-    }
+        <!--Scroll to top button   -->
+        <button id="myBtn" class="btn btn-rounded btn-success"><a href="storage" style="color: white; font-size:12px;">Top</a></button>
+    </div>
 }
 else
 {
     <p>You need to be logged in to see your storage</p>
 }
+
 
 @code{
     ConnectionSettings connectionSettings = new ConnectionSettings();
