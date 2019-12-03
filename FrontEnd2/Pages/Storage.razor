@@ -38,34 +38,34 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var items in ListFunc.CombinedList)
+                            @foreach (Product p in ListFunc.CombinedList)
                             {
                                 <tr>
-                                    <td data-th="Product">@items._productName</td>
+                                    <td data-th="Product">@p._productName</td>
                                     <td data-th="Amount">
-                                        <input type="number" id="number" value="@items._amountleft" />
-                                        @items._amount
+                                        <input type="number" id="number" value="@p._amountleft" />
+                                        @p._amount
                                     </td>
                                     <td data-th="Amount remaining">
-                                        <div class="btn-group show-on-hover">
-                                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                                                @items._state <span class="caret"></span>
-                                            </button>
-                                            <ul class="dropdown-menu" role="menu">
-                                                @foreach (var State in ItemState)
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                            </div>
+                                            <select class="custom-select" @onchange="((e)=>AssignScalar(e, p))">
+                                                <option value="@p._state">@p._state</option>
+                                                @foreach (string state in ItemState)
                                                 {
-                                                    <li><button class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(() => ChangeItemState(items, State))">@State</button></li>
+                                                    <option value="@state"> @state </option>
                                                 }
-                                            </ul>
+                                            </select>
                                         </div>
                                     </td>
-                                    <td data-th="Date added">@items._timeAdded</td>
+                                    <td data-th="Date added">@p._timeAdded</td>
                                     <td data-th="Delete">
                                         <div>
-                                            <button class="btn btn-rounded btn-danger btn-sm" title="Delete one @items._productName from storage" @onclick="(() => ChangeItemAmout(items))"><i class="oi oi-trash"></i></button>
-                                            @if (items._amountleft > 1)
+                                            <button class="btn btn-rounded btn-danger btn-sm" title="Delete one @p._productName from storage" @onclick="(() => ChangeItemAmout(p))"><i class="oi oi-trash"></i></button>
+                                            @if (p._amountleft > 1)
                                             {
-                                                <button class="btn btn-rounded btn-danger btn-sm" title="Delete all @items._amountleft @items._productName from storage" @onclick="(() => DeleteItem(items))"><i class="oi oi-trash"></i>(All)</button>
+                                                <button class="btn btn-rounded btn-danger btn-sm" title="Delete all @p._amountleft @p._productName from storage" @onclick="(() => DeleteItem(p))"><i class="oi oi-trash"></i>(All)</button>
                                             }
                                             else
                                             {
@@ -111,6 +111,7 @@
                             {
                                 <li class="no-bullets"> <button type="button" class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => retriveInfo(rep._recipie._recipeID))"> @rep._recipie._Name </button> </li>
                             }
+
                         </ul>
                     }
                 </div>
@@ -196,6 +197,7 @@ else
 
     #region Fields
     string email, userId, recipeDescription, recipeName;
+    string tempState;
     int ID;
 
     float recipePerPerson;
@@ -203,13 +205,14 @@ else
     int value;
     int x;
 
-
     bool found = true;
     bool viewTitle = false;
     bool viewIngredients = false;
+    bool changeState = false;
 
     ShoppinlistFunctionality ListFunc = new ShoppinlistFunctionality("api/Storage");
     HttpResponseMessage responseMessage = new HttpResponseMessage();
+    Product tempProduct = new Product();
 
 
     List<float> recipeAmount = new List<float>();
@@ -516,4 +519,9 @@ else
         return false;
     }
     #endregion
+
+    private void AssignScalar(ChangeEventArgs e, Product p)
+    {
+        ChangeItemState(p, e.Value.ToString());
+    }
 }

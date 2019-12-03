@@ -70,26 +70,42 @@
             </div>
         </div>
         <div class="p-2">
-            <div class="btn-group show-on-hover">
-                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                    <h5>Select Stores </h5>
-                    <span clasusergeolos="caret"></span>
-                </button>
-                <ul class="dropdown-menu" role="menu">
-                    @foreach (FilterItem item in storeList)
+            @*<div class="btn-group show-on-hover">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                <h5>Select Stores </h5>
+                <span clasusergeolos="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                @foreach (FilterItem item in storeList)
+                {
+                    if (item.IsEnabled == true)
                     {
-                        if (item.IsEnabled == true)
-                        {
-                            <li><button style="color:green" class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(() => ChangeState(item.FilterName, storeList))">@item.FilterName</button></li>
-                        }
-                        else
-                        {
-                            <li><button style="color:red" class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(() => ChangeState(item.FilterName, storeList))">@item.FilterName</button></li>
-                        }
+                        <li><button style="color:green" class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(() => ChangeState(item.FilterName, storeList))">@item.FilterName</button></li>
                     }
-                    <li><button class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(()=>SelectAll(storeList))">Select All</button></li>
-                </ul>
-            </div>
+                    else
+                    {
+                        <li><button style="color:red" class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(() => ChangeState(item.FilterName, storeList))">@item.FilterName</button></li>
+                    }
+                }
+                <li><button class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(()=>SelectAll(storeList))">Select All</button></li>
+            </ul>
+        </div>*@
+
+            <tr>
+                <td data-th="Amount remaining">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                        </div>
+                        <select class="custom-select" @onchange="((e)=>AssignScalar(e))">
+                            @foreach (FilterItem filter in storeList)
+                            {
+                                <option value="@filter"> @filter.FilterName </option>
+                            }
+                        </select>
+                    </div>
+                </td>
+            </tr>
+
         </div>
         <div class="p-2">
             <div class="btn-group show-on-hover">
@@ -295,6 +311,11 @@ else if (!isSearching && !_viewProducts)
     #endregion
 
     #region ChangeFilterControl
+
+    private void AssignScalar(ChangeEventArgs e)
+    {
+        string test = e.Value.ToString();
+    }
 
     void toggleAdvancedCheckBox()
     {
