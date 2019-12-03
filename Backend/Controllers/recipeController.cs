@@ -90,6 +90,7 @@ namespace Backend.Controllers
 
             DatabaseConnect dbConnect = new DatabaseConnect();
             var data = await dbConnect.Recipe.GetList(recipeTitle);
+
             string jsonDBRecipes = JsonConvert.SerializeObject(data);
 
             return jsonDBRecipes;
