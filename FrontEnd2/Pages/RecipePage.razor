@@ -256,11 +256,27 @@
                                                 {
                                                     @foreach (Product p in products)
                                                     {
-                                                        <tr>
-                                                            <td><button class="btn btn-block btn-light rounded-0" @onclick="(() => AddProductToSL(p))">@p._productName</button></td>
-                                                            <td>@p._price kr.</td>
-                                                            <td>@p._amountleft</td>
-                                                        </tr>
+                                                        if (p._CustomReferenceField != null && p._CustomReferenceField.Equals("*"))
+                                                        {
+                                                            <tr>
+                                                                <td>
+                                                                    <Tooltip IsAlwaysActive="true" Placement="Placement.Right" Text="This product is not correct, but close">
+                                                                        <button class="btn btn-block btn-warning rounded-0" @onclick="(() => AddProductToSL(p))">@p._productName</button>
+                                                                    </Tooltip>
+                                                                </td>
+                                                                <td>@p._price kr.</td>
+                                                                <td>@p._amountleft</td>
+                                                            </tr>
+                                                        }
+                                                        else
+                                                        {
+                                                            <tr>
+                                                                <td><button class="btn btn-block btn-light rounded-0" @onclick="(() => AddProductToSL(p))">@p._productName</button></td>
+                                                                <td>@p._price kr.</td>
+                                                                <td>@p._amountleft</td>
+                                                            </tr>
+                                                        }
+
                                                     }
                                                 }
                                             </tbody>
@@ -519,48 +535,27 @@
     /// </summary>
     private void retriveProduct()
     {
-        if (products == null)
-        {
-            foreach (ComplexRecipe com in complexRecipes)
-            {
-                foreach (string s in com._complexRecipeComponent._products.Keys)
-                {
-                    if (s.Contains(tempIngredientName))
-                    {
-                        foreach (List<Product> pro in com._complexRecipeComponent._products.Values)
-                        {
-                            foreach (Product p in pro)
-                            {
-                                if (p._productName.Contains(tempIngredientName) && !products.Contains(p))
-                                {
-                                    products.Add(p);
-                                    QuickList.Add(p);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        else
+        if (products != null)
         {
             products.Clear();
-            foreach (ComplexRecipe com in complexRecipes)
+        }
+        foreach (ComplexRecipe com in complexRecipes)
+        {
+            foreach (string s in com._complexRecipeComponent._products.Keys)
             {
-                foreach (string s in com._complexRecipeComponent._products.Keys)
+                if (s.Contains(tempIngredientName))
                 {
-                    if (s.Contains(tempIngredientName))
+                    foreach (var p in com._complexRecipeComponent._products[s])
                     {
-                        foreach (List<Product> pro in com._complexRecipeComponent._products.Values)
+                        if (p._productName.ToLower().Contains(tempIngredientName) && !products.Contains(p))
                         {
-                            foreach (Product p in pro)
-                            {
-                                if (p._productName.Contains(tempIngredientName) && !products.Contains(p))
-                                {
-                                    products.Add(p);
-                                    QuickList.Add(p);
-                                }
-                            }
+                            products.Add(p);
+                            QuickList.Add(p);
+                        }
+                        else if (p._CustomReferenceField != null && p._CustomReferenceField.ToLower().Contains("*")) 
+                        {
+                            products.Add(p);
+                            QuickList.Add(p);
                         }
                     }
                 }
@@ -658,5 +653,5 @@
         _viewLoadMore = true;
         this.StateHasChanged();
     }
-#endregion
+    #endregion
 }
