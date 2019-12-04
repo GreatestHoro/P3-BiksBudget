@@ -531,7 +531,7 @@
                         {
                             foreach (Product p in pro)
                             {
-                                if (p._productName.Contains(tempIngredientName) && !products.Contains(p))
+                                if (p._productName.ToLower().Contains(tempIngredientName) && !products.Contains(p))
                                 {
                                     products.Add(p);
                                     QuickList.Add(p);
@@ -555,7 +555,7 @@
                         {
                             foreach (Product p in pro)
                             {
-                                if (p._productName.Contains(tempIngredientName) && !products.Contains(p))
+                                if (p._productName.ToLower().Contains(tempIngredientName) && !products.Contains(p))
                                 {
                                     products.Add(p);
                                     QuickList.Add(p);
