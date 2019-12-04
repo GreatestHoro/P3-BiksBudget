@@ -8,26 +8,30 @@
 @using System.Diagnostics;
 @inject IJSRuntime JsRuntime
 
-<div class="container-fluid">
-    <!-- #region Recipe search bar -->
-    <div class="row d-flex justify-content-center">
-        <div class="col-sm-10 col-md-8 col-lg-7 col-xl-5">
-            <div class="form-check-inline center_div recipe-search-bar mb-2">
-                <input type="text" @bind="searchTerm" @onkeyup="OnKeyPress" disabled="@viewRecipes" class="form-control recipe-search-input" id="recipeSearchInput" placeholder="Search" />
-                <button class="btn btn-success recipe-search-button" @onclick="(() => Search())">
-                    <i class="fa fa-search"></i>
-                </button>
+    <div class="container-fluid">
+        <!-- #region Recipe search bar -->
+        <div class="row d-flex justify-content-center">
+            <div class="col-sm-10 col-md-8 col-lg-7 col-xl-5" id="recipeSearchBox">
+                <div class="form-check-inline center_div recipe-search-bar mb-2">
+                    <input type="text" @bind="searchTerm" @onkeyup="OnKeyPress" disabled="@viewRecipes" class="form-control recipe-search-input" id="recipeSearchInput" placeholder="Search recipe" />
+                    <button class="btn btn-success recipe-search-button" @onclick="(() => Search())">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </div>
             </div>
-            @if (isSearching == true)
-            {
+            <!--Scroll to top button   -->
+            <button id="myBtn" class="btn btn-rounded btn-success"><a href="recipe" style="color: white; font-size:12px;">Top</a></button>
+        </div>
+    @if (isSearching == true)
+    {
+        <div class="row d-flex justify-content-center top-margin">
+            <div class="col-sm-10 col-md-8 col-lg-7 col-xl-5">
                 <div class="center_div lds-roller">
                     <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
                 </div>
-            }
+            </div>
         </div>
-        <!--Scroll to top button   -->
-        <button id="myBtn" class="btn btn-rounded btn-success"><a href="recipe" style="color: white; font-size:12px;">Top</a></button>
-    </div>
+        }
     <!-- #endregion -->
     <!-- #region Recipe card lists -->
     @if (viewRecipeList == true)
@@ -36,7 +40,7 @@
             <div class="col-sm-10 col-md-8 col-lg-7 col-xl-5">
                 @foreach (ComplexRecipe complexRecipe in complexRecipes)
                 {
-                    <div class="card w-100 " style="transform:rotate(0); margin-top:10px;">
+                    <div class="center_div card w-100" id="recipeCard">
                         <a @onclick="(() => retriveRecipe(complexRecipe._recipeID))" class="stretched-link"></a>
                         <div class="card-header" style="padding-bottom: 0.25rem;">
                             <div class="card-title w-100">
@@ -65,210 +69,228 @@
                         </div>
                     </div>
                 }
-                @if (complexRecipes.Count() % recipeQuery._productsPerLoad == 0 && complexRecipes.Count() != 0)
-                {
-                    <button class="btn btn-warning mb-5" @onclick="LoadMore" id="LoadMore">Load More</button>
-                }
-                @if (isSearching == true)
+                @if (_viewLoadMoreSpinner == true)
                 {
                     <div class="center_div lds-roller">
                         <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+                    </div>
+                }
+                @if (complexRecipes.Count() % recipeQuery._productsPerLoad == 0 && complexRecipes.Count() != 0 && _viewLoadMore == true)
+                {
+                    <div class="row mt-4 d-flex justify-content-center">
+                        <button class="btn btn-warning mb-4" @onclick="LoadMore" id="LoadMore">Load More</button>
                     </div>
                 }
             </div>
         </div>
     }
     <!-- #endregion -->
-</div>
-@if (viewRecipes == true)
-{
-    <!-- #region Recipe view -->
-    <div class="container-fluid ">
-        <div class="minibox">
-            <div class="row">
-                <!-- #region Recipe Title -->
-                <div class="col-sm-12">
-                    <button class="close float-right" @onclick="(() => toggle())"><i class="oi oi-x"></i> </button>
-                    <h2 class="text-center recipeTitle">@recipeName</h2> <hr />
-                </div>
-
-                <!-- #endregion -->
             </div>
-            <div class="row">
-                <!-- #region Dropdown options -->
-                <div class="col-sm-4">
+            @if (viewRecipes == true)
+            {
+                <!-- #region Recipe view -->
+                <div class="container-fluid ">
+                    <div class="minibox">
+                        <div class="row">
+                            <!-- #region Recipe Title -->
+                            <div class="col-sm-12">
+                                <button class="close float-right" @onclick="(() => toggle())"><i class="oi oi-x"></i> </button>
+                                <h2 class="text-center recipeTitle">@recipeName</h2> <hr />
+                            </div>
 
-                </div>
-                <div class="col-sm-2">
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <label class="input-group-text" for="inputGroupSelect01"> For:</label>
-                        </div>
-                        <select class="custom-select" @onchange="AssignScalar">
-                            <option selected> @recipePerPerson</option>
-                            <!-- #region Options -->
-                            <option value="@TempScalar"> 1 </option>
-                            <option value="@TempScalar"> 2 </option>
-                            <option value="@TempScalar"> 3 </option>
-                            <option value="@TempScalar"> 4 </option>
-                            <option value="@TempScalar"> 5 </option>
-                            <option value="@TempScalar"> 6 </option>
-                            <option value="@TempScalar"> 7 </option>
-                            <option value="@TempScalar"> 8 </option>
-                            <option value="@TempScalar"> 9 </option>
-                            <option value="@TempScalar"> 10 </option>
                             <!-- #endregion -->
-                        </select>
-                        @*<div class="input-group-append">
-                                <label class="input-group-text" for="inputGroupSelect01"> Persons</label>
-                            </div>*@
-                    </div>
-                </div>
-                <div class="col-sm-2">
-                    <button style="background-color: #05c46b;" class="btn btn-block" @onclick="(() => QuickAddToShoppinglist(ingredients))"> <i class="oi oi-cart"></i> </button>
-                </div>
-                <hr />
-                <!-- #endregion -->
-            </div>
-            <div class="row" style="margin-top:10px">
-                <!-- #region Toggle buttons -->
-                <div class="col-sm-4">
-                    <button class="btn btn-light active btn-block" @onclick="toggleRecipeDescription">
-                        View description
-                        @if (viewDescription == true)
-                        {
-                            <i class="oi oi-chevron-bottom float-right"></i>
-                        }
-                        else
-                        {
-                            <i class="oi oi-chevron-right float-right"></i>
-                        }
-                    </button>
-                </div>
-                <div class="col-sm-4">
-                    <button class="btn btn-light active btn-block" @onclick="toggleRecipeIngredients">
-                        View Ingredients
-                        @if (viewIngredients == true)
-                        {
-                            <i class="oi oi-chevron-bottom float-right"></i>
-                        }
-                        else
-                        {
-                            <i class="oi oi-chevron-right float-right"></i>
-                        }
-                    </button>
-                </div>
-                <div class="col-sm-4 mx-auto">
-                    <button class="btn btn-light active btn-block" @onclick="toggleRecipeProducts">
-                        View Products
-                        @if (viewProducts == true)
-                        {
-                            <i class="oi oi-chevron-bottom float-right"></i>
-                        }
-                        else
-                        {
-                            <i class="oi oi-chevron-right float-right"></i>
-                        }
-                    </button>
-                </div>
-                <!-- #endregion -->
-            </div>
-            <div class="row d-flex justify-content-center top-margin m-sm-auto">
-                <!-- #region Description -->
-                <div class="col-sm-4">
-                    @if (viewDescription == true)
-                    {
-                        <p class="recipeDescription">@recipeDescription</p>
-                        <hr />
-                    }
-                </div>
-
-                <!-- #endregion -->
-                <!-- #region Ingredients table -->
-                <div class="col-sm-4">
-                    @if (viewIngredients == true)
-                    {
-                        <div style="max-height:400px; min-height:40px; overflow:auto; overflow-y:scroll;">
-                            <table class="table-hover border-0 ingredientsTable">
-                                <colgroup>
-                                    <col style="width:150px" />
-                                    <col style="width:150px" />
-                                </colgroup>
-                                <thead>
-                                    <tr>
-                                        <td style="font-weight:bold;"> Amount </td>
-                                        <td style="font-weight:bold;"> Name </td>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (Ingredient ing in ingredients)
-                                    {
-                                        if (runCounter <= ingredients.Count) //comback and fix
-                                        {
-                                            runCounter++;
-                                            scalar = recipePerPerson;
-                                        }
-
-                                        <tr>
-                                            <td>@(String.Format("{0:0.0}", (ing._amount / recipePerPerson) * scalar)) @ing._unit</td>
-                                            <td><button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => retriveIngredient(ing))">@ing._ingredientName</button></td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
                         </div>
-                        <hr />
-                    }
-                </div>
-                <!-- #endregion -->
-                <!-- #region Products -->
-                <div class="col-sm-4">
-                    @if (viewProducts == true)
-                    {
-                        <div style="max-height:400px; min-height:40px; overflow:auto; overflow-y:scroll; ">
-                            <table class="table-hover border-0 productTable">
-                                <colgroup>
-                                    <col style="width:200px" />
-                                    <col style="width:60px" />
-                                    <col style="width:20px" />
-                                </colgroup>
-                                <thead>
-                                    <tr>
-                                        <td style="font-weight:bold;"> Name </td>
-                                        <td style="font-weight:bold;"> Price </td>
-                                        <td style="font-weight:bold;"> <i class="oi oi-cart"></i> </td>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @if (products.Count == 0)
+                        <div class="row">
+                            <!-- #region Dropdown options -->
+                            <div class="col-sm-4">
+
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <label class="input-group-text" for="inputGroupSelect01"> For:</label>
+                                    </div>
+                                    <select class="custom-select" @onchange="AssignScalar">
+                                        <option selected> @recipePerPerson</option>
+                                        <!-- #region Options -->
+                                        <option value="@TempScalar"> 1 </option>
+                                        <option value="@TempScalar"> 2 </option>
+                                        <option value="@TempScalar"> 3 </option>
+                                        <option value="@TempScalar"> 4 </option>
+                                        <option value="@TempScalar"> 5 </option>
+                                        <option value="@TempScalar"> 6 </option>
+                                        <option value="@TempScalar"> 7 </option>
+                                        <option value="@TempScalar"> 8 </option>
+                                        <option value="@TempScalar"> 9 </option>
+                                        <option value="@TempScalar"> 10 </option>
+                                        <!-- #endregion -->
+                                    </select>
+                                    @*<div class="input-group-append">
+                                        <label class="input-group-text" for="inputGroupSelect01"> Persons</label>
+                                    </div>*@
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <button style="background-color: #05c46b;" class="btn btn-block" @onclick="(() => QuickAddToShoppinglist(ingredients))"> <i class="oi oi-cart"></i> </button>
+                            </div>
+                            <hr />
+                            <!-- #endregion -->
+                        </div>
+                        <div class="row" style="margin-top:10px">
+                            <!-- #region Toggle buttons -->
+                            <div class="col-sm-4">
+                                <button class="btn btn-light active btn-block" @onclick="toggleRecipeDescription">
+                                    View description
+                                    @if (viewDescription == true)
                                     {
-                                        <tr>
-                                            <td colspan="2" class="text-center"> Select a propper ingredient first </td>
-                                        </tr>
+                                        <i class="oi oi-chevron-bottom float-right"></i>
                                     }
                                     else
                                     {
-                                        @foreach (Product p in products)
-                                        {
-                                            <tr>
-                                                <td><button class="btn btn-block btn-light rounded-0" @onclick="(() => AddProductToSL(p))">@p._productName</button></td>
-                                                <td>@p._price kr.</td>
-                                                <td>@p._amountleft</td>
-                                            </tr>
-                                        }
+                                        <i class="oi oi-chevron-right float-right"></i>
                                     }
-                                </tbody>
-                            </table>
+                                </button>
+                            </div>
+                            <div class="col-sm-4">
+                                <button class="btn btn-light active btn-block" @onclick="toggleRecipeIngredients">
+                                    View Ingredients
+                                    @if (viewIngredients == true)
+                                    {
+                                        <i class="oi oi-chevron-bottom float-right"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="oi oi-chevron-right float-right"></i>
+                                    }
+                                </button>
+                            </div>
+                            <div class="col-sm-4 mx-auto">
+                                <button class="btn btn-light active btn-block" @onclick="toggleRecipeProducts">
+                                    View Products
+                                    @if (viewProducts == true)
+                                    {
+                                        <i class="oi oi-chevron-bottom float-right"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="oi oi-chevron-right float-right"></i>
+                                    }
+                                </button>
+                            </div>
+                            <!-- #endregion -->
                         </div>
-                        <hr />
-                    }
+                        <div class="row d-flex justify-content-center top-margin m-sm-auto">
+                            <!-- #region Description -->
+                            <div class="col-sm-4">
+                                @if (viewDescription == true)
+                                {
+                                    <p class="recipeDescription">@recipeDescription</p>
+                                    <hr />
+                                }
+                            </div>
+
+                            <!-- #endregion -->
+                            <!-- #region Ingredients table -->
+                            <div class="col-sm-4">
+                                @if (viewIngredients == true)
+                                {
+                                    <div style="max-height:400px; min-height:40px; overflow:auto; overflow-y:scroll;">
+                                        <table class="table-hover border-0 ingredientsTable">
+                                            <colgroup>
+                                                <col style="width:150px" />
+                                                <col style="width:150px" />
+                                            </colgroup>
+                                            <thead>
+                                                <tr>
+                                                    <td style="font-weight:bold;"> Amount </td>
+                                                    <td style="font-weight:bold;"> Name </td>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (Ingredient ing in ingredients)
+                                                {
+                                                    if (runCounter <= ingredients.Count) //comback and fix
+                                                    {
+                                                        runCounter++;
+                                                        scalar = recipePerPerson;
+                                                    }
+
+                                                    <tr>
+                                                        <td>@(String.Format("{0:0.0}", (ing._amount / recipePerPerson) * scalar)) @ing._unit</td>
+                                                        <td><button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => retriveIngredient(ing))">@ing._ingredientName</button></td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <hr />
+                                }
+                            </div>
+                            <!-- #endregion -->
+                            <!-- #region Products -->
+                            <div class="col-sm-4">
+                                @if (viewProducts == true)
+                                {
+                                    <div style="max-height:400px; min-height:40px; overflow:auto; overflow-y:scroll; ">
+                                        <table class="table-hover border-0 productTable">
+                                            <colgroup>
+                                                <col style="width:200px" />
+                                                <col style="width:60px" />
+                                                <col style="width:20px" />
+                                            </colgroup>
+                                            <thead>
+                                                <tr>
+                                                    <td style="font-weight:bold;"> Name </td>
+                                                    <td style="font-weight:bold;"> Price </td>
+                                                    <td style="font-weight:bold;"> <i class="oi oi-cart"></i> </td>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @if (products.Count == 0)
+                                                {
+                                                    <tr>
+                                                        <td colspan="2" class="text-center"> Select a propper ingredient first </td>
+                                                    </tr>
+                                                }
+                                                else
+                                                {
+                                                    @foreach (Product p in products)
+                                                    {
+                                                        if (p._CustomReferenceField != null && p._CustomReferenceField.Equals("*"))
+                                                        {
+                                                            <tr>
+                                                                <td>
+                                                                    <Tooltip IsAlwaysActive="true" Placement="Placement.Right" Text="This product is not correct, but close">
+                                                                        <button class="btn btn-block btn-warning rounded-0" @onclick="(() => AddProductToSL(p))">@p._productName</button>
+                                                                    </Tooltip>
+                                                                </td>
+                                                                <td>@p._price kr.</td>
+                                                                <td>@p._amountleft</td>
+                                                            </tr>
+                                                        }
+                                                        else
+                                                        {
+                                                            <tr>
+                                                                <td><button class="btn btn-block btn-light rounded-0" @onclick="(() => AddProductToSL(p))">@p._productName</button></td>
+                                                                <td>@p._price kr.</td>
+                                                                <td>@p._amountleft</td>
+                                                            </tr>
+                                                        }
+
+                                                    }
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <hr />
+                                }
+                            </div>
+                            <!-- #endregion -->
+                        </div>
+                    </div>
                 </div>
                 <!-- #endregion -->
-            </div>
-        </div>
-    </div>
-    <!-- #endregion -->
-}
+            }
 
 @code {
     #region fields
@@ -293,6 +315,8 @@
     bool viewProducts = false;
     bool viewDescription = false;
     bool viewIngredients = false;
+    bool _viewLoadMoreSpinner = false;
+    bool _viewLoadMore = true;
 
     List<ComplexRecipe> complexRecipes = new List<ComplexRecipe>();
     List<Ingredient> ingredients = new List<Ingredient>();
@@ -511,48 +535,27 @@
     /// </summary>
     private void retriveProduct()
     {
-        if (products == null)
-        {
-            foreach (ComplexRecipe com in complexRecipes)
-            {
-                foreach (string s in com._complexRecipeComponent._products.Keys)
-                {
-                    if (s.Contains(tempIngredientName))
-                    {
-                        foreach (List<Product> pro in com._complexRecipeComponent._products.Values)
-                        {
-                            foreach (Product p in pro)
-                            {
-                                if (p._productName.Contains(tempIngredientName) && !products.Contains(p))
-                                {
-                                    products.Add(p);
-                                    QuickList.Add(p);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        else
+        if (products != null)
         {
             products.Clear();
-            foreach (ComplexRecipe com in complexRecipes)
+        }
+        foreach (ComplexRecipe com in complexRecipes)
+        {
+            foreach (string s in com._complexRecipeComponent._products.Keys)
             {
-                foreach (string s in com._complexRecipeComponent._products.Keys)
+                if (s.Contains(tempIngredientName))
                 {
-                    if (s.Contains(tempIngredientName))
+                    foreach (var p in com._complexRecipeComponent._products[s])
                     {
-                        foreach (List<Product> pro in com._complexRecipeComponent._products.Values)
+                        if (p._productName.ToLower().Contains(tempIngredientName) && !products.Contains(p))
                         {
-                            foreach (Product p in pro)
-                            {
-                                if (p._productName.Contains(tempIngredientName) && !products.Contains(p))
-                                {
-                                    products.Add(p);
-                                    QuickList.Add(p);
-                                }
-                            }
+                            products.Add(p);
+                            QuickList.Add(p);
+                        }
+                        else if (p._CustomReferenceField != null && p._CustomReferenceField.ToLower().Contains("*")) 
+                        {
+                            products.Add(p);
+                            QuickList.Add(p);
                         }
                     }
                 }
@@ -642,8 +645,13 @@
 
     private async Task LoadMore()
     {
+        _viewLoadMoreSpinner = true;
+        _viewLoadMore = false;
+        this.StateHasChanged();
         complexRecipes.AddRange(await recipeQuery.CheapestCRecipes(searchTerm));
-        StateHasChanged();
+        _viewLoadMoreSpinner = false;
+        _viewLoadMore = true;
+        this.StateHasChanged();
     }
     #endregion
 }

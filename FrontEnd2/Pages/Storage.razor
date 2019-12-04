@@ -419,11 +419,21 @@ else
 
         recpies = weightedRecipies;
 
-        recpies = recpies.OrderByDescending(x => x.pMatch).ToList();
+        SortByPmatch(recpies);
 
         _viewEmptyFridgeLoadSpinner = false;
         viewTitle = true;
         this.StateHasChanged();
+    }
+
+    private void SortByPmatch(List<WeightedRecipies> recpies) 
+    {
+        this.recpies = recpies.OrderByDescending(x => x.pMatch).ToList();
+    }
+
+    private void SortByMatchnum(List<WeightedRecipies> recpies) 
+    {
+        this.recpies = recpies.OrderByDescending(x => x.matchingIngrdientsNum).ToList();
     }
 
     private async Task<List<Recipe>> getRecepies()

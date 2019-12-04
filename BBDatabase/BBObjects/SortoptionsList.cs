@@ -26,12 +26,12 @@ namespace BBCollection.BBObjects
     {
         public Options(string _filterName, bool _isEnabled)
         {
-            filterName = _filterName;
-            isEnabled = _isEnabled;
+            FilterName = _filterName;
+            IsEnabled = _isEnabled;
         }
 
-        public string filterName { get; set; }
-        public bool isEnabled { get; set; }
+        public string FilterName { get; set; }
+        public bool IsEnabled { get; set; }
 
     }
 }

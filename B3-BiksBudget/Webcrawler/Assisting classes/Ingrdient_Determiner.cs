@@ -36,7 +36,9 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
         /// <returns> returns a string that should be a unit such "kg" or "g"</returns>
         public String DeterminUnit(String ingrediens)
         {
-            String[] SplitString = ingrediens.Split(' ');
+            //string[] UnitTypes = new string[]{"tsk","spsk",""}; 
+            string[] SplitString = ingrediens.Split(' ');
+            
             return SplitString[1];
         }
 

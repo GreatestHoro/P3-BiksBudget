@@ -5,6 +5,10 @@
     -webkit-animation: spin2 1s infinite linear;
 }
 
+#recipeSearchBox{
+    background-color:red;
+}
+
 @keyframes spin {
     from {
         transform: scale(1) rotate(0deg);
@@ -338,6 +342,16 @@ table.fixed {
     margin-top: 50px;
 }
 
+#recipeCard {
+    transform: rotate(0);
+    margin: 2em auto !important;
+    
+}
+
+.recipe-top-margin {
+    margin-top: 60px;
+}
+
 ul.fixed {
     width: 400px;
     word-break: break-all;
@@ -632,11 +646,19 @@ product-search-bar {
     z-index: 3;
     position: absolute;
 }
-    
+
+.product-search-bar {
+    border-width: 5px;
+    border-style: solid;
+    border-color: #0BA428;
+    border-radius: 7px;
+    z-index: 3;
+}
+
 .recipe-search-input {
     border-radius: 0px;
     border-bottom-right-radius: 0px;
-    padding:10px;
+    padding: 10px;
 }
 
 .recipe-search-input:focus {

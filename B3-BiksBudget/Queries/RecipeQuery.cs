@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using BBCollection.DBHandling;
 using System.Collections;
 using BBCollection.StoreApi.SallingApi;
 using BBCollection.StoreApi;
@@ -118,12 +119,44 @@ namespace BBGatherer.Queries
         {
             List<Product> resProducts = new List<Product>();
             resProducts = await _dc.Product.GetRange(ingredient, _productsToMatch, 0);
-
+            if (resProducts.Count == 0) 
+            {
+                resProducts = await SlowExsperimentalSearch(ingredient);
+            }
             resProducts.Sort((a,b) => a._price.CompareTo(b._price));
 
             return resProducts;
         }
 
+        private async Task<List<Product>> SlowExsperimentalSearch(string searchterm)
+        {
+            string[] InduviduelTerms = searchterm.Split(" ");
+            ProductHandling pTest = new ProductHandling();
+            List<List<Product>> TempListList = new List<List<Product>>();
+            List<Product> ProductList = new List<Product>();
+
+            foreach (string s in InduviduelTerms)
+            {
+                TempListList.Add(await pTest.ReferencesAsync(s));
+            }
+            TempListList = TempListList.OrderByDescending(x => -x.Count).ToList();
+            if (ProductList.Count == 0) 
+            {
+                foreach (List<Product> Plist in TempListList)
+                {
+                    if (Plist.Count != 0) 
+                    {
+                        ProductList = Plist;
+                        break;
+                    }
+                }
+            }
+            foreach (Product p in ProductList)
+            {
+                p._CustomReferenceField = "*";
+            }
+            return ProductList;
+        }
 
         /// <summary>
         /// Function which finds corresponding recipes to the searchTerm in the database
