@@ -136,12 +136,16 @@ else
                 @if (remindToSave)
                 {
                     <Tooltip IsAlwaysActive="true" Text="Dont forget to save">
-                    <button class="btn btn-block btn-danger recipeDivDisplay rounded-0" @onclick="(() =>SaveShoppinglist())">Save shopping list</button>
+                        <button class="btn btn-block btn-danger recipeDivDisplay rounded-0" @onclick="(() =>SaveShoppinglist())">Save shopping list</button>
                     </Tooltip>
+                }
+                else if (ListFunc.CombinedList.Count != 0 && !remindToSave)
+                {
+                    <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>SaveShoppinglist())">Save shopping list</button>
                 }
                 else
                 {
-                    <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>SaveShoppinglist())">Save shopping list</button>
+                    <button disabled class="btn btn-block btn-light recipeDivDisplay rounded-0" title="You cannot save an empty shoppinglist">Save shopping list</button>
                 }
             </div>
             <div class="col-sm-4">
@@ -181,7 +185,7 @@ else
     string email;
     string shopString;
     string productString;
-#endregion
+    #endregion
 
     #region Modal
 
@@ -336,9 +340,10 @@ else
     /// </summary>
     public async void AddListToStorage()
     {
-        remindToSave = true;
+        //remindToSave = true;
         await ListFunc.AddShoppinlistToStorage();
         ListFunc.CombinedList.Clear();
+        await ListFunc.SaveShoppinglist();
         StateHasChanged();
     }
 
