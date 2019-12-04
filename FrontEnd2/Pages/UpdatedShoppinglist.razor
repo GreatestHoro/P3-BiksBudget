@@ -339,6 +339,7 @@ else
         remindToSave = true;
         await ListFunc.AddShoppinlistToStorage();
         ListFunc.CombinedList.Clear();
+        StateHasChanged();
     }
 
     public void DeleteShoppinglist()
