@@ -20,23 +20,23 @@
             <button class="btn btn-rounded btn-outline-success search" @onclick="(() => SearchForProducts())">Search</button>
         }
     </div>*@
+<div class="container-fluid">
+    <div class="row d-flex justify-content-center">
+        <div class="col-sm-10 col-md-8 col-lg-7 col-xl-5">
+            <div class="form-check-inline center_div recipe-search-bar mb-2">
+                <input type="text" @bind="searchBox" @onkeyup="KeyPressed" class="form-control recipe-search-input" id="productSearchInput" placeholder="Search product" />
+                <button class="btn btn-success recipe-search-button" @onclick="(() => SearchProducts())">
+                    <i class="fa fa-search"></i>
+                </button>
+            </div>
+            <label class="text-muted">
+                Advanced search
+                <input type="checkbox" value="viewAdvancedSearch" @onclick="toggleAdvancedCheckBox" />
+            </label>
 
-<div class="row d-flex justify-content-center">
-    <div class="col-sm-10 col-md-8 col-lg-7 col-xl-5">
-        <div class="form-check-inline center_div product-search-bar mb-2">
-            <input type="text" @bind="searchBox" @onkeyup="KeyPressed" class="form-control recipe-search-input" id="recipeSearchInput" placeholder="Search" />
-            <button class="btn btn-success recipe-search-button" @onclick="(() => SearchProducts())">
-                <i class="fa fa-search"></i>
-            </button>
         </div>
-        <label class="text-muted">
-            Advanced search
-            <input type="checkbox" value="viewAdvancedSearch" @onclick="toggleAdvancedCheckBox" />
-        </label>
-
     </div>
 </div>
-
 @*<div class="form-inline md-form mr-auto mb-4">
         <label class="text-muted">
             Advanced search
