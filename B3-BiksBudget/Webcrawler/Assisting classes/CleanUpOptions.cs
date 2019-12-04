@@ -38,7 +38,7 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
         /// <returns></returns>
         public List<string> StringSplit(string option, List<string> custom) 
         {
-            List<string> _defualt = new List<string>() { "eller", "i", "med", "gerne", "fra", "fx", "ekstra", "el", "og" , "såsom" };
+            List<string> _defualt = new List<string>() {"eller","i","med","gerne","fra","fx","ekstra", "el", "og" , "såsom","uden"};
             if (option.Equals("default"))
             {
                 return _defualt;

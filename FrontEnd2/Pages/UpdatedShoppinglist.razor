@@ -113,7 +113,7 @@
             {
                 <button disabled class="btn btn-block btn-light recipeDivDisplay rounded-0" title="You Cannot Add an Empty Shopping list to Storage">Add to storage</button>
             }
-            else if (isLoggedIn && ListFunc.CombinedList.Count > 2)
+            else if (isLoggedIn && ListFunc.CombinedList.Count >= 1)
             {
                 <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>AddListToStorage())">Add to storage</button>
             }
