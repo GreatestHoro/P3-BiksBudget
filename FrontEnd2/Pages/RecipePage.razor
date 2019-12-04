@@ -519,48 +519,22 @@
     /// </summary>
     private void retriveProduct()
     {
-        if (products == null)
-        {
-            foreach (ComplexRecipe com in complexRecipes)
-            {
-                foreach (string s in com._complexRecipeComponent._products.Keys)
-                {
-                    if (s.Contains(tempIngredientName))
-                    {
-                        foreach (List<Product> pro in com._complexRecipeComponent._products.Values)
-                        {
-                            foreach (Product p in pro)
-                            {
-                                if (p._productName.ToLower().Contains(tempIngredientName) && !products.Contains(p))
-                                {
-                                    products.Add(p);
-                                    QuickList.Add(p);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        else
+        if (products != null)
         {
             products.Clear();
-            foreach (ComplexRecipe com in complexRecipes)
+        }
+        foreach (ComplexRecipe com in complexRecipes)
+        {
+            foreach (string s in com._complexRecipeComponent._products.Keys)
             {
-                foreach (string s in com._complexRecipeComponent._products.Keys)
+                if (s.Contains(tempIngredientName))
                 {
-                    if (s.Contains(tempIngredientName))
+                    foreach (var p in com._complexRecipeComponent._products[s])
                     {
-                        foreach (List<Product> pro in com._complexRecipeComponent._products.Values)
+                        if (p._productName.ToLower().Contains(tempIngredientName) && !products.Contains(p))
                         {
-                            foreach (Product p in pro)
-                            {
-                                if (p._productName.ToLower().Contains(tempIngredientName) && !products.Contains(p))
-                                {
-                                    products.Add(p);
-                                    QuickList.Add(p);
-                                }
-                            }
+                            products.Add(p);
+                            QuickList.Add(p);
                         }
                     }
                 }
@@ -658,5 +632,5 @@
         _viewLoadMore = true;
         this.StateHasChanged();
     }
-#endregion
+    #endregion
 }
