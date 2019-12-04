@@ -77,16 +77,49 @@ namespace BBGatherer
 
         public async Task TestCollection()
         {
-            List<Product> products = new List<Product>();
-            List<string> testList = new List<string>();
+            DatabaseConnect dc = new DatabaseConnect();
 
-            string testString = "mælk"; string testString2 = "let";
+            List<string> strings = new List<String>();
 
-            testList.Add(testString); testList.Add(testString2);
+            string str1 = "A";
+            string str2 = "B";
+            string str3 = "C";
 
-            products = await dbConnect.Product.MultipleReferencesAsync(testList);
+            strings.Add(str1);
+            strings.Add(str2);
+            strings.Add(str3);
 
-            Console.WriteLine(products.Count);
+            dc.Recipe.GetReferencesAsync(strings);
+
+            /*int count = 6;
+            string check = "";
+            string[] three = new string[] { "A", "B", "C"};
+            string[] six = new string[] { "A", "B", "C", "D", "E", "F" };
+
+            for (int i = 1; i < six.Length; i++)
+            {
+                int j = 0;
+                while (j < i)
+                {
+                    check += $"{six[i]} = {six[j]}";
+                    j++;
+                    if (i != 1)
+                    {
+                        if (j != i)
+                        {
+                            check += " AND ";
+
+                        }
+                    }
+                }
+                if (i < six.Length - 1)
+                {
+                    check += " AND ";
+                }
+                
+            }
+            Console.WriteLine(check);*/
+
         }
     }
 }

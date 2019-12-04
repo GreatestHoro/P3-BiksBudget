@@ -20,7 +20,7 @@ namespace BBCollection.BBObjects
         bool[] ToggleStoreFILters;
         FilterItem[] storeArray;
         FilterItem[] wordArray;
-        public int _productsToMatch { get; set; } = 9;
+        public int _productsToMatch { get; set; } = int.MaxValue;
         string _prevSearch { get; set; }
         public int _loadCount { get; set; } = 0;
         private DatabaseConnect dc = new DatabaseConnect();

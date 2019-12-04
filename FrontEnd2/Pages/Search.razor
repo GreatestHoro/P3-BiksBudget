@@ -25,7 +25,7 @@
         <div class="col-sm-10 col-md-8 col-lg-7 col-xl-5">
             <div class="form-check-inline center_div product-search-bar mb-2">
                 <input type="text" @bind="searchBox" @onkeyup="KeyPressed" class="form-control recipe-search-input" id="productSearchInput" placeholder="Search product" />
-                <button class="btn btn-success recipe-search-button" @onclick="(() => SearchProducts())">
+                <button class="btn btn-success recipe-search-button" @onclick="(() => SearchBar())">
                     <i class="fa fa-search"></i>
                 </button>
             </div>
@@ -198,7 +198,7 @@
 {
     <div class="container">
         <div class="row top-margin mb-3">
-            @foreach (Product p in itemList)
+            @foreach (Product p in productsToPrint)
             {
                 if (p._price > minPrice && p._price < maxPrice)
                 {
@@ -282,6 +282,8 @@ else if (!isSearching && !_viewProducts)
     List<Product> itemList = new List<Product>();
     List<Product> ToShoppinglist = new List<Product>();
     List<Options> optionsList = new List<Options>();
+    List<Product> productsToPrint = new List<Product>();
+    List<Product> tempProductList = new List<Product>();
     // List<AdvancedFilterList> filterLists = new List<AdvancedFilterList>(); // Is not used yet
 
     bool[] EnabledStores;
@@ -303,8 +305,10 @@ else if (!isSearching && !_viewProducts)
     int radius = 1000;
     int amountAddedToSL = 1;
     int lastRadius = 0;
-    int _productsToMatch = 9;
+    int _productsToMatch = int.MaxValue;
     int _loadCount = 0;
+    int printCount = 9;
+    int printStartIndex = 0;
 
     double _minPrice = 0;
     double _maxPrice = 5000;
@@ -314,6 +318,7 @@ else if (!isSearching && !_viewProducts)
     string email;
     string messageToUser;
     string productString;
+    string tempSearchword;
 
     public double minPrice
     {
@@ -456,6 +461,22 @@ else if (!isSearching && !_viewProducts)
                 break;
 
         }
+
+        productsToPrint = ApplySortFilterToResults();
+    }
+
+    public List<Product> ApplySortFilterToResults()
+    {
+        try
+        {
+            return itemList.GetRange(0, productsToPrint.Count);
+        }
+        catch (System.ArgumentException)
+        {
+            Console.WriteLine("Filters does not works");
+        }
+
+        return new List<Product>();
     }
 
     void toggle()
@@ -478,7 +499,9 @@ else if (!isSearching && !_viewProducts)
     {
         // The only filter where the order cannot be found, is the most relevant filter.
         // This one is set from the backend, and the search is therefore done again.
-        await SearchProducts();
+        //await ApplyMostRelevant();
+
+        itemList.Sort((a, b) => a._productName.Length.CompareTo(b._productName.Length));
     }
 
     public void SortByPriceLH()
@@ -585,12 +608,30 @@ else if (!isSearching && !_viewProducts)
 
     #region SearchMethods
 
+    private async Task SearchBar()
+    {
+        productsToPrint.Clear();
+        printStartIndex = 0;
+
+        await SearchProducts();
+    }
+
+    private async Task ApplyMostRelevant()
+    {
+        searchBox = tempSearchword;
+
+        await SearchProducts();
+    }
+
     private async Task SearchProducts()
     {
         itemList.Clear();
+
+        _viewLoadMore = false;
         isSearching = true;
         this.StateHasChanged();
-        _loadCount   = 0;
+
+        _loadCount = 0;
         itemList = await SearchForProducts();
 
         if (itemList.Count == 0)
@@ -600,14 +641,32 @@ else if (!isSearching && !_viewProducts)
 
         if (itemList.Count != 0)
         {
+            if (itemList.Count > printCount)
+            {
+                productsToPrint.AddRange(AddProductsToPrint());
+            }
+            else
+            {
+                productsToPrint.AddRange(AddProductsToPrint(itemList.Count));
+            }
+
             _viewProducts = true;
-            if (itemList.Count() % _productsToMatch == 0)
+            if (itemList.Count > productsToPrint.Count)
             {
                 _viewLoadMore = true;
             } else
             {
                 _viewLoadMore = false;
             }
+
+            //// This is done to save the applied search order.
+            //// Should not be done if it is sorted by "most relevant"
+            ////since that calls this method again.
+            //if (!(FindActiveSortFilter() == "Most relevant"))
+            //{
+            //    DecideOrderFilter(FindActiveSortFilter());
+            //}
+            DecideOrderFilter(FindActiveSortFilter());
         }
         else
         {
@@ -619,23 +678,55 @@ else if (!isSearching && !_viewProducts)
         this.StateHasChanged();
     }
 
+    public List<Product> AddProductsToPrint()
+    {
+        tempProductList.Clear();
+        tempProductList = itemList.GetRange(printStartIndex, printCount);
+
+        printStartIndex += printCount;
+
+        return tempProductList;
+    }
+
+    public List<Product> AddProductsToPrint(int newAmount)
+    {
+        tempProductList.Clear();
+        tempProductList = itemList.GetRange(printStartIndex, newAmount);
+
+        printStartIndex += printCount;
+
+        return tempProductList;
+    }
+
     private async Task LoadMoreProducts()
     {
-        _viewLoadMoreSpinner = true;
-        _viewLoadMore = false;
+        //_viewLoadMoreSpinner = true;
+        //_viewLoadMore = false;
         this.StateHasChanged();
         _loadCount++;
-        List<Product> products = await SearchForProducts();
-        itemList.AddRange(products);
-        // Check if their are more items to
-        if (itemList.Count() != 0 && itemList.Count() % _productsToMatch != 0)
+        //List<Product> products = await SearchForProducts();
+        //itemList.AddRange(products);
+
+        if (productsToPrint.Count == 0 || printStartIndex > itemList.Count())
         {
             _viewLoadMore = false;
-        } else
+        }
+        else if (productsToPrint.Count() + printCount > itemList.Count() && productsToPrint.Count() + printCount % printCount != 0)
         {
+            productsToPrint.AddRange(AddProductsToPrint(itemList.Count() % printCount));
+            _viewLoadMore = false;
+        }
+        else if(productsToPrint.Count() < itemList.Count())
+        {
+            productsToPrint.AddRange(AddProductsToPrint());
             _viewLoadMore = true;
         }
-        _viewLoadMoreSpinner = false;
+        else
+        {
+            _viewLoadMore = false;
+        }
+
+        //_viewLoadMoreSpinner = false;
         this.StateHasChanged();
     }
 
@@ -649,19 +740,14 @@ else if (!isSearching && !_viewProducts)
     {
         if (!String.IsNullOrEmpty(searchBox) && !String.IsNullOrWhiteSpace(searchBox))
         {
+            tempSearchword = searchBox;
             updateFilters();
 
             ProductSearchLinkConstructer link = new ProductSearchLinkConstructer(searchBox, ConvertBoolArrToStr(EnabledKeywords), ConvertBoolArrToStr(EnabledStores), _loadCount);
 
             productString = await Http.GetStringAsync(link.GetURL());
 
-            // This is done to save the applied search order.
-            // Should not be done if it is sorted by "most relevant"
-            //since that calls this method again.
-            if (!(FindActiveSortFilter() == "Most relevant"))
-            {
-                DecideOrderFilter(FindActiveSortFilter());
-            }
+
 
             return JsonConvert.DeserializeObject<List<Product>>(productString);
 
@@ -688,7 +774,7 @@ else if (!isSearching && !_viewProducts)
     {
         if (e.Key == "Enter")
         {
-            await SearchProducts();
+            await SearchBar();
         }
     }
     #endregion
