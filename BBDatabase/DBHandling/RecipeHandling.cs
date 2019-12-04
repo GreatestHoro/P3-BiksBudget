@@ -1,9 +1,11 @@
 ﻿using BBCollection.BBObjects;
 using BBCollection.DBConncetion;
 using MySql.Data.MySqlClient;
+using MySqlX.XDevAPI.Relational;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
@@ -210,6 +212,72 @@ namespace BBCollection.DBHandling
             });
         }
         #endregion
+
+        public void GetReferencesAsync(List<string> references)
+        {
+            List<Recipe> recipes = new List<Recipe>();
+            string table = "t"; string statement = "s"; string parameter = "@Parameter"; int count = 0;
+
+            string getRecipesQuery =
+                "SELECT DISTINCT " + statement + count + ".* FROM ";
+
+            List<string> tables = new List<string>();
+
+            foreach (string reference in references)
+            {
+                if(count == 0)
+                {
+                    getRecipesQuery += "(SELECT " + table + count + ".*," + table + count + ".id as tempid"+ count +" FROM recipes " + table + count + " " +
+                    "inner join ingredientsinrecipe on " + table + count + ".id = ingredientsinrecipe.recipeid " +
+                    "inner join ingredients on ingredientsinrecipe.ingredientid = ingredients.id" +
+                    " WHERE ingredientName like " + parameter + count + ") " + statement + count;
+                }else
+                {
+                    getRecipesQuery += "(SELECT " + table + count + ".id as tempid" + count + " FROM recipes " + table + count + " " +
+                    "inner join ingredientsinrecipe on " + table + count + ".id = ingredientsinrecipe.recipeid " +
+                    "inner join ingredients on ingredientsinrecipe.ingredientid = ingredients.id " +
+                    " WHERE ingredientName like " + parameter + count + ") " + statement + count;
+                }
+                
+
+                tables.Add(statement + count + ".tempid"+count);
+                
+                count++;
+                if(references.Count != count)
+                {
+                    getRecipesQuery += ",";
+                }
+            }
+
+            var tArr = tables.ToArray();
+            string check = " WHERE ";
+            for (int i = 1; i < tArr.Length; i++)
+            {
+                int j = 0;
+                
+                while (j < i)
+                {
+                    check += $"{tArr[i]} = {tArr[j]}";
+                    j++;
+                    if (i != 1)
+                    {
+                        if (j != i)
+                        {
+                            check += " AND ";
+
+                        }
+                    }
+                }
+                if (i < tArr.Length-1)
+                {
+                    check += " AND ";
+                }
+            
+            }
+            getRecipesQuery += check;
+            Console.WriteLine(getRecipesQuery);
+            
+        }
     }
 }
 
