@@ -5,6 +5,10 @@
     -webkit-animation: spin2 1s infinite linear;
 }
 
+#recipeSearchBox{
+    background-color:red;
+}
+
 @keyframes spin {
     from {
         transform: scale(1) rotate(0deg);
@@ -336,6 +340,16 @@ table.fixed {
 
 .top-margin{
     margin-top: 50px;
+}
+
+#recipeCard {
+    transform: rotate(0);
+    margin: 2em auto !important;
+    
+}
+
+.recipe-top-margin {
+    margin-top: 60px;
 }
 
 ul.fixed {

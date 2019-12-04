@@ -6,6 +6,11 @@
 
   <ItemGroup>
     <PackageReference Include="Blazored.LocalStorage" Version="2.1.1" />
+    <PackageReference Include="Blazorise" Version="0.8.7.1" />
+    <PackageReference Include="Blazorise.Bootstrap" Version="0.8.7.1" />
+    <PackageReference Include="Blazorise.Components" Version="0.8.7.1" />
+    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.8.7.1" />
+    <PackageReference Include="Blazorise.Icons.Material" Version="0.8.7.1" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.7" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.0.0">

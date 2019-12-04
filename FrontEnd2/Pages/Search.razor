@@ -47,69 +47,108 @@
 
 @if (viewAdvancedSearch)
 {
-    <div class="d-flex flex-sm-row flex-column searchAdvancedText">
-        <div class="p-2">
-            <div class="btn-group show-on-hover">
-                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                    <h5>Sort By</h5>
-                    <span clasusergeolos="caret"></span>
-                </button>
-                <ul class="dropdown-menu" role="menu">
-                    @foreach (Options item in optionsList)
-                    {
-                        if (item.isEnabled)
-                        {
-                            <li><button style="color:green" class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(() => ChangeState(item.filterName, optionsList))">@item.filterName</button></li>
-                        }
-                        else
-                        {
-                            <li><button style="color:red" class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(() => ChangeState(item.filterName, optionsList))">@item.filterName</button></li>
-                        }
-                    }
-                </ul>
-            </div>
-        </div>
-        <div class="p-2">
-            @*<div class="btn-group show-on-hover">
-            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                <h5>Select Stores </h5>
-                <span clasusergeolos="caret"></span>
-            </button>
-            <ul class="dropdown-menu" role="menu">
-                @foreach (FilterItem item in storeList)
+<div class="d-flex flex-sm-row flex-column searchAdvancedText">
+    <div class="p-2">
+        <div class="input-group">
+            <select id="sortorderSelect" class="custom-select" @onchange="((e)=>AssignFilter(e, optionsList))">
+                <option disabled="disabled" selected="selected">Order Items</option>
+                @foreach (Options o in optionsList)
                 {
-                    if (item.IsEnabled == true)
+                    if (o.IsEnabled)
                     {
-                        <li><button style="color:green" class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(() => ChangeState(item.FilterName, storeList))">@item.FilterName</button></li>
+                        <option style="color:green" value="@o.FilterName"> @o.FilterName </option>
                     }
                     else
                     {
-                        <li><button style="color:red" class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(() => ChangeState(item.FilterName, storeList))">@item.FilterName</button></li>
+                        <option style="color:red" value="@o.FilterName"> @o.FilterName </option>
                     }
                 }
-                <li><button class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(()=>SelectAll(storeList))">Select All</button></li>
+            </select>
+        </div>
+
+        @*<div class="btn-group show-on-hover">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                <h5>Sort By</h5>
+                <span clasusergeolos="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                @foreach (Options item in optionsList)
+                {
+                    if (item.isEnabled)
+                    {
+                        <li><button style="color:green" class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(() => ChangeState(item.filterName, optionsList))">@item.filterName</button></li>
+                    }
+                    else
+                    {
+                        <li><button style="color:red" class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(() => ChangeState(item.filterName, optionsList))">@item.filterName</button></li>
+                    }
+                }
             </ul>
         </div>*@
-
-            <div class="input-group">
-                <select class="custom-select" @onchange="((e)=>AssignScalar(e, storeList))">
-                    <option disabled="disabled" selected="selected">Select Store</option>
-                    @foreach (FilterItem f in storeList)
+    </div>
+    <div class="p-2">
+        @*<div class="btn-group show-on-hover">
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                    <h5>Select Stores </h5>
+                    <span clasusergeolos="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    @foreach (FilterItem item in storeList)
                     {
-                        if (f.IsEnabled == true)
+                        if (item.IsEnabled == true)
                         {
-                            <option style="color:green" value="@f.FilterName"> @f.FilterName </option>
+                            <li><button style="color:green" class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(() => ChangeState(item.FilterName, storeList))">@item.FilterName</button></li>
                         }
                         else
                         {
-                            <option style="color:red" value="@f.FilterName"> @f.FilterName </option>
+                            <li><button style="color:red" class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(() => ChangeState(item.FilterName, storeList))">@item.FilterName</button></li>
                         }
                     }
-                </select>
-            </div>
+                    <li><button class="btn btn-block bg-light dropdownListStrorage rounded-0" @onclick="(()=>SelectAll(storeList))">Select All</button></li>
+                </ul>
+            </div>*@
 
+        <div class="input-group">
+            <select id="storeSelect" class="custom-select" @onchange="((e)=>AssignFilter(e, storeList))">
+                <option value="" disabled selected>Select Store</option>
+                @foreach (FilterItem f in storeList)
+                {
+                    if (f.IsEnabled == true)
+                    {
+                        <option style="color:green" value="@f.FilterName"> @f.FilterName </option>
+                    }
+                    else
+                    {
+                        <option style="color:red" value="@f.FilterName"> @f.FilterName </option>
+                    }
+                }
+                <option value="all">Select All</option>
+            </select>
         </div>
-        <div class="p-2">
+    </div>
+    <div class="p-2">
+        <div class="input-group">
+            <select id="wordSelect" class="custom-select" @onchange="((e)=>AssignFilter(e, wordList))">
+                <option disabled="disabled" selected="selected">Select Store</option>
+                @foreach (FilterItem w in wordList)
+                {
+                    if (w.IsEnabled == true)
+                    {
+                        <option style="color:green" value="@w.FilterName"> @w.FilterName </option>
+                    }
+                    else
+                    {
+                        <option style="color:red" value="@w.FilterName"> @w.FilterName </option>
+                    }
+                }
+                <option value="all">Select All</option>
+            </select>
+        </div>
+    </div>
+
+
+
+    @*<div class="p-2">
             <div class="btn-group show-on-hover">
                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
                     <h5>Select filters</h5> <span class="caret"></span>
@@ -128,24 +167,24 @@
                     }
                 </ul>
             </div>
-        </div>
-        <div class="p-2">
-            <h5>Distance @(radius / 1000) Km:</h5>
-            <input type="range" min="0" max="5000" @bind="radius" step="1000" />
-        </div>
-        <div class="p-2">
-            <label for="minPriceB">Minimum Price:</label>
-            <input type="number" class="form-control" placeholder="Min Price" @bind="minPrice" />
-        </div>
-        <div class="p-2">
-            <label for="maxPriceB">Maximum Price:</label>
-            <input type="number" class="form-control" placeholder="Max Price" @bind="maxPrice" />
-        </div>
-        <div class="p-2">
-            <p>Use Location:</p>
-            <input type="checkbox" class="locationCheckBox" bind="@IsLocationEnabled" @onclick="toggle" />
-        </div>
+        </div>*@
+    <div class="p-2">
+        <h5>Distance @(radius / 1000) Km:</h5>
+        <input type="range" min="0" max="5000" @bind="radius" step="1000" />
     </div>
+    <div class="p-2">
+        <label for="minPriceB">Minimum Price:</label>
+        <input type="number" class="form-control" placeholder="Min Price" @bind="minPrice" />
+    </div>
+    <div class="p-2">
+        <label for="maxPriceB">Maximum Price:</label>
+        <input type="number" class="form-control" placeholder="Max Price" @bind="maxPrice" />
+    </div>
+    <div class="p-2">
+        <p>Use Location:</p>
+        <input type="checkbox" class="locationCheckBox" bind="@IsLocationEnabled" @onclick="toggle" />
+    </div>
+</div>
 }
 
 @if (isSearching)
@@ -243,6 +282,7 @@ else if (!isSearching && !_viewProducts)
     List<Product> itemList = new List<Product>();
     List<Product> ToShoppinglist = new List<Product>();
     List<Options> optionsList = new List<Options>();
+    // List<AdvancedFilterList> filterLists = new List<AdvancedFilterList>(); // Is not used yet
 
     bool[] EnabledStores;
     bool[] EnabledKeywords;
@@ -323,11 +363,25 @@ else if (!isSearching && !_viewProducts)
 
     #region ChangeFilterControl
 
-    private void AssignScalar(ChangeEventArgs e, List<FilterItem> filterList)
+    private void AssignFilter(ChangeEventArgs e, List<FilterItem> filterList)
     {
         string test = e.Value.ToString();
 
-        ChangeState(test, filterList);
+        if (test.Equals("all"))
+        {
+            SelectAll(filterList);
+        }
+        else
+        {
+            ChangeState(test, filterList);
+        }
+    }
+
+    private void AssignFilter(ChangeEventArgs e, List<Options> optionsList)
+    {
+        string test = e.Value.ToString();
+
+        ChangeState(test, optionsList);
     }
 
     void toggleAdvancedCheckBox()
@@ -361,16 +415,16 @@ else if (!isSearching && !_viewProducts)
     {
         foreach (Options o in optionList)
         {
-            if (o.filterName == name)
+            if (o.FilterName == name)
             {
-                o.isEnabled = true;
+                o.IsEnabled = true;
 
                 // This method is to find the right sorting algorithm
-                DecideOrderFilter(o.filterName);
+                DecideOrderFilter(o.FilterName);
             }
             else
             {
-                o.isEnabled = false;
+                o.IsEnabled = false;
             }
         }
     }
@@ -568,6 +622,7 @@ else if (!isSearching && !_viewProducts)
     private async Task LoadMoreProducts()
     {
         _viewLoadMoreSpinner = true;
+        _viewLoadMore = false;
         this.StateHasChanged();
         _loadCount++;
         List<Product> products = await SearchForProducts();
@@ -576,6 +631,9 @@ else if (!isSearching && !_viewProducts)
         if (itemList.Count() != 0 && itemList.Count() % _productsToMatch != 0)
         {
             _viewLoadMore = false;
+        } else
+        {
+            _viewLoadMore = true;
         }
         _viewLoadMoreSpinner = false;
         this.StateHasChanged();
@@ -652,10 +710,6 @@ else if (!isSearching && !_viewProducts)
         if (firstRender)
         {
             await GetLocalSession();
-            localStorage.Changed += (sender, e) =>
-            {
-                Console.WriteLine($"Value for key {e.Key} changed from {e.OldValue} to {e.NewValue}");
-            };
 
             storeList = storeFilters.GetStoreList();
             wordList = wordFIlters.GetStoreList();
@@ -717,9 +771,9 @@ else if (!isSearching && !_viewProducts)
     {
         foreach (Options o in optionsList)
         {
-            if (o.isEnabled)
+            if (o.IsEnabled)
             {
-                return o.filterName;
+                return o.FilterName;
             }
         }
         return "Most Relevant";
