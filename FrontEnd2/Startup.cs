@@ -13,7 +13,10 @@ using Microsoft.Extensions.Hosting;
 using System.Net.Http;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
 using Blazored.Modal;
-
+using Blazorise;
+using Blazorise.Bootstrap;
+using Blazorise.Components;
+using Blazorise.Icons.FontAwesome;
 namespace FrontEnd2
 {
     public class Startup
@@ -29,6 +32,10 @@ namespace FrontEnd2
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddBlazorise(options =>
+           {
+               options.ChangeTextOnKeyPress = true;
+           }).AddBootstrapProviders().AddFontAwesomeIcons();
             services.AddBlazoredModal();
             services.AddHotKeys();
             services.AddBlazoredLocalStorage();
@@ -62,6 +69,12 @@ namespace FrontEnd2
             app.UseStaticFiles();
 
             app.UseRouting();
+
+#pragma warning disable CA1062 // Validate arguments of public methods
+            _ = app.ApplicationServices
+#pragma warning restore CA1062 // Validate arguments of public methods
+                .UseBootstrapProviders()
+                .UseFontAwesomeIcons();
 
             app.UseAuthentication();
             app.UseAuthorization();

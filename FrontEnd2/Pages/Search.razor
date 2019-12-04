@@ -622,6 +622,7 @@ else if (!isSearching && !_viewProducts)
     private async Task LoadMoreProducts()
     {
         _viewLoadMoreSpinner = true;
+        _viewLoadMore = false;
         this.StateHasChanged();
         _loadCount++;
         List<Product> products = await SearchForProducts();
@@ -630,6 +631,9 @@ else if (!isSearching && !_viewProducts)
         if (itemList.Count() != 0 && itemList.Count() % _productsToMatch != 0)
         {
             _viewLoadMore = false;
+        } else
+        {
+            _viewLoadMore = true;
         }
         _viewLoadMoreSpinner = false;
         this.StateHasChanged();
