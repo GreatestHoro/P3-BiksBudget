@@ -133,12 +133,12 @@ namespace BBGatherer.Webcrawler
             if (!String.IsNullOrWhiteSpace(name.Trim()))
             {
                 name = functionality.getCleanFunc().NameCleanUp(name);
-                Console.WriteLine("INPUT: " + name);
+                //Console.WriteLine("INPUT: " + name);
                 name = functionality.getRefs().CheckForValidIndgredients(name, out fatalError);
                 if (!fatalError)
                 {
                     name = functionality.getCleanFunc().EdgeCaseCleanUp(name);
-                    Console.WriteLine("OUTPUT: " + name);
+                    //Console.WriteLine("OUTPUT: " + name);
                     fatalError = EvaluateName(name);
                 }
             }
