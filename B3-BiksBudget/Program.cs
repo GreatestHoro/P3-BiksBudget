@@ -17,16 +17,17 @@ namespace BBGatherer
             
             DataHandling dh = new DataHandling();
             //dh.GenerateDatabase();
-            dh.GenerateData(false,true);
+            //dh.GenerateData(false,true);
 
-            /*try
+            try
             {
                 dh.TestCollection().Wait();
-            } catch(Exception e)
+            }
+            catch (Exception e)
             {
                 Console.WriteLine(e);
-            }*/
-            
+            }
+
         }
     }
 
@@ -81,15 +82,20 @@ namespace BBGatherer
 
             List<string> strings = new List<String>();
 
-            string str1 = "A";
-            string str2 = "B";
-            string str3 = "C";
+            string str1 = "mælk";
+            string str2 = "ost";
+            string str3 = "salt";
 
             strings.Add(str1);
             strings.Add(str2);
             strings.Add(str3);
 
-            dc.Recipe.GetReferencesAsync(strings);
+            List<Recipe> recipes = await dc.Recipe.GetReferencesAsync(strings);
+
+            foreach(Recipe r in recipes)
+            {
+                Console.WriteLine(r._Name);
+            }
 
             /*int count = 6;
             string check = "";
