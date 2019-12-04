@@ -24,7 +24,6 @@ namespace BBCollection.DBHandling
         readonly ConnectionSettings connectionSettings = new ConnectionSettings();
 
         public string productString;
-        string newProduct; 
         string dest;
         string Email;
 

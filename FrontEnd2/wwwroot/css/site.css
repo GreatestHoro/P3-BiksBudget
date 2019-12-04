@@ -655,6 +655,12 @@ product-search-bar {
     z-index: 3;
 }
 
+.product-search-input {
+    border-radius: 0px;
+    border-bottom-right-radius: 0px;
+    padding: 10px;
+}
+
 .recipe-search-input {
     border-radius: 0px;
     border-bottom-right-radius: 0px;
