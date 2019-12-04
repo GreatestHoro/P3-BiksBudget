@@ -254,13 +254,14 @@
                                                 }
                                                 else
                                                 {
+                                                    productSuggestions = products.First()._CustomReferenceField != null ? true : false;
                                                     @foreach (Product p in products)
                                                     {
-                                                        if (p._CustomReferenceField != null && p._CustomReferenceField.Equals("*"))
+                                                        if (p._CustomReferenceField != null && p._CustomReferenceField.Equals("*") && productSuggestions)
                                                         {
                                                             <tr>
                                                                 <td>
-                                                                    <Tooltip IsAlwaysActive="true" Placement="Placement.Right" Text="This product is not correct, but close">
+                                                                    <Tooltip IsAlwaysActive="true" Placement="Placement.Right" Text="Product suggestion">
                                                                         <button class="btn btn-block btn-warning rounded-0" @onclick="(() => AddProductToSL(p))">@p._productName</button>
                                                                     </Tooltip>
                                                                 </td>
@@ -276,7 +277,6 @@
                                                                 <td>@p._amountleft</td>
                                                             </tr>
                                                         }
-
                                                     }
                                                 }
                                             </tbody>
@@ -317,6 +317,7 @@
     bool viewIngredients = false;
     bool _viewLoadMoreSpinner = false;
     bool _viewLoadMore = true;
+    bool productSuggestions = true;
 
     List<ComplexRecipe> complexRecipes = new List<ComplexRecipe>();
     List<Ingredient> ingredients = new List<Ingredient>();
