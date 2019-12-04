@@ -126,6 +126,10 @@
             {
                 <button class="btn btn-block btn-danger recipeDivDisplay rounded-0" @onclick="(() =>SaveShoppinglist())">Save shopping list</button>
             }
+            else if (!remindToSave && ListFunc.CombinedList.Count == 0)
+            {
+                <button disabled class="btn btn-block btn-light recipeDivDisplay rounded-0 invisibleBtn" title="You cannot save an empty shopping list">Save shopping list</button>
+            }
             else
             {
                 <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>SaveShoppinglist())">Save shopping list</button>
@@ -309,6 +313,7 @@
         remindToSave = true;
         await ListFunc.AddShoppinlistToStorage();
         ListFunc.CombinedList.Clear();
+        StateHasChanged();
     }
 
     public void DeleteShoppinglist()
