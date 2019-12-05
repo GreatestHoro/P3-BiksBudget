@@ -398,30 +398,17 @@ else
     {
         _viewEmptyFridgeLoadSpinner = true;
         this.StateHasChanged();
-        List<Product> productsInStorage = ListFunc.CombinedList;
-        AllProductRefs = GetAllProductRefs(productsInStorage);
-        foreach (List<string> prodRefs in AllProductRefs) 
+        EmptyFridgeFuntionality emptyFridgeFuntionality = new EmptyFridgeFuntionality(ListFunc.CombinedList);
+        foreach (List<string> prodRefs in emptyFridgeFuntionality.allRefs)
         {
-        List<WeightedRecipies> weightedRecipies = await GetRelevantRecpies(prodRefs,productsInStorage);
+            recpies.AddRange(await emptyFridgeFuntionality.GetRelevantRecepiesFromProd(prodRefs));
+            emptyFridgeFuntionality.SortByPmatch(recpies);
+            recpies = await emptyFridgeFuntionality.GetSortedList();
 
-        recpies.AddRange(weightedRecipies);
-
-        SortByPmatch(recpies);
-
-        viewTitle = true;
-        this.StateHasChanged();
+            viewTitle = true;
+            this.StateHasChanged();
         }
         _viewEmptyFridgeLoadSpinner = false;
-    }
-
-    private void SortByPmatch(List<WeightedRecipies> recpies)
-    {
-        this.recpies = recpies.OrderByDescending(x => x.pMatch).ToList();
-    }
-
-    private void SortByMatchnum(List<WeightedRecipies> recpies)
-    {
-        this.recpies = recpies.OrderByDescending(x => x.matchingIngrdientsNum).ToList();
     }
 
     private async Task<List<Recipe>> getRecepies()
@@ -429,83 +416,6 @@ else
         _recpies = JsonConvert.DeserializeObject<List<Recipe>>(await Http.GetStringAsync("https://localhost:44325/api/recipe?recipeTitle=" + " "));
         List<Recipe> recepies = _recpies;
         return recepies;
-    }
-
-    private async Task<List<WeightedRecipies>> GetRelevantRecpies(List<string> ProductRefrence,List<Product> productsInStorage)
-    {
-        RecipeHandling recipeHandling = new RecipeHandling();
-        Dictionary<Recipe, Dictionary<Ingredient, List<string>>> dict = new Dictionary<Recipe, Dictionary<Ingredient, List<string>>>();
-        List<Recipe> recipes = new List<Recipe>();
-        foreach (string refs in ProductRefrence)
-        {
-                recipes.AddRange(await recipeHandling.GetReferencesAsync(new List<string>() { refs }));
-        }
-        foreach (Recipe r in recipes)
-        {
-            foreach (Ingredient I in r._ingredientList)
-            {
-                foreach (List<string> sList in AllProductRefs)
-                {
-                    foreach (string s in sList)
-                    {
-                        if (I._ingredientName.Contains(s))
-                        {
-                            if (dict.ContainsKey(r))
-                            {
-                                if (dict[r].ContainsKey(I))
-                                {
-                                    dict[r][I].Add(s);
-                                }
-                                else
-                                {
-                                    dict[r].Add(I, new List<string> { s });
-                                }
-                            }
-                            else
-                            {
-                                dict.Add(r, new Dictionary<Ingredient, List<string>>() { { I, new List<string> { s } } });
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return NewGeneratWeighted(dict);
-    }
-
-    private List<WeightedRecipies> NewGeneratWeighted(Dictionary<Recipe, Dictionary<Ingredient, List<string>>> Recepies)
-    {
-        List<WeightedRecipies> weightedRecipies = new List<WeightedRecipies>();
-        foreach (Recipe r in Recepies.Keys)
-        {
-            r.deleteDuplicates();
-            weightedRecipies.Add(new WeightedRecipies(r, Recepies[r]));
-        }
-        return weightedRecipies;
-    }
-    private List<List<string>> GetAllProductRefs(List<Product> products)
-    {
-        List<List<string>> allRefs = new List<List<string>>();
-        foreach (Product p in products)
-        {
-            allRefs.Add(GetCustomRefrences(p));
-        }
-        return allRefs;
-    }
-
-    private List<string> GetCustomRefrences(Product product)
-    {
-        List<string> ProductRefrence = product._CustomReferenceField.Split(",").ToList();
-        List<string> returnList = new List<string>();
-
-        foreach (string s in ProductRefrence)
-        {
-            if (!(s.Length < 2) && !string.IsNullOrWhiteSpace(s))
-            {
-                returnList.Add(s);
-            }
-        }
-        return returnList;
     }
 
     #endregion
