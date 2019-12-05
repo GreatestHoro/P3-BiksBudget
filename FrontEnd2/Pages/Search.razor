@@ -716,6 +716,7 @@ else if (!isSearching && !_viewProducts)
 
     private void LoadMoreProducts()
     {
+        _viewLoadMoreSpinner = true;
         this.StateHasChanged();
         _loadCount++;
 
@@ -733,7 +734,7 @@ else if (!isSearching && !_viewProducts)
         {
             _viewLoadMore = false;
         }
-
+        _viewLoadMoreSpinner = false;
         this.StateHasChanged();
     }
 
@@ -1048,7 +1049,7 @@ else if (!isSearching && !_viewProducts)
         return new string(returnChar);
     }
     #endregion
-
+        
     #region UserLocation
     async Task GetUserLocation()
     {
