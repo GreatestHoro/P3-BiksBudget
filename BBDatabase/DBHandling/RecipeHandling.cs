@@ -245,7 +245,7 @@ namespace BBCollection.DBHandling
 
 
                     tables.Add(statement + count + ".tempid" + count);
-                    msc.Parameters.AddWithValue(parameter + count, ""+reference+"");
+                    msc.Parameters.AddWithValue(parameter + count, reference);
 
                     count++;
                     if (references.Count != count)
