@@ -50,7 +50,7 @@
                                         <div class="input-group">
                                             <div class="input-group-prepend">
                                             </div>
-                                            <select class="custom-select" @onchange="((e)=>AssignScalar(e, p))">
+                                            <select class="custom-select" @onchange="((e) => AssignScalar(e, p))">
                                                 <option value="@p._state">@p._state</option>
                                                 @foreach (string state in ItemState)
                                                 {
@@ -103,88 +103,87 @@
         {
             <p>Sorry, you dont have enough products</p>
         }
-        <div class="row">
-            <div class="col-3">
-                @if (viewTitle == true)
-                {
-                    <h3> You can make the following </h3>
-                    <button class="close float-left" @onclick="(() => closeRecipies())"><i class="oi oi-x"></i> </button>
-                    <ul class="recipeListDisplay">
-                        @foreach (var rep in recpies)
-                        {
-                            <li class="no-bullets"> <button type="button" class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => retriveInfo(rep._recipie._recipeID))"> @rep._recipie._Name </button> </li>
-                        }
-
-                    </ul>
-                }
-            </div>
-            @if (viewIngredients == true)
+    <div class="row">
+        <div class="col-3">
+            @if (viewTitle == true)
             {
-                <div class="col-2 offset-2">
+                <h3> You can make the following </h3>
+                <button class="close float-left" @onclick="(() => closeRecipies())"><i class="oi oi-x"></i> </button>
+                <ul class="recipeListDisplay">
+                    @foreach (WeightedRecipies rep in recpies)
+                    {
+                        <li class="no-bullets"> <button type="button" class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => retriveInfo(rep._recipie))"> @rep._recipie._Name </button> </li>
+                    }
 
-                    <table class="table-bordered ingredientsTable">
-                        <colgroup>
-                            <col style="width: 100px" />
-                            <col style="width: 150px" />
-                        </colgroup>
-                        <thead>
-                            <tr>
-                                <th> Amount </th>
-                                <th> Name </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @(found = true)
-                            @foreach (WeightedRecipies w in recpies)
-                            {
-                                if (w._recipie._recipeID == ID)
-                                {
-
-                                    @if (found == true)
-                                    {
-                                        @foreach (Ingredient I in w._recipie._ingredientList)
-                                        {
-                                            matchFound();
-                                            <tr>
-                                                <td>
-                                                    @I._amount @I._unit
-                                                </td>
-
-                                                @if (compareIngredientsWtihRefs(I, w.custmomRef))
-                                                {
-                                                    <td style="background-color:green">@I._ingredientName</td>
-                                                }
-
-                                                else
-                                                {
-                                                    <td style="background-color:red"> @I._ingredientName</td>
-
-                                                }
-                                            </tr>
-                                        }
-                                    }
-                                }
-
-
-                            }
-                            <tr>
-                                <td colspan="2" class="text-sm-center">
-                                    <div class="valueClass text-center">
-                                        <div class="value-button" id="increase" @onclick="(() => decrementRecipeAmount())" value="Increase @value"> - </div>
-                                        <input type="number" id="number" value="@recipePerPerson" />
-                                        <div class="value-button" id="decrease" @onclick="(() => incrementRecipeAmount())" value="Decrease @value"> + </div>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="col-4">
-                    <h3> @recipeName </h3>
-                    <p> @recipeDescription </p>
-                </div>
+                </ul>
             }
         </div>
+        @if (viewIngredients == true)
+        {
+            @(found = true)
+        <div class="col-2 offset-2">
+
+            <table class="table-bordered ingredientsTable">
+                <colgroup>
+                    <col style="width: 100px" />
+                    <col style="width: 150px" />
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th> Amount </th>
+                        <th> Name </th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @foreach (WeightedRecipies w in recpies)
+                    {
+                        @if (selectedRecepie._Name.Equals(w._recipie._Name))
+                        {
+                            @if (found == true)
+                            {
+                                @foreach (Ingredient I in w._recipie._ingredientList)
+                                {
+                                    matchFound();
+                                    <tr>
+                                        <td>
+                                            @I._amount @I._unit
+                                        </td>
+
+                                        @if (w.ingrdients.ContainsKey(I))
+                                        {
+                                            <td style="background-color:green">@I._ingredientName</td>
+                                        }
+
+                                        else
+                                        {
+                                            <td style="background-color:red"> @I._ingredientName</td>
+
+                                        }
+                                    </tr>
+                                }
+                            }
+                        }
+
+                    }
+                    <tr>
+                        <td colspan="2" class="text-sm-center">
+                            <div class="valueClass text-center">
+                                <div class="value-button" id="increase" @onclick="(() => decrementRecipeAmount())" value="Increase @value"> - </div>
+                                <input type="number" id="number" value="@recipePerPerson" />
+                                <div class="value-button" id="decrease" @onclick="(() => incrementRecipeAmount())" value="Decrease @value"> + </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-4">
+            <h3> @recipeName </h3>
+            <p> @recipeDescription </p>
+        </div>
+    }
+    </div>
         <!--Scroll to top button   -->
         <button id="myBtn" class="btn btn-rounded btn-success"><a href="storage" style="color: white; font-size:12px;">Top</a></button>
     </div>
@@ -196,312 +195,290 @@ else
 
 
 @code{
-    ConnectionSettings connectionSettings = new ConnectionSettings();
+        ConnectionSettings connectionSettings = new ConnectionSettings();
 
-    #region Fields
-    string email, userId, recipeDescription, recipeName;
-    string tempState;
-    int ID;
+        #region Fields
+        string email, userId, recipeDescription, recipeName;
+        string tempState;
+        List<List<string>> AllProductRefs;
+        int ID;
 
-    float recipePerPerson;
+        float recipePerPerson;
 
-    int value;
-    int x;
+        int value;
+        int x;
 
-    bool found = true;
-    bool viewTitle = false;
-    bool viewIngredients = false;
+        bool found = true;
+        bool viewTitle = false;
+        bool viewIngredients = false;
 
-    bool changeState = false;
+        bool changeState = false;
 
-    bool _viewEmptyFridgeLoadSpinner = false;
+        bool _viewEmptyFridgeLoadSpinner = false;
 
-    ShoppinlistFunctionality ListFunc = new ShoppinlistFunctionality("api/Storage");
-    HttpResponseMessage responseMessage = new HttpResponseMessage();
-    Product tempProduct = new Product();
-
-
-    List<float> recipeAmount = new List<float>();
-    List<Ingredient> ingredients = new List<Ingredient>();
-    List<WeightedRecipies> recpies = new List<WeightedRecipies>();
-    List<Recipe> _recpies = new List<Recipe>();
-    List<string> ItemState = new List<string>() { "Full", "Almost Full", "Half Full", "Almost Empty" };
-
-    private delegate bool compareWR(WeightedRecipies r1, WeightedRecipies r2);
-    #endregion
-
-    #region StorageMethods
+        ShoppinlistFunctionality ListFunc = new ShoppinlistFunctionality("api/Storage");
+        HttpResponseMessage responseMessage = new HttpResponseMessage();
+        Product tempProduct = new Product();
 
 
-    /// <summary>
-    /// The state of an item is changed.
-    /// </summary>
-    /// <param name="item">The item of which the state shouold be changes</param>
-    /// <param name="state">The state to chaneg to</param>
-    public async void ChangeItemState(Product item, string state)
-    {
-        // Finds the index of the input item
-        int index = FindIdex(item);
-        item._state = state;
+        List<float> recipeAmount = new List<float>();
+        List<Ingredient> ingredients = new List<Ingredient>();
+        List<WeightedRecipies> recpies = new List<WeightedRecipies>();
+        List<Recipe> _recpies = new List<Recipe>();
+        Recipe selectedRecepie = new Recipe();
+        List<string> ItemState = new List<string>() { "Full", "Almost Full", "Half Full", "Almost Empty" };
 
-        // Change the state in the storage list
-        await ListFunc.ChangeItemInStorage(ListFunc.CombinedList[index]);
-    }
+        private delegate bool compareWR(WeightedRecipies r1, WeightedRecipies r2);
+        #endregion
 
-    public int FindIdex(Product item)
-    {
-        // Returns the index of the input item
-        return ListFunc.CombinedList.FindIndex(ind => ind.Equals(item));
-    }
-
-    public void DeleteItem(Product item)
-    {
-        // The amountleft is set to 1, and ChangeItemAmout is called, removing items where only 1 remains.
-        item._amountleft = 1;
-        ChangeItemAmout(item);
-    }
+        #region StorageMethods
 
 
-    /// <summary>
-    /// This method changes the amount of an item.
-    /// If there is only one left, it is deleted.
-    /// Else the amount left is decremented.
-    /// </summary>
-    /// <param name="item"></param>
-    public async void ChangeItemAmout(Product item)
-    {
-        int index = FindIdex(item);
-        int left = ListFunc.CombinedList[index]._amountleft;
-
-        if (left == 1)
+        /// <summary>
+        /// The state of an item is changed.
+        /// </summary>
+        /// <param name="item">The item of which the state shouold be changes</param>
+        /// <param name="state">The state to chaneg to</param>
+        public async void ChangeItemState(Product item, string state)
         {
-            ListFunc.CombinedList.RemoveAt(index);
+            // Finds the index of the input item
+            int index = FindIdex(item);
+            item._state = state;
 
+            // Change the state in the storage list
+            await ListFunc.ChangeItemInStorage(ListFunc.CombinedList[index]);
         }
-        item._amountleft--;
 
-        await ListFunc.ChangeItemInStorage(item);
-    }
-    #endregion
-
-    #region OnInit_async_Method
-
-    /// <summary>
-    /// If it is the first render, the email is requested form the local storage.
-    /// From this email, the storage from the user will be requested from the api.
-    /// </summary>
-    /// <param name="firstRender"></param>
-    /// <returns></returns>
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
+        public int FindIdex(Product item)
         {
-            await GetLocalSession();
-            localStorage.Changed += (sender, e) =>
-            {
-                Console.WriteLine($"Value for key {e.Key} changed from {e.OldValue} to {e.NewValue}");
-            };
+            // Returns the index of the input item
+            return ListFunc.CombinedList.FindIndex(ind => ind.Equals(item));
+        }
 
-            if (email != null)
+        public void DeleteItem(Product item)
+        {
+            // The amountleft is set to 1, and ChangeItemAmout is called, removing items where only 1 remains.
+            item._amountleft = 1;
+            ChangeItemAmout(item);
+        }
+
+
+        /// <summary>
+        /// This method changes the amount of an item.
+        /// If there is only one left, it is deleted.
+        /// Else the amount left is decremented.
+        /// </summary>
+        /// <param name="item"></param>
+        public async void ChangeItemAmout(Product item)
+        {
+            int index = FindIdex(item);
+            int left = ListFunc.CombinedList[index]._amountleft;
+
+            if (left == 1)
             {
-                responseMessage = await ListFunc.GetStorageOnStart(email);
+                ListFunc.CombinedList.RemoveAt(index);
+
+            }
+            item._amountleft--;
+
+            await ListFunc.ChangeItemInStorage(item);
+        }
+        #endregion
+
+        #region OnInit_async_Method
+
+        /// <summary>
+        /// If it is the first render, the email is requested form the local storage.
+        /// From this email, the storage from the user will be requested from the api.
+        /// </summary>
+        /// <param name="firstRender"></param>
+        /// <returns></returns>
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (firstRender)
+            {
+                await GetLocalSession();
+                localStorage.Changed += (sender, e) =>
+                {
+                    Console.WriteLine($"Value for key {e.Key} changed from {e.OldValue} to {e.NewValue}");
+                };
+
+                if (email != null)
+                {
+                    responseMessage = await ListFunc.GetStorageOnStart(email);
+                }
+
+                StateHasChanged();
             }
 
-            StateHasChanged();
         }
 
-    }
-
-    async Task GetLocalSession()
-    {
-        // The email is requested fomr localstorage
-        email = await localStorage.GetItemAsync<string>("Email");
-    }
-    #endregion
-
-    #region Recipe_Display_Methods
-    void matchNotFound()
-    {
-        found = true;
-    }
-
-    void matchFound()
-    {
-        found = false;
-    }
-
-    void clear()
-    {
-        ingredients.Clear();
-        recipeAmount.Clear();
-    }
-
-    void closeRecipies()
-    {
-        viewTitle = false;
-        viewIngredients = false;
-    }
-
-    void retriveInfo(int ID)
-    {
-        Recipe show = _recpies.First(x => x._recipeID == ID);
-        this.ID = ID;
-        recipeDescription = show._description;
-        recipeName = show._Name;
-        recipePerPerson = show._PerPerson;
-
-        found = true;
-        if (show._ingredientList == null)
+        async Task GetLocalSession()
         {
-            foreach (var item in show._ingredientList)
-            {
-                ingredients.Add(item);
-                recipeAmount.Add(item._amount);
-            }
+            // The email is requested fomr localstorage
+            email = await localStorage.GetItemAsync<string>("Email");
         }
-        else
-        {
-            clear();
-            foreach (var item in show._ingredientList)
-            {
-                x++;
-                ingredients.Add(item);
-                recipeAmount.Add(item._amount);
-            }
-        }
-        viewIngredients = true;
-        //viewAddToshoppinglist = true;
-    }
+        #endregion
 
-    void incrementRecipeAmount()
-    {
-        for (int i = 0; i < recipeAmount.Count; i++)
+        #region Recipe_Display_Methods
+        void matchNotFound()
         {
             found = true;
-            if (recipeAmount[i] != 0)
-            {
-                recipeAmount[i] = (recipeAmount[i] / recipePerPerson) * (recipePerPerson + 1F);
-                value++;
-            }
         }
-        recipePerPerson += 1;
-    }
 
+        void matchFound()
+        {
+            found = false;
+        }
 
-    void decrementRecipeAmount()
-    {
-        if (recipePerPerson >= 2)
+        void clear()
+        {
+            ingredients.Clear();
+            recipeAmount.Clear();
+        }
+
+        void closeRecipies()
+        {
+            viewTitle = false;
+            viewIngredients = false;
+        }
+
+        void retriveInfo(Recipe rep)
+        {
+            //Recipe show = _recpies.First(x => x._recipeID == ID);
+            selectedRecepie = rep;
+            recipeName = rep._Name;
+            recipeDescription = rep._description;
+            found = true;
+            viewIngredients = true;
+            //viewAddToshoppinglist = true;
+        }
+
+        void incrementRecipeAmount()
         {
             for (int i = 0; i < recipeAmount.Count; i++)
             {
                 found = true;
                 if (recipeAmount[i] != 0)
                 {
-                    recipeAmount[i] = (recipeAmount[i] / recipePerPerson) * (recipePerPerson - 1F);
-                    value--;
+                    recipeAmount[i] = (recipeAmount[i] / recipePerPerson) * (recipePerPerson + 1F);
+                    value++;
                 }
             }
-            recipePerPerson -= 1;
+            recipePerPerson += 1;
         }
-    }
-    #endregion
 
-    #region empty fridge
 
-    private async Task FindRecipies()
-    {
-        _viewEmptyFridgeLoadSpinner = true;
-        this.StateHasChanged();
-        List<Recipe> allRecepies = await getRecepies();
-        List<Product> productsInStorage = ListFunc.CombinedList;
-        List<Recipe> relevantRecepies = GetRelevantRecpies(allRecepies, productsInStorage);
-        List<WeightedRecipies> weightedRecipies = GeneratWeighted(relevantRecepies, productsInStorage);
-
-        recpies = weightedRecipies;
-
-        SortByPmatch(recpies);
-
-        _viewEmptyFridgeLoadSpinner = false;
-        viewTitle = true;
-        this.StateHasChanged();
-    }
-
-    private void SortByPmatch(List<WeightedRecipies> recpies) 
-    {
-        this.recpies = recpies.OrderByDescending(x => x.pMatch).ToList();
-    }
-
-    private void SortByMatchnum(List<WeightedRecipies> recpies) 
-    {
-        this.recpies = recpies.OrderByDescending(x => x.matchingIngrdientsNum).ToList();
-    }
-
-    private async Task<List<Recipe>> getRecepies()
-    {
-        _recpies = JsonConvert.DeserializeObject<List<Recipe>>(await Http.GetStringAsync("https://localhost:44325/api/recipe?recipeTitle=" + " "));
-        List<Recipe> recepies = _recpies;
-        return recepies;
-    }
-
-    private List<Recipe> GetRelevantRecpies(List<Recipe> allRecepies, List<Product> productsInStorage)
-    {
-        List<List<string>> productRefs = GetAllProductRefs(productsInStorage);
-        List<Recipe> recipes = new List<Recipe>();
-        foreach (Recipe r in allRecepies)
+        void decrementRecipeAmount()
         {
-            foreach (Ingredient I in r._ingredientList)
+            if (recipePerPerson >= 2)
             {
-                foreach (List<string> sList in productRefs)
+                for (int i = 0; i < recipeAmount.Count; i++)
                 {
-                    foreach (string s in sList)
+                    found = true;
+                    if (recipeAmount[i] != 0)
                     {
-                        if (I._ingredientName.Contains(s))
+                        recipeAmount[i] = (recipeAmount[i] / recipePerPerson) * (recipePerPerson - 1F);
+                        value--;
+                    }
+                }
+                recipePerPerson -= 1;
+            }
+        }
+        #endregion
+
+        #region empty fridge
+
+        private async Task FindRecipies()
+        {
+            _viewEmptyFridgeLoadSpinner = true;
+            this.StateHasChanged();
+            List<Product> productsInStorage = ListFunc.CombinedList;
+            List<WeightedRecipies> weightedRecipies = await GetRelevantRecpies(productsInStorage);
+
+            recpies = weightedRecipies;
+
+            SortByPmatch(recpies);
+
+            _viewEmptyFridgeLoadSpinner = false;
+            viewTitle = true;
+            this.StateHasChanged();
+        }
+
+        private void SortByPmatch(List<WeightedRecipies> recpies)
+        {
+            this.recpies = recpies.OrderByDescending(x => x.pMatch).ToList();
+        }
+
+        private void SortByMatchnum(List<WeightedRecipies> recpies)
+        {
+            this.recpies = recpies.OrderByDescending(x => x.matchingIngrdientsNum).ToList();
+        }
+
+        private async Task<List<Recipe>> getRecepies()
+        {
+            _recpies = JsonConvert.DeserializeObject<List<Recipe>>(await Http.GetStringAsync("https://localhost:44325/api/recipe?recipeTitle=" + " "));
+            List<Recipe> recepies = _recpies;
+            return recepies;
+        }
+
+        private async Task<List<WeightedRecipies>> GetRelevantRecpies(List<Product> productsInStorage)
+        {
+            RecipeHandling recipeHandling = new RecipeHandling();
+            AllProductRefs = GetAllProductRefs(productsInStorage);
+            Dictionary<Recipe, Dictionary<Ingredient, List<string>>> dict = new Dictionary<Recipe, Dictionary<Ingredient, List<string>>>();
+            List<Recipe> recipes = new List<Recipe>();
+            foreach (List<string> refs in AllProductRefs)
+            {
+                foreach (var item in refs)
+                {
+                    recipes.AddRange(await recipeHandling.GetReferencesAsync(new List<string>() { item }));
+                }
+
+            }
+            foreach (Recipe r in recipes)
+            {
+                foreach (Ingredient I in r._ingredientList)
+                {
+                    foreach (List<string> sList in AllProductRefs)
+                    {
+                        foreach (string s in sList)
                         {
-                            recipes.Add(r);
-                            goto end;
+                            if (I._ingredientName.Contains(s))
+                            {
+                                if (dict.ContainsKey(r))
+                                {
+                                    if (dict[r].ContainsKey(I))
+                                    {
+                                        dict[r][I].Add(s);
+                                    }
+                                    else
+                                    {
+                                        dict[r].Add(I, new List<string> { s });
+                                    }
+                                }
+                                else
+                                {
+                                    dict.Add(r, new Dictionary<Ingredient, List<string>>() { { I, new List<string> { s } } });
+                                }
+                            }
                         }
                     }
                 }
             }
-        end:;
+            return NewGeneratWeighted(dict);
         }
-        return recipes;
-    }
 
-    private List<WeightedRecipies> GeneratWeighted(List<Recipe> relevantRecepies, List<Product> productsInStorage)
+    private List<WeightedRecipies> NewGeneratWeighted(Dictionary<Recipe, Dictionary<Ingredient, List<string>>> Recepies)
     {
-        List<List<string>> allRefs = GetAllProductRefs(productsInStorage);
         List<WeightedRecipies> weightedRecipies = new List<WeightedRecipies>();
-
-        foreach (Recipe r in relevantRecepies)
+        foreach (Recipe r in Recepies.Keys)
         {
-            weightedRecipies.Add(new WeightedRecipies(r));
+            r.deleteDuplicates();
+            weightedRecipies.Add(new WeightedRecipies(r, Recepies[r]));
         }
-
-        foreach (WeightedRecipies w in weightedRecipies)
-        {
-            w._recipie.deleteDuplicates();
-            foreach (Ingredient I in w._recipie._ingredientList)
-            {
-                foreach (List<string> sList in allRefs)
-                {
-                    foreach (string s in sList)
-                    {
-                        if (I._ingredientName.Contains(s))
-                        {
-                            w.MatchFound(I, s);
-                        }
-                    }
-
-                }
-            }
-            w.calculateP();
-        }
-        //weightedRecipies.ForEach(x => x.uniqeIngrdients(x.matchingIngrdient));
-
         return weightedRecipies;
     }
-
     private List<List<string>> GetAllProductRefs(List<Product> products)
     {
         List<List<string>> allRefs = new List<List<string>>();
@@ -527,21 +504,11 @@ else
         return returnList;
     }
 
-    private bool compareIngredientsWtihRefs(Ingredient ingredient, List<string> refs)
-    {
-        foreach (string _ref in refs)
-        {
-            if (ingredient._ingredientName.Contains(_ref))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
     #endregion
 
     private void AssignScalar(ChangeEventArgs e, Product p)
     {
         ChangeItemState(p, e.Value.ToString());
     }
+}
 }

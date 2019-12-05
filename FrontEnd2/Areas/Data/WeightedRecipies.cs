@@ -13,20 +13,22 @@ namespace FrontEnd2.Data
         public float pMatch { get; set; }
         public int matchingIngrdientsNum { get; set; }
         public List<Ingredient> matchingIngrdient = new List<Ingredient>();
+        public Dictionary<Ingredient, List<string>> ingrdients = new Dictionary<Ingredient, List<string>>();
         public List<string> custmomRef = new List<string>();
         public List<Product> products = new List<Product>();
 
-        public WeightedRecipies(Recipe _recipie)
+        public WeightedRecipies(Recipe _recipie, Dictionary<Ingredient, List<string>> ingrdients)
         {
             this._recipie = _recipie;
+            this.ingrdients = ingrdients;
+            matchingIngrdient.AddRange(ingrdients.Keys);
+            foreach (Ingredient i in ingrdients.Keys) 
+            {
+                custmomRef.AddRange(ingrdients[i]);
+            }
+            matchingIngrdientsNum = matchingIngrdient.Count;
             complexity = _recipie._ingredientList.Count();
-        }
-
-        public void MatchFound(Ingredient ingrdient, string customRef)
-        {
-            matchingIngrdient.Add(ingrdient);
-            custmomRef.Add(customRef);
-            matchingIngrdientsNum = matchingIngrdient.Count();
+            calculateP();
         }
 
         public void calculateP()
