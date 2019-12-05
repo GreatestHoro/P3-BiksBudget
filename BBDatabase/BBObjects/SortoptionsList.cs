@@ -1,23 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
+using BBCollection.BBObjects;
 using System.Text;
 
 namespace BBCollection.BBObjects
 {
     public class SortoptionsList
     {
-        public List<Options> optionsList = new List<Options>()
+        public List<FilterItem> optionsList = new List<FilterItem>()
         {
-            new Options("Most relevant", true),
-            new Options("Price (Low to High)", false),
-            new Options("Price (High to Low)", false),
-            new Options("Alphabetical order (A - Z)", false),
-            new Options("Alphabetical order (Z - A)", false),
-            new Options("Store (A - Z)", false),
-            new Options("Store (Z - A", false)
+            new FilterItem("Most relevant", true, true),
+            new FilterItem("Price (Low to High)", false, true),
+            new FilterItem("Price (High to Low)", false, true),
+            new FilterItem("Alphabetical order (A - Z)", false, true),
+            new FilterItem("Alphabetical order (Z - A)", false, true),
+            new FilterItem("Store (A - Z)", false, true),
+            new FilterItem("Store (Z - A", false, true)
         };
 
-        public List<Options> GetList()
+        public List<FilterItem> GetSortList()
         {
             return optionsList;
         }
