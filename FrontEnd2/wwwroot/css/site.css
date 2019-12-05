@@ -1005,6 +1005,7 @@ product-search-bar {
         color: #fff;
         text-align: center;
         white-space: nowrap;
+        background-color: #ebc934;
         transition: width 5s ease;
     }
 
