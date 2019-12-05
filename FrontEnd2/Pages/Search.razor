@@ -422,7 +422,7 @@ else if (!isSearching && !_viewProducts)
         viewAdvancedSearch = !viewAdvancedSearch;
     }
 
-        void toggleAutocomplete()
+    void toggleAutocomplete()
     {
         viewAutoComplete = !viewAutoComplete;
     }
@@ -831,7 +831,11 @@ else if (!isSearching && !_viewProducts)
 
             itemList = await CallApiForProducts(tempSearchword);
             loadProdName();
-            prodData = Enumerable.Range( 1, prodName.Length ).Select( x => new AutocompleteSearch { textField = prodName[x - 1], valueField = x } );
+            prodData = Enumerable.Range(1, prodName.Length)
+                .Select(x => new AutocompleteSearch { textField = prodName[x - 1], valueField = x });
+
+
+            //.Where(x => x.textField.Contains(selectedSearchValue.ToString()));
 
             this.StateHasChanged();
         }
@@ -861,14 +865,25 @@ else if (!isSearching && !_viewProducts)
     void loadProdName()
     {
         prodName = itemList.Select(p => Convert.ToString(p._productName)).ToArray();
+
+        prodName = prodName.Select(s => s.ToLowerInvariant()).ToArray();
+
+        prodName = prodName.Distinct().ToArray();
     }
 
 
     private async void searchHandler(object newValue)
     {
-        selectedSearchValue = newValue;
-        searchBox = newValue.ToString();
-        await SearchBar();
+        try
+        {
+            selectedSearchValue = newValue;
+            searchBox = newValue.ToString();
+            await SearchBar();
+        }
+        catch (System.NullReferenceException)
+        {
+            Console.WriteLine("The searh was empty. Pls do not press ESC");
+        }
     }
 
     #endregion
