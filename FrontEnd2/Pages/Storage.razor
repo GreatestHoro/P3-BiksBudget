@@ -24,76 +24,81 @@
     else
     {
         @* Storage table *@
-        <div class="container">
-            <div class="row">
-                <div class="col-sm-12">
-                    <table class="table table-hover table-condensed">
-                        <thead>
-                            <tr>
-                                <th style="width:35%">Product</th>
-                                <th style="width:10%" class="textForTable">Quantity</th>
-                                <th style="width:15%" class="textForTable">Amount remaining</th>
-                                <th style="width:10%" class="textForTable">Date added</th>
-                                <th style="width:10%" class="textForTable">Delete</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (Product p in ListFunc.CombinedList)
-                            {
-                                <tr>
-                                    <td data-th="Product">@p._productName</td>
-                                    <td data-th="Amount" class="textForTable">
-                                        <input type="number" id="number" value="@p._amountleft" />
-                                        @*@p._amount*@
-                                    </td>
-                                    <td data-th="Amount remaining" class="textForTable">
-                                        <div class="input-group">
-                                            <div class="input-group-prepend">
-                                            </div>
-                                            <select class="custom-select" @onchange="((e) => AssignScalar(e, p))">
-                                                <option value="@p._state">@p._state</option>
-                                                @foreach (string state in ItemState)
-                                                {
-                                                    <option value="@state"> @state </option>
-                                                }
-                                            </select>
-                                        </div>
-                                    </td>
-                                    <td data-th="Date added" class="textForTable">@p._timeAdded</td>
-                                    <td data-th="Delete" class="textForTable">
-                                        <div>
-                                            <button class="btn btn-rounded btn-danger btn-sm" title="Delete one @p._productName from storage" @onclick="(() => ChangeItemAmout(p))"><i class="oi oi-trash"></i></button>
-                                            @if (p._amountleft > 1)
-                                            {
-                                                <button class="btn btn-rounded btn-danger btn-sm" title="Delete all @p._amountleft @p._productName from storage" @onclick="(() => DeleteItem(p))"><i class="oi oi-trash"></i>(All)</button>
-                                            }
-                                            else
-                                            {
-                                                <button disabled class="btn btn-rounded btn-danger btn-sm invisibleBtn"><i class="oi oi-trash"></i>(All)</button>
-                                            }
-                                        </div>
-                                    </td>
-                                </tr>
-                                <br />
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            @* Buttons *@
-            <div class="row">
-
-                @*<div class="col-sm-4 of">
-                        <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>ListFunc.AddFuncList())">Save storage</button>
-                    </div>*@
-                <div class="col-sm-4">
-                    <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => ListFunc.DeleteStorage())">Delete storage</button>
-                </div>
-                <div class="col-sm-4">
-                    <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => FindRecipies())">Empty my Fridge</button>
-                </div>
-            </div>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <table class="table table-hover table-condensed">
+                <thead>
+                    <tr>
+                        <th style="width:35%">Product</th>
+                        <th style="width:10%" class="textForTable">Quantity</th>
+                        <th style="width:15%" class="textForTable">Amount remaining</th>
+                        <th style="width:10%" class="textForTable">Date added</th>
+                        <th style="width:10%" class="textForTable">Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (Product p in ListFunc.CombinedList)
+                    {
+                        <tr>
+                            <td data-th="Product">@p._productName</td>
+                            <td data-th="Amount" class="textForTable">
+                                <input type="number" id="number" value="@p._amountleft" />
+                                @*@p._amount*@
+                            </td>
+                            <td data-th="Amount remaining" class="textForTable">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                    </div>
+                                    <select class="custom-select" @onchange="((e) => AssignScalar(e, p))">
+                                        <option value="@p._state">@p._state</option>
+                                        @foreach (string state in ItemState)
+                                        {
+                                            <option value="@state"> @state </option>
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                            <td data-th="Date added" class="textForTable">@p._timeAdded</td>
+                            <td data-th="Delete" class="textForTable">
+                                <div>
+                                    <button class="btn btn-rounded btn-danger btn-sm" title="Delete one @p._productName from storage" @onclick="(() => ChangeItemAmout(p))"><i class="oi oi-trash"></i></button>
+                                    @if (p._amountleft > 1)
+                                    {
+                                        <button class="btn btn-rounded btn-danger btn-sm" title="Delete all @p._amountleft @p._productName from storage" @onclick="(() => DeleteItem(p))"><i class="oi oi-trash"></i>(All)</button>
+                                    }
+                                    else
+                                    {
+                                        <button disabled class="btn btn-rounded btn-danger btn-sm invisibleBtn"><i class="oi oi-trash"></i>(All)</button>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                        <br />
+                    }
+                </tbody>
+            </table>
         </div>
+    </div>
+    @* Buttons *@
+    <div class="row">
+
+        @*<div class="col-sm-4 of">
+                <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>ListFunc.AddFuncList())">Save storage</button>
+            </div>*@
+        <div class="col-sm-4">
+            <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => ListFunc.DeleteStorage())">Delete storage</button>
+        </div>
+        <div class="col-sm-4">
+            <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => FindRecipies())">Empty my Fridge</button>
+        </div>
+    </div>
+    @if (_viewEmptyFridgeLoadSpinner){
+        <div class="center_div lds-roller">
+            <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+        </div>
+    }
+</div>
     }
     @*</div>*@
 
