@@ -25,35 +25,40 @@
 <div class="container-fluid">
     <div class="row d-flex justify-content-center">
         <div class="col-sm-10 col-md-8 col-lg-7 col-xl-5">
-            <div class="form-check-inline center_div product-search-bar mb-2">
-                @if (!viewAutoComplete)
-                {
+            @if (!viewAutoComplete)
+            {
+                <div class="form-check-inline center_div product-search-bar mb-2">
                     <input type="text" @bind="searchBox" @onkeyup="KeyPressed" class="form-control product-search-input" id="productSearchInput" placeholder="Search product" />
-                }
-                else
-                {
-                    <div style="max-height:400px" class="form-control product-search-input">
-                        <Autocomplete Data="@prodData"
-                                      TextField="@((item)=>item.textField)"
-                                      ValueField="@((item)=>item.textField)"
-                                      SelectedValue="@selectedSearchValue"
-                                      SelectedValueChanged="@searchHandler"
-                                      Placeholder="Search..." />
+                    <button class="btn btn-success recipe-search-button" @onclick="(() => SearchBar())">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </div>
+            }
+            else
+            {
+                <div class="form-check-inline center_div mb-2" id="acSearchBar">
+                    <div class="center_div" id="adSearchBBox">
+                        <div type="text" id="acProductSearchInput" class="product-search-input">
+                            <Autocomplete Data="@prodData"
+                                          TextField="@((item)=>item.textField)"
+                                          ValueField="@((item)=>item.textField)"
+                                          SelectedValue="@selectedSearchValue"
+                                          SelectedValueChanged="@searchHandler"
+                                          Placeholder="Search..." />                            
+                        </div>
                     </div>
-                }
-                <button class="btn btn-success recipe-search-button" @onclick="(() => SearchBar())">
-                    <i class="fa fa-search"></i>
-                </button>
+                </div>
+            }
+            <div class="mt-4 center_div" id="filterBox">
+                <label class="text-muted">
+                    Advanced search
+                    <input type="checkbox" value="viewAdvancedSearch" @onclick="toggleAdvancedCheckBox" />
+                </label>
+                <label class="text-muted">
+                    Autocomplete (BETA)
+                    <input type="checkbox" value="viewAdvancedSearch" @onclick="toggleAutocomplete" />
+                </label>
             </div>
-            <label class="text-muted">
-                Advanced search
-                <input type="checkbox" value="viewAdvancedSearch" @onclick="toggleAdvancedCheckBox" />
-            </label>
-            <label class="text-muted">
-                Autocomplete (BETA)
-                <input type="checkbox" value="viewAdvancedSearch" @onclick="toggleAutocomplete" />
-            </label>
-
         </div>
 
         
