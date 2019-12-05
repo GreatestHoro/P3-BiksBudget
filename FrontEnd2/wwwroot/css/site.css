@@ -5,6 +5,18 @@
     -webkit-animation: spin2 1s infinite linear;
 }
 
+headlineCard {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.picture {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 
 #acSearchBar {
     position: relative;
@@ -982,32 +994,6 @@ product-search-bar {
             display:none;
         }
 }
-
-.flexContainer {
-    display: flex;
-    height: 600px;
-    flex-wrap: wrap;
-    align-content: space-between;
-    justify-content: center;
-}
-
-    .flexContainer > div {
-        width: 100px;
-        margin: 6px;
-        text-align: center;
-        line-height: 75px;
-    }
-
-.productCard {
-    /* Add shadows to create the "card" effect */
-    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-    transition: 0.5s;
-}
-
-    /* On mouse-over, add a deeper shadow */
-    .productCard:hover {
-        box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
-    }
 
 @media (min-width: 768px) {
     app {

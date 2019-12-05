@@ -54,32 +54,34 @@
 
 @if (viewAdvancedSearch)
 {
-    <div class="d-flex flex-sm-row flex-column searchAdvancedText">
-        <div class="p-2">
-            @foreach (AdvancedFilterList a in filterLists)
-            {
-                <div class="input-group">
-                    <select id="sortorderSelect" class="custom-select" @onchange="((e)=>AssignFilter(e, a.optionsList, a.label))">
-                        <option disabled="disabled" selected="selected">@a.optionsname</option>
-                        @foreach (FilterItem o in a.optionsList)
-                        {
-                            if (o.IsEnabled)
-                            {
-                                <option style="color:green" value="@o.FilterName"> @o.FilterName </option>
-                            }
-                            else
-                            {
-                                <option style="color:red" value="@o.FilterName"> @o.FilterName </option>
-                            }
-                        }
-                        @if (!string.IsNullOrEmpty(a.lastOption))
-                        {
-                            <option value="all">Select All</option>
-                        }
-                    </select>
-                </div>
-            }
+<div class="d-flex flex-sm-row flex-column searchAdvancedText">
+
+    @foreach (AdvancedFilterList a in filterLists)
+    {
+    <div class="p-2">
+        <div class="input-group">
+            <select id="sortorderSelect" class="custom-select" @onchange="((e)=>AssignFilter(e, a.optionsList, a.label))">
+                <option disabled="disabled" selected="selected">@a.optionsname</option>
+                @foreach (FilterItem o in a.optionsList)
+                {
+                    if (o.IsEnabled)
+                    {
+                        <option style="color:green" value="@o.FilterName"> @o.FilterName </option>
+                    }
+                    else
+                    {
+                        <option style="color:red" value="@o.FilterName"> @o.FilterName </option>
+                    }
+                }
+                @if (!string.IsNullOrEmpty(a.lastOption))
+                {
+                    <option value="all">Select All</option>
+                }
+            </select>
         </div>
+    </div>
+            }
+
         <div class="p-2">
             <h5>Distance @(radius / 1000) Km:</h5>
             <input type="range" min="0" max="5000" @bind="radius" step="1000" />
@@ -139,9 +141,9 @@
 
                     <div class="col-12 col-sm-8 col-md-6 col-lg-4 top-margin">
                         <div class="card w-100 h-100">
-                            <img src="@p._image" class="card-img-top productCard" alt="..." style="display:block; max-height:340px; max-width: 340px; width: auto; height: auto;">
+                            <img src="@p._image" class="card-img-top  picture" alt="..." style="display:block; max-height:280px; max-width: 280px; width: auto; height: auto;">
                             <div class="card-body h-50 w-100 bg-light rounded mx-auto">
-                                <h5 class="card-title w-100">@p._productName</h5>
+                                <h5 class="card-title w-100 headlineCard">@p._productName</h5>
                                 <p class="card-text ">
                                     From @p._storeName <hr />
                                     @p._amount
@@ -155,11 +157,11 @@
                                     </div>
                                     @if (!disableButton)
                                     {
-                                        <button @onclick="(() => AddProductToSL(p))" class="btn btn-success mt-3"><i class="oi oi-cart"></i> Shopping list</button>
+                                        <button @onclick="(() => AddProductToSL(p))" class="btn btn-success mt-3 buttonPlace"><i class="oi oi-cart"></i> Shopping list</button>
                                     }
                                     else
                                     {
-                                        <button class="btn btn-success mt-3"><i class="oi oi-cart"></i> Shopping list</button>
+                                        <button class="btn btn-success mt-3 buttonPlace"><i class="oi oi-cart"></i> Shopping list</button>
 
                                     }
                                 </div>
