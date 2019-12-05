@@ -93,9 +93,24 @@
             <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => FindRecipies())">Empty my Fridge</button>
         </div>
     </div>
-    @if (_viewEmptyFridgeLoadSpinner){
+
+    @if (_viewEmptyFridgeLoadSpinner)
+    {
         <div class="center_div lds-roller">
             <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+        </div>
+    }
+    @if (loadingbar)
+    {
+        <div class="progress mb-3">
+            <!--!-->
+            <!--!-->
+            <!--!-->    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="@(LoadingBarProggres) " aria-valuemin="0" aria-valuemax="100" style="width: @(LoadingBarProggres.ToString()+"%");">
+                <!--!-->
+                <!--!-->
+            </div><!--!-->
+            <!--!-->
+            <!--!-->
         </div>
     }
 </div>
@@ -123,75 +138,78 @@
                 </ul>
             }
         </div>
+
         @if (viewIngredients == true)
         {
-            @(found = true)
-        <div class="col-2 offset-2">
+            Found();
+            <div class="col-2 offset-2">
 
-            <table class="table-bordered ingredientsTable">
-                <colgroup>
-                    <col style="width: 100px" />
-                    <col style="width: 150px" />
-                </colgroup>
-                <thead>
-                    <tr>
-                        <th> Amount </th>
-                        <th> Name </th>
-                    </tr>
-                </thead>
-                <tbody>
+                <table class="table-bordered ingredientsTable">
+                    <colgroup>
+                        <col style="width: 100px" />
+                        <col style="width: 150px" />
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th> Amount </th>
+                            <th> Name </th>
+                        </tr>
+                    </thead>
+                    <tbody>
 
-                    @foreach (WeightedRecipies w in recpies)
-                    {
-                        @if (selectedRecepie._Name.Equals(w._recipie._Name))
+                        @foreach (WeightedRecipies w in recpies)
                         {
-                            @if (found == true)
+                            @if (selectedRecepie._Name.Equals(w._recipie._Name))
                             {
-                                @foreach (Ingredient I in w._recipie._ingredientList)
+                                @if (found == true)
                                 {
-                                    matchFound();
-                                    <tr>
-                                        <td>
-                                            @I._amount @I._unit
-                                        </td>
+                                    @foreach (Ingredient I in w._recipie._ingredientList)
+                                    {
+                                        matchFound();
+                                        <tr>
+                                            <td>
+                                                @I._amount @I._unit
+                                            </td>
 
-                                        @if (w.ingrdients.ContainsKey(I))
-                                        {
-                                            <td style="background-color:green">@I._ingredientName</td>
-                                        }
+                                            @if (w.ingrdients.ContainsKey(I))
+                                            {
+                                                <td style="background-color:green">@I._ingredientName</td>
+                                            }
 
-                                        else
-                                        {
-                                            <td style="background-color:red"> @I._ingredientName</td>
+                                            else
+                                            {
+                                                <td style="background-color:red"> @I._ingredientName</td>
 
-                                        }
-                                    </tr>
+                                            }
+                                        </tr>
+                                    }
                                 }
                             }
-                        }
 
-                    }
-                    <tr>
-                        <td colspan="2" class="text-sm-center">
-                            <div class="valueClass text-center">
-                                <div class="value-button" id="increase" @onclick="(() => decrementRecipeAmount())" value="Increase @value"> - </div>
-                                <input type="number" id="number" value="@recipePerPerson" />
-                                <div class="value-button" id="decrease" @onclick="(() => incrementRecipeAmount())" value="Decrease @value"> + </div>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div class="col-4">
-            <h3> @recipeName </h3>
-            <p> @recipeDescription </p>
-        </div>
-    }
+                        }
+                        <tr>
+                            <td colspan="2" class="text-sm-center">
+                                <div class="valueClass text-center">
+                                    <div class="value-button" id="increase" @onclick="(() => decrementRecipeAmount())" value="Increase @value"> - </div>
+                                    <input type="number" id="number" value="@recipePerPerson" />
+                                    <div class="value-button" id="decrease" @onclick="(() => incrementRecipeAmount())" value="Decrease @value"> + </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-4">
+                <h3> @recipeName </h3>
+                <p> @recipeDescription </p>
+            </div>
+        }
     </div>
         <!--Scroll to top button   -->
         <button id="myBtn" class="btn btn-rounded btn-success"><a href="storage" style="color: white; font-size:12px;">Top</a></button>
     </div>
+
+
 }
 else
 {
@@ -209,6 +227,7 @@ else
     int ID;
 
     float recipePerPerson;
+    int LoadingBarProggres;
 
     int value;
     int x;
@@ -220,6 +239,7 @@ else
     bool changeState = false;
 
     bool _viewEmptyFridgeLoadSpinner = false;
+    bool loadingbar = false;
 
     ShoppinlistFunctionality ListFunc = new ShoppinlistFunctionality("api/Storage");
     HttpResponseMessage responseMessage = new HttpResponseMessage();
@@ -335,6 +355,10 @@ else
     {
         found = false;
     }
+    void Found()
+    {
+        found = true;
+    }
 
     void clear()
     {
@@ -397,31 +421,31 @@ else
     private async Task FindRecipies()
     {
         _viewEmptyFridgeLoadSpinner = true;
+        int HasBeenLoaded = 0;
         this.StateHasChanged();
-        List<Product> productsInStorage = ListFunc.CombinedList;
-        AllProductRefs = GetAllProductRefs(productsInStorage);
-        foreach (List<string> prodRefs in AllProductRefs) 
+        EmptyFridgeFuntionality emptyFridgeFuntionality = new EmptyFridgeFuntionality(ListFunc.CombinedList);
+        foreach (List<string> prodRefs in emptyFridgeFuntionality.allRefs)
         {
-        List<WeightedRecipies> weightedRecipies = await GetRelevantRecpies(prodRefs,productsInStorage);
-
-        recpies.AddRange(weightedRecipies);
-
-        SortByPmatch(recpies);
-
-        viewTitle = true;
-        this.StateHasChanged();
+            recpies.AddRange(await emptyFridgeFuntionality.GetRelevantRecepiesFromProd(prodRefs));
+            emptyFridgeFuntionality.SortByPmatch(recpies);
+            recpies = await emptyFridgeFuntionality.GetSortedList();
+            loadingbar = true;
+            LoadingManager(++HasBeenLoaded,ListFunc.CombinedList.Count);
+            this.StateHasChanged();
         }
+
         _viewEmptyFridgeLoadSpinner = false;
+        await disableLoad();
+        viewTitle = true;
     }
-
-    private void SortByPmatch(List<WeightedRecipies> recpies)
+    private async void LoadingManager(int currentLoad, int TotalToLoad)
     {
-        this.recpies = recpies.OrderByDescending(x => x.pMatch).ToList();
+        LoadingBarProggres = currentLoad == TotalToLoad ?  100:((int)(100*((float)currentLoad / (float)TotalToLoad)));
     }
-
-    private void SortByMatchnum(List<WeightedRecipies> recpies)
+    private async Task disableLoad() 
     {
-        this.recpies = recpies.OrderByDescending(x => x.matchingIngrdientsNum).ToList();
+        await Task.Delay(3000);
+        loadingbar = false;
     }
 
     private async Task<List<Recipe>> getRecepies()
@@ -429,83 +453,6 @@ else
         _recpies = JsonConvert.DeserializeObject<List<Recipe>>(await Http.GetStringAsync("https://localhost:44325/api/recipe?recipeTitle=" + " "));
         List<Recipe> recepies = _recpies;
         return recepies;
-    }
-
-    private async Task<List<WeightedRecipies>> GetRelevantRecpies(List<string> ProductRefrence,List<Product> productsInStorage)
-    {
-        RecipeHandling recipeHandling = new RecipeHandling();
-        Dictionary<Recipe, Dictionary<Ingredient, List<string>>> dict = new Dictionary<Recipe, Dictionary<Ingredient, List<string>>>();
-        List<Recipe> recipes = new List<Recipe>();
-        foreach (string refs in ProductRefrence)
-        {
-                recipes.AddRange(await recipeHandling.GetReferencesAsync(new List<string>() { refs }));
-        }
-        foreach (Recipe r in recipes)
-        {
-            foreach (Ingredient I in r._ingredientList)
-            {
-                foreach (List<string> sList in AllProductRefs)
-                {
-                    foreach (string s in sList)
-                    {
-                        if (I._ingredientName.Contains(s))
-                        {
-                            if (dict.ContainsKey(r))
-                            {
-                                if (dict[r].ContainsKey(I))
-                                {
-                                    dict[r][I].Add(s);
-                                }
-                                else
-                                {
-                                    dict[r].Add(I, new List<string> { s });
-                                }
-                            }
-                            else
-                            {
-                                dict.Add(r, new Dictionary<Ingredient, List<string>>() { { I, new List<string> { s } } });
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return NewGeneratWeighted(dict);
-    }
-
-    private List<WeightedRecipies> NewGeneratWeighted(Dictionary<Recipe, Dictionary<Ingredient, List<string>>> Recepies)
-    {
-        List<WeightedRecipies> weightedRecipies = new List<WeightedRecipies>();
-        foreach (Recipe r in Recepies.Keys)
-        {
-            r.deleteDuplicates();
-            weightedRecipies.Add(new WeightedRecipies(r, Recepies[r]));
-        }
-        return weightedRecipies;
-    }
-    private List<List<string>> GetAllProductRefs(List<Product> products)
-    {
-        List<List<string>> allRefs = new List<List<string>>();
-        foreach (Product p in products)
-        {
-            allRefs.Add(GetCustomRefrences(p));
-        }
-        return allRefs;
-    }
-
-    private List<string> GetCustomRefrences(Product product)
-    {
-        List<string> ProductRefrence = product._CustomReferenceField.Split(",").ToList();
-        List<string> returnList = new List<string>();
-
-        foreach (string s in ProductRefrence)
-        {
-            if (!(s.Length < 2) && !string.IsNullOrWhiteSpace(s))
-            {
-                returnList.Add(s);
-            }
-        }
-        return returnList;
     }
 
     #endregion
