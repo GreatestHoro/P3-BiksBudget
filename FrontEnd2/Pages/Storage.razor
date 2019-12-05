@@ -404,15 +404,14 @@ else
         {
         List<WeightedRecipies> weightedRecipies = await GetRelevantRecpies(prodRefs,productsInStorage);
 
-        recpies = weightedRecipies;
+        recpies.AddRange(weightedRecipies);
 
         SortByPmatch(recpies);
 
-        _viewEmptyFridgeLoadSpinner = false;
         viewTitle = true;
         this.StateHasChanged();
         }
-
+        _viewEmptyFridgeLoadSpinner = false;
     }
 
     private void SortByPmatch(List<WeightedRecipies> recpies)
