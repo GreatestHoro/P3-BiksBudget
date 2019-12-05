@@ -5,8 +5,47 @@
     -webkit-animation: spin2 1s infinite linear;
 }
 
-#recipeSearchBox{
-    background-color:red;
+
+#acSearchBar {
+    position: relative;
+    margin: 0px;
+    padding: 0px;
+}
+
+#adSearchBBox {
+    outline:none;
+}
+
+#acProductSearchInput {
+    width: 100%;
+    display: inline-block;
+    position: relative;
+    padding: 0px;
+    border: solid;
+    border-width: 5px;
+    border-color: #28a745;
+    border-radius: 5px;
+}
+
+#acSearchButton {
+    display: inline-block;
+    width: 45px;
+    position: relative;
+    margin: 0px;
+}
+
+
+#filterBox {
+}
+
+.dropdown {
+    display: inline-block;
+    width: inherit;
+    margin: 0px;
+}
+
+.dropdown:focus {
+    outline:none !important;
 }
 
 @keyframes spin {
