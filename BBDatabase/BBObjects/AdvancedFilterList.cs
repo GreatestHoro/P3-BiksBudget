@@ -4,7 +4,7 @@ using System.Text;
 
 namespace BBCollection.BBObjects
 {
-    public class AdvancedFilterList // Is not used yet
+    public class AdvancedFilterList
     {
         public string label { get; set; }
         public string optionsname { get; set; }
@@ -16,6 +16,14 @@ namespace BBCollection.BBObjects
             label = _label;
             optionsname = _optionname;
             optionsList = _optionsList;
+        }
+
+        public AdvancedFilterList(string _label, string _optionname, List<FilterItem> _optionsList, string _lastOption)
+        {
+            label = _label;
+            optionsname = _optionname;
+            optionsList = _optionsList;
+            lastOption = _lastOption;
         }
 
         public AdvancedFilterList()

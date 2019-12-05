@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using BBCollection.BBObjects;
 
-namespace FrontEnd2.Data
+namespace BBCollection.BBObjects
 {
     public class WeightedRecipies
     {
