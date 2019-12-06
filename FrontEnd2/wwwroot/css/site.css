@@ -5,6 +5,18 @@
     -webkit-animation: spin2 1s infinite linear;
 }
 
+headlineCard {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.picture {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 
 #acSearchBar {
     position: relative;
@@ -76,6 +88,13 @@
     width: 10rem;
 }
 
+.card-imgNew {
+    width: auto;
+    height:auto;
+    max-width: 280px;
+    min-height: 280px;
+    
+}
 
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -974,7 +993,6 @@ product-search-bar {
         .card-img-top{
             display:none;
         }
-        
 }
 
 @media (min-width: 768px) {

@@ -55,48 +55,50 @@
 @if (viewAdvancedSearch)
 {
 <div class="d-flex flex-sm-row flex-column searchAdvancedText">
+
+    @foreach (AdvancedFilterList a in filterLists)
+    {
     <div class="p-2">
-        @foreach (AdvancedFilterList a in filterLists)
-        {
-            <div class="input-group">
-                <select id="sortorderSelect" class="custom-select" @onchange="((e)=>AssignFilter(e, a.optionsList, a.label))">
-                    <option disabled="disabled" selected="selected">@a.optionsname</option>
-                    @foreach (FilterItem o in a.optionsList)
+        <div class="input-group">
+            <select id="sortorderSelect" class="custom-select" @onchange="((e)=>AssignFilter(e, a.optionsList, a.label))">
+                <option disabled="disabled" selected="selected">@a.optionsname</option>
+                @foreach (FilterItem o in a.optionsList)
+                {
+                    if (o.IsEnabled)
                     {
-                        if (o.IsEnabled)
-                        {
-                            <option style="color:green" value="@o.FilterName"> @o.FilterName </option>
-                        }
-                        else
-                        {
-                            <option style="color:red" value="@o.FilterName"> @o.FilterName </option>
-                        }
+                        <option style="color:green" value="@o.FilterName"> @o.FilterName </option>
                     }
-                    @if (!string.IsNullOrEmpty(a.lastOption))
+                    else
                     {
-                        <option value="all">Select All</option>
+                        <option style="color:red" value="@o.FilterName"> @o.FilterName </option>
                     }
-                </select>
-            </div>
-        }
+                }
+                @if (!string.IsNullOrEmpty(a.lastOption))
+                {
+                    <option value="all">Select All</option>
+                }
+            </select>
+        </div>
     </div>
-    <div class="p-2">
-        <h5>Distance @(radius / 1000) Km:</h5>
-        <input type="range" min="0" max="5000" @bind="radius" step="1000" />
+            }
+
+        <div class="p-2">
+            <h5>Distance @(radius / 1000) Km:</h5>
+            <input type="range" min="0" max="5000" @bind="radius" step="1000" />
+        </div>
+        <div class="p-2">
+            <label for="minPriceB">Minimum Price:</label>
+            <input type="number" class="form-control" placeholder="Min Price" @bind="minPrice" />
+        </div>
+        <div class="p-2">
+            <label for="maxPriceB">Maximum Price:</label>
+            <input type="number" class="form-control" placeholder="Max Price" @bind="maxPrice" />
+        </div>
+        <div class="p-2">
+            <p>Use Location:</p>
+            <input type="checkbox" class="locationCheckBox" bind="@IsLocationEnabled" @onclick="toggle" />
+        </div>
     </div>
-    <div class="p-2">
-        <label for="minPriceB">Minimum Price:</label>
-        <input type="number" class="form-control" placeholder="Min Price" @bind="minPrice" />
-    </div>
-    <div class="p-2">
-        <label for="maxPriceB">Maximum Price:</label>
-        <input type="number" class="form-control" placeholder="Max Price" @bind="maxPrice" />
-    </div>
-    <div class="p-2">
-        <p>Use Location:</p>
-        <input type="checkbox" class="locationCheckBox" bind="@IsLocationEnabled" @onclick="toggle" />
-    </div>
-</div>
 }
 
 @if (isSearching)
@@ -110,25 +112,38 @@
 {
     <div class="container">
         <div class="row top-margin mb-3">
+        @*<div class="flexContainer">*@
+            @*<CardGroup>*@
             @foreach (Product p in productsToPrint)
             {
                 if (p._price > minPrice && p._price < maxPrice)
                 {
+                    @*<div class="card productCard" style="width: 18rem;">
+                        <img src="@p._image" class="card-img-top" alt="..." style="display:block; max-height:280px; max-width: 280px; width: auto; height: auto;">
+                        <div class="card-body">
+                            <h5 style="overflow-wrap:break-word" class="card-title w-100">@p._productName</h5>
+                            <p style="overflow-wrap:break-word" class="card-text w-100">@p._amount</p>
+                            <a href="#" class="btn btn-primary">Add To Shoppinglist</a>
+                        </div>
+                    </div>*@
+                    @*<Card style="width: 18rem;">
+                            <CardImage Class="card-imgNew" Source="@p._image"></CardImage>
+                            <CardBody>
+                                <CardTitle Size="5" Class="w-100"><h4 style="overflow-wrap:break-word">@p._productName</h4></CardTitle>
+                                <CardText>
+                                    @p._amount
+                                    Amount: @p._amountleft
+                                    Store: @p._storeName
+                                </CardText>
+                                <Button Color="Color.Primary" @onclick="(() => AddProductToSL(p))">Add To Shoppinglist</Button>
+                            </CardBody>
+                        </Card>*@
+
                     <div class="col-12 col-sm-8 col-md-6 col-lg-4 top-margin">
                         <div class="card w-100 h-100">
-                            <div class="card-header h-50 bg-white mx-auto text-center">
-                                @if (p._image.Length == 0)
-                                {
-                                    <img style="width:280px; height:auto; " class="card-img-top " src="https://cdn.discordapp.com/attachments/519096261408718908/649685312083197973/coopdicoop.jpg">
-                                }
-                                else
-                                {
-                                    <img style="width: auto; height: auto; max-height:280px; max-width: 280px;"
-                                         class="card-img-top" src="@ProductImage(p._image)">
-                                }
-                            </div>
+                            <img src="@p._image" class="card-img-top  picture" alt="..." style="display:block; max-height:280px; max-width: 280px; width: auto; height: auto;">
                             <div class="card-body h-50 w-100 bg-light rounded mx-auto">
-                                <h5 class="card-title w-100">@p._productName</h5>
+                                <h5 class="card-title w-100 headlineCard">@p._productName</h5>
                                 <p class="card-text ">
                                     From @p._storeName <hr />
                                     @p._amount
@@ -142,19 +157,20 @@
                                     </div>
                                     @if (!disableButton)
                                     {
-                                        <button @onclick="(() => AddProductToSL(p))" class="btn btn-success mt-3"><i class="oi oi-cart"></i> Shopping list</button>
+                                        <button @onclick="(() => AddProductToSL(p))" class="btn btn-success mt-3 buttonPlace"><i class="oi oi-cart"></i> Shopping list</button>
                                     }
                                     else
                                     {
-                                        <button class="btn btn-success mt-3"><i class="oi oi-cart"></i> Shopping list</button>
+                                        <button class="btn btn-success mt-3 buttonPlace"><i class="oi oi-cart"></i> Shopping list</button>
 
                                     }
                                 </div>
                             </div>
                         </div>
-                    </div>
+                        </div>
                 }
             }
+            @*</CardGroup>*@
             @if (_viewLoadMoreSpinner)
             {
                 <div class="center_div lds-roller">
@@ -162,14 +178,15 @@
                 </div>
             }
         </div>
-        @if (_viewLoadMore)
-        {
-            <div class="row mt-4 d-flex justify-content-center">
-                <button class="btn btn-warning mb-5 mx-auto" @onclick="LoadMoreProducts">Load More</button>
-            </div>
-        }
+
         <!--Scroll to top button   -->
-        <button id="myBtn" class="btn btn-rounded btn-success"><a href="search" style="color: white; font-size:12px;">Top</a></button>
+        @*<button id="myBtn" class="btn btn-rounded btn-success"><a href="search" style="color: white; font-size:12px;">Top</a></button>*@
+    </div>
+}
+@if (_viewLoadMore)
+{
+    <div class="row mt-4 d-flex justify-content-center">
+        <button class="btn btn-warning mb-5 mx-auto" @onclick="LoadMoreProducts">Load More</button>
     </div>
 }
 
@@ -239,6 +256,8 @@ else if (!isSearching && !_viewProducts)
     string wordLabel = "word";
     string storeLabel = "store";
     string optionLabel = "option";
+    string imageUrl;
+    string replacementUlr = "https://cdn.discordapp.com/attachments/519096261408718908/649685312083197973/coopdicoop.jpg";
 
     public double minPrice
     {
@@ -302,13 +321,6 @@ else if (!isSearching && !_viewProducts)
         }
     }
 
-    //private void AssignFilter(ChangeEventArgs e, List<Options> optionsList)
-    //{
-    //    string test = e.Value.ToString();
-
-    //    ChangeState(test, optionsList);
-    //}
-
     void toggleAdvancedCheckBox()
     {
         viewAdvancedSearch = !viewAdvancedSearch;
@@ -325,7 +337,7 @@ else if (!isSearching && !_viewProducts)
 
         if (tempFilteritem.IsSortable)
         {
-            DecideOrderFilter(tempFilteritem.FilterName);
+            productsToPrint = DecideOrderFilter(tempFilteritem.FilterName);
         }
         else
         {
@@ -333,60 +345,36 @@ else if (!isSearching && !_viewProducts)
         }
     }
 
-    /// <summary>
-    /// Is called when deciding how the list should be sorted.
-    /// Only the one clicked on should be true, reste is set to false.
-    /// </summary>
-    /// <param name="name">The name of the filter to be true</param>
-    /// <param name="optionList"></param>
 
-    public void ChangeState(string name, List<Options> optionList)
+    public List<Product> DecideOrderFilter(string filterName)
     {
-        foreach (Options o in optionList)
+        switch (filterName.ToLower())
         {
-            if (o.FilterName == name)
-            {
-                o.IsEnabled = true;
-
-                // This method is to find the right sorting algorithm
-                DecideOrderFilter(o.FilterName);
-            }
-            else
-            {
-                o.IsEnabled = false;
-            }
-        }
-    }
-
-    public void DecideOrderFilter(string filterName)
-    {
-        switch (filterName)
-        {
-            case "Most relevant":
+            case "most relevant":
                 SortByMostRelevant();
                 break;
-            case "Price (Low to High)":
+            case "price (low to high)":
                 SortByPriceLH();
                 break;
-            case "Price (High to Low)":
+            case "price (high to low)":
                 SortBypriceHL();
                 break;
-            case "Alphabetical order (A - Z)":
+            case "alphabetical order (a - z)":
                 SortByNameAZ();
                 break;
-            case "Alphabetical order (Z - A)":
+            case "alphabetical order (z - a)":
                 SortByNameZA();
                 break;
-            case "Store (A - Z)":
+            case "store (a - z)":
                 SortByStoreAZ();
                 break;
-            case "Store (Z - A":
+            case "store (z - a":
                 SortByStoreZA();
                 break;
 
         }
 
-        productsToPrint = ApplySortFilterToResults();
+        return ApplySortFilterToResults();
     }
 
     public List<Product> ApplySortFilterToResults()
@@ -540,6 +528,8 @@ else if (!isSearching && !_viewProducts)
 
         _loadCount = 0;
         itemList = await SearchForProducts();
+        itemList = SetAllPicture(itemList);
+
 
         if (itemList.Count == 0)
         {
@@ -548,6 +538,7 @@ else if (!isSearching && !_viewProducts)
 
         if (itemList.Count != 0)
         {
+
             if (itemList.Count > printCount)
             {
                 productsToPrint.AddRange(AddProductsToPrint());
@@ -557,11 +548,14 @@ else if (!isSearching && !_viewProducts)
                 productsToPrint.AddRange(AddProductsToPrint(itemList.Count));
             }
 
+            productsToPrint = DecideOrderFilter(FindActiveSortFilter());
+
             _viewProducts = true;
             if (itemList.Count > productsToPrint.Count)
             {
                 _viewLoadMore = true;
-            } else
+            }
+            else
             {
                 _viewLoadMore = false;
             }
@@ -573,7 +567,6 @@ else if (!isSearching && !_viewProducts)
             //{
             //    DecideOrderFilter(FindActiveSortFilter());
             //}
-            DecideOrderFilter(FindActiveSortFilter());
         }
         else
         {
@@ -616,7 +609,7 @@ else if (!isSearching && !_viewProducts)
             productsToPrint.AddRange(AddProductsToPrint(itemList.Count() % printCount));
             _viewLoadMore = false;
         }
-        else if(productsToPrint.Count != 0 && productsToPrint.Count != 0 &&productsToPrint.Count() < itemList.Count())
+        else if (productsToPrint.Count != 0 && productsToPrint.Count != 0 && productsToPrint.Count() < itemList.Count())
         {
             productsToPrint.AddRange(AddProductsToPrint());
             _viewLoadMore = true;
@@ -978,8 +971,33 @@ else if (!isSearching && !_viewProducts)
     }
     #endregion
 
+    #region Image
+
+    public string SetImageUrl(string url)
+    {
+        if (String.IsNullOrEmpty(url) || String.IsNullOrWhiteSpace(url))
+        {
+            return replacementUlr;
+        }
+        else
+        {
+            return ProductImage(url);
+        }
+    }
+
     private string ProductImage(string prod_image)
     {
         return prod_image + "&imgSize=1080x1080";
     }
+
+    public List<Product> SetAllPicture(List<Product> inputList)
+    {
+        inputList.ForEach(x => x._image = SetImageUrl(x._image));
+
+        return inputList;
+    }
+
+    #endregion
 }
+
+
