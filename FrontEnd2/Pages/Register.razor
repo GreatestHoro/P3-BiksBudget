@@ -1,6 +1,7 @@
 ﻿@page "/Register"
 @using BBCollection.BBObjects;
 @using BBCollection.DBConncetion;
+@using BBCollection.DBHandling;
 @using Newtonsoft.Json;
 @using  System.Text;
 @using FrontEnd2.Data;
@@ -67,17 +68,10 @@ else
     private string userString;
     private string verificationText = "";
     ConnectionSettings connectionSettings = new ConnectionSettings();
+    LoginRegister acount = new LoginRegister();
+
 
     bool isRegistering = false;
-
-    ////protected async override Task OnInitializedAsync()
-    //protected async void doStuff()
-    //{
-    //    if (email != null)
-    //    {
-    //        gottenData = await Http.GetStringAsync(connectionSettings.GetApiLink() + "api/Login/" + email);
-    //    }
-    //}
 
     protected void CheckInputs()
     {
@@ -109,26 +103,27 @@ else
         User user = new User(addEmail, password);
 
         List<Product> shoppingList = new List<Product>();
-        Product[] shoppinglistArray = new Product[10];
 
-        string ShopString = JsonConvert.SerializeObject(shoppingList);
-
-        userString = JsonConvert.SerializeObject(user);
-
-        var content = new StringContent(userString, Encoding.UTF8, "application/json");
-
-        response = await Http.PostAsync(connectionSettings.GetApiLink() + "User/Register", content);
+        response = await acount.Register(user);
 
         if (response.IsSuccessStatusCode)
         {
-            //await localStorage.SetItemAsync("ProductString", ShopString);
-            await localStorage.RemoveItemAsync("Email");
-            await localStorage.RemoveItemAsync("ProductString");
-            await localStorage.SetItemAsync("Email", addEmail);
-            isRegistering = false;
-            StateHasChanged();
+            await SetupWhenRegistered(addEmail);
             NavigationManager.NavigateTo("shoppinglist");
         }
+        else
+        {
+            // Give message on fail
+        }
+    }
+
+    public async Task SetupWhenRegistered(string email)
+    {
+        await localStorage.RemoveItemAsync("Email");
+        await localStorage.RemoveItemAsync("ProductString");
+        await localStorage.SetItemAsync("Email", email);
+        isRegistering = false;
+        StateHasChanged();
     }
 
 
@@ -137,10 +132,6 @@ else
         if (firstRender)
         {
             await GetLocalSession();
-            localStorage.Changed += (sender, e) =>
-            {
-                Console.WriteLine($"Value for key {e.Key} changed from {e.OldValue} to {e.NewValue}");
-            };
 
             if (email != null)
             {
@@ -164,7 +155,7 @@ else
     {
         if (args.Key == "Enter")
         {
-           CheckInputs();
+            CheckInputs();
         }
     }
 
