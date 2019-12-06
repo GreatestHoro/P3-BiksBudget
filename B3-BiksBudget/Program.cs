@@ -79,12 +79,14 @@ namespace BBGatherer
         public async Task TestCollection()
         {
             DatabaseConnect dc = new DatabaseConnect();
-
+            await dc.Recipe.GenerateTotalPriceAsync();
+            
+            /*
             List<string> strings = new List<String>();
 
-            string str1 = "mælk";
-            string str2 = "ost";
-            string str3 = "salt";
+            string str1 = null;
+            string str2 = null;
+            string str3 = null;
 
             strings.Add(str1);
             strings.Add(str2);
@@ -95,7 +97,7 @@ namespace BBGatherer
             foreach(Recipe r in recipes)
             {
                 Console.WriteLine(r._Name);
-            }
+            }*/
 
             /*int count = 6;
             string check = "";

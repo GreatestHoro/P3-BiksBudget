@@ -6,7 +6,7 @@ using BBCollection;
 using System.IO;
 using Microsoft.AspNetCore.Http;
 using System;
-using BBGatherer.Queries;
+using BBCollection.Queries;
 using System.Threading.Tasks;
 
 namespace Backend.Controllers

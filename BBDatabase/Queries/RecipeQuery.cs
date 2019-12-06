@@ -11,7 +11,7 @@ using BBCollection.StoreApi.ApiNeeds;
 using BBCollection;
 using System.Threading.Tasks;
 
-namespace BBGatherer.Queries
+namespace BBCollection.Queries
 {
     public class RecipeQuery
     {

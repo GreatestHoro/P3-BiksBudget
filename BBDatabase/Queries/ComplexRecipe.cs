@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using BBGatherer.Queries;
 
-namespace BBGatherer.Queries
+
+namespace BBCollection.Queries
 {
     //Complex Recipe inherits the standard recipe, but extends it with an member/field of ComplexRecipeComponent, 
     //which can be seen in the file ComplexRecipeComponent.cs
