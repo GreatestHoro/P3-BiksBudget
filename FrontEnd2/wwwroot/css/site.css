@@ -709,6 +709,7 @@ logo-header-wrapper {
     border-color: #0BA428;
     border-radius: 7px;
     position: relative;
+    z-index: 3;
 }
 
 .product-search-bar {
