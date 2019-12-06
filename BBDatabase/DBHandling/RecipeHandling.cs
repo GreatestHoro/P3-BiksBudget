@@ -301,9 +301,33 @@ namespace BBCollection.DBHandling
         }
         #endregion
 
+        public async Task<List<Recipe>> GetRangePriceAsync(string productName)
+        {
+            string getRecipesPrice =
+                "SELECT * FROM biksbudgetdb.recipes WHERE recipename like @ProductName ORDER BY recipe_totalprice";
+            List<Recipe> recipes = new List<Recipe>();
+
+            MySqlCommand msc = new MySqlCommand(getRecipesPrice);
+
+            msc.Parameters.AddWithValue("@ProductName", "%" + productName + "%");
+
+            DataSet ds = await new SQLConnect().DynamicSimpleListSQL(msc);
+            if (ds.Tables.Count != 0)
+            {
+                foreach (DataRow r in ds.Tables[0].Rows)
+                {
+                    Recipe recipe = new Recipe((int)r[0], (string)r[1], (string)r[3], await GetIngredients((int)r[0]), Convert.ToSingle(r[2]), Convert.ToDouble(r[4]));
+                    recipes.Add(recipe);
+                }
+            }
+            return recipes;
+        }
+
         public async Task GenerateTotalPriceAsync()
         {
             List<ComplexRecipe> CRC = await new RecipeQuery().CheapestCRecipes("");
+
+            Console.WriteLine(CRC.Count);
 
             foreach(ComplexRecipe c in CRC)
             {

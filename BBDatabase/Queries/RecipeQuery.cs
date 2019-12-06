@@ -173,8 +173,10 @@ namespace BBCollection.Queries
                 _prevSearch = searchTerm;
 
             }
-            
-            List<Recipe> recipes = await _dc.Recipe.GetRange(searchTerm, _productsPerLoad, _productsPerLoad * _loadCount);
+
+            //List<Recipe> recipes = await _dc.Recipe.GetRange(searchTerm, _productsPerLoad, _productsPerLoad * _loadCount);
+
+            List<Recipe> recipes = await _dc.Recipe.GetList(searchTerm);
 
             _loadCount++;
 
