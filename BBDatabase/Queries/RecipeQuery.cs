@@ -11,7 +11,7 @@ using BBCollection.StoreApi.ApiNeeds;
 using BBCollection;
 using System.Threading.Tasks;
 
-namespace BBGatherer.Queries
+namespace BBCollection.Queries
 {
     public class RecipeQuery
     {
@@ -56,6 +56,12 @@ namespace BBGatherer.Queries
 
             return resultComplexRecipes;
 
+        }
+
+        public async Task<List<ComplexRecipe>> CheapestRecipeDB(string searchTerm)
+        {
+            var cRecipes = await _dc.Recipe.GetPriceAsync(searchTerm);
+            return cRecipes;
         }
 
         /// <summary>
@@ -173,8 +179,10 @@ namespace BBGatherer.Queries
                 _prevSearch = searchTerm;
 
             }
-            
-            List<Recipe> recipes = await _dc.Recipe.GetRange(searchTerm, _productsPerLoad, _productsPerLoad * _loadCount);
+
+            //List<Recipe> recipes = await _dc.Recipe.GetRange(searchTerm, _productsPerLoad, _productsPerLoad * _loadCount);
+
+            List<Recipe> recipes = await _dc.Recipe.GetList(searchTerm);
 
             _loadCount++;
 

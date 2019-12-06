@@ -5,6 +5,18 @@
     -webkit-animation: spin2 1s infinite linear;
 }
 
+headlineCard {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.picture {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 
 #acSearchBar {
     position: relative;
@@ -13,25 +25,30 @@
 }
 
 #adSearchBBox {
-    outline:none;
-}
-
-#acProductSearchInput {
-    width: 100%;
-    display: inline-block;
-    position: relative;
-    padding: 0px;
+    outline: none;
     border: solid;
     border-width: 5px;
     border-color: #28a745;
-    border-radius: 5px;
+    border-radius: 7px;
 }
 
-#acSearchButton {
+#acProductSearchInput {
+    width: calc(100% - 42px);
     display: inline-block;
-    width: 45px;
+    position: relative;
+    border-radius: 0px;
+    padding: 0px;
+    margin:0px;
+    float: left;
+}
+
+.acSearchButton {
+    display: inline-block;
+    width: 42px;
     position: relative;
     margin: 0px;
+    float:right;
+    border-radius: 0px;
 }
 
 
@@ -40,8 +57,14 @@
 
 .dropdown {
     display: inline-block;
-    width: inherit;
+    width: 100%;
     margin: 0px;
+    border-radius: 0px !important;
+}
+
+.dropdown input {
+    border-radius: 0px !important;
+    margin: 0px !important;
 }
 
 .dropdown:focus {
@@ -76,6 +99,13 @@
     width: 10rem;
 }
 
+.card-imgNew {
+    width: auto;
+    height:auto;
+    max-width: 280px;
+    min-height: 280px;
+    
+}
 
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -672,21 +702,13 @@ logo-header-wrapper {
     margin-right: 7px;
 }
 
-product-search-bar {
-    border-width: 5px;
-    border-style: solid;
-    border-color: #0BA428;
-    border-radius: 7px;
-    position: absolute;
-}
 
 .recipe-search-bar {
     border-width: 5px;
     border-style: solid;
     border-color: #0BA428;
     border-radius: 7px;
-    z-index: 3;
-    position: absolute;
+    position: relative;
 }
 
 .product-search-bar {
@@ -694,7 +716,8 @@ product-search-bar {
     border-style: solid;
     border-color: #0BA428;
     border-radius: 7px;
-    z-index: 3;
+    position: relative; 
+    margin-bottom: 7px !important;
 }
 
 .product-search-input {
@@ -879,6 +902,15 @@ product-search-bar {
         padding-left: 0;
     }
 
+    .product-search-bar {
+        border-width: 5px;
+        border-style: solid;
+        border-color: #0BA428;
+        border-radius: 7px;
+        position: relative;
+        margin-bottom: 6.5px !important;
+    }
+
     .recipeSearchBtn {
         display: block;
     }
@@ -977,7 +1009,6 @@ product-search-bar {
         .card-img-top{
             display:none;
         }
-        
 }
 
 @media (min-width: 768px) {
@@ -1018,4 +1049,39 @@ product-search-bar {
     .show-on-hover:hover > ul.dropdown-menu {
         display: block;
     }
+
+    .progress-bar {
+        background-color: #0288d1;
+    }
+
+    /*.w-75 {
+        width: 75% !important;
+    }*/
+
+    .progress-bar-animated {
+        -webkit-animation: progress-bar-stripes 1s linear infinite;
+        animation: progress-bar-stripes 1s linear infinite;
+    }
+
+    .progress-bar-striped {
+        background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+        background-size: 1rem 1rem;
+    }
+
+    .progress-bar {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        -ms-flex-pack: center;
+        justify-content: center;
+        color: #fff;
+        text-align: center;
+        white-space: nowrap;
+        background-color: #ebc934;
+        transition: width 5s ease;
+    }
+
+
+
 }

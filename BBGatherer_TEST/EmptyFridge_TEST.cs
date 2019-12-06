@@ -14,58 +14,17 @@ namespace BBGatherer_TEST
         [TestMethod]
         public async Task EmptyFridge_GetRelevantRecepiesFromProd_TEST() 
         {
-            List<Product> products = new List<Product>();
-            Product product = new Product();
-            product._productName = "test1";
-            product._CustomReferenceField = "salt";
-            Product product1 = new Product();
-            product1._productName = "test2";
-            product1._CustomReferenceField = "peber";
-            Product product2 = new Product();
-            product2._productName = "test3";
-            product2._CustomReferenceField = "okse";
-            products.AddRange(new List<Product>() {product,product1,product2});
-
-            EmptyFridgeFuntionality emptyFridgeFuntionality = new EmptyFridgeFuntionality(products);
+            List<Product> Storage = InstantiateStorage();
+            EmptyFridgeFuntionality emptyFridgeFuntionality = new EmptyFridgeFuntionality(Storage);
             List<WeightedRecipies> resultRecepies = new List<WeightedRecipies>();
-            bool SaltFound = false;
-            bool PeberFound = false;
-            bool OkseFound = false;
-            bool result = false;
-            bool exspected = true;
+
+            bool exspected = true,result = false;
 
             foreach (var item in emptyFridgeFuntionality.allRefs)
             {
                 resultRecepies.AddRange(await emptyFridgeFuntionality.GetRelevantRecepiesFromProd(item));
             }
-
-            foreach (WeightedRecipies w in resultRecepies) 
-            {
-                foreach (Ingredient I in w._recipie._ingredientList) 
-                {
-                    if (I._ingredientName.ToLower().Contains("salt")) 
-                    {
-                        SaltFound = true;
-                    }
-
-                    if (I._ingredientName.ToLower().Contains("okse")) 
-                    {
-                        PeberFound = true;
-                    }
-
-                    if (I._ingredientName.ToLower().Contains("peber")) 
-                    {
-                        OkseFound = true;
-                    }
-
-                    if (SaltFound && PeberFound && OkseFound) 
-                    {
-                        result = true;
-                        goto Done;
-                    }
-                }
-            }
-            Done:;
+            result = CheckIfRerencesArePresentInRecepies(resultRecepies, Storage);
 
             Assert.AreEqual(result, exspected);
         }
@@ -73,22 +32,12 @@ namespace BBGatherer_TEST
         [TestMethod]
         public async Task EmptyFridge_SortMatchnum_TEST() 
         {
-            List<Product> products = new List<Product>();
-            Product product = new Product();
-            product._productName = "test1";
-            product._CustomReferenceField = "salt";
-            Product product1 = new Product();
-            product1._productName = "test2";
-            product1._CustomReferenceField = "peber";
-            Product product2 = new Product();
-            product2._productName = "test3";
-            product2._CustomReferenceField = "okse";
-            products.AddRange(new List<Product>() { product, product1, product2 });
-            int testVlaue;
-            bool result = false;
-            bool exspected = true;
+            List<Product> Storage = InstantiateStorage();
 
-            EmptyFridgeFuntionality emptyFridgeFuntionality = new EmptyFridgeFuntionality(products);
+            int testVlaue;
+            bool exspected = true, result = false;
+
+            EmptyFridgeFuntionality emptyFridgeFuntionality = new EmptyFridgeFuntionality(Storage);
             List<WeightedRecipies> resultRecepies = new List<WeightedRecipies>();
 
             foreach (var item in emptyFridgeFuntionality.allRefs)
@@ -119,22 +68,13 @@ namespace BBGatherer_TEST
         [TestMethod]
         public async Task EmptyFridge_SortPmatch_TEST()
         {
-            List<Product> products = new List<Product>();
-            Product product = new Product();
-            product._productName = "test1";
-            product._CustomReferenceField = "salt";
-            Product product1 = new Product();
-            product1._productName = "test2";
-            product1._CustomReferenceField = "peber";
-            Product product2 = new Product();
-            product2._productName = "test3";
-            product2._CustomReferenceField = "okse";
-            products.AddRange(new List<Product>() { product, product1, product2 });
+            List<Product> Storage = InstantiateStorage();
+
             float testVlaue;
             bool result = false;
             bool exspected = true;
 
-            EmptyFridgeFuntionality emptyFridgeFuntionality = new EmptyFridgeFuntionality(products);
+            EmptyFridgeFuntionality emptyFridgeFuntionality = new EmptyFridgeFuntionality(Storage);
             List<WeightedRecipies> resultRecepies = new List<WeightedRecipies>();
 
             foreach (var item in emptyFridgeFuntionality.allRefs)
@@ -161,5 +101,56 @@ namespace BBGatherer_TEST
 
             Assert.AreEqual(result, exspected);
         }
+
+        private List<Product> InstantiateStorage() 
+        {
+            Product product = new Product();
+            product._productName = "test1";
+            product._CustomReferenceField = "salt";
+            Product product1 = new Product();
+            product1._productName = "test2";
+            product1._CustomReferenceField = "peber";
+            Product product2 = new Product();
+            product2._productName = "test3";
+            product2._CustomReferenceField = "okse";
+
+            return new List<Product>() {product,product1,product2};
+        }
+
+        private bool CheckIfRerencesArePresentInRecepies(List<WeightedRecipies> recepies, List<Product> storage) 
+        {
+            bool SaltFound = false, PeberFound = false, OkseFound = false;
+            bool result = false;
+
+            foreach (WeightedRecipies w in recepies)
+            {
+                foreach (Ingredient I in w._recipie._ingredientList)
+                {
+                    if (I._ingredientName.ToLower().Contains("salt"))
+                    {
+                        SaltFound = true;
+                    }
+
+                    if (I._ingredientName.ToLower().Contains("okse"))
+                    {
+                        PeberFound = true;
+                    }
+
+                    if (I._ingredientName.ToLower().Contains("peber"))
+                    {
+                        OkseFound = true;
+                    }
+
+                    if (SaltFound && PeberFound && OkseFound)
+                    {
+                        result = true;
+                        goto Done;
+                    }
+                }
+            }
+            Done:;
+            return result;
+        }
+        
     }
 }
