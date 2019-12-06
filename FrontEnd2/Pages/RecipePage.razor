@@ -637,7 +637,7 @@
         isSearching = true;
         StateHasChanged();
         recipeQuery._loadCount = 0;
-        complexRecipes = await recipeQuery.CheapestCRecipes(searchTerm);
+        complexRecipes = await recipeQuery.CheapestRecipeDB(searchTerm);
 
         viewRecipeList = true;
         isSearching = false;
@@ -649,7 +649,7 @@
         _viewLoadMoreSpinner = true;
         _viewLoadMore = false;
         this.StateHasChanged();
-        complexRecipes.AddRange(await recipeQuery.CheapestCRecipes(searchTerm));
+        complexRecipes.AddRange(await recipeQuery.CheapestRecipeDB(searchTerm));
         _viewLoadMoreSpinner = false;
         _viewLoadMore = true;
         this.StateHasChanged();
