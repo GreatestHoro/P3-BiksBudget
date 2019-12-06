@@ -28,18 +28,18 @@
     <div class="p-2">
         @if (isLogginIn)
         {
-            <button class="btn btn-rounded btn-outline-success search disabled" disabled><span class='fa-left fas fa-sync-alt spinning'></span>Logging in...</button>
+            <button class="btn btn-rounded btn-outline-success search disabled" disabled><span class='fa-left fas fa-sync-alt spinning'></span> Logging in...</button>
         }
         else
         {
-            <button class="btn btn-rounded btn-outline-success search" @onclick="(() => AutorizeLogin())">Login</button>
+    <button class="btn btn-rounded btn-success search" @onclick="(() => AutorizeLogin())"><i class="oi oi-account-login"></i>&nbsp; Log in</button>
         }
     </div>
     <div class="p-2">
         <p>If you have not yet created an account, please press the button below.</p>
     </div>
     <div class="p-2">
-        <a class="btn btn-rounded btn-success" href="Register"><i class="oi oi-person"></i>&nbsp; Register</a>
+        <a class="btn btn-rounded btn-outline-success" href="Register"><i class="oi oi-person"></i>&nbsp; Register</a>
     </div>
 </div>
 

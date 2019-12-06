@@ -11,7 +11,7 @@ using BBCollection.StoreApi.ApiNeeds;
 using BBCollection;
 using System.Threading.Tasks;
 
-namespace BBGatherer.Queries
+namespace BBCollection.Queries
 {
     public class RecipeQuery
     {
@@ -56,6 +56,34 @@ namespace BBGatherer.Queries
 
             return resultComplexRecipes;
 
+        }
+
+        public async Task<List<ComplexRecipe>> CheapestRecipeDB(string searchTerm)
+        {
+            if (_loadCount == 0)
+            {
+                _prevSearch = searchTerm;
+
+            }
+
+            List<ComplexRecipe> complexRecipes = await _dc.Recipe.GetPriceAsync(searchTerm, _productsPerLoad, _productsPerLoad * _loadCount);
+
+            //List<Recipe> recipes = await _dc.Recipe.GetList(searchTerm);
+
+            _loadCount++;
+
+            return complexRecipes;
+        }
+
+        public async Task<Dictionary<string, List<Product>>> GetProductsForRecipe(int recipeID, List<ComplexRecipe> complexRecipes)
+        {
+            ComplexRecipe cr = complexRecipes.First(x => x._recipeID == recipeID);
+            Dictionary<string, List<Product>> dict = new Dictionary<string, List<Product>>();
+            List<string> ingList = cr._ingredientList.Select(ingredient => ingredient._ingredientName).ToList();
+
+            Dictionary<string, List<Product>> prodDict = await MatchingProducts(ingList);
+            
+            return prodDict;
         }
 
         /// <summary>
@@ -173,8 +201,10 @@ namespace BBGatherer.Queries
                 _prevSearch = searchTerm;
 
             }
-            
-            List<Recipe> recipes = await _dc.Recipe.GetRange(searchTerm, _productsPerLoad, _productsPerLoad * _loadCount);
+
+            //List<Recipe> recipes = await _dc.Recipe.GetRange(searchTerm, _productsPerLoad, _productsPerLoad * _loadCount);
+
+            List<Recipe> recipes = await _dc.Recipe.GetList(searchTerm);
 
             _loadCount++;
 

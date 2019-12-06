@@ -25,25 +25,30 @@ headlineCard {
 }
 
 #adSearchBBox {
-    outline:none;
-}
-
-#acProductSearchInput {
-    width: 100%;
-    display: inline-block;
-    position: relative;
-    padding: 0px;
+    outline: none;
     border: solid;
     border-width: 5px;
     border-color: #28a745;
-    border-radius: 5px;
+    border-radius: 7px;
 }
 
-#acSearchButton {
+#acProductSearchInput {
+    width: calc(100% - 42px);
     display: inline-block;
-    width: 45px;
+    position: relative;
+    border-radius: 0px;
+    padding: 0px;
+    margin:0px;
+    float: left;
+}
+
+.acSearchButton {
+    display: inline-block;
+    width: 42px;
     position: relative;
     margin: 0px;
+    float:right;
+    border-radius: 0px;
 }
 
 
@@ -52,8 +57,14 @@ headlineCard {
 
 .dropdown {
     display: inline-block;
-    width: inherit;
+    width: 100%;
     margin: 0px;
+    border-radius: 0px !important;
+}
+
+.dropdown input {
+    border-radius: 0px !important;
+    margin: 0px !important;
 }
 
 .dropdown:focus {
@@ -108,6 +119,9 @@ h1 {
 /*Search field on search page*/
 .SearchBar {
     width: 200px;
+}
+.columnWidth {
+    max-width:220px;
 }
 /*Used for Hello message by log out button*/
 .fontColor {
@@ -688,21 +702,14 @@ logo-header-wrapper {
     margin-right: 7px;
 }
 
-product-search-bar {
-    border-width: 5px;
-    border-style: solid;
-    border-color: #0BA428;
-    border-radius: 7px;
-    position: absolute;
-}
 
 .recipe-search-bar {
     border-width: 5px;
     border-style: solid;
     border-color: #0BA428;
     border-radius: 7px;
+    position: relative;
     z-index: 3;
-    position: absolute;
 }
 
 .product-search-bar {
@@ -710,7 +717,8 @@ product-search-bar {
     border-style: solid;
     border-color: #0BA428;
     border-radius: 7px;
-    z-index: 3;
+    position: relative; 
+    margin-bottom: 7px !important;
 }
 
 .product-search-input {
@@ -893,6 +901,15 @@ product-search-bar {
         border: 1px solid transparent;
         font-size: 1.1rem;
         padding-left: 0;
+    }
+
+    .product-search-bar {
+        border-width: 5px;
+        border-style: solid;
+        border-color: #0BA428;
+        border-radius: 7px;
+        position: relative;
+        margin-bottom: 6.5px !important;
     }
 
     .recipeSearchBtn {

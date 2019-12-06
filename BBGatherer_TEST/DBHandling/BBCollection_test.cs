@@ -141,6 +141,58 @@ namespace BBCollection.DBHandling.Tests
 
         #region Recipe_Test
         [TestMethod()]
+        public async Task GetReferenceNullTest()
+        {
+            List<string> strings = new List<String>();
+
+            string str1 = null;
+            string str2 = null;
+            string str3 = null;
+
+            strings.Add(str1);
+            strings.Add(str2);
+            strings.Add(str3);
+
+            List<Recipe> recipes = await databaseConnect.Recipe.GetReferencesAsync(strings);
+
+            Assert.IsTrue(recipes.Count == 0);
+        }
+
+        [TestMethod()]
+        public async Task GetOneReferenceTest()
+        {
+            List<string> strings = new List<String>();
+
+            string str1 = "mælk";
+
+            strings.Add(str1);
+
+            List<Recipe> recipes = await databaseConnect.Recipe.GetReferencesAsync(strings);
+
+            Assert.IsTrue(recipes.Count > 0);
+            CollectionAssert.AllItemsAreUnique(recipes);
+        }
+
+        [TestMethod()]
+        public async Task GetMultipleReferencesTest()
+        {
+            List<string> strings = new List<String>();
+
+            string str1 = "mælk";
+            string str2 = "ost";
+            string str3 = "salt";
+
+            strings.Add(str1);
+            strings.Add(str2);
+            strings.Add(str3);
+
+            List<Recipe> recipes = await databaseConnect.Recipe.GetReferencesAsync(strings);
+
+            Assert.IsTrue(recipes.Count > 0);
+            CollectionAssert.AllItemsAreUnique(recipes);
+        }
+
+        [TestMethod()]
         public void GetListTest()
         {
             Assert.Fail();
