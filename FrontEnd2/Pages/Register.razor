@@ -15,33 +15,29 @@
 {
     //sæt dem under hinanden
     <h1>Register</h1>
-<div class="d-flex flex-column mb-3">
-    <div class="p-2">
-        <input class="SearchField SearchBar" placeholder="Username or e-mail" @bind="@tempEmail" autofocus/>
+<div class="d-flex flex-column justify-content-end mb-3">
+    <div class="p-2 columnWidth">
+        <Tooltip IsMultiline="true" Text="Please use 6 or more characters. 
+                 Please refrain from using a 'space'.
+                 Please refrain from using symbols (æ,ø,å is also considered a symbol)" 
+                 Placement="Placement.Bottom">
+            <input class="SearchField SearchBar" placeholder="Username or e-mail" @bind="@tempEmail" autofocus />
+        </Tooltip>
     </div>
-    <div class="p-2">
-        <p>
-            Please use 6 or more characters. <br />
-            Please refrain from using a 'space'. <br />
-            Please refrain from using symbols (æ,ø,å is also considered a symbol). <br />
-        </p>
-    </div>
-    <div class="d-sm-flex flex-row mb-3">
-    <div class="p-2">
-        <input class="SearchField SearchBar" type="password" placeholder="Password" @bind="@password" />
-    </div>
-    <div class="p-2">
+    @*<div class="d-sm-flex flex-row mb-3">*@
+        <div class="p-2 columnWidth">
+            <Tooltip IsMultiline="true" Text="Please use 6 or more characters.
+                 Please include atleast one upper and lower case letter.
+                 Please refrain from using a 'space'.
+                 Please use at least one symbol (æ,ø,å is also considered a symbol)"
+                     Placement="Placement.Bottom">
+                <input class="SearchField SearchBar" type="password" placeholder="Password" @bind="@password" />
+                </Tooltip>
+        </div>
+    <div class="p-2 columnWidth">
         <input class="SearchField SearchBar" type="password" placeholder="Confirm password" @bind="@repPassword" @onkeyup="OnKeyPress" />
-    </div>
-    </div>
-    <div class="p-2">
-        <p>
-            Please use 6 or more characters. <br />
-            Please include atleast one upper and lower case letter. <br />
-            Please refrain from using a 'space'. <br />
-            Please use at least one symbol (æ,ø,å is also considered a symbol). <br />
-        </p>
-    </div>
+    @*</div>*@
+</div>
     <div class="p-2">
         @if (isRegistering)
         {
@@ -49,7 +45,7 @@
         }
         else
         {
-            <button class="btn btn-rounded btn-outline-success" @onclick="CheckInputs">Register</button>
+    <button class="btn btn-rounded btn-success" @onclick="CheckInputs"><i class="oi oi-person"></i>&nbsp; Register</button>
         }
     </div>
 </div>
