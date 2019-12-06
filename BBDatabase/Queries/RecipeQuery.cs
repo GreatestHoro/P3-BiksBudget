@@ -58,6 +58,12 @@ namespace BBCollection.Queries
 
         }
 
+        public async Task<List<ComplexRecipe>> CheapestRecipeDB(string searchTerm)
+        {
+            var cRecipes = await _dc.Recipe.GetPriceAsync(searchTerm);
+            return cRecipes;
+        }
+
         /// <summary>
         /// Calculates the price for a recipe
         /// by looking for the price in the hashtable of products previously created

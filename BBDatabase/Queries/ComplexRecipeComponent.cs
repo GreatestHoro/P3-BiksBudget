@@ -26,6 +26,10 @@ namespace BBCollection.Queries
             RecipeCost = recipeCost;
             _products = products;
         }
+        public ComplexRecipeComponent(double recipeCost)
+        {
+            RecipeCost = recipeCost;
+        }
         //constructur for the class v.2
         public ComplexRecipeComponent()
         {

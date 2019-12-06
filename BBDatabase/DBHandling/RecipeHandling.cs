@@ -301,11 +301,11 @@ namespace BBCollection.DBHandling
         }
         #endregion
 
-        public async Task<List<Recipe>> GetRangePriceAsync(string productName)
+        public async Task<List<ComplexRecipe>> GetPriceAsync(string productName)
         {
             string getRecipesPrice =
                 "SELECT * FROM biksbudgetdb.recipes WHERE recipename like @ProductName ORDER BY recipe_totalprice";
-            List<Recipe> recipes = new List<Recipe>();
+            List<ComplexRecipe> complexRecipes = new List<ComplexRecipe>();
 
             MySqlCommand msc = new MySqlCommand(getRecipesPrice);
 
@@ -316,11 +316,11 @@ namespace BBCollection.DBHandling
             {
                 foreach (DataRow r in ds.Tables[0].Rows)
                 {
-                    Recipe recipe = new Recipe((int)r[0], (string)r[1], (string)r[3], await GetIngredients((int)r[0]), Convert.ToSingle(r[2]), Convert.ToDouble(r[4]));
-                    recipes.Add(recipe);
+                    ComplexRecipe recipe = new ComplexRecipe((int)r[0], (string)r[1], (string)r[3], await GetIngredients((int)r[0]), Convert.ToSingle(r[2]), new ComplexRecipeComponent(Convert.ToDouble(r[4])));
+                    complexRecipes.Add(recipe);
                 }
             }
-            return recipes;
+            return complexRecipes;
         }
 
         public async Task GenerateTotalPriceAsync()
