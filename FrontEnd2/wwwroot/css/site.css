@@ -120,6 +120,9 @@ h1 {
 .SearchBar {
     width: 200px;
 }
+.columnWidth {
+    max-width:220px;
+}
 /*Used for Hello message by log out button*/
 .fontColor {
     color: white;
