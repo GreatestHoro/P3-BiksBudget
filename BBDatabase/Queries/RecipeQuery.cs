@@ -60,8 +60,30 @@ namespace BBCollection.Queries
 
         public async Task<List<ComplexRecipe>> CheapestRecipeDB(string searchTerm)
         {
-            var cRecipes = await _dc.Recipe.GetPriceAsync(searchTerm);
-            return cRecipes;
+            if (_loadCount == 0)
+            {
+                _prevSearch = searchTerm;
+
+            }
+
+            List<ComplexRecipe> complexRecipes = await _dc.Recipe.GetPriceAsync(searchTerm, _productsPerLoad, _productsPerLoad * _loadCount);
+
+            //List<Recipe> recipes = await _dc.Recipe.GetList(searchTerm);
+
+            _loadCount++;
+
+            return complexRecipes;
+        }
+
+        public async Task<Dictionary<string, List<Product>>> GetProductsForRecipe(int recipeID, List<ComplexRecipe> complexRecipes)
+        {
+            ComplexRecipe cr = complexRecipes.First(x => x._recipeID == recipeID);
+            Dictionary<string, List<Product>> dict = new Dictionary<string, List<Product>>();
+            List<string> ingList = cr._ingredientList.Select(ingredient => ingredient._ingredientName).ToList();
+
+            Dictionary<string, List<Product>> prodDict = await MatchingProducts(ingList);
+            
+            return prodDict;
         }
 
         /// <summary>

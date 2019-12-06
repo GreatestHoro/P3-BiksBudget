@@ -301,15 +301,18 @@ namespace BBCollection.DBHandling
         }
         #endregion
 
-        public async Task<List<ComplexRecipe>> GetPriceAsync(string productName)
+        public async Task<List<ComplexRecipe>> GetPriceAsync(string productName, int limit, int offset)
         {
             string getRecipesPrice =
-                "SELECT * FROM biksbudgetdb.recipes WHERE recipename like @ProductName ORDER BY recipe_totalprice";
+                "SELECT * FROM biksbudgetdb.recipes WHERE recipename like @ProductName " +
+                "ORDER BY recipe_totalprice LIMIT @Limit OFFSET @Offset";
             List<ComplexRecipe> complexRecipes = new List<ComplexRecipe>();
 
             MySqlCommand msc = new MySqlCommand(getRecipesPrice);
 
             msc.Parameters.AddWithValue("@ProductName", "%" + productName + "%");
+            msc.Parameters.AddWithValue("@Limit", limit);
+            msc.Parameters.AddWithValue("@Offset", offset);
 
             DataSet ds = await new SQLConnect().DynamicSimpleListSQL(msc);
             if (ds.Tables.Count != 0)

@@ -582,11 +582,12 @@
     /// It initializes different recipe propperties.
     /// </summary>
     /// <param name="ID"></param>
-    private void retriveRecipe(int ID)
+    private async void retriveRecipe(int ID)
     {
+
         // get the first element that satisfies the condition
         ComplexRecipe cr = complexRecipes.First(x => x._recipeID == ID);
-
+        cr._complexRecipeComponent._products = await recipeQuery.GetProductsForRecipe(cr._recipeID, complexRecipes);
         //Set properties
         recipeDescription = cr._description;
         recipeName = cr._Name;
