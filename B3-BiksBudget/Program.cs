@@ -17,17 +17,16 @@ namespace BBGatherer
             
             DataHandling dh = new DataHandling();
             //dh.GenerateDatabase();
-            //dh.GenerateData(false,true);
 
             try
             {
+                dh.GenerateData(false, false, true).Wait();
                 dh.TestCollection().Wait();
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
             }
-
         }
     }
 
@@ -39,7 +38,7 @@ namespace BBGatherer
             
         }
 
-        public void GenerateData(bool coop, bool salling)
+        public async Task GenerateData(bool coop, bool salling, bool generatePrice)
         {
             ProductHandling test = new ProductHandling();
             //InitializeDB _test = new InitializeDB();
@@ -74,6 +73,10 @@ namespace BBGatherer
             //dbConnect.AddProduct(new Product("test","hey","alot",1d,"nope","walmart"));
             //test.InsertIngredientReferenceFromId("tester", "test", new DatabaseInformation("localhost", "biksbudgetDB", "root", "BiksBudget123"));
 
+            if(generatePrice == true)
+            {
+                await dbConnect.Recipe.GenerateTotalPriceAsync();
+            }
         }
 
         public async Task TestCollection()
