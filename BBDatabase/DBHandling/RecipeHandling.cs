@@ -8,6 +8,7 @@ using System.Data;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using BBCollection.Queries;
 
 namespace BBCollection.DBHandling
 {
@@ -94,12 +95,9 @@ namespace BBCollection.DBHandling
         #region Functions handling AddRecipe
         public async Task AddList(Recipe recipe)
         {
-            await Task.Run(async() =>
-            {
-                await AddRecipeToDatabase(recipe);
-                await AddIngredientsToDatabase(recipe._ingredientList);
-                await CombineRecipeAndIngredient(recipe);
-            });
+            await AddRecipeToDatabase(recipe);
+            await AddIngredientsToDatabase(recipe._ingredientList);
+            await CombineRecipeAndIngredient(recipe);
         }
 
         private async Task AddRecipeToDatabase(Recipe recipe)
@@ -112,10 +110,7 @@ namespace BBCollection.DBHandling
             msc.Parameters.AddWithValue("@RecipePersons", recipe._PerPerson);
             msc.Parameters.AddWithValue("@RecipeDescription", recipe._description);
             
-            await Task.Run(async() =>
-            {
-                await new SQLConnect().NonQueryMSC(msc);
-            });
+            await new SQLConnect().NonQueryMSC(msc);
         }
 
         private async Task AddIngredientsToDatabase(List<Ingredient> ingredients)
@@ -213,6 +208,7 @@ namespace BBCollection.DBHandling
         }
         #endregion
 
+        #region Finding ingredients based on references in products.
         public async Task<List<Recipe>> GetReferencesAsync(List<string> references)
         {
             List<Recipe> recipes = new List<Recipe>();
@@ -302,6 +298,29 @@ namespace BBCollection.DBHandling
             }
 
             return recipes;
+        }
+        #endregion
+
+        public async Task GenerateTotalPriceAsync()
+        {
+            List<ComplexRecipe> CRC = await new RecipeQuery().CheapestCRecipes("");
+
+            foreach(ComplexRecipe c in CRC)
+            {
+                Console.WriteLine(c._recipeID + " and " + c._complexRecipeComponent.RecipeCost);
+                await UpdatePriceAsync(c._recipeID, c._complexRecipeComponent.RecipeCost);
+            }
+        }
+
+        private async Task UpdatePriceAsync(int recipeID, double price)
+        {
+            string recipeQuery = "UPDATE `recipes` SET `recipe_totalprice` = @Price WHERE id = @RecipeId";
+            MySqlCommand msc = new MySqlCommand(recipeQuery);
+
+            msc.Parameters.AddWithValue("@Price", price);
+            msc.Parameters.AddWithValue("@RecipeId", recipeID);
+
+            await new SQLConnect().NonQueryMSC(msc);
         }
     }
 }
