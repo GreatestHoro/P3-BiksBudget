@@ -7,6 +7,9 @@ using System.Collections.Generic;
 using BBCollection.DBConncetion;
 using BBCollection.DBHandling;
 using System.Threading.Tasks;
+using B3_BiksBudget.Webcrawler;
+using HtmlAgilityPack;
+using System.Linq;
 
 namespace BBGatherer
 {
@@ -14,19 +17,32 @@ namespace BBGatherer
     {
         static void Main(string[] args)
         {
-            
-            DataHandling dh = new DataHandling();
+
+            //DataHandling dh = new DataHandling();
             //dh.GenerateDatabase();
             //dh.GenerateData(false,true);
 
-            try
+            //try
+            //{
+            //    dh.TestCollection().Wait();
+            //}
+            //catch (Exception e)
+            //{
+            //    Console.WriteLine(e);
+            //}
+
+            productImages productImages = new productImages();
+            string name = Console.ReadLine();
+            var test = productImages.GetImageUrls(name).Result;
+            foreach (var item in test)
             {
-                dh.TestCollection().Wait();
+                Console.WriteLine(item);
             }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
+            //string url = "https://www.google.dk/search?q=bacon+og+egg&tbm=isch&ved=2ahUKEwiQo9bq16PmAhXLxCoKHa8fAK4Q2-cCegQIABAA&oq=bacon+og+&gs_l=img.1.0.0i30l3j0i8i30l7.10536.11246..12647...0.0..0.66.246.4......0....1..gws-wiz-img.......0i67j0j0i5i30.eze2FJzAG-A&ei=467rXdClGcuJqwGvv4DwCg&bih=751&biw=1536";//productImages.GetImageUrl(name).Result;
+
+            //HtmlNodeCollection images = productImages.GetImagePlacement(url).Result;
+
+            //Console.WriteLine(images.ElementAt<HtmlNode>(0).InnerText);
 
         }
     }
