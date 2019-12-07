@@ -6,11 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using BBCollection.StoreApi;
-using BBCollection.StoreApi.ApiNeeds;
-using BBCollection.StoreApi.SallingApi;
-using BBCollection.DBHandling;
-using BBCollection.DBConncetion;
 using B3_BiksBudget.Webcrawler.Assisting_classes;
 
 

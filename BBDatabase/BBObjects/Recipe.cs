@@ -10,6 +10,7 @@ namespace BBCollection.BBObjects
         public List<Ingredient> _ingredientList;
         public float _PerPerson;
         public int _recipeID;
+        public string image;
 
         public Recipe(int recipeID, string name)
         {
