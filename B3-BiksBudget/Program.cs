@@ -14,19 +14,26 @@ namespace BBGatherer
     {
         static void Main(string[] args)
         {
-            
-            DataHandling dh = new DataHandling();
-            //dh.GenerateDatabase();
 
-            try
+            //DataHandling dh = new DataHandling();
+            //dh.GenerateDatabase();
+            productImages productImages = new productImages();
+            string searchterm = Console.ReadLine();
+            List<string> links = productImages.GetImageUrls(searchterm).Result;
+            foreach (var item in links)
             {
-                dh.GenerateData(false, false, true).Wait();
-                dh.TestCollection().Wait();
+                Console.WriteLine(item);
             }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
+            productImages.SaveImagesFromLink(links);
+            //try
+            //{
+            //    dh.GenerateData(false, false, true).Wait();
+            //    dh.TestCollection().Wait();
+            //}
+            //catch (Exception e)
+            //{
+            //    Console.WriteLine(e);
+            //}
         }
     }
 
