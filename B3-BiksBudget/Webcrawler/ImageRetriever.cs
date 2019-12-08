@@ -19,13 +19,17 @@ namespace BBGatherer.Webcrawler
         {
             public Recipe recipe;
             public Product Product;
+            public RecepiesProduct(Product p, Recipe r) 
+            {
+                recipe = r;
+                Product = p;
+            }
         }
         public async Task<List<string>> GetImageUrls(string searchterm)
         {
             string url = CreateLink(assembleSearchName(searchterm));
             HtmlNodeCollection nodes = GetImagePlacement(url).Result;
             List<string> imageLinks = ExtractImageURL(nodes);
-            //imageLinks = GetBestFitImage(imageLinks);
             
             return imageLinks;
         }
@@ -177,7 +181,7 @@ namespace BBGatherer.Webcrawler
         public override bool AssingItemImage(RecepiesProduct recepiesProduct, string url)
         {
             recepiesProduct.Product._image = recepiesProduct.Product._image ?? url;
-
+            //insert update method here
             return true;
         }
     }
@@ -187,6 +191,7 @@ namespace BBGatherer.Webcrawler
         public override bool AssingItemImage(RecepiesProduct recepiesProduct, string url)
         {
             recepiesProduct.recipe.image = recepiesProduct.recipe.image ?? url;
+            //insert update method here
             return true;
         }
     }
