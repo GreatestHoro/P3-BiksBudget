@@ -189,8 +189,11 @@ namespace BBCollection.DBHandling
         {
             string newColumnQuery =
                 "ALTER TABLE `recipes` ADD `recipe_totalprice` decimal(6,2)";
+            string newColumnQuery2 =
+               "ALTER TABLE `recipes` ADD `image_url` decimal(6,2)";
 
             await new SQLConnect().NonQueryString(newColumnQuery);
+            await new SQLConnect().NonQueryString(newColumnQuery2);
         }
         #endregion
     }

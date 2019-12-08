@@ -349,6 +349,19 @@ namespace BBCollection.DBHandling
 
             await new SQLConnect().NonQueryMSC(msc);
         }
+
+        public async Task AddImage(string image, string prodid)
+        {
+            string insertQuery =
+                "UPDATE `recipes` SET `image` = @Image WHERE id = @Prodid";
+
+            MySqlCommand msc = new MySqlCommand(insertQuery);
+
+            msc.Parameters.AddWithValue("@Image", image);
+            msc.Parameters.AddWithValue("@Prodid", prodid);
+
+            await Task.Run(() => new SQLConnect().NonQueryMSC(msc));
+        }
     }
 }
 
