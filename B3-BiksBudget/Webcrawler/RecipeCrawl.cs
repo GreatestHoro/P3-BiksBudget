@@ -31,6 +31,7 @@ namespace BBGatherer.Webcrawler
         public async Task GetRecipes(int start_page, int Last_page, DatabaseConnect dc)
         {
             AssistingClasses functionality = new AssistingClasses();
+            recipeImages recipeImages = new recipeImages();
 
             for (int i = start_page; i <= Last_page; i++) //loop that goes from the first page to the last page
             {
@@ -82,6 +83,8 @@ namespace BBGatherer.Webcrawler
                             Beskrivels.ElementAt<HtmlNode>(0).InnerText,
                             IngriedisensList,
                             functionality.getCleanFunc().CleanUpPerPerson(PerPerson)));
+
+
                         }
                         else
                         {
