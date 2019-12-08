@@ -9,23 +9,14 @@ using System.Threading.Tasks;
 using System.Drawing;
 using System.Net;
 using System.IO;
-
+using B3_BiksBudget.Webcrawler.Assisting_classes;
 
 namespace BBGatherer.Webcrawler
 {
     abstract class ImageRetriever
     {
         string searchterm;
-        public struct RecepiesProduct
-        {
-            public Recipe recipe;
-            public Product Product;
-            public RecepiesProduct(Product p, Recipe r) 
-            {
-                recipe = r;
-                Product = p;
-            }
-        }
+
         public async Task<List<string>> GetImageUrls(string searchterm)
         {
             this.searchterm = searchterm;
@@ -36,7 +27,7 @@ namespace BBGatherer.Webcrawler
             return imageLinks;
         }
 
-        public abstract bool AssingItemImage(RecepiesProduct recepiesProduct);
+        public abstract bool AssingItemImage(RecepieProductHelper recepiesProduct);
         private string CreateLink(string Name)
         {
             return ("https://www.google.dk/search?q=" + assembleSearchName(Name) + "&sxsrf=ACYBGNQ4PfY5BhIxB_xA0-2uOBOLIunI8w:1575640228751&source=lnms&tbm=isch&sa=X&ved=2ahUKEwjsooOhlaHmAhXCLlAKHRo-CBUQ_AUoAXoECBQQAw&biw=1536&bih=751");
@@ -140,20 +131,20 @@ namespace BBGatherer.Webcrawler
 
     class productImages : ImageRetriever
     {
-        public override bool AssingItemImage(RecepiesProduct recepiesProduct)
+        public override bool AssingItemImage(RecepieProductHelper recepiesProduct)
         {
-            recepiesProduct.Product._image = recepiesProduct.Product._image ?? GetImageUrls(recepiesProduct.Product._productName).Result.First();
-            //insert update method here
+            string url = recepiesProduct.GetImage() ?? GetImageUrls(recepiesProduct.GetName()).Result.First();
+            recepiesProduct.UpdateImage(url);
             return true;
         }
     }
 
     class recipeImages : ImageRetriever
     {
-        public override bool AssingItemImage(RecepiesProduct recepiesProduct)
+        public override bool AssingItemImage(RecepieProductHelper recepiesProduct)
         {
-            recepiesProduct.recipe.image = recepiesProduct.recipe.image ?? GetImageUrls(recepiesProduct.recipe._Name).Result.First();
-            //insert update method here
+            string url = recepiesProduct.GetImage() ?? GetImageUrls(recepiesProduct.GetName()).Result.First();
+            recepiesProduct.UpdateImage(url);
             return true;
         }
     }

@@ -10,9 +10,13 @@ namespace FrontEnd2.Authentication
 {
     public class Verification
     {
-        public Tuple<bool, string> VerifyPassword(string password, string repPassword)
+        public Tuple<bool, string> VerifyPassword(string password)
         {
-            if (password.Length < 6 || password.Length > 50)
+            if (String.IsNullOrEmpty(password) || String.IsNullOrWhiteSpace(password))
+            {
+                return Tuple.Create(false, "Please use between 6 and 50 characters.");
+            }
+            else if (password.Length < 6 || password.Length > 50)
             {
                 return Tuple.Create(false, "Please use between 6 and 50 characters.");
             }
@@ -32,6 +36,24 @@ namespace FrontEnd2.Authentication
             {
                 return Tuple.Create(false, "Please use at least one symbol.");
             }
+            else
+            {
+                return Tuple.Create(true, "Perfect!");
+            }
+        }
+
+        public Tuple<bool, string> VerifyRepPassword(string password, string repPassword)
+        {
+            Tuple<bool, string> checkFirstPass = VerifyPassword(password);
+
+            if (checkFirstPass.Item1 == false)
+            {
+                return Tuple.Create(false, "The first password is invalid");
+            }
+            else if (String.IsNullOrEmpty(repPassword) || String.IsNullOrWhiteSpace(repPassword))
+            {
+                return Tuple.Create(false, "Please use between 6 and 50 characters.");
+            }
             else if (password != repPassword)
             {
                 return Tuple.Create(false, "The passwords are not the same.");
@@ -44,7 +66,11 @@ namespace FrontEnd2.Authentication
 
         public Tuple<bool, string> VerifyUsername(string username)
         {
-            if (username.Length < 6 || username.Length > 50)
+            if (String.IsNullOrEmpty(username) || String.IsNullOrWhiteSpace(username))
+            {
+                return Tuple.Create(false, "Please write a username");
+            }
+            else if (username.Length < 6 || username.Length > 50)
             {
                 return Tuple.Create(false, "Please use between 6 and 50 characters.");
             }

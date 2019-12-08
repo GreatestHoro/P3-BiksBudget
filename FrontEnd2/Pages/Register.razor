@@ -1,4 +1,5 @@
 ﻿@page "/Register"
+
 @using BBCollection.BBObjects;
 @using BBCollection.DBConncetion;
 @using BBCollection.DBHandling;
@@ -11,89 +12,164 @@
 @inject NavigationManager NavigationManager
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 
+<Row Class="justify-content-center">
+    <Column ColumnSize="ColumnSize.IsAuto">
+        <Card Margin="Margin.Is2.OnY">
+            <CardHeader>
+                <CardSubtitle Class="text-center">Create Account</CardSubtitle>
+            </CardHeader>
+            <CardBody>
+                <Validations @ref="validations" Mode="ValidationMode.Manual">
+                    <Field IsHorizontal="true">
+                        <FieldLabel ColumnSize="ColumnSize.Is12" Class="text-left">Username</FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.Is12">
+                            <Validation Validator="@ValidateUsername">
+                                <TextEdit Placeholder="Username" @bind-Text="@username" @onkeyup="OnKeyPress">
+                                    <Feedback>
+                                        <ValidationError>Enter Username!</ValidationError>
+                                    </Feedback>
+                                </TextEdit>
+                            </Validation>
+                        </FieldBody>
+                    </Field>
+                    <Field IsHorizontal="true">
+                        <FieldLabel ColumnSize="ColumnSize.Is12" Class="text-left">Password</FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.Is12">
+                            <Validation Validator="@ValidatePassword">
+                                <TextEdit Role="TextRole.Password" Placeholder="Password" @bind-Text="@password" @onkeyup="OnKeyPress">
+                                    <Feedback>
+                                        <ValidationError>@checkPassword.Item2</ValidationError>
+                                    </Feedback>
+                                </TextEdit>
+                            </Validation>
+                        </FieldBody>
+                    </Field>
+                    <Field IsHorizontal="true">
+                        <FieldLabel ColumnSize="ColumnSize.Is12" Class="text-left">Re Password</FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.Is12">
+                            <Validation Validator="@ValidateRepPassword">
+                                <TextEdit Role="TextRole.Password" Placeholder="Retype password" @bind-Text="@repPassword" @onkeyup="OnKeyPress">
+                                    <Feedback>
+                                        <ValidationError>@checkRepPassword.Item2</ValidationError>
+                                    </Feedback>
+                                </TextEdit>
+                            </Validation>
+                        </FieldBody>
+                    </Field>
+                    <Field IsHorizontal="true" JustifyContent="JustifyContent.End">
+                        <FieldLabel ColumnSize="ColumnSize.Is3"></FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.Is8">
+                            <Button Color="Color.Success" Clicked="@Submit" IsLoading="@isLoading"><i class="oi oi-person"></i> Register</Button>
+                        </FieldBody>
+                    </Field>
+                </Validations>
+            </CardBody>
+        </Card>
+    </Column>
+</Row>
+@code{
+    bool isLoading = false;
+    bool goodPassword = false;
+    bool goodRePassword = false;
+    bool goodUsername = false;
 
-@if (email == null)
-{
-    //sæt dem under hinanden
-    <h1>Register</h1>
-<div class="d-flex flex-column justify-content-end mb-3">
-    <div class="p-2 columnWidth">
-        <Tooltip IsMultiline="true" Text="Please use 6 or more characters. 
-                 Please refrain from using a 'space'.
-                 Please refrain from using symbols (æ,ø,å is also considered a symbol)" 
-                 Placement="Placement.Bottom">
-            <input class="SearchField SearchBar" placeholder="Username or e-mail" @bind="@tempEmail" autofocus />
-        </Tooltip>
-    </div>
-    @*<div class="d-sm-flex flex-row mb-3">*@
-        <div class="p-2 columnWidth">
-            <Tooltip IsMultiline="true" Text="Please use 6 or more characters.
-                 Please include atleast one upper and lower case letter.
-                 Please refrain from using a 'space'.
-                 Please use at least one symbol (æ,ø,å is also considered a symbol)"
-                     Placement="Placement.Bottom">
-                <input class="SearchField SearchBar" type="password" placeholder="Password" @bind="@password" />
-                </Tooltip>
-        </div>
-    <div class="p-2 columnWidth">
-        <input class="SearchField SearchBar" type="password" placeholder="Confirm password" @bind="@repPassword" @onkeyup="OnKeyPress" />
-    @*</div>*@
-</div>
-    <div class="p-2">
-        @if (isRegistering)
+    Verification verification = new Verification();
+    ConnectionSettings connectionSettings = new ConnectionSettings();
+    LoginRegister acount = new LoginRegister();
+    Validations validations;
+
+    Validations annotationsValidations;
+
+    Tuple<bool, string> checkPassword;
+    Tuple<bool, string> checkRepPassword;
+    Tuple<bool, string> checkUsername;
+
+    string password;
+    string repPassword;
+    string username;
+    string email;
+
+
+    void ValidatePassword(ValidatorEventArgs e)
+    {
+        password = e.Value.ToString();
+
+        checkPassword = verification.VerifyPassword(password);
+
+        if (checkPassword.Item1 == true)
         {
-            <button class="btn btn-rounded btn-outline-success search disabled" disabled><span class='fa-left fas fa-sync-alt spinning'></span>Logging in...</button>
+            goodUsername = true;
+            e.Status = ValidationStatus.Success;
         }
         else
         {
-    <button class="btn btn-rounded btn-success" @onclick="CheckInputs"><i class="oi oi-person"></i>&nbsp; Register</button>
-        }
-    </div>
-</div>
-    <label>@verificationText</label>
-}
-else
-{
-}
-
-@code {
-    private string email;
-    private string tempEmail;
-    private string password;
-    private string repPassword;
-    private string userString;
-    private string verificationText = "";
-    ConnectionSettings connectionSettings = new ConnectionSettings();
-    LoginRegister acount = new LoginRegister();
-
-
-    bool isRegistering = false;
-
-    protected void CheckInputs()
-    {
-        Verification verify = new Verification();
-
-        Tuple<bool, string> usernameCheck = verify.VerifyUsername(tempEmail);
-        Tuple<bool, string> passwordCheck = verify.VerifyPassword(password, repPassword);
-
-        if (!usernameCheck.Item1)
-        {
-            verificationText = usernameCheck.Item2;
-        }
-        else if (!passwordCheck.Item1)
-        {
-            verificationText = passwordCheck.Item2;
-        }
-
-        if (usernameCheck.Item1 && passwordCheck.Item1)
-        {
-            RegisterUser(tempEmail);
+            e.Status = ValidationStatus.Error;
         }
     }
 
-    protected async void RegisterUser(string addEmail)
+    void ValidateRepPassword(ValidatorEventArgs e)
     {
-        isRegistering = true;
+        repPassword = e.Value.ToString();
+
+        checkRepPassword = verification.VerifyRepPassword(password, repPassword);
+
+        if (checkPassword.Item1 == true)
+        {
+            goodPassword = true;
+            e.Status = ValidationStatus.Success;
+        }
+        else
+        {
+            e.Status = ValidationStatus.Error;
+        }
+    }
+
+    void ValidateUsername(ValidatorEventArgs e)
+    {
+        username = e.Value.ToString();
+
+        checkUsername = verification.VerifyUsername(username);
+
+        if (checkUsername.Item1 == true)
+        {
+            goodUsername = true;
+            e.Status = ValidationStatus.Success;
+        }
+        else
+        {
+            e.Status = ValidationStatus.Error;
+        }
+    }
+
+    async Task Submit()
+    {
+        isLoading = true;
+        //if (goodPassword && goodRePassword && goodUsername)
+        {
+            if (validations.ValidateAll())
+            {
+                await RegisterUser(username);
+                validations.ClearAll();
+            }
+        }
+        isLoading = false;
+    }
+
+    async Task GetLocalSession()
+    {
+        email = await localStorage.GetItemAsync<string>("Email");
+    }
+
+    private async void OnKeyPress(KeyboardEventArgs args)
+    {
+        if (args.Key == "Enter")
+        {
+            await Submit();
+        }
+    }
+
+    protected async Task RegisterUser(string addEmail)
+    {
         var response = new HttpResponseMessage();
 
         User user = new User(addEmail, password);
@@ -107,10 +183,6 @@ else
             await SetupWhenRegistered(addEmail);
             NavigationManager.NavigateTo("shoppinglist");
         }
-        else
-        {
-            // Give message on fail
-        }
     }
 
     public async Task SetupWhenRegistered(string email)
@@ -118,43 +190,5 @@ else
         await localStorage.RemoveItemAsync("Email");
         await localStorage.RemoveItemAsync("ProductString");
         await localStorage.SetItemAsync("Email", email);
-        isRegistering = false;
-        StateHasChanged();
     }
-
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await GetLocalSession();
-
-            if (email != null)
-            {
-                NavigationManager.NavigateTo("");
-
-            }
-
-            StateHasChanged();
-        }
-
-    }
-
-
-
-    async Task GetLocalSession()
-    {
-        email = await localStorage.GetItemAsync<string>("Email");
-    }
-
-    private void OnKeyPress(KeyboardEventArgs args)
-    {
-        if (args.Key == "Enter")
-        {
-            CheckInputs();
-        }
-    }
-
-
-
 }
