@@ -7,7 +7,7 @@ using BBCollection.StoreApi;
 using BBCollection.StoreApi.SallingApi;
 using BBCollection.DBHandling;
 using BBCollection.DBConncetion;
-
+using BBGatherer.Webcrawler;
 
 namespace B3_BiksBudget.Webcrawler.Assisting_classes
 {
@@ -81,6 +81,7 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
         {
             string newRefrence;
             List<Product> ProductsWithRef = new List<Product>();
+            productImages productImages = new productImages();
             if (!string.IsNullOrWhiteSpace(Searchterm))
             {
                 ProductsWithRef = dc.Product.GetListSyncAsync(Searchterm);
@@ -90,6 +91,7 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
                     newRefrence = _refs.UpdateProductRefrence(newRefrence, Searchterm);
                     newRefrence = _refs.InterpretAndEditProductRef(newRefrence);
                     dc.Product.AddReference(newRefrence, p._id);
+                    productImages.AssingItemImage(new RecepieProductHelper(p));
                 }
             }
             else 

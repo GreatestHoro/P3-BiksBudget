@@ -78,13 +78,15 @@ namespace BBGatherer.Webcrawler
 
                         if (!fatalError)
                         {
-                            await dc.Recipe.AddList(new Recipe
-                            (i, name.ElementAt<HtmlNode>(0).InnerText,
+                            Recipe recipe = new Recipe(i, 
+                            name.ElementAt<HtmlNode>(0).InnerText,
                             Beskrivels.ElementAt<HtmlNode>(0).InnerText,
                             IngriedisensList,
-                            functionality.getCleanFunc().CleanUpPerPerson(PerPerson)));
+                            functionality.getCleanFunc().CleanUpPerPerson(PerPerson));
 
+                            await dc.Recipe.AddList(recipe);
 
+                            recipeImages.AssingItemImage(new RecepieProductHelper(recipe));
                         }
                         else
                         {
