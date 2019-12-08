@@ -15,6 +15,7 @@ namespace BBGatherer.Webcrawler
 {
     abstract class ImageRetriever
     {
+        string searchterm;
         public struct RecepiesProduct
         {
             public Recipe recipe;
@@ -27,6 +28,7 @@ namespace BBGatherer.Webcrawler
         }
         public async Task<List<string>> GetImageUrls(string searchterm)
         {
+            this.searchterm = searchterm;
             string url = CreateLink(assembleSearchName(searchterm));
             HtmlNodeCollection nodes = GetImagePlacement(url).Result;
             List<string> imageLinks = ExtractImageURL(nodes);
@@ -34,7 +36,7 @@ namespace BBGatherer.Webcrawler
             return imageLinks;
         }
 
-        public abstract bool AssingItemImage(RecepiesProduct recepiesProduct, string url);
+        public abstract bool AssingItemImage(RecepiesProduct recepiesProduct);
         private string CreateLink(string Name)
         {
             return ("https://www.google.dk/search?q=" + assembleSearchName(Name) + "&sxsrf=ACYBGNQ4PfY5BhIxB_xA0-2uOBOLIunI8w:1575640228751&source=lnms&tbm=isch&sa=X&ved=2ahUKEwjsooOhlaHmAhXCLlAKHRo-CBUQ_AUoAXoECBQQAw&biw=1536&bih=751");
@@ -126,7 +128,7 @@ namespace BBGatherer.Webcrawler
 
                 if (bitmap != null)
                 {
-                    bitmap.Save(@"C:\Users\jeppe\Desktop\Images_BBGathere\"+i+++".jpg");
+                    bitmap.Save(@"C:\Users\jeppe\Desktop\Images_BBGathere\"+ assemblefilename(searchterm) +i+++".jpg");
                 }
 
                 stream.Flush();
@@ -138,7 +140,7 @@ namespace BBGatherer.Webcrawler
 
     class productImages : ImageRetriever
     {
-        public override bool AssingItemImage(RecepiesProduct recepiesProduct, string url)
+        public override bool AssingItemImage(RecepiesProduct recepiesProduct)
         {
             recepiesProduct.Product._image = recepiesProduct.Product._image ?? GetImageUrls(recepiesProduct.Product._productName).Result.First();
             //insert update method here
@@ -148,7 +150,7 @@ namespace BBGatherer.Webcrawler
 
     class recipeImages : ImageRetriever
     {
-        public override bool AssingItemImage(RecepiesProduct recepiesProduct, string url)
+        public override bool AssingItemImage(RecepiesProduct recepiesProduct)
         {
             recepiesProduct.recipe.image = recepiesProduct.recipe.image ?? GetImageUrls(recepiesProduct.recipe._Name).Result.First();
             //insert update method here
