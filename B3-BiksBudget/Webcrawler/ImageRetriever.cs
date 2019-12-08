@@ -115,46 +115,6 @@ namespace BBGatherer.Webcrawler
             return !Flag;
         }
 
-        //private List<string> GetBestFitImage(List<string> links)
-        //{
-        //    Dictionary<Bitmap, string> Images = new Dictionary<Bitmap, string>();
-        //    WebClient client = new WebClient();
-        //    foreach (var item in links)
-        //    {
-        //        Stream stream = client.OpenRead(item);
-        //        Bitmap bitmap; bitmap = new Bitmap(stream);
-
-        //        if (bitmap != null)
-        //        {
-        //            Images.Add(bitmap,item);
-        //        }
-
-        //        stream.Flush();
-        //        stream.Close();
-        //        client.Dispose();
-        //    }
-
-        //    return SortByBestFit(Images);
-        //}
-
-        //private List<string> SortByBestFit(Dictionary<Bitmap, string> Images) 
-        //{
-        //    Dictionary<Bitmap, int> Offset = new Dictionary<Bitmap, int>();
-        //    List<string> linkList = new List<string>();
-
-        //    foreach (Bitmap key in Images.Keys)
-        //    {
-        //        Offset.Add(key, key.Width + key.Height);
-        //    }
-        //    Offset.OrderByDescending(x => x.Value);
-        //    foreach (Bitmap key in Offset.Keys)
-        //    {
-        //        linkList.Add(Images[key]);
-        //    }
-
-        //    return linkList;
-        //}
-
         public void SaveImagesFromLink(List<string> SortedLinks) 
         {
             int i = 0;
@@ -180,7 +140,7 @@ namespace BBGatherer.Webcrawler
     {
         public override bool AssingItemImage(RecepiesProduct recepiesProduct, string url)
         {
-            recepiesProduct.Product._image = recepiesProduct.Product._image ?? url;
+            recepiesProduct.Product._image = recepiesProduct.Product._image ?? GetImageUrls(recepiesProduct.Product._productName).Result.First();
             //insert update method here
             return true;
         }
@@ -190,7 +150,7 @@ namespace BBGatherer.Webcrawler
     {
         public override bool AssingItemImage(RecepiesProduct recepiesProduct, string url)
         {
-            recepiesProduct.recipe.image = recepiesProduct.recipe.image ?? url;
+            recepiesProduct.recipe.image = recepiesProduct.recipe.image ?? GetImageUrls(recepiesProduct.recipe._Name).Result.First();
             //insert update method here
             return true;
         }

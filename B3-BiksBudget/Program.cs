@@ -17,14 +17,6 @@ namespace BBGatherer
 
             //DataHandling dh = new DataHandling();
             //dh.GenerateDatabase();
-            productImages productImages = new productImages();
-            string searchterm = Console.ReadLine();
-            List<string> links = productImages.GetImageUrls(searchterm).Result;
-            foreach (var item in links)
-            {
-                Console.WriteLine(item);
-            }
-            productImages.SaveImagesFromLink(links);
             //try
             //{
             //    dh.GenerateData(false, false, true).Wait();
