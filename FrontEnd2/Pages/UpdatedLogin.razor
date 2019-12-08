@@ -39,8 +39,8 @@
                     </Field>
                     <Field IsHorizontal="true" JustifyContent="JustifyContent.End">
                         <FieldBody ColumnSize="ColumnSize.IsFull">
-                            <Button Color="Color.Success" Clicked="@AutorizeLogin" IsLoading="@isLoading"><i class="oi oi-person"></i> Login</Button>
-                            <Button Color="Color.Success" IsOutline="true" href="Register" IsLoading="@isLoading"><i class="oi oi-person"></i> Register</Button>
+                            <Button Color="Color.Success" Clicked="@AutorizeLogin" IsLoading="@isLogginIn"><i class="oi oi-person"></i> Login</Button>
+                            <Button Color="Color.Success" IsOutline="true" Clicked="SendToRegister"><i class="oi oi-person"></i> Register</Button>
                         </FieldBody>
                     </Field>
             </CardBody>
@@ -48,10 +48,7 @@
     </Column>
 </Row>
 @code{
-    bool isLoading = false;
-    bool goodPassword = false;
-    bool goodRePassword = false;
-    bool goodUsername = false;
+    bool loginFailed = false;
 
     Verification verification = new Verification();
     LoginRegister acount = new LoginRegister();
@@ -63,6 +60,8 @@
     string username;
     string errorMessage = "Your username or password was incorrect.";
     string createAccount = "No account? Press here to sign up:";
+    HttpResponseMessage response = new HttpResponseMessage();
+
 
 
     string email;
@@ -80,13 +79,15 @@
         }
     }
 
+    public void SendToRegister()
+    {
+        NavigationManager.NavigateTo("Register");
+    }
+
     protected async Task AutorizeLogin()
     {
         isLogginIn = true;
         StateHasChanged();
-        await localStorage.RemoveItemAsync("ProductString");
-
-        var response = new HttpResponseMessage();
 
         User user = new User(email, password);
 
@@ -94,22 +95,20 @@
 
         if (response.IsSuccessStatusCode)
         {
-
             await localStorage.SetItemAsync("Email", email);
+            await localStorage.RemoveItemAsync("ProductString");
+
             NavigationManager.NavigateTo("shoppinglist");
         }
         else
         {
-            Debug.WriteLine("Testing Remove");
+
+            //Debug.WriteLine("Testing Remove");
             await localStorage.RemoveItemAsync("Email");
         }
         isLogginIn = false;
         StateHasChanged();
     }
-
-
-
-
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
