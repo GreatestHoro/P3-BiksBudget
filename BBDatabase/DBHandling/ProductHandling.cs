@@ -119,7 +119,11 @@ namespace BBCollection.DBHandling
             {
                 foreach (DataRow r in ds.Tables[0].Rows)
                 {
-                    Product product = new Product((string)r[0], (string)r[1], (string)r[2], Convert.ToDouble(r[3]), (string)r[4], (string)r[5]);
+                    string? id = r[0].ToString(); string? name = r[1].ToString(); string? amount = r[2].ToString();
+                    string? image = r[4].ToString(); string? store = r[5].ToString();
+                    double? price = Convert.ToDouble(r[3]); 
+
+                    Product product = new Product(id ??= "Null", name ??= "Null", amount ??= "", price ??= 0, image ??= "", store ??= "");
                     productList.Add(product);
                 }
             }
@@ -208,6 +212,19 @@ namespace BBCollection.DBHandling
                 }
             }
             return products;
+        }
+
+        public async Task AddImage(string image, string prodid)
+        {
+            string insertQuery =
+                "UPDATE `products` SET `image` = @Image WHERE id = @Prodid AND (`image` IS NULL OR `image` = '')";
+
+            MySqlCommand msc = new MySqlCommand(insertQuery);
+
+            msc.Parameters.AddWithValue("@Image", image);
+            msc.Parameters.AddWithValue("@Prodid", prodid);
+
+            await Task.Run(() => new SQLConnect().NonQueryMSC(msc));
         }
     }
 }
