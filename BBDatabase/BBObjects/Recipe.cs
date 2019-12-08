@@ -11,6 +11,7 @@ namespace BBCollection.BBObjects
         public List<Ingredient> _ingredientList;
         public float _PerPerson;
         public double _minimumTotalPrice;
+        public string image;
 
         public Recipe(int recipeID, string name)
         {
