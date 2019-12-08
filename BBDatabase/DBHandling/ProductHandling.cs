@@ -51,7 +51,7 @@ namespace BBCollection.DBHandling
             await Task.Run(() => new SQLConnect().NonQueryMSC(msc));
         }
 
-        public async Task<List<Product>> GetList(string productName)
+        public async Task<List<Product>> GetListAsync(string productName)
         {
             List<Product> productList = new List<Product>();
             string table = "products";
@@ -79,7 +79,7 @@ namespace BBCollection.DBHandling
             return productList;
         }
 
-        public List<Product> GetListSyncAsync(string productName)
+        public List<Product> GetList(string productName)
         {
             List<Product> productList = new List<Product>();
             string table = "products";
@@ -109,7 +109,6 @@ namespace BBCollection.DBHandling
 
         public async Task<List<Product>> GetRange(string productName, int limit, int offset)
         {
-
             List<Product> productList = new List<Product>();
             string table = "products";
             string collumn = "productname";
@@ -149,7 +148,6 @@ namespace BBCollection.DBHandling
                 {
                     foreach (DataRow r in ds.Tables[0].Rows)
                     {
-
 
                         Product product = new Product((string)r[0], (string)r[1], (string)r[2], Convert.ToDouble(r[3]), (string)r[6]);
                         products.Add(product);

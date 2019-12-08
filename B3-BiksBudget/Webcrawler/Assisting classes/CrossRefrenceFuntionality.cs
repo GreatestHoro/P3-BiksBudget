@@ -84,7 +84,7 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
             productImages productImages = new productImages();
             if (!string.IsNullOrWhiteSpace(Searchterm))
             {
-                ProductsWithRef = dc.Product.GetListSyncAsync(Searchterm);
+                ProductsWithRef = dc.Product.GetList(Searchterm);
                 foreach (Product p in ProductsWithRef)
                 {
                     newRefrence = _refs.CheckRefrenceContent(p._CustomReferenceField);

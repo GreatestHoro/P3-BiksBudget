@@ -68,7 +68,7 @@ namespace BBCollection.Queries
 
             List<ComplexRecipe> complexRecipes = await _dc.Recipe.GetPriceAsync(searchTerm, _productsPerLoad, _productsPerLoad * _loadCount);
 
-            //List<Recipe> recipes = await _dc.Recipe.GetList(searchTerm);
+            //List<Recipe> recipes = await _dc.Recipe.GetListAsync(searchTerm);
 
             _loadCount++;
 

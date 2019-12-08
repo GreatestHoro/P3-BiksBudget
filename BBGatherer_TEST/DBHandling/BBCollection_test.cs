@@ -22,7 +22,7 @@ namespace BBCollection.DBHandling.Tests
             List<Product> products = new List<Product>();
             string nullString = null;
 
-            products = await databaseConnect.Product.GetList(nullString);
+            products = await databaseConnect.Product.GetListAsync(nullString);
 
             Assert.IsTrue(products.Count > 0);
             CollectionAssert.AllItemsAreUnique(products);
@@ -34,7 +34,7 @@ namespace BBCollection.DBHandling.Tests
             List<Product> products = new List<Product>();
             string testString = "mælk";
 
-            products = await databaseConnect.Product.GetList(testString);
+            products = await databaseConnect.Product.GetListAsync(testString);
 
             Assert.IsTrue(products.Count > 0);
             CollectionAssert.AllItemsAreUnique(products);
@@ -55,11 +55,11 @@ namespace BBCollection.DBHandling.Tests
             string test4 = "kaffe";
             string test5 = "Oksekød";
 
-            products1 = await databaseConnect.Product.GetList(test1);
-            products2 = await databaseConnect.Product.GetList(test2);
-            products3 = await databaseConnect.Product.GetList(test3);
-            products4 = await databaseConnect.Product.GetList(test4);
-            products5 = await databaseConnect.Product.GetList(test5);
+            products1 = await databaseConnect.Product.GetListAsync(test1);
+            products2 = await databaseConnect.Product.GetListAsync(test2);
+            products3 = await databaseConnect.Product.GetListAsync(test3);
+            products4 = await databaseConnect.Product.GetListAsync(test4);
+            products5 = await databaseConnect.Product.GetListAsync(test5);
 
             Assert.IsTrue(products1.Count > 0);
             CollectionAssert.AllItemsAreUnique(products1);
@@ -79,7 +79,7 @@ namespace BBCollection.DBHandling.Tests
             List<Product> products = new List<Product>();
             string testString = "lædfslsgfds¤#!'as23121";
 
-            products = await databaseConnect.Product.GetList(testString);
+            products = await databaseConnect.Product.GetListAsync(testString);
 
             Assert.IsTrue(products.Count == 0);
             CollectionAssert.AllItemsAreUnique(products);
@@ -93,7 +93,7 @@ namespace BBCollection.DBHandling.Tests
             await databaseConnect.Product.Add(testProduct);
 
             List<Product> products = new List<Product>();
-            products = await databaseConnect.Product.GetList("test");
+            products = await databaseConnect.Product.GetListAsync("test");
 
             Assert.IsTrue(products.Count > 0);
             CollectionAssert.AllItemsAreUnique(products);
