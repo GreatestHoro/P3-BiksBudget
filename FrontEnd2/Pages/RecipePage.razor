@@ -318,6 +318,7 @@
     bool _viewLoadMoreSpinner = false;
     bool _viewLoadMore = true;
     bool productSuggestions = true;
+    bool disableButton = false;
 
     List<ComplexRecipe> complexRecipes = new List<ComplexRecipe>();
     List<Ingredient> ingredients = new List<Ingredient>();
@@ -331,31 +332,81 @@
 
     HttpResponseMessage responseMessage = new HttpResponseMessage();
     ShoppinlistFunctionality ShopList = new ShoppinlistFunctionality("api/Shoppinglist");
+    ControllerFuncionality features = new ControllerFuncionality();
 
     #endregion
 
     #region Get products and sent products
 
+    //public async void AddProductToSL(Product AddedItem)
+    //{
+    //    AddedItem._amountleft++;
+    //    int actualAmount = AddedItem._amountleft;
+    //    AddedItem._amountleft = 1;
+
+    //    if (String.IsNullOrEmpty(email))
+    //    {
+    //        ToShoppinglist.Add(AddedItem);
+
+    //        shopString = JsonConvert.SerializeObject(ToShoppinglist);
+
+    //        await localStorage.SetItemAsync("ProductString", shopString);
+    //    }
+    //    else
+    //    {
+    //        AddedItem._amountleft = 1;
+    //        await ShopList.QuickaddItemToShoppinglist(AddedItem);
+    //    }
+    //    AddedItem._amountleft = actualAmount;
+    //}
+
     public async void AddProductToSL(Product AddedItem)
     {
+        disableButton = true;
+        StateHasChanged();
+
         AddedItem._amountleft++;
-        int actualAmount = AddedItem._amountleft;
+
+        int actualAmout = AddedItem._amountleft;
+
         AddedItem._amountleft = 1;
+
+        AddedItem._image = features.SetOnePicture(AddedItem._image);
 
         if (String.IsNullOrEmpty(email))
         {
-            ToShoppinglist.Add(AddedItem);
+            await GetAndSetLocalStorage(AddedItem);
+        }
+        else
+        {
+            await ShopList.QuickaddItemToShoppinglist(AddedItem);
+        }
+
+        AddedItem._amountleft = actualAmout;
+
+        disableButton = await AwaitButton();
+        StateHasChanged();
+    }
+
+    public async Task<bool> AwaitButton()
+    {
+        await Task.Delay(40);
+        return false;
+    }
+
+    public async Task GetAndSetLocalStorage(Product product)
+    {
+            ToShoppinglist = await GetLocalStorage();
+
+            ToShoppinglist.Add(product);
+
+            ToShoppinglist = features.HandleDublicats(ToShoppinglist);
+
+            await localStorage.RemoveItemAsync("ProductString");
 
             shopString = JsonConvert.SerializeObject(ToShoppinglist);
 
             await localStorage.SetItemAsync("ProductString", shopString);
-        }
-        else
-        {
-            AddedItem._amountleft = 1;
-            await ShopList.QuickaddItemToShoppinglist(AddedItem);
-        }
-        AddedItem._amountleft = actualAmount;
     }
 
     public void QuickAddToShoppinglist(List<Ingredient> ingredient)
@@ -382,6 +433,8 @@
             }
         }
 
+        productsToAddSL = features.SetAllPicture(productsToAddSL);
+
         if (String.IsNullOrEmpty(email))
         {
             QuickaddListToLocalStorage(productsToAddSL);
@@ -390,23 +443,23 @@
         {
             QuickAddListToSL(productsToAddSL);
         }
+
         returnList.Clear();
     }
 
     public async void QuickAddListToSL(List<Product> ingredientList)
     {
-        if (!String.IsNullOrEmpty(email))
+        foreach (Product p in ingredientList)
         {
-            foreach (Product p in ingredientList)
-            {
-                p._amountleft = 1;
-            }
-            await ShopList.QuickaddListToShoppinglist(ingredientList);
+            p._amountleft = 1;
         }
+        await ShopList.QuickaddListToShoppinglist(ingredientList);
     }
 
     public async void QuickaddListToLocalStorage(List<Product> ingredientList)
     {
+        ToShoppinglist = await GetLocalStorage();
+
         foreach (Product p in ingredientList)
         {
             p._amountleft = 1;
@@ -418,6 +471,19 @@
         shopString = JsonConvert.SerializeObject(ToShoppinglist);
 
         await localStorage.SetItemAsync("ProductString", shopString);
+    }
+
+
+    public async Task<List<Product>> GetLocalStorage()
+    {
+        shopString = await localStorage.GetItemAsync<string>("ProductString");
+
+        if (!String.IsNullOrEmpty(shopString))
+        {
+            return JsonConvert.DeserializeObject<List<Product>>(shopString);
+        }
+
+        return new List<Product>();
     }
 
     public void GetProductLists(List<Ingredient> ingredients)

@@ -200,7 +200,7 @@ else if (!isSearching && !_viewProducts)
     WordFilterList wordFIlters = new WordFilterList();
     FindCloseStores closeStore;
     ShoppinlistFunctionality SLFunc = new ShoppinlistFunctionality("api/Shoppinglist");
-    ControllerFuncionality dublicats = new ControllerFuncionality();
+    ControllerFuncionality features = new ControllerFuncionality();
 
     List<FilterItem> optionsList = new List<FilterItem>();
     List<UnifiedAPIStore> allStoresUnified = new List<UnifiedAPIStore>();
@@ -459,17 +459,11 @@ else if (!isSearching && !_viewProducts)
 
         AddedItem._amountleft = 1;
 
+        //AddedItem._image = features.SetOnePicture(AddedItem._image);
+
         if (String.IsNullOrEmpty(email))
         {
-            ToShoppinglist.Add(AddedItem);
-
-            ToShoppinglist = dublicats.HandleDublicats(ToShoppinglist);
-
-            await localStorage.RemoveItemAsync("ProductString");
-
-            shopString = JsonConvert.SerializeObject(ToShoppinglist);
-
-            await localStorage.SetItemAsync("ProductString", shopString);
+            await GetAndSetLocalStorage(AddedItem);
         }
         else
         {
@@ -488,6 +482,21 @@ else if (!isSearching && !_viewProducts)
         return false;
     }
 
+    public async Task GetAndSetLocalStorage(Product AddedItem)
+    {
+            ToShoppinglist = await GetLocalStorage();
+
+            ToShoppinglist.Add(AddedItem);
+
+            ToShoppinglist = features.HandleDublicats(ToShoppinglist);
+
+            await localStorage.RemoveItemAsync("ProductString");
+
+            shopString = JsonConvert.SerializeObject(ToShoppinglist);
+
+            await localStorage.SetItemAsync("ProductString", shopString);
+    }
+
     #endregion
 
     #region SearchMethods
@@ -504,7 +513,7 @@ else if (!isSearching && !_viewProducts)
 
         _loadCount = 0;
         itemList = await SearchForProducts();
-        itemList = SetAllPicture(itemList);
+        itemList = features.SetAllPicture(itemList);
 
 
         if (itemList.Count == 0)
@@ -682,12 +691,7 @@ else if (!isSearching && !_viewProducts)
             }
             else
             {
-                shopString = await localStorage.GetItemAsync<string>("ProductString");
-
-                if (!String.IsNullOrEmpty(shopString))
-                {
-                    ToShoppinglist = JsonConvert.DeserializeObject<List<Product>>(shopString);
-                }
+                ToShoppinglist = await GetLocalStorage();
             }
 
             itemList = await CallApiForProducts(tempSearchword);
@@ -701,6 +705,18 @@ else if (!isSearching && !_viewProducts)
             this.StateHasChanged();
         }
 
+    }
+
+    public async Task<List<Product>> GetLocalStorage()
+    {
+        shopString = await localStorage.GetItemAsync<string>("ProductString");
+
+        if (!String.IsNullOrEmpty(shopString))
+        {
+            return JsonConvert.DeserializeObject<List<Product>>(shopString);
+        }
+
+        return new List<Product>();
     }
 
     public int FindListAmount(string label)
@@ -945,34 +961,6 @@ else if (!isSearching && !_viewProducts)
             tcsUserLocation.SetResult(userGeoLocation);
         }
     }
-    #endregion
-
-    #region Image
-
-    public string SetImageUrl(string url)
-    {
-        if (String.IsNullOrEmpty(url) || String.IsNullOrWhiteSpace(url))
-        {
-            return replacementUlr;
-        }
-        else
-        {
-            return ProductImage(url);
-        }
-    }
-
-    private string ProductImage(string prod_image)
-    {
-        return prod_image + "&imgSize=1080x1080";
-    }
-
-    public List<Product> SetAllPicture(List<Product> inputList)
-    {
-        inputList.ForEach(x => x._image = SetImageUrl(x._image));
-
-        return inputList;
-    }
-
     #endregion
 }
 

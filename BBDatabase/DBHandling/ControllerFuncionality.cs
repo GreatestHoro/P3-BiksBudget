@@ -13,6 +13,9 @@ namespace BBCollection.DBHandling
 {
     public class ControllerFuncionality
     {
+        string replacementUlr = "https://cdn.discordapp.com/attachments/519096261408718908/649685312083197973/coopdicoop.jpg";
+        string shopString;
+
         /// <summary>
         /// The inputlist is split up in two lists.
         /// One is the unique list.
@@ -85,6 +88,44 @@ namespace BBCollection.DBHandling
             }
 
             return -1;
+        }
+
+        public string SetImageUrl(string url)
+        {
+            if (String.IsNullOrEmpty(url) || String.IsNullOrWhiteSpace(url) || url.Equals(replacementUlr))
+            {
+                return replacementUlr;
+            }
+            else
+            {
+                return ProductImage(url);
+            }
+        }
+
+        private string ProductImage(string prod_image)
+        {
+            if (prod_image.Contains("&imgSize=1080x1080"))
+            {
+                return prod_image;
+            }
+            else
+            {
+                return prod_image + "&imgSize=1080x1080";
+            }
+        }
+
+        public List<Product> SetAllPicture(List<Product> inputList)
+        {
+            inputList.ForEach(x => x._image = SetImageUrl(x._image));
+
+            return inputList;
+        }
+
+        public string SetOnePicture(string image)
+        {
+            image = SetImageUrl(image);
+
+            return image;
         }
     }
 }
