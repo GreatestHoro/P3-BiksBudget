@@ -1,0 +1,128 @@
+﻿@page "/UpdatedLogin"
+
+@using BBCollection.BBObjects;
+@using BBCollection.DBConncetion;
+@using BBCollection.DBHandling;
+@using Newtonsoft.Json;
+@using  System.Text;
+@using FrontEnd2.Data;
+@using System.Diagnostics;
+@using FrontEnd2.Authentication;
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+
+<Row Class="justify-content-center">
+    <Column ColumnSize="ColumnSize.IsAuto">
+        <Card Margin="Margin.Is2.OnY">
+            <CardHeader>
+                <CardSubtitle Class="text-center">Login</CardSubtitle>
+            </CardHeader>
+            <CardBody>
+                    <Field IsHorizontal="true">
+                        <FieldLabel ColumnSize="ColumnSize.Is12" Class="text-left">Username</FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.Is12">
+                            <TextEdit Placeholder="Username" @bind-Text="@username" @onkeyup="OnKeyPress"></TextEdit>
+                        </FieldBody>
+                    </Field>
+                    <Field IsHorizontal="true">
+                        <FieldLabel ColumnSize="ColumnSize.Is12" Class="text-left">Password</FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.Is12">
+                            <TextEdit Role="TextRole.Password" Placeholder="Password" @bind-Text="@password" @onkeyup="OnKeyPress"></TextEdit>
+                        </FieldBody>
+                    </Field>
+                    <Field IsHorizontal="true">
+                        <FieldBody ColumnSize="ColumnSize.Is12">
+                                <TextEdit Class="overflow-auto;" @bind-Text="@errorMessage" style="color: red;" Size="Size.Small" IsDisabled="true">
+                                </TextEdit>
+                        </FieldBody>
+                    </Field>
+                    <Field IsHorizontal="true" JustifyContent="JustifyContent.End">
+                        <FieldBody ColumnSize="ColumnSize.IsFull">
+                            <Button Color="Color.Success" Clicked="@AutorizeLogin" IsLoading="@isLoading"><i class="oi oi-person"></i> Login</Button>
+                            <Button Color="Color.Success" IsOutline="true" href="Register" IsLoading="@isLoading"><i class="oi oi-person"></i> Register</Button>
+                        </FieldBody>
+                    </Field>
+            </CardBody>
+        </Card>
+    </Column>
+</Row>
+@code{
+    bool isLoading = false;
+    bool goodPassword = false;
+    bool goodRePassword = false;
+    bool goodUsername = false;
+
+    Verification verification = new Verification();
+    LoginRegister acount = new LoginRegister();
+    Validations validations;
+
+    Validations annotationsValidations;
+
+
+    string username;
+    string errorMessage = "Your username or password was incorrect.";
+    string createAccount = "No account? Press here to sign up:";
+
+
+    string email;
+    string password;
+    string userString;
+    bool isLogginIn = false;
+    ConnectionSettings connectionSettings = new ConnectionSettings();
+    LoginRegister account = new LoginRegister();
+
+    private async Task OnKeyPress(KeyboardEventArgs args)
+    {
+        if (args.Key == "Enter")
+        {
+            await AutorizeLogin();
+        }
+    }
+
+    protected async Task AutorizeLogin()
+    {
+        isLogginIn = true;
+        StateHasChanged();
+        await localStorage.RemoveItemAsync("ProductString");
+
+        var response = new HttpResponseMessage();
+
+        User user = new User(email, password);
+
+        response = await account.Login(user);
+
+        if (response.IsSuccessStatusCode)
+        {
+
+            await localStorage.SetItemAsync("Email", email);
+            NavigationManager.NavigateTo("shoppinglist");
+        }
+        else
+        {
+            Debug.WriteLine("Testing Remove");
+            await localStorage.RemoveItemAsync("Email");
+        }
+        isLogginIn = false;
+        StateHasChanged();
+    }
+
+
+
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await GetLocalSession();
+
+            StateHasChanged();
+        }
+    }
+
+    async Task GetLocalSession()
+    {
+        email = await localStorage.GetItemAsync<string>("Email");
+    }
+}
