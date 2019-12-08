@@ -24,76 +24,96 @@
     else
     {
         @* Storage table *@
-        <div class="container">
-            <div class="row">
-                <div class="col-sm-12">
-                    <table class="table table-hover table-condensed">
-                        <thead>
-                            <tr>
-                                <th style="width:35%">Product</th>
-                                <th style="width:10%" class="textForTable">Quantity</th>
-                                <th style="width:15%" class="textForTable">Amount remaining</th>
-                                <th style="width:10%" class="textForTable">Date added</th>
-                                <th style="width:10%" class="textForTable">Delete</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (Product p in ListFunc.CombinedList)
-                            {
-                                <tr>
-                                    <td data-th="Product">@p._productName</td>
-                                    <td data-th="Amount" class="textForTable">
-                                        <input type="number" id="number" value="@p._amountleft" />
-                                        @*@p._amount*@
-                                    </td>
-                                    <td data-th="Amount remaining" class="textForTable">
-                                        <div class="input-group">
-                                            <div class="input-group-prepend">
-                                            </div>
-                                            <select class="custom-select" @onchange="((e)=>AssignScalar(e, p))">
-                                                <option value="@p._state">@p._state</option>
-                                                @foreach (string state in ItemState)
-                                                {
-                                                    <option value="@state"> @state </option>
-                                                }
-                                            </select>
-                                        </div>
-                                    </td>
-                                    <td data-th="Date added" class="textForTable">@p._timeAdded</td>
-                                    <td data-th="Delete" class="textForTable">
-                                        <div>
-                                            <button class="btn btn-rounded btn-danger btn-sm" title="Delete one @p._productName from storage" @onclick="(() => ChangeItemAmout(p))"><i class="oi oi-trash"></i></button>
-                                            @if (p._amountleft > 1)
-                                            {
-                                                <button class="btn btn-rounded btn-danger btn-sm" title="Delete all @p._amountleft @p._productName from storage" @onclick="(() => DeleteItem(p))"><i class="oi oi-trash"></i>(All)</button>
-                                            }
-                                            else
-                                            {
-                                                <button disabled class="btn btn-rounded btn-danger btn-sm invisibleBtn"><i class="oi oi-trash"></i>(All)</button>
-                                            }
-                                        </div>
-                                    </td>
-                                </tr>
-                                <br />
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            @* Buttons *@
-            <div class="row">
-
-                @*<div class="col-sm-4 of">
-                        <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>ListFunc.AddFuncList())">Save storage</button>
-                    </div>*@
-                <div class="col-sm-4">
-                    <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => ListFunc.DeleteStorage())">Delete storage</button>
-                </div>
-                <div class="col-sm-4">
-                    <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => FindRecipies())">Empty my Fridge</button>
-                </div>
-            </div>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <table class="table table-hover table-condensed">
+                <thead>
+                    <tr>
+                        <th style="width:35%">Product</th>
+                        <th style="width:10%" class="textForTable">Quantity</th>
+                        <th style="width:15%" class="textForTable">Amount remaining</th>
+                        <th style="width:10%" class="textForTable">Date added</th>
+                        <th style="width:10%" class="textForTable">Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (Product p in ListFunc.CombinedList)
+                    {
+                        <tr>
+                            <td data-th="Product">@p._productName</td>
+                            <td data-th="Amount" class="textForTable">
+                                <input type="number" id="number" value="@p._amountleft" />
+                                @*@p._amount*@
+                            </td>
+                            <td data-th="Amount remaining" class="textForTable">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                    </div>
+                                    <select class="custom-select" @onchange="((e) => AssignScalar(e, p))">
+                                        <option value="@p._state">@p._state</option>
+                                        @foreach (string state in ItemState)
+                                        {
+                                            <option value="@state"> @state </option>
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                            <td data-th="Date added" class="textForTable">@p._timeAdded</td>
+                            <td data-th="Delete" class="textForTable">
+                                <div>
+                                    <button class="btn btn-rounded btn-danger btn-sm" title="Delete one @p._productName from storage" @onclick="(() => ChangeItemAmout(p))"><i class="oi oi-trash"></i></button>
+                                    @if (p._amountleft > 1)
+                                    {
+                                        <button class="btn btn-rounded btn-danger btn-sm" title="Delete all @p._amountleft @p._productName from storage" @onclick="(() => DeleteItem(p))"><i class="oi oi-trash"></i>(All)</button>
+                                    }
+                                    else
+                                    {
+                                        <button disabled class="btn btn-rounded btn-danger btn-sm invisibleBtn"><i class="oi oi-trash"></i>(All)</button>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                        <br />
+                    }
+                </tbody>
+            </table>
         </div>
+    </div>
+    @* Buttons *@
+    <div class="row">
+
+        @*<div class="col-sm-4 of">
+                <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>ListFunc.AddFuncList())">Save storage</button>
+            </div>*@
+        <div class="col-sm-4">
+            <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => ListFunc.DeleteStorage())">Delete storage</button>
+        </div>
+        <div class="col-sm-4">
+            <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => FindRecipies())">Empty my Fridge</button>
+        </div>
+    </div>
+
+    @if (_viewEmptyFridgeLoadSpinner)
+    {
+        <div class="center_div lds-roller">
+            <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+        </div>
+    }
+    @if (loadingbar)
+    {
+        <div class="progress mb-3">
+            <!--!-->
+            <!--!-->
+            <!--!-->    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="@(LoadingBarProggres) " aria-valuemin="0" aria-valuemax="100" style="width: @(LoadingBarProggres.ToString()+"%");">
+                <!--!-->
+                <!--!-->
+            </div><!--!-->
+            <!--!-->
+            <!--!-->
+        </div>
+    }
+</div>
     }
     @*</div>*@
 
@@ -103,91 +123,93 @@
         {
             <p>Sorry, you dont have enough products</p>
         }
-        <div class="row">
-            <div class="col-3">
-                @if (viewTitle == true)
-                {
-                    <h3> You can make the following </h3>
-                    <button class="close float-left" @onclick="(() => closeRecipies())"><i class="oi oi-x"></i> </button>
-                    <ul class="recipeListDisplay">
-                        @foreach (var rep in recpies)
-                        {
-                            <li class="no-bullets"> <button type="button" class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => retriveInfo(rep._recipie._recipeID))"> @rep._recipie._Name </button> </li>
-                        }
-
-                    </ul>
-                }
-            </div>
-            @if (viewIngredients == true)
+    <div class="row">
+        <div class="col-3">
+            @if (viewTitle == true)
             {
-                <div class="col-2 offset-2">
+                <h3> You can make the following </h3>
+                <button class="close float-left" @onclick="(() => closeRecipies())"><i class="oi oi-x"></i> </button>
+                <ul class="recipeListDisplay">
+                    @foreach (WeightedRecipies rep in recpies)
+                    {
+                        <li class="no-bullets"> <button type="button" class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => retriveInfo(rep._recipie))"> @rep._recipie._Name </button> </li>
+                    }
 
-                    <table class="table-bordered ingredientsTable">
-                        <colgroup>
-                            <col style="width: 100px" />
-                            <col style="width: 150px" />
-                        </colgroup>
-                        <thead>
-                            <tr>
-                                <th> Amount </th>
-                                <th> Name </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @(found = true)
-                            @foreach (WeightedRecipies w in recpies)
-                            {
-                                if (w._recipie._recipeID == ID)
-                                {
-
-                                    @if (found == true)
-                                    {
-                                        @foreach (Ingredient I in w._recipie._ingredientList)
-                                        {
-                                            matchFound();
-                                            <tr>
-                                                <td>
-                                                    @I._amount @I._unit
-                                                </td>
-
-                                                @if (compareIngredientsWtihRefs(I, w.custmomRef))
-                                                {
-                                                    <td style="background-color:green">@I._ingredientName</td>
-                                                }
-
-                                                else
-                                                {
-                                                    <td style="background-color:red"> @I._ingredientName</td>
-
-                                                }
-                                            </tr>
-                                        }
-                                    }
-                                }
-
-
-                            }
-                            <tr>
-                                <td colspan="2" class="text-sm-center">
-                                    <div class="valueClass text-center">
-                                        <div class="value-button" id="increase" @onclick="(() => decrementRecipeAmount())" value="Increase @value"> - </div>
-                                        <input type="number" id="number" value="@recipePerPerson" />
-                                        <div class="value-button" id="decrease" @onclick="(() => incrementRecipeAmount())" value="Decrease @value"> + </div>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="col-4">
-                    <h3> @recipeName </h3>
-                    <p> @recipeDescription </p>
-                </div>
+                </ul>
             }
         </div>
+
+        @if (viewIngredients == true)
+        {
+            Found();
+            <div class="col-2 offset-2">
+
+                <table class="table-bordered ingredientsTable">
+                    <colgroup>
+                        <col style="width: 100px" />
+                        <col style="width: 150px" />
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th> Amount </th>
+                            <th> Name </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @foreach (WeightedRecipies w in recpies)
+                        {
+                            @if (selectedRecepie._Name.Equals(w._recipie._Name))
+                            {
+                                @if (found == true)
+                                {
+                                    @foreach (Ingredient I in w._recipie._ingredientList)
+                                    {
+                                        matchFound();
+                                        <tr>
+                                            <td>
+                                                @I._amount @I._unit
+                                            </td>
+
+                                            @if (w.ingrdients.ContainsKey(I))
+                                            {
+                                                <td style="background-color:green">@I._ingredientName</td>
+                                            }
+
+                                            else
+                                            {
+                                                <td style="background-color:red"> @I._ingredientName</td>
+
+                                            }
+                                        </tr>
+                                    }
+                                }
+                            }
+
+                        }
+                        <tr>
+                            <td colspan="2" class="text-sm-center">
+                                <div class="valueClass text-center">
+                                    <div class="value-button" id="increase" @onclick="(() => decrementRecipeAmount())" value="Increase @value"> - </div>
+                                    <input type="number" id="number" value="@recipePerPerson" />
+                                    <div class="value-button" id="decrease" @onclick="(() => incrementRecipeAmount())" value="Decrease @value"> + </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-4">
+                <h3> @recipeName </h3>
+                <p> @recipeDescription </p>
+            </div>
+        }
+    </div>
         <!--Scroll to top button   -->
         <button id="myBtn" class="btn btn-rounded btn-success"><a href="storage" style="color: white; font-size:12px;">Top</a></button>
     </div>
+
+
 }
 else
 {
@@ -201,9 +223,11 @@ else
     #region Fields
     string email, userId, recipeDescription, recipeName;
     string tempState;
+    List<List<string>> AllProductRefs;
     int ID;
 
     float recipePerPerson;
+    int LoadingBarProggres;
 
     int value;
     int x;
@@ -215,6 +239,7 @@ else
     bool changeState = false;
 
     bool _viewEmptyFridgeLoadSpinner = false;
+    bool loadingbar = false;
 
     ShoppinlistFunctionality ListFunc = new ShoppinlistFunctionality("api/Storage");
     HttpResponseMessage responseMessage = new HttpResponseMessage();
@@ -225,6 +250,7 @@ else
     List<Ingredient> ingredients = new List<Ingredient>();
     List<WeightedRecipies> recpies = new List<WeightedRecipies>();
     List<Recipe> _recpies = new List<Recipe>();
+    Recipe selectedRecepie = new Recipe();
     List<string> ItemState = new List<string>() { "Full", "Almost Full", "Half Full", "Almost Empty" };
 
     private delegate bool compareWR(WeightedRecipies r1, WeightedRecipies r2);
@@ -329,6 +355,10 @@ else
     {
         found = false;
     }
+    void Found()
+    {
+        found = true;
+    }
 
     void clear()
     {
@@ -342,33 +372,13 @@ else
         viewIngredients = false;
     }
 
-    void retriveInfo(int ID)
+    void retriveInfo(Recipe rep)
     {
-        Recipe show = _recpies.First(x => x._recipeID == ID);
-        this.ID = ID;
-        recipeDescription = show._description;
-        recipeName = show._Name;
-        recipePerPerson = show._PerPerson;
-
+        //Recipe show = _recpies.First(x => x._recipeID == ID);
+        selectedRecepie = rep;
+        recipeName = rep._Name;
+        recipeDescription = rep._description;
         found = true;
-        if (show._ingredientList == null)
-        {
-            foreach (var item in show._ingredientList)
-            {
-                ingredients.Add(item);
-                recipeAmount.Add(item._amount);
-            }
-        }
-        else
-        {
-            clear();
-            foreach (var item in show._ingredientList)
-            {
-                x++;
-                ingredients.Add(item);
-                recipeAmount.Add(item._amount);
-            }
-        }
         viewIngredients = true;
         //viewAddToshoppinglist = true;
     }
@@ -411,29 +421,31 @@ else
     private async Task FindRecipies()
     {
         _viewEmptyFridgeLoadSpinner = true;
+        int HasBeenLoaded = 0;
         this.StateHasChanged();
-        List<Recipe> allRecepies = await getRecepies();
-        List<Product> productsInStorage = ListFunc.CombinedList;
-        List<Recipe> relevantRecepies = GetRelevantRecpies(allRecepies, productsInStorage);
-        List<WeightedRecipies> weightedRecipies = GeneratWeighted(relevantRecepies, productsInStorage);
-
-        recpies = weightedRecipies;
-
-        SortByPmatch(recpies);
+        EmptyFridgeFuntionality emptyFridgeFuntionality = new EmptyFridgeFuntionality(ListFunc.CombinedList);
+        foreach (List<string> prodRefs in emptyFridgeFuntionality.allRefs)
+        {
+            recpies.AddRange(await emptyFridgeFuntionality.GetRelevantRecepiesFromProd(prodRefs));
+            emptyFridgeFuntionality.SortByPmatch(recpies);
+            recpies = await emptyFridgeFuntionality.GetSortedList();
+            loadingbar = true;
+            LoadingManager(++HasBeenLoaded,ListFunc.CombinedList.Count);
+            this.StateHasChanged();
+        }
 
         _viewEmptyFridgeLoadSpinner = false;
+        await disableLoad();
         viewTitle = true;
-        this.StateHasChanged();
     }
-
-    private void SortByPmatch(List<WeightedRecipies> recpies) 
+    private async void LoadingManager(int currentLoad, int TotalToLoad)
     {
-        this.recpies = recpies.OrderByDescending(x => x.pMatch).ToList();
+        LoadingBarProggres = currentLoad == TotalToLoad ?  100:((int)(100*((float)currentLoad / (float)TotalToLoad)));
     }
-
-    private void SortByMatchnum(List<WeightedRecipies> recpies) 
+    private async Task disableLoad() 
     {
-        this.recpies = recpies.OrderByDescending(x => x.matchingIngrdientsNum).ToList();
+        await Task.Delay(3000);
+        loadingbar = false;
     }
 
     private async Task<List<Recipe>> getRecepies()
@@ -443,101 +455,6 @@ else
         return recepies;
     }
 
-    private List<Recipe> GetRelevantRecpies(List<Recipe> allRecepies, List<Product> productsInStorage)
-    {
-        List<List<string>> productRefs = GetAllProductRefs(productsInStorage);
-        List<Recipe> recipes = new List<Recipe>();
-        foreach (Recipe r in allRecepies)
-        {
-            foreach (Ingredient I in r._ingredientList)
-            {
-                foreach (List<string> sList in productRefs)
-                {
-                    foreach (string s in sList)
-                    {
-                        if (I._ingredientName.Contains(s))
-                        {
-                            recipes.Add(r);
-                            goto end;
-                        }
-                    }
-                }
-            }
-        end:;
-        }
-        return recipes;
-    }
-
-    private List<WeightedRecipies> GeneratWeighted(List<Recipe> relevantRecepies, List<Product> productsInStorage)
-    {
-        List<List<string>> allRefs = GetAllProductRefs(productsInStorage);
-        List<WeightedRecipies> weightedRecipies = new List<WeightedRecipies>();
-
-        foreach (Recipe r in relevantRecepies)
-        {
-            weightedRecipies.Add(new WeightedRecipies(r));
-        }
-
-        foreach (WeightedRecipies w in weightedRecipies)
-        {
-            w._recipie.deleteDuplicates();
-            foreach (Ingredient I in w._recipie._ingredientList)
-            {
-                foreach (List<string> sList in allRefs)
-                {
-                    foreach (string s in sList)
-                    {
-                        if (I._ingredientName.Contains(s))
-                        {
-                            w.MatchFound(I, s);
-                        }
-                    }
-
-                }
-            }
-            w.calculateP();
-        }
-        //weightedRecipies.ForEach(x => x.uniqeIngrdients(x.matchingIngrdient));
-
-        return weightedRecipies;
-    }
-
-    private List<List<string>> GetAllProductRefs(List<Product> products)
-    {
-        List<List<string>> allRefs = new List<List<string>>();
-        foreach (Product p in products)
-        {
-            allRefs.Add(GetCustomRefrences(p));
-        }
-        return allRefs;
-    }
-
-    private List<string> GetCustomRefrences(Product product)
-    {
-        List<string> ProductRefrence = product._CustomReferenceField.Split(",").ToList();
-        List<string> returnList = new List<string>();
-
-        foreach (string s in ProductRefrence)
-        {
-            if (!(s.Length < 2) && !string.IsNullOrWhiteSpace(s))
-            {
-                returnList.Add(s);
-            }
-        }
-        return returnList;
-    }
-
-    private bool compareIngredientsWtihRefs(Ingredient ingredient, List<string> refs)
-    {
-        foreach (string _ref in refs)
-        {
-            if (ingredient._ingredientName.Contains(_ref))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
     #endregion
 
     private void AssignScalar(ChangeEventArgs e, Product p)

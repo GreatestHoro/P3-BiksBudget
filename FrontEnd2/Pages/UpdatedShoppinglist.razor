@@ -42,7 +42,7 @@ else
                                     <div class="row">
 
                                         <div class="col-sm-10">
-                                            @if (item._image.Length == 0)
+                                            @*@if (item._image.Length == 0)
                                             {
                                                 <img style="width:100px; height:auto; " class="card-img-top " src="https://cdn.discordapp.com/attachments/519096261408718908/649685312083197973/coopdicoop.jpg">
                                             }
@@ -50,7 +50,10 @@ else
                                             {
                                                 <img style="width: auto; height: auto; max-height:100px; max-width: 100px;"
                                                      class="card-img-top" src="@ProductImage(item._image)">
-                                            }
+                                            }*@
+
+                                            <img style="width: auto; height: auto; max-height:100px; max-width: 100px;"
+                                                 class="card-img-top" src="@item._image">
                                             <h6 class="nomargin">@item._productName</h6>
                                             <p>@item._amount</p>
                                         </div>
@@ -102,6 +105,7 @@ else
                                     }
                                 </td>
                             </tr>
+                            <br />
                         }
                     </tbody>
                     <!-- #endregion -->
@@ -136,12 +140,16 @@ else
                 @if (remindToSave)
                 {
                     <Tooltip IsAlwaysActive="true" Text="Dont forget to save">
-                    <button class="btn btn-block btn-danger recipeDivDisplay rounded-0" @onclick="(() =>SaveShoppinglist())">Save shopping list</button>
+                        <button class="btn btn-block btn-danger recipeDivDisplay rounded-0" @onclick="(() =>SaveShoppinglist())">Save shopping list</button>
                     </Tooltip>
+                }
+                else if (ListFunc.CombinedList.Count != 0 && !remindToSave)
+                {
+                    <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>SaveShoppinglist())">Save shopping list</button>
                 }
                 else
                 {
-                    <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>SaveShoppinglist())">Save shopping list</button>
+                    <button disabled class="btn btn-block btn-light recipeDivDisplay rounded-0" title="You cannot save an empty shoppinglist">Save shopping list</button>
                 }
             </div>
             <div class="col-sm-4">
@@ -181,7 +189,7 @@ else
     string email;
     string shopString;
     string productString;
-#endregion
+    #endregion
 
     #region Modal
 
@@ -336,9 +344,10 @@ else
     /// </summary>
     public async void AddListToStorage()
     {
-        remindToSave = true;
+        //remindToSave = true;
         await ListFunc.AddShoppinlistToStorage();
         ListFunc.CombinedList.Clear();
+        await ListFunc.SaveShoppinglist();
         StateHasChanged();
     }
 
@@ -381,7 +390,14 @@ else
     // Function to get salling products in high resolution
     private string ProductImage(string prod_image)
     {
-        return prod_image + "&imgSize=1080x1080";
+        if (prod_image.Contains("&imgSize=1080x1080"))
+        {
+            return prod_image;
+        }
+        else
+        {
+            return prod_image + "&imgSize=1080x1080";
+        }
     }
     #endregion
 }

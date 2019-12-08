@@ -20,11 +20,12 @@ namespace BBCollection.DBHandling
             CreateCoreDatabase();
             await GenerateWebcrawelerDatabaseTables();
             await GenerateAPIDatabaseTables();
-            await UpdateProductTable();
             await GenerateUserDatabaseTables();
             await GenerateSallingProductDB();
             await GenerateStorageTables();
             await GenerateShoppingListTables();
+            await UpdateProductTable();
+            await UpdateRecipesTable();
         }
 
         /// <summary>
@@ -182,6 +183,17 @@ namespace BBCollection.DBHandling
                 "ALTER TABLE `products` ADD `ingredient_reference` varchar(255)";
 
             await new SQLConnect().NonQueryString(newCollumnQuery);
+        }
+
+        private async Task UpdateRecipesTable()
+        {
+            string newColumnQuery =
+                "ALTER TABLE `recipes` ADD `recipe_totalprice` decimal(6,2)";
+            string newColumnQuery2 =
+               "ALTER TABLE `recipes` ADD `image_url` decimal(6,2)";
+
+            await new SQLConnect().NonQueryString(newColumnQuery);
+            await new SQLConnect().NonQueryString(newColumnQuery2);
         }
         #endregion
     }

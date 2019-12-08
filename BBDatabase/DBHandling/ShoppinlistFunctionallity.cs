@@ -24,7 +24,6 @@ namespace BBCollection.DBHandling
         readonly ConnectionSettings connectionSettings = new ConnectionSettings();
 
         public string productString;
-        string newProduct; 
         string dest;
         string Email;
 
@@ -34,6 +33,7 @@ namespace BBCollection.DBHandling
         public List<Shoppinglist> shoppinglists = new List<Shoppinglist>();
         public List<Product> TempStorageList = new List<Product>();
 
+        ControllerFuncionality features = new ControllerFuncionality();
         HttpResponseMessage response = new HttpResponseMessage();
         HttpClient Http = new HttpClient();
         #endregion
@@ -80,7 +80,8 @@ namespace BBCollection.DBHandling
             if (LocalStorageList.Count != 0)
             {
                 CombinedList = LocalStorageList;
-                CombinedList = HandleDublicats(CombinedList);
+                CombinedList = features.HandleDublicats(CombinedList);
+                CombinedList = features.SetAllPicture(CombinedList);
             }
         }
 
@@ -102,61 +103,12 @@ namespace BBCollection.DBHandling
                 if (shoppinglists[0]._products.Count > 0)
                 {
                     CombinedList = shoppinglists[0]._products;
-                    CombinedList = HandleDublicats(CombinedList);
+                    CombinedList = features.HandleDublicats(CombinedList);
+                    CombinedList = features.SetAllPicture(CombinedList);
                 }
             }
 
             return new HttpResponseMessage(HttpStatusCode.OK);
-        }
-
-        /// <summary>
-        /// When the shoppinglist is loaded from the api or localstorage
-        /// this method finds dublicats and count the amount of each product
-        /// </summary>
-        /// <param name="inputList">The list to handle dublicats from</param>
-        /// <returns>A list of unique products</returns>
-        public List<Product> HandleDublicats(List<Product> inputList)
-        {
-            bool isFound = false;
-            List<Product> uniqueList = new List<Product>();
-            List<Product> dublicateList = new List<Product>();
-
-            // The inputList is split in a list of the unique products and dublicats
-            foreach (Product i in inputList)
-            {
-                isFound = false;
-                foreach (Product u in uniqueList)
-                {
-                    if (i._id == u._id)
-                    {
-                        // If the product id already exists in the uniqueList it is added to the dublicate list
-                        dublicateList.Add(i);
-                        isFound = true;
-                        break;
-                    }
-                }
-                if (isFound == false)
-                {
-                    // If the product id is not found in the uniqueList it is added to it
-                    uniqueList.Add(i);
-                }
-            }
-
-            // Now all dublicates amounts are added to the unique product amounts
-            foreach (Product d in dublicateList)
-            {
-                foreach (Product i in uniqueList)
-                {
-                    if (d._id == i._id)
-                    {
-                        // If the id is found in the uniqueList, the amountLeft is added up
-                        i._amountleft += d._amountleft;
-                        break;
-                    }
-                }
-            }
-
-            return uniqueList;
         }
 
         /// <summary>
@@ -202,11 +154,9 @@ namespace BBCollection.DBHandling
         /// <param name="item">the amount to add</param>
         /// <param name="actualAmout">how many you have added. is resat so you add one at a time</param>
         /// <returns></returns>
-        public async Task<HttpResponseMessage> QuickaddItemToShoppinglist(Product item, int actualAmout)
+        public async Task<HttpResponseMessage> QuickaddItemToShoppinglist(Product item)
         {
             productString = JsonConvert.SerializeObject(item);
-
-            item._amountleft = actualAmout;
 
             response = await PutToApi(productString);
 

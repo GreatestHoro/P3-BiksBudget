@@ -38,7 +38,7 @@ namespace BBCollection.BBObjects
             new FilterItem("Lactose free", "laktosefri", false)
         };
 
-        public List<FilterItem> GetStoreList()
+        public List<FilterItem> GetWordList()
         {
             return wordFilterlist;
         }
@@ -54,6 +54,7 @@ namespace BBCollection.BBObjects
         public string FilterName { get; set; }
         public string SearchName { get; set; }
         public bool IsEnabled { get; set; }
+        public bool IsSortable { get; set; }
 
         public FilterItem(string _filterName, bool _isEnabled)
         {
@@ -66,6 +67,18 @@ namespace BBCollection.BBObjects
             FilterName = _filterName;
             SearchName = _searchName;
             IsEnabled = _isEnabled;
+        }
+
+        public FilterItem(string _filterName, bool _isEnabled, bool _isSortable)
+        {
+            FilterName = _filterName;
+            IsEnabled = _isEnabled;
+            IsSortable = _isSortable;
+        }
+
+        public FilterItem()
+        {
+
         }
     }
 }

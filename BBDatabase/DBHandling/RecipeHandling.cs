@@ -8,6 +8,7 @@ using System.Data;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using BBCollection.Queries;
 
 namespace BBCollection.DBHandling
 {
@@ -94,12 +95,9 @@ namespace BBCollection.DBHandling
         #region Functions handling AddRecipe
         public async Task AddList(Recipe recipe)
         {
-            await Task.Run(async() =>
-            {
-                await AddRecipeToDatabase(recipe);
-                await AddIngredientsToDatabase(recipe._ingredientList);
-                await CombineRecipeAndIngredient(recipe);
-            });
+            await AddRecipeToDatabase(recipe);
+            await AddIngredientsToDatabase(recipe._ingredientList);
+            await CombineRecipeAndIngredient(recipe);
         }
 
         private async Task AddRecipeToDatabase(Recipe recipe)
@@ -112,10 +110,7 @@ namespace BBCollection.DBHandling
             msc.Parameters.AddWithValue("@RecipePersons", recipe._PerPerson);
             msc.Parameters.AddWithValue("@RecipeDescription", recipe._description);
             
-            await Task.Run(async() =>
-            {
-                await new SQLConnect().NonQueryMSC(msc);
-            });
+            await new SQLConnect().NonQueryMSC(msc);
         }
 
         private async Task AddIngredientsToDatabase(List<Ingredient> ingredients)
@@ -213,7 +208,8 @@ namespace BBCollection.DBHandling
         }
         #endregion
 
-        public void GetReferencesAsync(List<string> references)
+        #region Finding ingredients based on references in products.
+        public async Task<List<Recipe>> GetReferencesAsync(List<string> references)
         {
             List<Recipe> recipes = new List<Recipe>();
             string table = "t"; string statement = "s"; string parameter = "@Parameter"; int count = 0;
@@ -223,60 +219,148 @@ namespace BBCollection.DBHandling
 
             List<string> tables = new List<string>();
 
-            foreach (string reference in references)
+            MySqlCommand msc = await Task.Run(() =>
             {
-                if(count == 0)
+                MySqlCommand msc = new MySqlCommand();
+                foreach (string reference in references)
                 {
-                    getRecipesQuery += "(SELECT " + table + count + ".*," + table + count + ".id as tempid"+ count +" FROM recipes " + table + count + " " +
-                    "inner join ingredientsinrecipe on " + table + count + ".id = ingredientsinrecipe.recipeid " +
-                    "inner join ingredients on ingredientsinrecipe.ingredientid = ingredients.id" +
-                    " WHERE ingredientName like " + parameter + count + ") " + statement + count;
-                }else
-                {
-                    getRecipesQuery += "(SELECT " + table + count + ".id as tempid" + count + " FROM recipes " + table + count + " " +
-                    "inner join ingredientsinrecipe on " + table + count + ".id = ingredientsinrecipe.recipeid " +
-                    "inner join ingredients on ingredientsinrecipe.ingredientid = ingredients.id " +
-                    " WHERE ingredientName like " + parameter + count + ") " + statement + count;
-                }
-                
-
-                tables.Add(statement + count + ".tempid"+count);
-                
-                count++;
-                if(references.Count != count)
-                {
-                    getRecipesQuery += ",";
-                }
-            }
-
-            var tArr = tables.ToArray();
-            string check = " WHERE ";
-            for (int i = 1; i < tArr.Length; i++)
-            {
-                int j = 0;
-                
-                while (j < i)
-                {
-                    check += $"{tArr[i]} = {tArr[j]}";
-                    j++;
-                    if (i != 1)
+                    if (count == 0)
                     {
-                        if (j != i)
-                        {
-                            check += " AND ";
+                        getRecipesQuery += "(SELECT " + table + count + ".*," + table + count + ".id as tempid" + count + " FROM recipes " + table + count + " " +
+                        "inner join ingredientsinrecipe on " + table + count + ".id = ingredientsinrecipe.recipeid " +
+                        "inner join ingredients on ingredientsinrecipe.ingredientid = ingredients.id" +
+                        " WHERE ingredientName like " + parameter + count + ") " + statement + count;
+                    }
+                    else
+                    {
+                        getRecipesQuery += "(SELECT " + table + count + ".id as tempid" + count + " FROM recipes " + table + count + " " +
+                        "inner join ingredientsinrecipe on " + table + count + ".id = ingredientsinrecipe.recipeid " +
+                        "inner join ingredients on ingredientsinrecipe.ingredientid = ingredients.id " +
+                        " WHERE ingredientName like " + parameter + count + ") " + statement + count;
+                    }
 
-                        }
+
+                    tables.Add(statement + count + ".tempid" + count);
+                    msc.Parameters.AddWithValue(parameter + count, reference);
+
+                    count++;
+                    if (references.Count != count)
+                    {
+                        getRecipesQuery += ",";
                     }
                 }
-                if (i < tArr.Length-1)
+
+                var tArr = tables.ToArray();
+                string check = " WHERE ";
+                for (int i = 1; i < tArr.Length; i++)
                 {
-                    check += " AND ";
+                    int j = 0;
+
+                    while (j < i)
+                    {
+                        check += $"{tArr[i]} = {tArr[j]}";
+                        j++;
+                        if (i != 1)
+                        {
+                            if (j != i)
+                            {
+                                check += " AND ";
+
+                            }
+                        }
+                    }
+                    if (i < tArr.Length - 1)
+                    {
+                        check += " AND ";
+                    }
+
                 }
-            
+
+                msc.CommandText = getRecipesQuery;
+
+                return msc;
+            });
+
+            try 
+            { 
+                DataSet ds = await new SQLConnect().DynamicSimpleListSQL(msc);
+                foreach (DataRow r in ds.Tables[0].Rows)
+                {
+
+                    Recipe recipe = new Recipe((int)r[0], (string)r[1], (string)r[3], await GetIngredients((int)r[0]), Convert.ToSingle(r[2]));
+
+                    recipes.Add(recipe);
+                }
             }
-            getRecipesQuery += check;
-            Console.WriteLine(getRecipesQuery);
-            
+            catch (NullReferenceException e)
+            {
+                Console.WriteLine(e);
+            }
+
+            return recipes;
+        }
+        #endregion
+
+        public async Task<List<ComplexRecipe>> GetPriceAsync(string productName, int limit, int offset)
+        {
+            string getRecipesPrice =
+                "SELECT * FROM biksbudgetdb.recipes WHERE recipename like @ProductName " +
+                "ORDER BY recipe_totalprice LIMIT @Limit OFFSET @Offset";
+            List<ComplexRecipe> complexRecipes = new List<ComplexRecipe>();
+
+            MySqlCommand msc = new MySqlCommand(getRecipesPrice);
+
+            msc.Parameters.AddWithValue("@ProductName", "%" + productName + "%");
+            msc.Parameters.AddWithValue("@Limit", limit);
+            msc.Parameters.AddWithValue("@Offset", offset);
+
+            DataSet ds = await new SQLConnect().DynamicSimpleListSQL(msc);
+            if (ds.Tables.Count != 0)
+            {
+                foreach (DataRow r in ds.Tables[0].Rows)
+                {
+                    ComplexRecipe recipe = new ComplexRecipe((int)r[0], (string)r[1], (string)r[3], await GetIngredients((int)r[0]), Convert.ToSingle(r[2]), new ComplexRecipeComponent(Convert.ToDouble(r[4])));
+                    complexRecipes.Add(recipe);
+                }
+            }
+            return complexRecipes;
+        }
+
+        public async Task GenerateTotalPriceAsync()
+        {
+            List<ComplexRecipe> CRC = await new RecipeQuery().CheapestCRecipes("");
+
+            Console.WriteLine(CRC.Count);
+
+            foreach(ComplexRecipe c in CRC)
+            {
+                Console.WriteLine(c._recipeID + " and " + c._complexRecipeComponent.RecipeCost);
+                await UpdatePriceAsync(c._recipeID, c._complexRecipeComponent.RecipeCost);
+            }
+        }
+
+        private async Task UpdatePriceAsync(int recipeID, double price)
+        {
+            string recipeQuery = "UPDATE `recipes` SET `recipe_totalprice` = @Price WHERE id = @RecipeId";
+            MySqlCommand msc = new MySqlCommand(recipeQuery);
+
+            msc.Parameters.AddWithValue("@Price", price);
+            msc.Parameters.AddWithValue("@RecipeId", recipeID);
+
+            await new SQLConnect().NonQueryMSC(msc);
+        }
+
+        public async Task AddImage(string image, string prodid)
+        {
+            string insertQuery =
+                "UPDATE `recipes` SET `image` = @Image WHERE id = @Prodid";
+
+            MySqlCommand msc = new MySqlCommand(insertQuery);
+
+            msc.Parameters.AddWithValue("@Image", image);
+            msc.Parameters.AddWithValue("@Prodid", prodid);
+
+            await Task.Run(() => new SQLConnect().NonQueryMSC(msc));
         }
     }
 }

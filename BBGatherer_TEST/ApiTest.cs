@@ -19,36 +19,63 @@ namespace BBGatherer_TEST
         ShoppinlistFunctionality slFunc = new ShoppinlistFunctionality("api/Shoppinglist");
         ShoppinlistFunctionality stFunc = new ShoppinlistFunctionality("api/Storage");
         ControllerFuncionality cFunc = new ControllerFuncionality();
+        LoginRegister account = new LoginRegister();
         Filters sallingSearch = new Filters();
         TestData testList = new TestData();
+        LoginRegister acount = new LoginRegister();
 
         List<CoopProduct> coopProduct = new List<CoopProduct>();
         List<Product> sallingProduct = new List<Product>();
 
         HttpResponseMessage response = new HttpResponseMessage();
 
+        string username = "unitTestUser";
+
+        // IMPORTANT: 
+        // File: ConnectoinSettings 
+        // bool: _onlineAPI
+        // This variable needs to be true to run these tests
         #region API
 
-        #region GetOnStart
-        public async Task<HttpResponseMessage> HelpGetShoppinglist()
-        {
-            response = await stFunc.GetStorageOnStart("apiTestUser");
+        #region Login
 
-            return response;
+        [TestMethod]
+        public async Task RegisterUser()
+        {
+            User user = new User(username, "unitTestUser123!");
+
+            response = await acount.Register(user);
+
+            Assert.IsTrue(response.IsSuccessStatusCode);
         }
+
+        [TestMethod]
+        public async Task LoginUser()
+        {
+            User user = new User(username, "unitTestUser123!");
+
+            response = await acount.Login(user);
+
+            Assert.IsTrue(response.IsSuccessStatusCode);
+        }
+
+        #endregion
+
+        #region GetOnStart
 
         // This method tests GetShoppinglistOnStart(string userId)
         [TestMethod]
         public async Task GetShoppinglist()
         {
-            response = await HelpGetShoppinglist();
+            response = await stFunc.GetShoppinglistOnStart(username);
+
 
             Assert.IsTrue(response.IsSuccessStatusCode);
         }
 
         public async Task<HttpResponseMessage> HelpGetStorage()
         {
-            response = await stFunc.GetStorageOnStart("apiTestUser");
+            response = await stFunc.GetStorageOnStart(username);
 
             return response;
         }
@@ -58,7 +85,6 @@ namespace BBGatherer_TEST
         public async Task GetStorage()
         {
             response = await HelpGetStorage();
-            //response = await stFunc.GetStorageOnStart("apiTestUser");
 
             Assert.IsTrue(response.IsSuccessStatusCode);
         }
@@ -93,16 +119,6 @@ namespace BBGatherer_TEST
 
             Assert.IsTrue(response.IsSuccessStatusCode);
         }
-
-        //[TestMethod]
-        //public async Task SendWithDoubleParameters()
-        //{
-        //    await HelpGetShoppinglist();
-
-        //    response = await slFunc.AddOneItemToStorage(testList.dummyProductOne);
-
-        //    Assert.IsTrue(response.IsSuccessStatusCode);
-        //}
 
         #endregion
 
