@@ -121,14 +121,6 @@
             {
                 if (p._price > minPrice && p._price < maxPrice)
                 {
-                    @*<div class="card productCard" style="width: 18rem;">
-                        <img src="@p._image" class="card-img-top" alt="..." style="display:block; max-height:280px; max-width: 280px; width: auto; height: auto;">
-                        <div class="card-body">
-                            <h5 style="overflow-wrap:break-word" class="card-title w-100">@p._productName</h5>
-                            <p style="overflow-wrap:break-word" class="card-text w-100">@p._amount</p>
-                            <a href="#" class="btn btn-primary">Add To Shoppinglist</a>
-                        </div>
-                    </div>*@
                     @*<Card style="width: 18rem;">
                             <CardImage Class="card-imgNew" Source="@p._image"></CardImage>
                             <CardBody>
@@ -208,6 +200,7 @@ else if (!isSearching && !_viewProducts)
     WordFilterList wordFIlters = new WordFilterList();
     FindCloseStores closeStore;
     ShoppinlistFunctionality SLFunc = new ShoppinlistFunctionality("api/Shoppinglist");
+    ControllerFuncionality dublicats = new ControllerFuncionality();
 
     List<FilterItem> optionsList = new List<FilterItem>();
     List<UnifiedAPIStore> allStoresUnified = new List<UnifiedAPIStore>();
@@ -464,11 +457,13 @@ else if (!isSearching && !_viewProducts)
 
         int actualAmout = AddedItem._amountleft;
 
+        AddedItem._amountleft = 1;
+
         if (String.IsNullOrEmpty(email))
         {
             ToShoppinglist.Add(AddedItem);
 
-            ToShoppinglist = HandleDublicats(ToShoppinglist);
+            ToShoppinglist = dublicats.HandleDublicats(ToShoppinglist);
 
             await localStorage.RemoveItemAsync("ProductString");
 
@@ -478,9 +473,10 @@ else if (!isSearching && !_viewProducts)
         }
         else
         {
-            AddedItem._amountleft = 1;
-            await SLFunc.QuickaddItemToShoppinglist(AddedItem, actualAmout);
+            await SLFunc.QuickaddItemToShoppinglist(AddedItem);
         }
+
+        AddedItem._amountleft = actualAmout;
 
         disableButton = await AwaitButton();
         StateHasChanged();
@@ -488,33 +484,10 @@ else if (!isSearching && !_viewProducts)
 
     public async Task<bool> AwaitButton()
     {
-        await Task.Delay(20);
+        await Task.Delay(40);
         return false;
     }
 
-    public List<Product> HandleDublicats(List<Product> inputList)
-    {
-        bool isFound = false;
-        List<Product> uniqueList = new List<Product>();
-        List<Product> dublicateList = new List<Product>();
-
-        foreach (Product i in inputList)
-        {
-            isFound = false;
-            foreach (Product u in uniqueList)
-            {
-                if (i._id == u._id)
-                {
-                    break;
-                }
-            }
-            if (isFound == false)
-            {
-                uniqueList.Add(i);
-            }
-        }
-        return uniqueList;
-    }
     #endregion
 
     #region SearchMethods

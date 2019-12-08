@@ -201,11 +201,9 @@ namespace BBCollection.DBHandling
         /// <param name="item">the amount to add</param>
         /// <param name="actualAmout">how many you have added. is resat so you add one at a time</param>
         /// <returns></returns>
-        public async Task<HttpResponseMessage> QuickaddItemToShoppinglist(Product item, int actualAmout)
+        public async Task<HttpResponseMessage> QuickaddItemToShoppinglist(Product item)
         {
             productString = JsonConvert.SerializeObject(item);
-
-            item._amountleft = actualAmout;
 
             response = await PutToApi(productString);
 

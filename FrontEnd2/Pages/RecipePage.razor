@@ -340,11 +340,10 @@
     {
         AddedItem._amountleft++;
         int actualAmount = AddedItem._amountleft;
+        AddedItem._amountleft = 1;
 
         if (String.IsNullOrEmpty(email))
         {
-            AddedItem._amountleft = 1;
-
             ToShoppinglist.Add(AddedItem);
 
             shopString = JsonConvert.SerializeObject(ToShoppinglist);
@@ -354,8 +353,9 @@
         else
         {
             AddedItem._amountleft = 1;
-            await ShopList.QuickaddItemToShoppinglist(AddedItem, actualAmount);
+            await ShopList.QuickaddItemToShoppinglist(AddedItem);
         }
+        AddedItem._amountleft = actualAmount;
     }
 
     public void QuickAddToShoppinglist(List<Ingredient> ingredient)
