@@ -15,26 +15,27 @@ namespace BBGatherer
         static void Main(string[] args)
         {
 
-            //DataHandling dh = new DataHandling();
-            //dh.GenerateDatabase();
-            //try
-            //{
-            //    dh.GenerateData(false, false, true).Wait();
-            //    dh.TestCollection().Wait();
-            //}
-            //catch (Exception e)
-            //{
-            //    Console.WriteLine(e);
-            //}
+            DataHandling dh = new DataHandling();
+            
+            try
+            {
+                dh.GenerateDatabase().Wait();
+                //dh.GenerateData(false, false, true).Wait();
+                //dh.TestCollection().Wait();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
         }
     }
 
     public class DataHandling
     {
         public DatabaseConnect dbConnect = new DatabaseConnect();
-        public void GenerateDatabase()
+        public async Task GenerateDatabase()
         {
-            
+            await dbConnect.Initialize.Start();
         }
 
         public async Task GenerateData(bool coop, bool salling, bool generatePrice)

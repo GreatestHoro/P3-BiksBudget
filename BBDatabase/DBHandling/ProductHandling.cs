@@ -209,5 +209,18 @@ namespace BBCollection.DBHandling
             }
             return products;
         }
+
+        public async Task AddImage(string image, string prodid)
+        {
+            string insertQuery =
+                "UPDATE `products` SET `image` = @Image WHERE id = @Prodid AND (`image` IS NULL OR `image` = '')";
+
+            MySqlCommand msc = new MySqlCommand(insertQuery);
+
+            msc.Parameters.AddWithValue("@Image", image);
+            msc.Parameters.AddWithValue("@Prodid", prodid);
+
+            await Task.Run(() => new SQLConnect().NonQueryMSC(msc));
+        }
     }
 }
