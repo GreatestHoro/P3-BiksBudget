@@ -1,0 +1,751 @@
+﻿@page "/newRecipe"
+@using BBCollection.Queries;
+@using BBCollection.BBObjects;
+@using BBCollection.DBHandling;
+@using FiftyOne.Foundation.Mobile.Detection.Factories
+@using Newtonsoft.Json;
+@using FrontEnd2.Data;
+@using System.Diagnostics;
+@inject IJSRuntime JsRuntime
+
+<div class="container-fluid">
+    <!-- #region Recipe search bar -->
+    <div class="row d-flex justify-content-center">
+        <div class="col-sm-10 col-md-8 col-lg-7 col-xl-5" id="recipeSearchBox">
+            <div class="form-check-inline center_div recipe-search-bar mb-2">
+                <input type="text" @bind="searchTerm" @onkeyup="OnKeyPress" disabled="@viewRecipes" class="form-control recipe-search-input" id="recipeSearchInput" placeholder="Search recipe" />
+                <button class="btn btn-success recipe-search-button" @onclick="(() => Search())">
+                    <i class="fa fa-search"></i>
+                </button>
+            </div>
+        </div>
+        <!--Scroll to top button   -->
+        <button id="myBtn" class="btn btn-rounded btn-success"><a href="recipe" style="color: white; font-size:12px;">Top</a></button>
+    </div>
+    @if (isSearching == true)
+    {
+        <div class="row d-flex justify-content-center top-margin">
+            <div class="col-sm-10 col-md-8 col-lg-7 col-xl-5">
+                <div class="center_div lds-roller">
+                    <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+                </div>
+            </div>
+        </div>
+    }
+    <!-- #endregion -->
+    <!-- #region Recipe card lists -->
+    @if (viewRecipeList == true)
+    {
+        <div class="row d-flex justify-content-center top-margin">
+            <div class="col-sm-10 col-md-8 col-lg-7 col-xl-5">
+                @foreach (ComplexRecipe complexRecipe in complexRecipes)
+                {
+                    <div class="center_div card w-100" id="recipeCard">
+                        <a @onclick="(() => retriveRecipe(complexRecipe._recipeID))" class="stretched-link"></a>
+                        <div class="card-header" style="padding-bottom: 0.25rem;">
+                            <div class="card-title w-100">
+                                <h6 style="font-weight:bold;">
+                                    @complexRecipe._Name
+                                </h6>
+                            </div>
+                        </div>
+                        <div class="card-body" style="padding-bottom: 0.25rem; padding-top: 0.60rem;">
+                            <div class="justify-content-between">
+                                <button class="rounded btn-success">
+                                    @for (int i = 0; i < complexRecipe._PerPerson; i++)
+                                    {
+                                        if (i < 4)
+                                        {
+                                            <i class="oi oi-person"> </i>
+                                        }
+                                    }
+                                    @if (complexRecipe._PerPerson >= 4)
+                                    {
+                                        <i class="oi oi-plus"> </i>
+                                    }
+                                </button>
+                                <p class="d-inline-block float-right"> @complexRecipe._complexRecipeComponent.RecipeCost kr.</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+                @if (_viewLoadMoreSpinner == true)
+                {
+                    <div class="center_div lds-roller">
+                        <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+                    </div>
+                }
+                @if (complexRecipes.Count() % recipeQuery._productsPerLoad == 0 && complexRecipes.Count() != 0 && _viewLoadMore == true)
+                {
+                    <div class="row mt-4 d-flex justify-content-center">
+                        <button class="btn btn-warning mb-4" @onclick="LoadMore" id="LoadMore">Load More</button>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+    <!-- #endregion -->
+</div>
+
+<Modal @ref="recipeCard">
+    <ModalBackdrop />
+    <ModalContent IsCentered="true">
+        <ModalHeader Class="text-center">
+            <ModalTitle>@recipeName</ModalTitle>
+        </ModalHeader>
+        <ModalBody>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <label class="input-group-text" for="inputGroupSelect01"> For:</label>
+                </div>
+                <SelectEdit TValue="int" SelectedValue="selectedValue" SelectedValueChanged="@OnSelectedValueChanged" Style="max-width:100px;">
+                    @{
+                        int numb = 0;
+                        @for (int i = 0; i < 100; i++)
+                        {
+                            <SelectItem Value="TempScalar">@(numb++)</SelectItem>
+                        }
+                    }
+                </SelectEdit>
+            </div>
+            <Accordion>
+                <Card>
+                    <CardHeader>
+                        <Heading Size="HeadingSize.Is5" Class="text-center">
+                            <Button Clicked="@(()=>isOpen1 = !isOpen1)">Description</Button>
+                        </Heading>
+                    </CardHeader>
+                    <Collapse IsOpen="@isOpen1">
+                        <CardBody>
+                            @recipeDescription
+                        </CardBody>
+                    </Collapse>
+                </Card>
+                <Card>
+                    <CardHeader>
+                        <Heading Size="HeadingSize.Is5" Class="text-center">
+                            <Button Clicked="@(()=>isOpen2 = !isOpen2)">Ingrediens</Button>
+                        </Heading>
+                    </CardHeader>
+                    <Collapse IsOpen="@isOpen2">
+                        <CardBody>
+                            @scalar
+                        </CardBody>
+                    </Collapse>
+                </Card>
+                <Card>
+                    <CardHeader>
+                        <Heading Size="HeadingSize.Is5" Class="text-center">
+                            <Button Clicked="@(()=>isOpen3 = !isOpen3)">Products</Button>
+                        </Heading>
+                    </CardHeader>
+                    <Collapse IsOpen="@isOpen3">
+                        <CardBody>
+
+                        </CardBody>
+                    </Collapse>
+                </Card>
+            </Accordion>
+        </ModalBody>
+    </ModalContent>
+</Modal>
+
+
+@if (viewRecipes == true)
+{
+    <!-- #region Recipe view -->
+    <div class="container-fluid ">
+        <div class="minibox">
+            <div class="row">
+                <!-- #region Recipe Title -->
+                <div class="col-sm-12">
+                    <button class="close float-right" @onclick="(() => toggle())"><i class="oi oi-x"></i> </button>
+                    <h2 class="text-center recipeTitle">@recipeName</h2> <hr />
+                </div>
+                <!-- #endregion -->
+            </div>
+            <div class="row">
+                <!-- #region Dropdown options -->
+                <div class="col-sm-4">
+
+                </div>
+                <div class="col-sm-2">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <label class="input-group-text" for="inputGroupSelect01"> For:</label>
+                        </div>
+                        <select class="custom-select" @onchange="AssignScalar">
+                            <option selected> @recipePerPerson</option>
+                            <!-- #region Options -->
+                            <option value="@TempScalar"> 1 </option>
+                            <option value="@TempScalar"> 2 </option>
+                            <option value="@TempScalar"> 3 </option>
+                            <option value="@TempScalar"> 4 </option>
+                            <option value="@TempScalar"> 5 </option>
+                            <option value="@TempScalar"> 6 </option>
+                            <option value="@TempScalar"> 7 </option>
+                            <option value="@TempScalar"> 8 </option>
+                            <option value="@TempScalar"> 9 </option>
+                            <option value="@TempScalar"> 10 </option>
+                            <!-- #endregion -->
+                        </select>
+                    </div>
+                </div>
+                <div class="col-sm-2">
+                    <button style="background-color: #05c46b;" class="btn btn-block" @onclick="(() => QuickAddToShoppinglist(ingredients))"> <i class="oi oi-cart"></i> </button>
+                </div>
+                <hr />
+                <!-- #endregion -->
+            </div>
+            <div class="row" style="margin-top:10px">
+                <!-- #region Toggle buttons -->
+                <div class="col-sm-4">
+                    <button class="btn btn-light active btn-block" @onclick="toggleRecipeDescription">
+                        View description
+                        @if (viewDescription == true)
+                        {
+                            <i class="oi oi-chevron-bottom float-right"></i>
+                        }
+                        else
+                        {
+                            <i class="oi oi-chevron-right float-right"></i>
+                        }
+                    </button>
+                </div>
+                <div class="col-sm-4">
+                    <button class="btn btn-light active btn-block" @onclick="toggleRecipeIngredients">
+                        View Ingredients
+                        @if (viewIngredients == true)
+                        {
+                            <i class="oi oi-chevron-bottom float-right"></i>
+                        }
+                        else
+                        {
+                            <i class="oi oi-chevron-right float-right"></i>
+                        }
+                    </button>
+                </div>
+                <div class="col-sm-4 mx-auto">
+                    <button class="btn btn-light active btn-block" @onclick="toggleRecipeProducts">
+                        View Products
+                        @if (viewProducts == true)
+                        {
+                            <i class="oi oi-chevron-bottom float-right"></i>
+                        }
+                        else
+                        {
+                            <i class="oi oi-chevron-right float-right"></i>
+                        }
+                    </button>
+                </div>
+                <!-- #endregion -->
+            </div>
+            <div class="row d-flex justify-content-center top-margin m-sm-auto">
+                <!-- #region Description -->
+                <div class="col-sm-4">
+                    @if (viewDescription == true)
+                    {
+                        <p class="recipeDescription">@recipeDescription</p>
+                        <hr />
+                    }
+                </div>
+
+                <!-- #endregion -->
+                <!-- #region Ingredients table -->
+                <div class="col-sm-4">
+                    @if (viewIngredients == true)
+                    {
+                        <div style="max-height:400px; min-height:40px; overflow:auto; overflow-y:scroll;">
+                            <table class="table-hover border-0 ingredientsTable">
+                                <colgroup>
+                                    <col style="width:150px" />
+                                    <col style="width:150px" />
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                        <td style="font-weight:bold;"> Amount </td>
+                                        <td style="font-weight:bold;"> Name </td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (Ingredient ing in ingredients)
+                                    {
+                                        if (runCounter <= ingredients.Count) //comback and fix
+                                        {
+                                            runCounter++;
+                                            scalar = recipePerPerson;
+                                        }
+
+                                        <tr>
+                                            <td>@(String.Format("{0:0.0}", (ing._amount / recipePerPerson) * scalar)) @ing._unit</td>
+                                            <td><button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => retriveIngredient(ing))">@ing._ingredientName</button></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <hr />
+                    }
+                </div>
+                <!-- #endregion -->
+                <!-- #region Products -->
+                <div class="col-sm-4">
+                    @if (viewProducts == true)
+                    {
+                        <div style="max-height:400px; min-height:40px; overflow:auto; overflow-y:scroll; ">
+                            <table class="table-hover border-0 productTable">
+                                <colgroup>
+                                    <col style="width:200px" />
+                                    <col style="width:60px" />
+                                    <col style="width:20px" />
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                        <td style="font-weight:bold;"> Name </td>
+                                        <td style="font-weight:bold;"> Price </td>
+                                        <td style="font-weight:bold;"> <i class="oi oi-cart"></i> </td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (products.Count == 0)
+                                    {
+                                        <tr>
+                                            <td colspan="2" class="text-center"> Select a propper ingredient first </td>
+                                        </tr>
+                                    }
+                                    else
+                                    {
+                                        productSuggestions = products.First()._CustomReferenceField != null ? true : false;
+                                        @foreach (Product p in products)
+                                        {
+                                            if (p._CustomReferenceField != null && p._CustomReferenceField.Equals("*") && productSuggestions)
+                                            {
+                                                <tr>
+                                                    <td>
+                                                        <Tooltip IsAlwaysActive="true" Placement="Placement.Right" Text="Product suggestion">
+                                                            <button class="btn btn-block btn-warning rounded-0" @onclick="(() => AddProductToSL(p))">@p._productName</button>
+                                                        </Tooltip>
+                                                    </td>
+                                                    <td>@p._price kr.</td>
+                                                    <td>@p._amountleft</td>
+                                                </tr>
+                                            }
+                                            else
+                                            {
+                                                <tr>
+                                                    <td><button class="btn btn-block btn-light rounded-0" @onclick="(() => AddProductToSL(p))">@p._productName</button></td>
+                                                    <td>@p._price kr.</td>
+                                                    <td>@p._amountleft</td>
+                                                </tr>
+                                            }
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <hr />
+                    }
+                </div>
+                <!-- #endregion -->
+            </div>
+        </div>
+    </div>
+    <!-- #endregion -->
+}
+
+@code {
+    #region fields
+    private Modal recipeCard;
+
+    string searchTerm;
+    string recipeDescription = " ";
+    string recipeName = " ";
+    string tempIngredientName = " ";
+    string email;
+    string shopString;
+
+    int selectedValue;
+    int recipePerPerson;
+    int scalar = 1;
+    int numb = 0;
+    string TempScalar;
+    int runCounter = 0;
+    int value;
+
+    bool isOpen1 = true;
+    bool isOpen2 = false;
+    bool isOpen3 = false;
+    bool isSearching = false;
+    bool viewRecipes = false;
+    bool viewRecipeList = false;
+    bool viewProducts = false;
+    bool viewDescription = false;
+    bool viewIngredients = false;
+    bool _viewLoadMoreSpinner = false;
+    bool _viewLoadMore = true;
+    bool productSuggestions = true;
+
+    List<ComplexRecipe> complexRecipes = new List<ComplexRecipe>();
+    List<Ingredient> ingredients = new List<Ingredient>();
+    List<Product> products = new List<Product>();
+    List<Product> ToShoppinglist = new List<Product>();
+    List<Product> QuickList = new List<Product>();
+    List<List<Product>> returnList = new List<List<Product>>();
+    List<int> perpersonvalues = new List<int>();
+
+    RecipeQuery recipeQuery = new RecipeQuery();
+
+    HttpResponseMessage responseMessage = new HttpResponseMessage();
+    ShoppinlistFunctionality ShopList = new ShoppinlistFunctionality("api/Shoppinglist");
+
+    #endregion
+
+    #region Modal
+    /// <summary>
+    /// Shows recipe card modal
+    /// </summary>
+    private void showModal()
+    {
+        recipeCard.Show();
+    }
+
+    /// <summary>
+    /// hides recipe card modal
+    /// </summary>
+    private void hideModal()
+    {
+        recipeCard.Hide();
+    }
+    #endregion
+
+    #region Get products and sent products
+
+    public async void AddProductToSL(Product AddedItem)
+    {
+        AddedItem._amountleft++;
+        int actualAmount = AddedItem._amountleft;
+
+        if (String.IsNullOrEmpty(email))
+        {
+            AddedItem._amountleft = 1;
+
+            ToShoppinglist.Add(AddedItem);
+
+            shopString = JsonConvert.SerializeObject(ToShoppinglist);
+
+            await localStorage.SetItemAsync("ProductString", shopString);
+        }
+        else
+        {
+            AddedItem._amountleft = 1;
+            await ShopList.QuickaddListToShoppinglist(AddedItem);
+        }
+    }
+
+    public void QuickAddToShoppinglist(List<Ingredient> ingredient)
+    {
+        bool firstRun;
+        Product temp = new Product();
+        List<Product> productsToAddSL = new List<Product>();
+        GetProductLists(ingredient);
+            
+        foreach (List<Product> pro in returnList)
+        {
+            if (pro.Count != 0)
+            {
+                firstRun = true;
+                foreach (Product p in pro)
+                {
+                    if (temp._price > p._price || firstRun)
+                    {
+                        temp = p;
+                        firstRun = false;
+                    }
+                }
+                productsToAddSL.Add(temp);
+            }
+        }
+
+        if (String.IsNullOrEmpty(email))
+        {
+            QuickaddListToLocalStorage(productsToAddSL);
+        }
+        else
+        {
+            QuickAddListToSL(productsToAddSL);
+        }
+        returnList.Clear();
+    }
+
+    public async void QuickAddListToSL(List<Product> ingredientList)
+    {
+        if (!String.IsNullOrEmpty(email))
+        {
+            foreach (Product p in ingredientList)
+            {
+                p._amountleft = 1;
+            }
+            await ShopList.QuickaddListToShoppinglist(ingredientList);
+        }
+    }
+
+    public async void QuickaddListToLocalStorage(List<Product> ingredientList)
+    {
+        foreach (Product p in ingredientList)
+        {
+            p._amountleft = 1;
+            ToShoppinglist.Add(p);
+        }
+
+        await localStorage.RemoveItemAsync("ProductString");
+
+        shopString = JsonConvert.SerializeObject(ToShoppinglist);
+
+        await localStorage.SetItemAsync("ProductString", shopString);
+    }
+
+    public void GetProductLists(List<Ingredient> ingredients)
+    {
+        //List<Product> test = new List<Product>();
+        foreach (Ingredient ind in ingredients)
+        {
+            retriveIngredient(ind);
+
+            returnList.Add(new List<Product>(QuickList));
+            QuickList.Clear();
+        }
+
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            Debug.WriteLine("User: -> " + await localStorage.GetItemAsync<string>("Email"));
+            await GetLocalSession();
+            localStorage.Changed += (sender, e) =>
+            {
+                Console.WriteLine($"Value for key {e.Key} changed from {e.OldValue} to {e.NewValue}");
+            };
+
+            if (!String.IsNullOrEmpty(email))
+            {
+                responseMessage = await ShopList.GetShoppinglistOnStart(email);
+            }
+
+            StateHasChanged();
+        }
+    }
+
+    async Task GetLocalSession()
+    {
+        email = await localStorage.GetItemAsync<string>("Email");
+
+        if (String.IsNullOrEmpty(email))
+        {
+            shopString = await localStorage.GetItemAsync<string>("ProductString");
+            if (!String.IsNullOrEmpty(shopString))
+            {
+                ToShoppinglist = JsonConvert.DeserializeObject<List<Product>>(shopString);
+            }
+        }
+    }
+
+    #endregion
+
+    #region Recipe Methods
+
+
+    private void toggleRecipeDescription()
+    {
+        viewDescription = !viewDescription;
+    }
+
+    private void toggleRecipeIngredients()
+    {
+        viewIngredients = !viewIngredients;
+    }
+
+    private void toggleRecipeProducts()
+    {
+        viewProducts = !viewProducts;
+    }
+
+    private void OnSelectedValueChanged(int value)
+    {
+        selectedValue = value;
+        scalar = selectedValue;
+    }
+
+    private void AssignScalar(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value.ToString(), out int result))
+        {
+            scalar = result;
+        }
+    }
+
+    private void incrementAmount()
+    {
+        scalar++;
+    }
+
+    private void decrementAmount()
+    {
+        if (recipePerPerson >= 2)
+        {
+            scalar--;
+        }
+    }
+
+    /// <summary>
+    /// toggles different bools, this is used to show/hide
+    /// elements without using JS
+    /// </summary>
+    private void toggle()
+    {
+        viewRecipes = !viewRecipes;
+        viewRecipeList = !viewRecipeList;
+    }
+
+    /// <summary>
+    /// Clears lists
+    /// </summary>
+    private void clear()
+    {
+        // clear ingredient list
+        ingredients.Clear();
+    }
+
+    /// <summary>
+    /// Step 1: go through all ComplexRecipies
+    /// Step 2: go through all keys in list<Product> from ComplexRecipe
+    /// Step 3: check if the selected ingredient matches with an key
+    /// Step 4 - 5: if condition holds go through all values and match ingredient with products
+    /// Step 6: add to products list
+    /// </summary>
+    private void retriveProduct()
+    {
+        if (products != null)
+        {
+            products.Clear();
+        }
+        foreach (ComplexRecipe com in complexRecipes)
+        {
+            foreach (string s in com._complexRecipeComponent._products.Keys)
+            {
+                if (s.Contains(tempIngredientName))
+                {
+                    foreach (var p in com._complexRecipeComponent._products[s])
+                    {
+                        if (p._productName.ToLower().Contains(tempIngredientName) && !products.Contains(p))
+                        {
+                            products.Add(p);
+                            QuickList.Add(p);
+                        }
+                        else if (p._CustomReferenceField != null && p._CustomReferenceField.ToLower().Contains("*"))
+                        {
+                            products.Add(p);
+                            QuickList.Add(p);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// This method gets triggered when an ingredient is clicked.
+    /// It initializes different ingredient propperties.
+    /// </summary>
+    /// <param name="ID"></param>
+    private void retriveIngredient(Ingredient ID)
+    {
+        viewProducts = true;
+        Ingredient ing = ingredients.First(x => x._ingredientName == ID._ingredientName);
+        tempIngredientName = ing._ingredientName;
+        retriveProduct();
+    }
+
+    /// <summary>
+    /// This method gets triggered when a recipe card body is clicked.
+    /// It initializes different recipe propperties.
+    /// </summary>
+    /// <param name="ID"></param>
+    private void retriveRecipe(int ID)
+    {
+
+        // show the recipe card modal
+        showModal();
+        // get the first element that satisfies the condition
+        ComplexRecipe cr = complexRecipes.First(x => x._recipeID == ID);
+
+        //Set properties
+        recipeDescription = cr._description;
+        recipeName = cr._Name;
+        recipePerPerson = (int)cr._PerPerson;
+
+        //fill ingredient list
+        if (cr._ingredientList == null)
+        {
+            foreach (var item in cr._ingredientList)
+            {
+                ingredients.Add(item);
+                //recipeAmount.Add(item._amount);
+            }
+        }
+        else
+        {
+            clear();
+            foreach (var item in cr._ingredientList)
+            {
+                ingredients.Add(item);
+                //recipeAmount.Add(item._amount);
+            }
+        }
+        viewRecipes = true;
+        viewRecipeList = false;
+    }
+    #endregion
+
+    #region Search and load items
+    /// <summary>
+    /// Calls search method when keyboard event is
+    /// triggered (when you press "Enter")
+    /// </summary>
+    /// <param name="args"></param>
+    /// <returns></returns>
+    private async Task OnKeyPress(KeyboardEventArgs args)
+    {
+        if (args.Key == "Enter")
+        {
+            //await RemoveElementFocus("recipeSearchInput");
+            complexRecipes.Clear();
+            await Search();
+        }
+    }
+
+    private async Task Search()
+    {
+        isSearching = true;
+        StateHasChanged();
+        recipeQuery._loadCount = 0;
+        complexRecipes = await recipeQuery.CheapestCRecipes(searchTerm);
+
+        viewRecipeList = true;
+        isSearching = false;
+        StateHasChanged();
+    }
+
+    private async Task LoadMore()
+    {
+        _viewLoadMoreSpinner = true;
+        _viewLoadMore = false;
+        this.StateHasChanged();
+        complexRecipes.AddRange(await recipeQuery.CheapestCRecipes(searchTerm));
+        _viewLoadMoreSpinner = false;
+        _viewLoadMore = true;
+        this.StateHasChanged();
+    }
+    #endregion
+}
