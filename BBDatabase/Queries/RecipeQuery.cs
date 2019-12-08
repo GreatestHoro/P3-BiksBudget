@@ -131,7 +131,7 @@ namespace BBCollection.Queries
         {
             Dictionary<string, List<Product>> resDictionary = new Dictionary<string, List<Product>>();
 
-            foreach(string ingredient in distinctIngredients)
+            foreach(string ingredient in distinctIngredients.Distinct().ToList())
             {
                 resDictionary.Add(ingredient, await Products(ingredient));
             }
