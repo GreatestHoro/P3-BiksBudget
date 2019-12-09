@@ -56,6 +56,21 @@
                             </Validation>
                         </FieldBody>
                     </Field>
+                    @*<Field IsHorizontal="true" JustifyContent="JustifyContent.End">
+                        <FieldLabel ColumnSize="ColumnSize.Is2"></FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.Is10">
+                            <Validation Validator="@ValidateTermsAndConditions">
+                                <CheckEdit>
+                                    <ChildContent>
+                                        <Button IsBlock="true" Size="ButtonSize.Small" Color="Color.Link">@readTerms</Button>
+                                    </ChildContent>
+                                    <Feedback>
+                                        <ValidationError>You must check me out!</ValidationError>
+                                    </Feedback>
+                                </CheckEdit>
+                            </Validation>
+                        </FieldBody>
+                    </Field>*@
                     <Field IsHorizontal="true" JustifyContent="JustifyContent.End">
                         <FieldLabel ColumnSize="ColumnSize.IsFull"></FieldLabel>
                         <FieldBody ColumnSize="ColumnSize.IsFull">
@@ -88,7 +103,9 @@
     string repPassword;
     string username;
     string email;
+    string readTerms = "Click here to read and accept Terms and Conditoins";
 
+    
 
     void ValidatePassword(ValidatorEventArgs e)
     {
@@ -104,6 +121,11 @@
         {
             e.Status = ValidationStatus.Error;
         }
+    }
+
+    void ValidateTermsAndConditions( ValidatorEventArgs e )
+    {
+        e.Status = Convert.ToBoolean( e.Value ) ? ValidationStatus.Success : ValidationStatus.Error;
     }
 
     void ValidateRepPassword(ValidatorEventArgs e)

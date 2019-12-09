@@ -123,49 +123,49 @@
                 if (p._price > minPrice && p._price < maxPrice)
                 {
                     @*<Row>
-                        <Card style="width: 18rem;">
-                            <CardImage Class="card-imgNew" Source="@p._image"></CardImage>
-                            <CardBody>
-                                <CardTitle Size="5" Class="w-100"><h4 style="overflow-wrap:break-word">@p._productName</h4></CardTitle>
-                                <CardText>
-                                    @p._amount
-                                    Amount: @p._amountleft
-                                    Store: @p._storeName
-                                </CardText>
-                                <Button Color="Color.Primary" @onclick="(() => AddProductToSL(p))">Add To Shoppinglist</Button>
-                            </CardBody>
-                        </Card>
-                    </Row>*@
+                    <Card style="width: 18rem;" Margin="Margin.Is1" Padding="Padding.Is1">
+                        <CardImage Class="card-imgNew" Source="@p._image" style="display:block; max-height:280px; max-width: 280px; width: auto; height: auto;"></CardImage>
+                        <CardBody>
+                            <CardTitle Size="5" Class="w-100"><h4 style="overflow-wrap:break-word">@p._productName</h4></CardTitle>
+                            <CardText>
+                                @p._amount
+                                Amount: @p._amountleft
+                                Store: @p._storeName
+                            </CardText>
+                            <Button Color="Color.Primary" @onclick="(() => AddProductToSL(p))">Add To Shoppinglist</Button>
+                        </CardBody>
+                    </Card>
+                </Row>*@
 
                     <div class="col-12 col-sm-8 col-md-6 col-lg-4 top-margin">
-                    <div class="card w-100 h-100">
-                        <img src="@p._image" class="card-img-top  picture" alt="..." style="display:block; max-height:280px; max-width: 280px; width: auto; height: auto;">
-                        <div class="card-body h-50 w-100 bg-light rounded mx-auto">
-                            <h5 class="card-title w-100 headlineCard">@p._productName</h5>
-                            <p class="card-text ">
-                                From @p._storeName <hr />
-                                @p._amount
-                            </p>
-                            <div class="buy d-flex justify-content-between align-items-center">
-                                <div class="price"><h5 class="mt-4">@p._price kr.</h5></div>
-                                <div class="amount">
-                                    <div class="valueClass text-center">
-                                        <p>@p._amountleft</p>
+                        <div class="card w-100 h-100">
+                            <img src="@p._image" class="card-img-top  picture" alt="..." style="display:block; max-height:280px; max-width: 280px; width: auto; height: auto;">
+                            <div class="card-body h-50 w-100 bg-light rounded mx-auto">
+                                <h5 class="card-title w-100 headlineCard">@p._productName</h5>
+                                <p class="card-text ">
+                                    From @p._storeName <hr />
+                                    @p._amount
+                                </p>
+                                <div class="buy d-flex justify-content-between align-items-center">
+                                    <div class="price"><h5 class="mt-4">@p._price kr.</h5></div>
+                                    <div class="amount">
+                                        <div class="valueClass text-center">
+                                            <p>@p._amountleft</p>
+                                        </div>
                                     </div>
-                                </div>
-                                @if (!disableButton)
-                                {
-                                    <button @onclick="(() => AddProductToSL(p))" class="btn btn-success mt-3 buttonPlace"><i class="oi oi-cart"></i> Shopping list</button>
-                                }
-                                else
-                                {
-                                    <button class="btn btn-success mt-3 buttonPlace"><i class="oi oi-cart"></i> Shopping list</button>
+                                    @if (!disableButton)
+                                    {
+                                        <button @onclick="(() => AddProductToSL(p))" class="btn btn-success mt-3 buttonPlace"><i class="oi oi-cart"></i> Shopping list</button>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn btn-success mt-3 buttonPlace"><i class="oi oi-cart"></i> Shopping list</button>
 
-                                }
+                                    }
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
                 }
             }
             @*</CardGroup>*@
