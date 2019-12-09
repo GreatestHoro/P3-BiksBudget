@@ -87,7 +87,9 @@ namespace BBCollection.DBHandling
                     ingredients.Add(ingredient);
                 }
 
-                return ingredients;
+                IEnumerable<Ingredient> distinctIngredients = ingredients.GroupBy(o => o._ingredientName).Select(g => g.First());
+
+                return distinctIngredients.ToList();
             });
         }
         #endregion
