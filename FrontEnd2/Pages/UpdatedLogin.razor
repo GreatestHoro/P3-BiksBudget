@@ -42,7 +42,7 @@
                 </Field>
                 <Field IsHorizontal="true" JustifyContent="JustifyContent.End">
                     <FieldBody ColumnSize="ColumnSize.IsFull">
-                        <Button IsBlock="true" Color="Color.Success" Clicked="@RegisterAccount" IsLoading="@isLogginIn"><i class="oi oi-person"></i> Login</Button>
+                        <Button IsBlock="true" Color="Color.Success" Clicked="@Login" IsLoading="@isLogginIn"><i class="oi oi-person"></i> Login</Button>
                     </FieldBody>
                 </Field>
                 <Field IsHorizontal="true" JustifyContent="JustifyContent.End" Class="text-center">
@@ -79,7 +79,7 @@
     {
         if (args.Key == "Enter")
         {
-            await AutorizeLogin();
+            await Login();
         }
     }
 
@@ -134,14 +134,9 @@
     {
         username = e.Value.ToString();
 
-        if (isLogginIn)
+        if (!isLogginIn)
         {
             errorMessage = "Unrecognized Username or Password";
-            e.Status = ValidationStatus.Error;
-        }
-        else if (String.IsNullOrEmpty(username) ||String.IsNullOrWhiteSpace(username))
-        {
-            errorMessage = "Please Write A Username";
             e.Status = ValidationStatus.Error;
         }
         else
@@ -150,10 +145,9 @@
         }
     }
 
-    async Task RegisterAccount()
+    async Task Login()
     {
-        isLogginIn = true;
-        if (!String.IsNullOrEmpty(username) && !String.IsNullOrEmpty(password))
+        if (!String.IsNullOrEmpty(password) && !String.IsNullOrEmpty(username))
         {
             if (validations.ValidateAll())
             {
@@ -161,6 +155,5 @@
                 validations.ClearAll();
             }
         }
-        isLogginIn = false;
     }
 }
