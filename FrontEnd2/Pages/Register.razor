@@ -56,13 +56,14 @@
                             </Validation>
                         </FieldBody>
                     </Field>
-                    @*<Field IsHorizontal="true" JustifyContent="JustifyContent.End">
+                    <Field IsHorizontal="true" JustifyContent="JustifyContent.End">
                         <FieldLabel ColumnSize="ColumnSize.Is2"></FieldLabel>
-                        <FieldBody ColumnSize="ColumnSize.Is10">
+                        <FieldBody ColumnSize="ColumnSize.Is12" Class="text-center">
                             <Validation Validator="@ValidateTermsAndConditions">
                                 <CheckEdit>
                                     <ChildContent>
-                                        <Button IsBlock="true" Size="ButtonSize.Small" Color="Color.Link">@readTerms</Button>
+                                        Accept terms and conditions.
+                                        <Button IsBlock="true" Size="ButtonSize.Small" Clicked="@showModal" Color="Color.Link">@readTerms</Button>
                                     </ChildContent>
                                     <Feedback>
                                         <ValidationError>You must check me out!</ValidationError>
@@ -70,7 +71,7 @@
                                 </CheckEdit>
                             </Validation>
                         </FieldBody>
-                    </Field>*@
+                    </Field>
                     <Field IsHorizontal="true" JustifyContent="JustifyContent.End">
                         <FieldLabel ColumnSize="ColumnSize.IsFull"></FieldLabel>
                         <FieldBody ColumnSize="ColumnSize.IsFull">
@@ -82,11 +83,33 @@
         </Card>
     </Column>
 </Row>
+
+<Accordion>
+    <Modal @ref="termsAndConditions">
+        <ModalBackdrop />
+        <ModalContent IsCentered="true" Size="ModalSize.Large">
+            <Card>
+                <CardHeader>
+                    <CardSubtitle Class="text-center">Terms and Conditions</CardSubtitle>
+                </CardHeader>
+                <CardBody>
+                    <ChildContent>
+                        All your information will be sold the the Chinese.
+                    </ChildContent>
+                </CardBody>
+                <Button IsBlock="true" Color="Color.Success" Clicked="@hideModal">That is okay!</Button>
+            </Card>
+        </ModalContent>
+    </Modal>
+</Accordion>
+
 @code{
     bool isLoading = false;
     bool goodPassword = false;
     bool goodRePassword = false;
     bool goodUsername = false;
+
+    private Modal termsAndConditions;
 
     Verification verification = new Verification();
     ConnectionSettings connectionSettings = new ConnectionSettings();
@@ -103,9 +126,17 @@
     string repPassword;
     string username;
     string email;
-    string readTerms = "Click here to read and accept Terms and Conditoins";
+    string readTerms = "Click here to read";
 
-    
+    private void showModal()
+    {
+        termsAndConditions.Show();
+    }
+
+    private void hideModal()
+    {
+        termsAndConditions.Hide();
+    }
 
     void ValidatePassword(ValidatorEventArgs e)
     {
