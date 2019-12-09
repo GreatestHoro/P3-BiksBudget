@@ -1,4 +1,4 @@
-﻿@page "/UpdatedLogin"
+﻿@page "/Login"
 
 @using BBCollection.BBObjects;
 @using BBCollection.DBConncetion;
@@ -19,34 +19,39 @@
                 <CardSubtitle Class="text-center">Login</CardSubtitle>
             </CardHeader>
             <CardBody>
+                <Validations @ref="validations" Mode="ValidationMode.Manual">
                     <Field IsHorizontal="true">
                         <FieldLabel ColumnSize="ColumnSize.Is12" Class="text-left">Username</FieldLabel>
                         <FieldBody ColumnSize="ColumnSize.Is12">
-                            <TextEdit Placeholder="Username" @bind-Text="@username" @onkeyup="OnKeyPress"></TextEdit>
-                        </FieldBody>
-                    </Field>
-                    <Field IsHorizontal="true">
-                        <FieldLabel ColumnSize="ColumnSize.Is12" Class="text-left">Password</FieldLabel>
-                        <FieldBody ColumnSize="ColumnSize.Is12">
-                            <TextEdit Role="TextRole.Password" Placeholder="Password" @bind-Text="@password" @onkeyup="OnKeyPress"></TextEdit>
-                        </FieldBody>
-                    </Field>
-                    <Field IsHorizontal="true">
-                        <FieldBody ColumnSize="ColumnSize.Is12">
-                                <TextEdit Class="overflow-auto;" @bind-Text="@errorMessage" style="color: red;" Size="Size.Small" IsDisabled="true">
+                            <Validation Validator="@(async(e)=>await ValidateUsername(e))">
+                                <TextEdit Placeholder="Enter Username" @bind-Text="@username" @onkeyup="OnKeyPress">
+                                    <Feedback>
+                                        <ValidationError>@errorMessage</ValidationError>
+                                    </Feedback>
                                 </TextEdit>
+                            </Validation>
                         </FieldBody>
                     </Field>
-                    <Field IsHorizontal="true" JustifyContent="JustifyContent.End">
-                        <FieldBody ColumnSize="ColumnSize.IsFull">
-                            <Button Color="Color.Success" Clicked="@AutorizeLogin" IsLoading="@isLogginIn"><i class="oi oi-person"></i> Login</Button>
-                            <Button Color="Color.Success" IsOutline="true" Clicked="SendToRegister"><i class="oi oi-person"></i> Register</Button>
-                        </FieldBody>
-                    </Field>
+                </Validations>
+                <Field IsHorizontal="true">
+                    <FieldLabel ColumnSize="ColumnSize.Is12" Class="text-left">Password</FieldLabel>
+                    <FieldBody ColumnSize="ColumnSize.Is12">
+                        <TextEdit Role="TextRole.Password" Placeholder="Enter Password" @bind-Text="@password" @onkeyup="OnKeyPress"></TextEdit>
+                    </FieldBody>
+                </Field>
+                <Field IsHorizontal="true" JustifyContent="JustifyContent.End">
+                    <FieldBody ColumnSize="ColumnSize.IsFull">
+                        <Button IsBlock="true" Color="Color.Success" Clicked="@RegisterAccount" IsLoading="@isLogginIn"><i class="oi oi-person"></i> Login</Button>
+                    </FieldBody>
+                </Field>
+                <Field IsHorizontal="true" JustifyContent="JustifyContent.End" Class="text-center">
+                    <Button IsBlock="true" Size="ButtonSize.Small" Color="Color.Link" Clicked="SendToRegister">@createAccount</Button>
+                </Field>
             </CardBody>
         </Card>
     </Column>
 </Row>
+
 @code{
     bool loginFailed = false;
 
@@ -56,13 +61,10 @@
 
     Validations annotationsValidations;
 
-
     string username;
-    string errorMessage = "Your username or password was incorrect.";
-    string createAccount = "No account? Press here to sign up:";
+    string errorMessage = "Unrecognized Username or Password";
+    string createAccount = "No Account? Click Here to Register!";
     HttpResponseMessage response = new HttpResponseMessage();
-
-
 
     string email;
     string password;
@@ -86,28 +88,21 @@
 
     protected async Task AutorizeLogin()
     {
-        isLogginIn = true;
-        StateHasChanged();
-
-        User user = new User(email, password);
+        User user = new User(username, password);
 
         response = await account.Login(user);
 
         if (response.IsSuccessStatusCode)
         {
-            await localStorage.SetItemAsync("Email", email);
+            await localStorage.SetItemAsync("Email", username);
             await localStorage.RemoveItemAsync("ProductString");
 
             NavigationManager.NavigateTo("shoppinglist");
         }
         else
         {
-
-            //Debug.WriteLine("Testing Remove");
             await localStorage.RemoveItemAsync("Email");
         }
-        isLogginIn = false;
-        StateHasChanged();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -123,5 +118,37 @@
     async Task GetLocalSession()
     {
         email = await localStorage.GetItemAsync<string>("Email");
+    }
+
+    public async Task ValidateUsername(ValidatorEventArgs e)
+    {
+        username = e.Value.ToString();
+
+        User user = new User(username, password);
+
+        response = await account.Login(user);
+
+        if (response.IsSuccessStatusCode)
+        {
+            e.Status = ValidationStatus.Success;
+        }
+        else
+        {
+            e.Status = ValidationStatus.Error;
+        }
+    }
+
+    async Task RegisterAccount()
+    {
+        isLogginIn = true;
+        if (!String.IsNullOrEmpty(username) && !String.IsNullOrEmpty(password))
+        {
+            if (validations.ValidateAll())
+            {
+                await AutorizeLogin();
+                validations.ClearAll();
+            }
+        }
+        isLogginIn = false;
     }
 }

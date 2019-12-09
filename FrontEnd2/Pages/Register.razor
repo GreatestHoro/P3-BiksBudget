@@ -26,7 +26,7 @@
                             <Validation Validator="@ValidateUsername">
                                 <TextEdit Placeholder="Username" @bind-Text="@username" @onkeyup="OnKeyPress">
                                     <Feedback>
-                                        <ValidationError>Enter Username!</ValidationError>
+                                        <ValidationError>@checkUsername.Item2</ValidationError>
                                     </Feedback>
                                 </TextEdit>
                             </Validation>
@@ -36,7 +36,7 @@
                         <FieldLabel ColumnSize="ColumnSize.Is12" Class="text-left">Password</FieldLabel>
                         <FieldBody ColumnSize="ColumnSize.Is12">
                             <Validation Validator="@ValidatePassword">
-                                <TextEdit Role="TextRole.Password" Placeholder="Password" @bind-Text="@password" @onkeyup="OnKeyPress">
+                                <TextEdit Role="TextRole.Password" Placeholder="Enter Password" @bind-Text="@password" @onkeyup="OnKeyPress">
                                     <Feedback>
                                         <ValidationError>@checkPassword.Item2</ValidationError>
                                     </Feedback>
@@ -48,7 +48,7 @@
                         <FieldLabel ColumnSize="ColumnSize.Is12" Class="text-left">Re Password</FieldLabel>
                         <FieldBody ColumnSize="ColumnSize.Is12">
                             <Validation Validator="@ValidateRepPassword">
-                                <TextEdit Role="TextRole.Password" Placeholder="Retype password" @bind-Text="@repPassword" @onkeyup="OnKeyPress">
+                                <TextEdit Role="TextRole.Password" Placeholder="Re-enter password" @bind-Text="@repPassword" @onkeyup="OnKeyPress">
                                     <Feedback>
                                         <ValidationError>@checkRepPassword.Item2</ValidationError>
                                     </Feedback>
@@ -57,9 +57,9 @@
                         </FieldBody>
                     </Field>
                     <Field IsHorizontal="true" JustifyContent="JustifyContent.End">
-                        <FieldLabel ColumnSize="ColumnSize.Is3"></FieldLabel>
-                        <FieldBody ColumnSize="ColumnSize.Is8">
-                            <Button Color="Color.Success" Clicked="@Submit" IsLoading="@isLoading"><i class="oi oi-person"></i> Register</Button>
+                        <FieldLabel ColumnSize="ColumnSize.IsFull"></FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.IsFull">
+                            <Button IsBlock="true" Color="Color.Success" Clicked="@RegisterAccount" IsLoading="@isLoading"><i class="oi oi-person"></i> Register</Button>
                         </FieldBody>
                     </Field>
                 </Validations>
@@ -98,7 +98,6 @@
 
         if (checkPassword.Item1 == true)
         {
-            goodUsername = true;
             e.Status = ValidationStatus.Success;
         }
         else
@@ -115,7 +114,6 @@
 
         if (checkPassword.Item1 == true)
         {
-            goodPassword = true;
             e.Status = ValidationStatus.Success;
         }
         else
@@ -132,7 +130,6 @@
 
         if (checkUsername.Item1 == true)
         {
-            goodUsername = true;
             e.Status = ValidationStatus.Success;
         }
         else
@@ -141,10 +138,10 @@
         }
     }
 
-    async Task Submit()
+    async Task RegisterAccount()
     {
         isLoading = true;
-        //if (goodPassword && goodRePassword && goodUsername)
+        if (!String.IsNullOrEmpty(username) && !String.IsNullOrEmpty(password) && !String.IsNullOrEmpty(repPassword))
         {
             if (validations.ValidateAll())
             {
@@ -164,7 +161,7 @@
     {
         if (args.Key == "Enter")
         {
-            await Submit();
+            await RegisterAccount();
         }
     }
 
