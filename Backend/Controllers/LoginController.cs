@@ -48,14 +48,15 @@ namespace Backend.Controllers
             }
 
             user = JsonConvert.DeserializeObject<User>(buffer);
+         
 
             bool exist = await dbConnect.User.Verify(user._userName, user._password);
 
-            
-            if(exist == true)
+
+            if (exist == true)
             {
                 return Ok(ModelState);
-            } 
+            }
             else
             {
                 return BadRequest(ModelState);

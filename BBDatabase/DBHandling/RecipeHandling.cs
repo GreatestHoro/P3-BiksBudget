@@ -304,7 +304,7 @@ namespace BBCollection.DBHandling
         public async Task<List<ComplexRecipe>> GetPriceAsync(string productName, int limit, int offset)
         {
             string getRecipesPrice =
-                "SELECT * FROM biksbudgetdb.recipes WHERE recipename like @ProductName " +
+                "SELECT * FROM biksbudgetdb.recipes WHERE recipename like @ProductName AND recipe_totalprice > 0 " +
                 "ORDER BY recipe_totalprice LIMIT @Limit OFFSET @Offset";
             List<ComplexRecipe> complexRecipes = new List<ComplexRecipe>();
 
@@ -334,7 +334,6 @@ namespace BBCollection.DBHandling
 
             foreach(ComplexRecipe c in CRC)
             {
-                Console.WriteLine(c._recipeID + " and " + c._complexRecipeComponent.RecipeCost);
                 await UpdatePriceAsync(c._recipeID, c._complexRecipeComponent.RecipeCost);
             }
         }
