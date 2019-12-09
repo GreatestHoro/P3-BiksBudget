@@ -1,14 +1,13 @@
-﻿using System;
+﻿using BBCollection;
+using BBCollection.BBObjects;
+using BBCollection.DBHandling;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using BBCollection;
-using BBCollection.BBObjects;
-using BBCollection.DBHandling;
 
 namespace Backend.Controllers
 {
@@ -55,7 +54,7 @@ namespace Backend.Controllers
         {
             List<Product> newItem = new List<Product>();
             List<Product> Fromdb = new List<Product>();
-            
+
             string buffer;
 
             HttpRequest request = HttpContext.Request;

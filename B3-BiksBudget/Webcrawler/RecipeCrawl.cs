@@ -1,4 +1,5 @@
-﻿using BBCollection;
+﻿using B3_BiksBudget.Webcrawler.Assisting_classes;
+using BBCollection;
 using BBCollection.BBObjects;
 using HtmlAgilityPack;
 using System;
@@ -6,12 +7,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using BBCollection.StoreApi;
-using BBCollection.StoreApi.ApiNeeds;
-using BBCollection.StoreApi.SallingApi;
-using BBCollection.DBHandling;
-using BBCollection.DBConncetion;
-using B3_BiksBudget.Webcrawler.Assisting_classes;
 
 
 namespace BBGatherer.Webcrawler
@@ -78,7 +73,7 @@ namespace BBGatherer.Webcrawler
 
                         if (!fatalError)
                         {
-                            Recipe recipe = new Recipe(i, 
+                            Recipe recipe = new Recipe(i,
                             name.ElementAt<HtmlNode>(0).InnerText,
                             Beskrivels.ElementAt<HtmlNode>(0).InnerText,
                             IngriedisensList,
@@ -114,13 +109,13 @@ namespace BBGatherer.Webcrawler
         /// <param name="dbConnect">Instace of the database used to save and edit the database</param>
         /// <param name="functionality">A instance of a classe which contains many of the nessesary funtionalitys for the method</param>
         /// <returns>Return a new instance</returns>
-        private Ingredient CreateIngriedient(string ind,out bool fatalError, DatabaseConnect dbConnect, AssistingClasses functionality)
+        private Ingredient CreateIngriedient(string ind, out bool fatalError, DatabaseConnect dbConnect, AssistingClasses functionality)
         {
             float amount = functionality.getDetermin().DeterminAmount(ind);
             String unit = functionality.getDetermin().DeterminUnit(ind);
             String name = functionality.getDetermin().DeterminName(ind).Trim();
 
-            name = nameEditing_Evalution(name,out fatalError,dbConnect, functionality);
+            name = nameEditing_Evalution(name, out fatalError, dbConnect, functionality);
 
             return new Ingredient(name.Trim(), unit, amount);
         }
@@ -133,7 +128,7 @@ namespace BBGatherer.Webcrawler
         /// <param name="dbConnect">Instace of the database used to save and edit the database</param>
         /// <param name="functionality">A instance of a classe which contains many of the nessesary funtionalitys for the method</param>
         /// <returns>Returns a string that will be used as the ingrediient name</returns>
-        private string nameEditing_Evalution(string name,out bool fatalError,DatabaseConnect dbConnect, AssistingClasses functionality)
+        private string nameEditing_Evalution(string name, out bool fatalError, DatabaseConnect dbConnect, AssistingClasses functionality)
         {
             if (!String.IsNullOrWhiteSpace(name.Trim()))
             {

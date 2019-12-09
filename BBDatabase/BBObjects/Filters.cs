@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using BBCollection;
-using BBCollection.StoreApi;
-using BBCollection.StoreApi.ApiNeeds;
+﻿using BBCollection.StoreApi;
 using BBCollection.StoreApi.SallingApi;
-using BBCollection.DBHandling;
-using BBCollection.DBConncetion;
+using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -93,7 +88,7 @@ namespace BBCollection.BBObjects
                     // Otherwise the loop runs again to search in the Salling api.
                     break;
                 }
-            } while (i++ <=2);
+            } while (i++ <= 2);
             return FilteredProductList;
         }
 

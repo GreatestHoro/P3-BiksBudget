@@ -1,9 +1,7 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using BBCollection.BBObjects;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using BBCollection.BBObjects;
 using System.Threading.Tasks;
 
 namespace BBGatherer_TEST
@@ -12,13 +10,13 @@ namespace BBGatherer_TEST
     public class EmptyFridge_TEST
     {
         [TestMethod]
-        public async Task EmptyFridge_GetRelevantRecepiesFromProd_TEST() 
+        public async Task EmptyFridge_GetRelevantRecepiesFromProd_TEST()
         {
             List<Product> Storage = InstantiateStorage();
             EmptyFridgeFuntionality emptyFridgeFuntionality = new EmptyFridgeFuntionality(Storage);
             List<WeightedRecipies> resultRecepies = new List<WeightedRecipies>();
 
-            bool exspected = true,result = false;
+            bool exspected = true, result = false;
 
             foreach (var item in emptyFridgeFuntionality.allRefs)
             {
@@ -30,7 +28,7 @@ namespace BBGatherer_TEST
         }
 
         [TestMethod]
-        public async Task EmptyFridge_SortMatchnum_TEST() 
+        public async Task EmptyFridge_SortMatchnum_TEST()
         {
             List<Product> Storage = InstantiateStorage();
 
@@ -46,23 +44,23 @@ namespace BBGatherer_TEST
             }
 
             emptyFridgeFuntionality.SortByMatchnum(resultRecepies);
-            resultRecepies =await emptyFridgeFuntionality.GetSortedList();
+            resultRecepies = await emptyFridgeFuntionality.GetSortedList();
 
             testVlaue = resultRecepies.First().matchingIngrdientsNum;
-            foreach (WeightedRecipies w in resultRecepies) 
+            foreach (WeightedRecipies w in resultRecepies)
             {
                 if (w.matchingIngrdientsNum == testVlaue || w.matchingIngrdientsNum < testVlaue)
                 {
                     result = true;
                 }
-                else 
+                else
                 {
                     result = false;
                     break;
                 }
             }
 
-            Assert.AreEqual(result,exspected);
+            Assert.AreEqual(result, exspected);
         }
 
         [TestMethod]
@@ -102,7 +100,8 @@ namespace BBGatherer_TEST
             Assert.AreEqual(result, exspected);
         }
 
-        private List<Product> InstantiateStorage() 
+        #region Helper Merhods
+        private List<Product> InstantiateStorage()
         {
             Product product = new Product();
             product._productName = "test1";
@@ -114,10 +113,10 @@ namespace BBGatherer_TEST
             product2._productName = "test3";
             product2._CustomReferenceField = "okse";
 
-            return new List<Product>() {product,product1,product2};
+            return new List<Product>() { product, product1, product2 };
         }
 
-        private bool CheckIfRerencesArePresentInRecepies(List<WeightedRecipies> recepies, List<Product> storage) 
+        private bool CheckIfRerencesArePresentInRecepies(List<WeightedRecipies> recepies, List<Product> storage)
         {
             bool SaltFound = false, PeberFound = false, OkseFound = false;
             bool result = false;
@@ -148,9 +147,10 @@ namespace BBGatherer_TEST
                     }
                 }
             }
-            Done:;
+        Done:;
             return result;
         }
-        
+        #endregion
+
     }
 }

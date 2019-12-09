@@ -1,14 +1,12 @@
+using BBCollection.BBObjects;
+using BBCollection.DBConncetion;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using System.Globalization;
-using BBCollection.BBObjects;
-using BBCollection.DBConncetion;
 
 namespace BBCollection.DBHandling
 {
@@ -141,7 +139,7 @@ namespace BBCollection.DBHandling
         {
             productString = JsonConvert.SerializeObject(sentList);
 
-            response =  await PutToApi(productString);
+            response = await PutToApi(productString);
 
             return response;
         }
@@ -159,6 +157,15 @@ namespace BBCollection.DBHandling
             productString = JsonConvert.SerializeObject(item);
 
             response = await PutToApi(productString);
+
+            return response;
+        }
+
+        public async Task<HttpResponseMessage> QuickaddItemToShoppinglist(Product item, string dist)
+        {
+            productString = JsonConvert.SerializeObject(item);
+
+            response = await PutToApi(productString,dist);
 
             return response;
         }
@@ -320,7 +327,7 @@ namespace BBCollection.DBHandling
 
             return response;
         }
-        
+
         /// <summary>
         /// Sends a string to the api.
         /// This method is called when the shoppinglist should not be replaced
@@ -332,6 +339,14 @@ namespace BBCollection.DBHandling
         {
             var content = new StringContent(productString, Encoding.UTF8, "application/json");
             response = await Http.PutAsync(connectionSettings.GetApiLink() + dest + "/" + Email, content);
+
+            return response;
+        }
+
+        async Task<HttpResponseMessage> PutToApi(string productString, string dist)
+        {
+            var content = new StringContent(productString, Encoding.UTF8, "application/json");
+            response = await Http.PutAsync(connectionSettings.GetApiLink() + dist + "/" + Email, content);
 
             return response;
         }

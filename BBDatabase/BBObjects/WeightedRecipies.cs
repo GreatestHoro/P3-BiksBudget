@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using BBCollection.BBObjects;
 
 namespace BBCollection.BBObjects
 {
@@ -22,7 +19,7 @@ namespace BBCollection.BBObjects
             this._recipie = _recipie;
             this.ingrdients = ingrdients;
             matchingIngrdient.AddRange(ingrdients.Keys);
-            foreach (Ingredient i in ingrdients.Keys) 
+            foreach (Ingredient i in ingrdients.Keys)
             {
                 custmomRef.AddRange(ingrdients[i]);
             }
@@ -33,7 +30,7 @@ namespace BBCollection.BBObjects
 
         public void calculateP()
         {
-            int matchs = 0,NonMatches = 0,allTested = 0;
+            int matchs = 0, NonMatches = 0, allTested = 0;
 
             foreach (Ingredient I in _recipie._ingredientList)
             {
@@ -56,7 +53,7 @@ namespace BBCollection.BBObjects
             {
                 pMatch = 100;
             }
-            else 
+            else
             {
                 pMatch = (float)matchs / (float)allTested;
             }

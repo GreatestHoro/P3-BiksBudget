@@ -1,15 +1,13 @@
-﻿using BBCollection;
-using BBCollection.BBObjects;
+﻿using B3_BiksBudget.Webcrawler.Assisting_classes;
 using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using System.Drawing;
-using System.Net;
-using System.IO;
-using B3_BiksBudget.Webcrawler.Assisting_classes;
 
 namespace BBGatherer.Webcrawler
 {
@@ -23,7 +21,7 @@ namespace BBGatherer.Webcrawler
             string url = CreateLink(assembleSearchName(searchterm));
             HtmlNodeCollection nodes = GetImagePlacement(url).Result;
             List<string> imageLinks = ExtractImageURL(nodes);
-            
+
             return imageLinks;
         }
 
@@ -108,7 +106,7 @@ namespace BBGatherer.Webcrawler
             return !Flag;
         }
 
-        public void SaveImagesFromLink(List<string> SortedLinks) 
+        public void SaveImagesFromLink(List<string> SortedLinks)
         {
             int i = 0;
             WebClient client = new WebClient();
@@ -119,7 +117,7 @@ namespace BBGatherer.Webcrawler
 
                 if (bitmap != null)
                 {
-                    bitmap.Save(@"C:\Users\jeppe\Desktop\Images_BBGathere\"+ assemblefilename(searchterm) +i+++".jpg");
+                    bitmap.Save(@"C:\Users\jeppe\Desktop\Images_BBGathere\" + assemblefilename(searchterm) + i++ + ".jpg");
                 }
 
                 stream.Flush();

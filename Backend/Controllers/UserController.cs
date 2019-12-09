@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using BBCollection;
+﻿using BBCollection;
 using BBCollection.BBObjects;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace Backend.Controllers
 {
@@ -34,24 +31,19 @@ namespace Backend.Controllers
 
             user = JsonConvert.DeserializeObject<User>(buffer);
 
+            bool result = await dbConnect.User.Verify(user._userName, user._password);
+            if (result)
+            {
+                return BadRequest(ModelState);
+                //response = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
+            }
+
             string username = user._userName;
             string password = user._password;
 
             await dbConnect.User.Add(username, password);
 
-            var result = await dbConnect.User.Verify(user._userName, user._password);
-
-            if (result)
-            {
-                return Ok(ModelState);
-                //response = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
-            }
-            else
-            {
-                return BadRequest(ModelState);
-                //var message = string.Format("Product with email " + user._userName + "was not found");
-                //response = new HttpResponseMessage(System.Net.HttpStatusCode.NotFound);
-            }
+            return Ok(ModelState);
 
             //return response;
         }

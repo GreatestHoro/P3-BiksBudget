@@ -1,11 +1,9 @@
+using BBCollection;
+using BBCollection.DBHandling;
 using BBCollection.StoreApi.CoopApi;
 using BBGatherer.Webcrawler;
-using BBCollection;
-using BBCollection.BBObjects;
 using System;
 using System.Collections.Generic;
-using BBCollection.DBConncetion;
-using BBCollection.DBHandling;
 using System.Threading.Tasks;
 
 namespace BBGatherer
@@ -16,7 +14,7 @@ namespace BBGatherer
         {
 
             DataHandling dh = new DataHandling();
-            
+
             try
             {
                 dh.GenerateDatabase().Wait();
@@ -42,7 +40,8 @@ namespace BBGatherer
         {
             ProductHandling test = new ProductHandling();
             //InitializeDB _test = new InitializeDB();
-            if (coop) {
+            if (coop)
+            {
                 CoopDoStuff tryCoop = new CoopDoStuff("d0b9a5266a2749cda99d4468319b6d9f");
 
                 List<CoopProduct> coopProducts = tryCoop.CoopFindEverythingInStore("24073");
@@ -73,7 +72,7 @@ namespace BBGatherer
             //dbConnect.AddProduct(new Product("test","hey","alot",1d,"nope","walmart"));
             //test.InsertIngredientReferenceFromId("tester", "test", new DatabaseInformation("localhost", "biksbudgetDB", "root", "BiksBudget123"));
 
-            if(generatePrice == true)
+            if (generatePrice == true)
             {
                 await dbConnect.Recipe.GenerateTotalPriceAsync();
             }
@@ -83,7 +82,7 @@ namespace BBGatherer
         {
             DatabaseConnect dc = new DatabaseConnect();
             await dc.Recipe.GenerateTotalPriceAsync();
-            
+
             /*
             List<string> strings = new List<String>();
 
