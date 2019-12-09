@@ -5,11 +5,13 @@ namespace BBCollection.BBObjects
 {
     public class Recipe
     {
+        public int _recipeID;
         public string _Name;
         public string _description;
         public List<Ingredient> _ingredientList;
         public float _PerPerson;
-        public int _recipeID;
+        public double _minimumTotalPrice;
+        public string image;
 
         public Recipe(int recipeID, string name)
         {
@@ -25,6 +27,18 @@ namespace BBCollection.BBObjects
             _ingredientList = ingredientList;
             _PerPerson = PerPerson;
         }
+
+        public Recipe(int recipeID, string name, string description, 
+            List<Ingredient> ingredientList, float PerPerson, double minimumTotalPrice)
+        {
+            _recipeID = recipeID;
+            _Name = name;
+            _description = description;
+            _ingredientList = ingredientList;
+            _PerPerson = PerPerson;
+            _minimumTotalPrice = minimumTotalPrice;
+        }
+
         public Recipe() { }
 
         public void deleteDuplicates() 

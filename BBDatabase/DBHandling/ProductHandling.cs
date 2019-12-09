@@ -51,60 +51,60 @@ namespace BBCollection.DBHandling
             await Task.Run(() => new SQLConnect().NonQueryMSC(msc));
         }
 
-        public async Task<List<Product>> GetList(string productName)
+        public async Task<List<Product>> GetListAsync(string productName)
         {
             List<Product> productList = new List<Product>();
             string table = "products";
             string collumn = "productname";
 
-                DataSet ds = await new SQLConnect().DynamicSimpleListSQL(new SqlQuerySort().SortMSC(productName, table, collumn));
+            DataSet ds = await new SQLConnect().DynamicSimpleListSQL(new SqlQuerySort().SortMSC(productName, table, collumn));
 
-                if (ds.Tables.Count != 0)
+            if (ds.Tables.Count != 0)
+            {
+                foreach (DataRow r in ds.Tables[0].Rows)
                 {
-                    foreach (DataRow r in ds.Tables[0].Rows)
+                    if (r[6] != DBNull.Value)
                     {
-                        if (r[6] != DBNull.Value)
-                        {
-                            Product product = new Product((string)r[0], (string)r[1], (string)r[2], Convert.ToDouble(r[3]), (string)r[4], (string)r[5], (string)r[6]);
-                            productList.Add(product);
-                        }
-                        else
-                        {
-                            Product product = new Product((string)r[0], (string)r[1], (string)r[2], Convert.ToDouble(r[3]), (string)r[4], (string)r[5]);
-                            productList.Add(product);
-                        }
-
+                        Product product = new Product((string)r[0], (string)r[1], (string)r[2], Convert.ToDouble(r[3]), (string)r[4], (string)r[5], (string)r[6]);
+                        productList.Add(product);
                     }
+                    else
+                    {
+                        Product product = new Product((string)r[0], (string)r[1], (string)r[2], Convert.ToDouble(r[3]), (string)r[4], (string)r[5]);
+                        productList.Add(product);
+                    }
+
                 }
-                return productList;
+            }
+            return productList;
         }
 
-        public List<Product> GetListSyncAsync(string productName)
+        public List<Product> GetList(string productName)
         {
             List<Product> productList = new List<Product>();
             string table = "products";
             string collumn = "productname";
 
-                DataSet ds = new SQLConnect().DynamicSimpleListSQLSync(new SqlQuerySort().SortMSC(productName, table, collumn));
+            DataSet ds = new SQLConnect().DynamicSimpleListSQLSync(new SqlQuerySort().SortMSC(productName, table, collumn));
 
-                if (ds.Tables.Count != 0)
+            if (ds.Tables.Count != 0)
+            {
+                foreach (DataRow r in ds.Tables[0].Rows)
                 {
-                    foreach (DataRow r in ds.Tables[0].Rows)
+                    if (r[6] != DBNull.Value)
                     {
-                        if (r[6] != DBNull.Value)
-                        {
-                            Product product = new Product((string)r[0], (string)r[1], (string)r[2], Convert.ToDouble(r[3]), (string)r[4], (string)r[5], (string)r[6]);
-                            productList.Add(product);
-                        }
-                        else
-                        {
-                            Product product = new Product((string)r[0], (string)r[1], (string)r[2], Convert.ToDouble(r[3]), (string)r[4], (string)r[5]);
-                            productList.Add(product);
-                        }
-
+                        Product product = new Product((string)r[0], (string)r[1], (string)r[2], Convert.ToDouble(r[3]), (string)r[4], (string)r[5], (string)r[6]);
+                        productList.Add(product);
                     }
+                    else
+                    {
+                        Product product = new Product((string)r[0], (string)r[1], (string)r[2], Convert.ToDouble(r[3]), (string)r[4], (string)r[5]);
+                        productList.Add(product);
+                    }
+
                 }
-                return productList;
+            }
+            return productList;
         }
 
         public async Task<List<Product>> GetRange(string productName, int limit, int offset)
@@ -113,18 +113,24 @@ namespace BBCollection.DBHandling
             string table = "products";
             string collumn = "productname";
 
-             DataSet ds = await new SQLConnect().DynamicSimpleListSQL(new SqlQuerySort().SortMSCInterval(productName, table, collumn, limit, offset));
-                if (ds.Tables.Count != 0)
+            DataSet ds = await new SQLConnect().DynamicSimpleListSQL(new SqlQuerySort().SortMSCInterval(productName, table, collumn, limit, offset));
+            if (ds.Tables.Count != 0)
+            {
+                foreach (DataRow r in ds.Tables[0].Rows)
                 {
-                    foreach (DataRow r in ds.Tables[0].Rows)
-                    {
-                        Product product = new Product((string)r[0], (string)r[1], (string)r[2], Convert.ToDouble(r[3]), (string)r[4], (string)r[5]);
-                        productList.Add(product);
-                    }
-                }
+                    string? id = r[0].ToString(); string? name = r[1].ToString(); string? amount = r[2].ToString();
+                    string? image = r[4].ToString(); string? store = r[5].ToString();
+                    double? price = Convert.ToDouble(r[3]); 
 
-                return productList;
+                    Product product = new Product(id ??= "Null", name ??= "Null", amount ??= "", price ??= 0, image ??= "", store ??= "");
+                    productList.Add(product);
+                }
+            }
+
+            return productList;
         }
+
+        
 
         public async Task<List<Product>> ReferencesAsync(string reference)
         {
@@ -133,26 +139,35 @@ namespace BBCollection.DBHandling
                 "SELECT * FROM products WHERE ingredient_reference like @reference";
 
             MySqlCommand msc = new MySqlCommand(query);
-            msc.Parameters.AddWithValue("@reference", "%"+reference+"%");
+            msc.Parameters.AddWithValue("@reference", "%" + reference + "%");
 
-                DataSet ds = await new SQLConnect().DynamicSimpleListSQL(msc);
-                if (ds.Tables.Count != 0)
+            DataSet ds = await new SQLConnect().DynamicSimpleListSQL(msc);
+            if (ds.Tables.Count != 0)
+            {
+                try
                 {
                     foreach (DataRow r in ds.Tables[0].Rows)
                     {
-                    
+
                         Product product = new Product((string)r[0], (string)r[1], (string)r[2], Convert.ToDouble(r[3]), (string)r[6]);
                         products.Add(product);
                     }
                 }
-                return products;
+                catch (System.AggregateException e)
+                {
+                    Console.WriteLine(e);
+                }
+            }   
+
+
+            return products;
         }
 
         public async Task<List<Product>> MultipleReferencesAsync(List<string> references)
         {
             int count = 0;
             List<Product> products = new List<Product>();
-            List<Tuple<string,string>> combinations = new List<Tuple<string, string>>();
+            List<Tuple<string, string>> combinations = new List<Tuple<string, string>>();
             string query = "SELECT * FROM products WHERE ingredient_reference";
             foreach (string reference in references)
             {
@@ -162,23 +177,24 @@ namespace BBCollection.DBHandling
                 if (query.Contains("like"))
                 {
                     query = query + " and ingredient_reference like " + parameter;
-                } else
+                }
+                else
                 {
                     query = query + " like " + parameter;
                 }
 
-                
 
-                combinations.Add(new Tuple<string, string>(parameter,reference));
+
+                combinations.Add(new Tuple<string, string>(parameter, reference));
             }
 
             MySqlCommand msc = new MySqlCommand(query);
 
-            foreach (Tuple<string,string> combination in combinations)
+            foreach (Tuple<string, string> combination in combinations)
             {
                 msc.Parameters.AddWithValue(combination.Item1, "%" + combination.Item2 + "%");
             }
-            
+
             Console.WriteLine(query);
 
 
@@ -194,6 +210,19 @@ namespace BBCollection.DBHandling
                 }
             }
             return products;
+        }
+
+        public async Task AddImage(string image, string prodid)
+        {
+            string insertQuery =
+                "UPDATE `products` SET `image` = @Image WHERE id = @Prodid AND (`image` IS NULL OR `image` = '')";
+
+            MySqlCommand msc = new MySqlCommand(insertQuery);
+
+            msc.Parameters.AddWithValue("@Image", image);
+            msc.Parameters.AddWithValue("@Prodid", prodid);
+
+            await Task.Run(() => new SQLConnect().NonQueryMSC(msc));
         }
     }
 }

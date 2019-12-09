@@ -16,7 +16,7 @@
         <div class="col-sm-10 col-md-8 col-lg-7 col-xl-5">
             @if (!viewAutoComplete)
             {
-                <div class="form-check-inline center_div product-search-bar mb-2">
+                <div class="form-check-inline center_div product-search-bar">
                     <input type="text" @bind="searchBox" @onkeyup="KeyPressed" class="form-control product-search-input" id="productSearchInput" placeholder="Search product" />
                     <button class="btn btn-success recipe-search-button" @onclick="(() => SearchBar())">
                         <i class="fa fa-search"></i>
@@ -25,7 +25,7 @@
             }
             else
             {
-                <div class="form-check-inline center_div mb-2" id="acSearchBar">
+                <div class="form-check-inline center_div" id="acSearchBar">
                     <div class="center_div" id="adSearchBBox">
                         <div type="text" id="acProductSearchInput" class="product-search-input">
                             <Autocomplete Data="@prodData"
@@ -35,10 +35,13 @@
                                           SelectedValueChanged="@searchHandler"
                                           Placeholder="Search..." />
                         </div>
+                        <button class="btn btn-success acSearchButton" @onclick="(() => SearchBar())">
+                            <i class="fa fa-search"></i>
+                        </button>
                     </div>
                 </div>
             }
-            <div class="mt-4 center_div" id="filterBox">
+            <div class="center_div" id="filterBox">
                 <label class="text-muted">
                     Advanced search
                     <input type="checkbox" value="viewAdvancedSearch" @onclick="toggleAdvancedCheckBox" />
@@ -112,32 +115,27 @@
 {
     <div class="container">
         <div class="row top-margin mb-3">
-        @*<div class="flexContainer">*@
+            @*<div class="flexContainer">*@
             @*<CardGroup>*@
+
             @foreach (Product p in productsToPrint)
             {
                 if (p._price > minPrice && p._price < maxPrice)
                 {
-                    @*<div class="card productCard" style="width: 18rem;">
-                        <img src="@p._image" class="card-img-top" alt="..." style="display:block; max-height:280px; max-width: 280px; width: auto; height: auto;">
-                        <div class="card-body">
-                            <h5 style="overflow-wrap:break-word" class="card-title w-100">@p._productName</h5>
-                            <p style="overflow-wrap:break-word" class="card-text w-100">@p._amount</p>
-                            <a href="#" class="btn btn-primary">Add To Shoppinglist</a>
-                        </div>
-                    </div>*@
-                    @*<Card style="width: 18rem;">
-                            <CardImage Class="card-imgNew" Source="@p._image"></CardImage>
-                            <CardBody>
-                                <CardTitle Size="5" Class="w-100"><h4 style="overflow-wrap:break-word">@p._productName</h4></CardTitle>
-                                <CardText>
-                                    @p._amount
-                                    Amount: @p._amountleft
-                                    Store: @p._storeName
-                                </CardText>
-                                <Button Color="Color.Primary" @onclick="(() => AddProductToSL(p))">Add To Shoppinglist</Button>
-                            </CardBody>
-                        </Card>*@
+                    @*<Row>
+                    <Card style="width: 18rem;" Margin="Margin.Is1" Padding="Padding.Is1">
+                        <CardImage Class="card-imgNew" Source="@p._image" style="display:block; max-height:280px; max-width: 280px; width: auto; height: auto;"></CardImage>
+                        <CardBody>
+                            <CardTitle Size="5" Class="w-100"><h4 style="overflow-wrap:break-word">@p._productName</h4></CardTitle>
+                            <CardText>
+                                @p._amount
+                                Amount: @p._amountleft
+                                Store: @p._storeName
+                            </CardText>
+                            <Button Color="Color.Primary" @onclick="(() => AddProductToSL(p))">Add To Shoppinglist</Button>
+                        </CardBody>
+                    </Card>
+                </Row>*@
 
                     <div class="col-12 col-sm-8 col-md-6 col-lg-4 top-margin">
                         <div class="card w-100 h-100">
@@ -167,7 +165,7 @@
                                 </div>
                             </div>
                         </div>
-                        </div>
+                    </div>
                 }
             }
             @*</CardGroup>*@
@@ -205,6 +203,7 @@ else if (!isSearching && !_viewProducts)
     WordFilterList wordFIlters = new WordFilterList();
     FindCloseStores closeStore;
     ShoppinlistFunctionality SLFunc = new ShoppinlistFunctionality("api/Shoppinglist");
+    ControllerFuncionality features = new ControllerFuncionality();
 
     List<FilterItem> optionsList = new List<FilterItem>();
     List<UnifiedAPIStore> allStoresUnified = new List<UnifiedAPIStore>();
@@ -461,23 +460,20 @@ else if (!isSearching && !_viewProducts)
 
         int actualAmout = AddedItem._amountleft;
 
+        AddedItem._amountleft = 1;
+
+        //AddedItem._image = features.SetOnePicture(AddedItem._image);
+
         if (String.IsNullOrEmpty(email))
         {
-            ToShoppinglist.Add(AddedItem);
-
-            ToShoppinglist = HandleDublicats(ToShoppinglist);
-
-            await localStorage.RemoveItemAsync("ProductString");
-
-            shopString = JsonConvert.SerializeObject(ToShoppinglist);
-
-            await localStorage.SetItemAsync("ProductString", shopString);
+            await GetAndSetLocalStorage(AddedItem);
         }
         else
         {
-            AddedItem._amountleft = 1;
-            await SLFunc.QuickaddItemToShoppinglist(AddedItem, actualAmout);
+            await SLFunc.QuickaddItemToShoppinglist(AddedItem);
         }
+
+        AddedItem._amountleft = actualAmout;
 
         disableButton = await AwaitButton();
         StateHasChanged();
@@ -485,33 +481,25 @@ else if (!isSearching && !_viewProducts)
 
     public async Task<bool> AwaitButton()
     {
-        await Task.Delay(20);
+        await Task.Delay(40);
         return false;
     }
 
-    public List<Product> HandleDublicats(List<Product> inputList)
+    public async Task GetAndSetLocalStorage(Product AddedItem)
     {
-        bool isFound = false;
-        List<Product> uniqueList = new List<Product>();
-        List<Product> dublicateList = new List<Product>();
+            ToShoppinglist = await GetLocalStorage();
 
-        foreach (Product i in inputList)
-        {
-            isFound = false;
-            foreach (Product u in uniqueList)
-            {
-                if (i._id == u._id)
-                {
-                    break;
-                }
-            }
-            if (isFound == false)
-            {
-                uniqueList.Add(i);
-            }
-        }
-        return uniqueList;
+            ToShoppinglist.Add(AddedItem);
+
+            ToShoppinglist = features.HandleDublicats(ToShoppinglist);
+
+            await localStorage.RemoveItemAsync("ProductString");
+
+            shopString = JsonConvert.SerializeObject(ToShoppinglist);
+
+            await localStorage.SetItemAsync("ProductString", shopString);
     }
+
     #endregion
 
     #region SearchMethods
@@ -528,7 +516,7 @@ else if (!isSearching && !_viewProducts)
 
         _loadCount = 0;
         itemList = await SearchForProducts();
-        itemList = SetAllPicture(itemList);
+        itemList = features.SetAllPicture(itemList);
 
 
         if (itemList.Count == 0)
@@ -706,12 +694,7 @@ else if (!isSearching && !_viewProducts)
             }
             else
             {
-                shopString = await localStorage.GetItemAsync<string>("ProductString");
-
-                if (!String.IsNullOrEmpty(shopString))
-                {
-                    ToShoppinglist = JsonConvert.DeserializeObject<List<Product>>(shopString);
-                }
+                ToShoppinglist = await GetLocalStorage();
             }
 
             itemList = await CallApiForProducts(tempSearchword);
@@ -725,6 +708,18 @@ else if (!isSearching && !_viewProducts)
             this.StateHasChanged();
         }
 
+    }
+
+    public async Task<List<Product>> GetLocalStorage()
+    {
+        shopString = await localStorage.GetItemAsync<string>("ProductString");
+
+        if (!String.IsNullOrEmpty(shopString))
+        {
+            return JsonConvert.DeserializeObject<List<Product>>(shopString);
+        }
+
+        return new List<Product>();
     }
 
     public int FindListAmount(string label)
@@ -969,34 +964,6 @@ else if (!isSearching && !_viewProducts)
             tcsUserLocation.SetResult(userGeoLocation);
         }
     }
-    #endregion
-
-    #region Image
-
-    public string SetImageUrl(string url)
-    {
-        if (String.IsNullOrEmpty(url) || String.IsNullOrWhiteSpace(url))
-        {
-            return replacementUlr;
-        }
-        else
-        {
-            return ProductImage(url);
-        }
-    }
-
-    private string ProductImage(string prod_image)
-    {
-        return prod_image + "&imgSize=1080x1080";
-    }
-
-    public List<Product> SetAllPicture(List<Product> inputList)
-    {
-        inputList.ForEach(x => x._image = SetImageUrl(x._image));
-
-        return inputList;
-    }
-
     #endregion
 }
 

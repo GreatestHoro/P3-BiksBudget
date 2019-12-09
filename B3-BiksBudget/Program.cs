@@ -14,32 +14,31 @@ namespace BBGatherer
     {
         static void Main(string[] args)
         {
-            
-            DataHandling dh = new DataHandling();
-            //dh.GenerateDatabase();
-            //dh.GenerateData(false,true);
 
+            DataHandling dh = new DataHandling();
+            
             try
             {
-                dh.TestCollection().Wait();
+                dh.GenerateDatabase().Wait();
+                //dh.GenerateData(false, false, true).Wait();
+                //dh.TestCollection().Wait();
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
             }
-
         }
     }
 
     public class DataHandling
     {
         public DatabaseConnect dbConnect = new DatabaseConnect();
-        public void GenerateDatabase()
+        public async Task GenerateDatabase()
         {
-            
+            await dbConnect.Initialize.Start();
         }
 
-        public void GenerateData(bool coop, bool salling)
+        public async Task GenerateData(bool coop, bool salling, bool generatePrice)
         {
             ProductHandling test = new ProductHandling();
             //InitializeDB _test = new InitializeDB();
@@ -74,17 +73,23 @@ namespace BBGatherer
             //dbConnect.AddProduct(new Product("test","hey","alot",1d,"nope","walmart"));
             //test.InsertIngredientReferenceFromId("tester", "test", new DatabaseInformation("localhost", "biksbudgetDB", "root", "BiksBudget123"));
 
+            if(generatePrice == true)
+            {
+                await dbConnect.Recipe.GenerateTotalPriceAsync();
+            }
         }
 
         public async Task TestCollection()
         {
             DatabaseConnect dc = new DatabaseConnect();
-
+            await dc.Recipe.GenerateTotalPriceAsync();
+            
+            /*
             List<string> strings = new List<String>();
 
-            string str1 = "mælk";
-            string str2 = "ost";
-            string str3 = "salt";
+            string str1 = null;
+            string str2 = null;
+            string str3 = null;
 
             strings.Add(str1);
             strings.Add(str2);
@@ -95,7 +100,7 @@ namespace BBGatherer
             foreach(Recipe r in recipes)
             {
                 Console.WriteLine(r._Name);
-            }
+            }*/
 
             /*int count = 6;
             string check = "";

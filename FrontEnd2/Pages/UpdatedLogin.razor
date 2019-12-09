@@ -1,0 +1,154 @@
+﻿@page "/Login"
+
+@using BBCollection.BBObjects;
+@using BBCollection.DBConncetion;
+@using BBCollection.DBHandling;
+@using Newtonsoft.Json;
+@using  System.Text;
+@using FrontEnd2.Data;
+@using System.Diagnostics;
+@using FrontEnd2.Authentication;
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+
+<Row Class="justify-content-center">
+    <Column ColumnSize="ColumnSize.IsAuto">
+        <Card Margin="Margin.Is2.OnY">
+            <CardHeader>
+                <CardSubtitle Class="text-center">Login</CardSubtitle>
+            </CardHeader>
+            <CardBody>
+                <Validations @ref="validations" Mode="ValidationMode.Manual">
+                    <Field IsHorizontal="true">
+                        <FieldLabel ColumnSize="ColumnSize.Is12" Class="text-left">Username</FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.Is12">
+                            <Validation Validator="@(async(e)=>await ValidateUsername(e))">
+                                <TextEdit Placeholder="Enter Username" @bind-Text="@username" @onkeyup="OnKeyPress">
+                                    <Feedback>
+                                        <ValidationError>@errorMessage</ValidationError>
+                                    </Feedback>
+                                </TextEdit>
+                            </Validation>
+                        </FieldBody>
+                    </Field>
+                </Validations>
+                <Field IsHorizontal="true">
+                    <FieldLabel ColumnSize="ColumnSize.Is12" Class="text-left">Password</FieldLabel>
+                    <FieldBody ColumnSize="ColumnSize.Is12">
+                        <TextEdit Role="TextRole.Password" Placeholder="Enter Password" @bind-Text="@password" @onkeyup="OnKeyPress"></TextEdit>
+                    </FieldBody>
+                </Field>
+                <Field IsHorizontal="true" JustifyContent="JustifyContent.End">
+                    <FieldBody ColumnSize="ColumnSize.IsFull">
+                        <Button IsBlock="true" Color="Color.Success" Clicked="@RegisterAccount" IsLoading="@isLogginIn"><i class="oi oi-person"></i> Login</Button>
+                    </FieldBody>
+                </Field>
+                <Field IsHorizontal="true" JustifyContent="JustifyContent.End" Class="text-center">
+                    <Button IsBlock="true" Size="ButtonSize.Small" Color="Color.Link" Clicked="SendToRegister">@createAccount</Button>
+                </Field>
+            </CardBody>
+        </Card>
+    </Column>
+</Row>
+
+@code{
+    bool loginFailed = false;
+
+    Verification verification = new Verification();
+    LoginRegister acount = new LoginRegister();
+    Validations validations;
+
+    Validations annotationsValidations;
+
+    string username;
+    string errorMessage = "Unrecognized Username or Password";
+    string createAccount = "No Account? Click Here to Register!";
+    HttpResponseMessage response = new HttpResponseMessage();
+
+    string email;
+    string password;
+    string userString;
+    bool isLogginIn = false;
+    ConnectionSettings connectionSettings = new ConnectionSettings();
+    LoginRegister account = new LoginRegister();
+
+    private async Task OnKeyPress(KeyboardEventArgs args)
+    {
+        if (args.Key == "Enter")
+        {
+            await AutorizeLogin();
+        }
+    }
+
+    public void SendToRegister()
+    {
+        NavigationManager.NavigateTo("Register");
+    }
+
+    protected async Task AutorizeLogin()
+    {
+        User user = new User(username, password);
+
+        response = await account.Login(user);
+
+        if (response.IsSuccessStatusCode)
+        {
+            await localStorage.SetItemAsync("Email", username);
+            await localStorage.RemoveItemAsync("ProductString");
+
+            NavigationManager.NavigateTo("shoppinglist");
+        }
+        else
+        {
+            await localStorage.RemoveItemAsync("Email");
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await GetLocalSession();
+
+            StateHasChanged();
+        }
+    }
+
+    async Task GetLocalSession()
+    {
+        email = await localStorage.GetItemAsync<string>("Email");
+    }
+
+    public async Task ValidateUsername(ValidatorEventArgs e)
+    {
+        username = e.Value.ToString();
+
+        User user = new User(username, password);
+
+        response = await account.Login(user);
+
+        if (response.IsSuccessStatusCode)
+        {
+            e.Status = ValidationStatus.Success;
+        }
+        else
+        {
+            e.Status = ValidationStatus.Error;
+        }
+    }
+
+    async Task RegisterAccount()
+    {
+        isLogginIn = true;
+        if (!String.IsNullOrEmpty(username) && !String.IsNullOrEmpty(password))
+        {
+            if (validations.ValidateAll())
+            {
+                await AutorizeLogin();
+                validations.ClearAll();
+            }
+        }
+        isLogginIn = false;
+    }
+}

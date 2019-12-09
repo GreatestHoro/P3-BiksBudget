@@ -42,7 +42,7 @@ else
                                     <div class="row">
 
                                         <div class="col-sm-10">
-                                            @if (item._image.Length == 0)
+                                            @*@if (item._image.Length == 0)
                                             {
                                                 <img style="width:100px; height:auto; " class="card-img-top " src="https://cdn.discordapp.com/attachments/519096261408718908/649685312083197973/coopdicoop.jpg">
                                             }
@@ -50,7 +50,10 @@ else
                                             {
                                                 <img style="width: auto; height: auto; max-height:100px; max-width: 100px;"
                                                      class="card-img-top" src="@ProductImage(item._image)">
-                                            }
+                                            }*@
+
+                                            <img style="width: auto; height: auto; max-height:100px; max-width: 100px;"
+                                                 class="card-img-top" src="@item._image">
                                             <h6 class="nomargin">@item._productName</h6>
                                             <p>@item._amount</p>
                                         </div>
@@ -102,6 +105,7 @@ else
                                     }
                                 </td>
                             </tr>
+                            <br />
                         }
                     </tbody>
                     <!-- #endregion -->
@@ -386,7 +390,14 @@ else
     // Function to get salling products in high resolution
     private string ProductImage(string prod_image)
     {
-        return prod_image + "&imgSize=1080x1080";
+        if (prod_image.Contains("&imgSize=1080x1080"))
+        {
+            return prod_image;
+        }
+        else
+        {
+            return prod_image + "&imgSize=1080x1080";
+        }
     }
     #endregion
 }

@@ -1,6 +1,7 @@
-﻿@page "/Login"
+﻿@page "/oldLogin"
 @using BBCollection.BBObjects;
 @using BBCollection.DBConncetion;
+@using BBCollection.DBHandling;
 @using Newtonsoft.Json;
 @using  System.Text;
 @using FrontEnd2.Data;
@@ -27,18 +28,18 @@
     <div class="p-2">
         @if (isLogginIn)
         {
-            <button class="btn btn-rounded btn-outline-success search disabled" disabled><span class='fa-left fas fa-sync-alt spinning'></span>Logging in...</button>
+            <button class="btn btn-rounded btn-outline-success search disabled" disabled><span class='fa-left fas fa-sync-alt spinning'></span> Logging in...</button>
         }
         else
         {
-            <button class="btn btn-rounded btn-outline-success search" @onclick="(() => AutorizeLogin())">Login</button>
+    <button class="btn btn-rounded btn-success search" @onclick="(() => AutorizeLogin())"><i class="oi oi-account-login"></i>&nbsp; Log in</button>
         }
     </div>
     <div class="p-2">
         <p>If you have not yet created an account, please press the button below.</p>
     </div>
     <div class="p-2">
-        <a class="btn btn-rounded btn-success" href="Register"><i class="oi oi-person"></i>&nbsp; Register</a>
+        <a class="btn btn-rounded btn-outline-success" href="Register"><i class="oi oi-person"></i>&nbsp; Register</a>
     </div>
 </div>
 
@@ -48,6 +49,7 @@
     string userString;
     bool isLogginIn = false;
     ConnectionSettings connectionSettings = new ConnectionSettings();
+    LoginRegister account = new LoginRegister();
 
     private async Task OnKeyPress(KeyboardEventArgs args)
     {
@@ -67,22 +69,12 @@
 
         User user = new User(email, password);
 
-        List<Product> shoppingList = new List<Product>();
-        Product[] shoppinglistArray = new Product[10];
-
-        string ShopString = JsonConvert.SerializeObject(shoppingList);
-
-        userString = JsonConvert.SerializeObject(user);
-
-        var content = new StringContent(userString, Encoding.UTF8, "application/json");
-
-        response = await Http.PostAsync(connectionSettings.GetApiLink() + "api/Login", content);
+        response = await account.Login(user);
 
         if (response.IsSuccessStatusCode)
         {
 
             await localStorage.SetItemAsync("Email", email);
-            await localStorage.SetItemAsync("ProductString", ShopString);
             NavigationManager.NavigateTo("shoppinglist");
         }
         else
@@ -103,10 +95,6 @@
         if (firstRender)
         {
             await GetLocalSession();
-            localStorage.Changed += (sender, e) =>
-            {
-                Console.WriteLine($"Value for key {e.Key} changed from {e.OldValue} to {e.NewValue}");
-            };
 
             StateHasChanged();
         }

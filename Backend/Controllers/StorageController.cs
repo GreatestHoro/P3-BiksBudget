@@ -158,6 +158,10 @@ namespace Backend.Controllers
             {
                 await dbConnect.Storage.Update(Email, storageList);
             }
+            else
+            {
+                await dbConnect.Storage.Delete(Email);
+            }
         }
     }
 }
