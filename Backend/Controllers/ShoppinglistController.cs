@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using MySqlX.XDevAPI.Common;
-using Newtonsoft.Json;
-using BBCollection;
+﻿using BBCollection;
 using BBCollection.BBObjects;
 using BBCollection.DBHandling;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace Backend.Controllers
 {
@@ -107,7 +104,7 @@ namespace Backend.Controllers
                     foreach (var item in newItems)
                     {
                         toSend[0]._products.Add(item);
-                    } 
+                    }
                 }
 
                 await dbConnect.Shoppinglist.Delete("Shoppinglist", Email);

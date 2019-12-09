@@ -1,13 +1,11 @@
 ﻿using BBCollection;
 using BBCollection.BBObjects;
+using BBCollection.StoreApi;
+using BBCollection.StoreApi.SallingApi;
+using BBGatherer.Webcrawler;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using BBCollection.StoreApi;
-using BBCollection.StoreApi.SallingApi;
-using BBCollection.DBHandling;
-using BBCollection.DBConncetion;
-using BBGatherer.Webcrawler;
 
 namespace B3_BiksBudget.Webcrawler.Assisting_classes
 {
@@ -94,7 +92,7 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
                     productImages.AssingItemImage(new RecepieProductHelper(p));
                 }
             }
-            else 
+            else
             {
                 return false;
             }

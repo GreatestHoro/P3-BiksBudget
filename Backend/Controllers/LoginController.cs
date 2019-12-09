@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using BBCollection;
 using BBCollection.BBObjects;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using BBCollection;
-using System.Net.Http;
-using System.Net;
+using System.IO;
+using System.Threading.Tasks;
 
 
 namespace Backend.Controllers
@@ -48,14 +43,15 @@ namespace Backend.Controllers
             }
 
             user = JsonConvert.DeserializeObject<User>(buffer);
+         
 
             bool exist = await dbConnect.User.Verify(user._userName, user._password);
 
-            
-            if(exist == true)
+
+            if (exist == true)
             {
                 return Ok(ModelState);
-            } 
+            }
             else
             {
                 return BadRequest(ModelState);

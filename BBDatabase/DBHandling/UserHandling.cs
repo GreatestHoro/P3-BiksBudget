@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Diagnostics;
-using System.Reflection.Metadata.Ecma335;
-using System.Runtime.ExceptionServices;
-using System.Text;
-using System.Threading.Tasks;
-using BBCollection.DBConncetion;
+﻿using BBCollection.DBConncetion;
 using Microsoft.AspNet.Identity;
 using MySql.Data.MySqlClient;
+using System.Data;
+using System.Threading.Tasks;
 
 namespace BBCollection.DBHandling
 {
@@ -37,7 +31,7 @@ namespace BBCollection.DBHandling
         public async Task<bool> Verify(string username, string password)
         {
             string hashpw = await GetHashedPWFromUsername(username);
-            
+
             return await CheckHashedPassword(password, hashpw);
         }
 
@@ -72,7 +66,7 @@ namespace BBCollection.DBHandling
             // First the password gets initiated with null, to have something to store the password 
             // from the database in. Then the select query gets made, that will select the password
             // From the `users` collumn in the database, where the username is equal to the String username.
-            string password = null; 
+            string password = null;
             string getPasswordQuery =
                 "SELECT password FROM users WHERE username = @Username ;";
 
@@ -86,13 +80,13 @@ namespace BBCollection.DBHandling
             // create and return a Dataset. We store this dataset in DS and then we add the first element in the
             // dataset in our password string and return it. We can do this because the username is unique, so the amount
             // of rows that get returned, will always be 1 or 0.
-            
-                DataSet ds = await new SQLConnect().DynamicSimpleListSQL(msc);
 
-                if (ds.Tables[0].Rows.Count != 0)
-                {
-                    password = (string)ds.Tables[0].Rows[0]["password"];
-                }
+            DataSet ds = await new SQLConnect().DynamicSimpleListSQL(msc);
+
+            if (ds.Tables[0].Rows.Count != 0)
+            {
+                password = (string)ds.Tables[0].Rows[0]["password"];
+            }
             return password;
 
         }
@@ -112,14 +106,14 @@ namespace BBCollection.DBHandling
                 PasswordHasher pw = new PasswordHasher();
                 return pw.VerifyHashedPassword(hashedPassword, password);
             });
-                if (result == PasswordVerificationResult.Success)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+            if (result == PasswordVerificationResult.Success)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         /// <summary>

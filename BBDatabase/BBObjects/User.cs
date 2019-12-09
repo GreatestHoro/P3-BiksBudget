@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace BBCollection.BBObjects
 {
@@ -14,7 +11,7 @@ namespace BBCollection.BBObjects
 
         public User(string userName, string password, List<Shoppinglist> shoppinglists)
         {
-            
+
         }
 
         public User(string userName, string passWord, List<Product> storage, List<string> filters)

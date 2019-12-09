@@ -120,7 +120,7 @@ namespace BBCollection.DBHandling
                 {
                     string? id = r[0].ToString(); string? name = r[1].ToString(); string? amount = r[2].ToString();
                     string? image = r[4].ToString(); string? store = r[5].ToString();
-                    double? price = Convert.ToDouble(r[3]); 
+                    double? price = Convert.ToDouble(r[3]);
 
                     Product product = new Product(id ??= "Null", name ??= "Null", amount ??= "", price ??= 0, image ??= "", store ??= "");
                     productList.Add(product);
@@ -130,7 +130,7 @@ namespace BBCollection.DBHandling
             return productList;
         }
 
-        
+
 
         public async Task<List<Product>> ReferencesAsync(string reference)
         {
@@ -157,7 +157,7 @@ namespace BBCollection.DBHandling
                 {
                     Console.WriteLine(e);
                 }
-            }   
+            }
 
 
             return products;

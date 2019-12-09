@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using BBCollection.DBConncetion;
+using System;
 using System.Web;
-using BBCollection.DBConncetion;
 
 namespace BBCollection.BBObjects
 {
@@ -10,18 +8,18 @@ namespace BBCollection.BBObjects
     {
         ConnectionSettings connectionSettings = new ConnectionSettings();
         private string url;
-        public ProductSearchLinkConstructer(String search, String keywordFilter, String storeFilter, int loadCount) 
+        public ProductSearchLinkConstructer(String search, String keywordFilter, String storeFilter, int loadCount)
         {
             search = HttpUtility.UrlEncode(search);
             url = connectionSettings.GetApiLink() + $"api/Search?searchterm={search}&_keywordFilter={keywordFilter}&_storeFilter={storeFilter}&_loadCount={loadCount}";
-            
+
         }
 
-        public string GetURL() 
+        public string GetURL()
         {
             return url;
         }
 
-        
+
     }
 }

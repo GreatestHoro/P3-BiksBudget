@@ -1,9 +1,9 @@
 ﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
-using System;
 
 namespace FrontEnd2
 {
@@ -49,7 +49,7 @@ namespace FrontEnd2
         {
             // create HTTP header tuned for an API call
             HttpWebRequest httpWebRequest = APIHttpWebReqeust();
-            
+
             HttpWebResponse response = httpWebRequest.GetResponse() as HttpWebResponse;
             // create a streamreader to read from the response
             StreamReader streamReader = new StreamReader(response.GetResponseStream());
@@ -134,7 +134,7 @@ namespace FrontEnd2
         public T ReadAndParseAPISingle()
         {
             HttpWebRequest httpWebRequest = APIHttpWebReqeust();
-            
+
             HttpWebResponse response = httpWebRequest.GetResponse() as HttpWebResponse;
 
             StreamReader streamReader = new StreamReader(response.GetResponseStream());
@@ -167,7 +167,7 @@ namespace FrontEnd2
         {
 
             _httpWebRequest = (HttpWebRequest)WebRequest.Create(_apiLink);
-            
+
 
             IWebProxy theProxy = _httpWebRequest.Proxy;
             if (theProxy != null)

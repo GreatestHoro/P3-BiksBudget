@@ -1,13 +1,10 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using BBCollection.BBObjects;
 using BBCollection.DBHandling;
-using BBCollection.BBObjects;
-using BBCollection.StoreApi.ApiNeeds;
 using BBCollection.StoreApi.CoopApi;
-using BBCollection.StoreApi.SallingApi;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Net.Http;
 using System.Threading.Tasks;
 

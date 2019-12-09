@@ -1,10 +1,6 @@
-﻿using BBCollection;
-using BBCollection.BBObjects;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using BBCollection.DBHandling;
-using BBCollection.DBConncetion;
 
 namespace B3_BiksBudget.Webcrawler.Assisting_classes
 {

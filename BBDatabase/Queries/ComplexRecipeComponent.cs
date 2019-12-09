@@ -1,7 +1,6 @@
-﻿using System;
+﻿using BBCollection.BBObjects;
+using System;
 using System.Collections.Generic;
-using System.Text;
-using BBCollection.BBObjects;
 
 namespace BBCollection.Queries
 {
@@ -9,13 +8,14 @@ namespace BBCollection.Queries
     {
         //member for the total price of the recipe
         private double _recipeCost;
-        
-        public double RecipeCost{
+
+        public double RecipeCost
+        {
             get => _recipeCost;
             set
             {
                 _recipeCost = Math.Round(value, 2);
-            } 
+            }
         }
         //dictionary for looking up products for the recipe's ingredients by ingredient name
         public Dictionary<string, List<Product>> _products = new Dictionary<string, List<Product>>();

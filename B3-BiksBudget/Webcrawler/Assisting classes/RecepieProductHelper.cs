@@ -1,8 +1,6 @@
 ﻿using BBCollection.BBObjects;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using BBCollection.DBHandling;
+using System;
 
 namespace B3_BiksBudget.Webcrawler.Assisting_classes
 {
@@ -14,7 +12,7 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
         ProductHandling ProductHandling = new ProductHandling();
         RecipeHandling RecipeHandling = new RecipeHandling();
 
-        public RecepieProductHelper(Product product) 
+        public RecepieProductHelper(Product product)
         {
             this.product = product;
         }
@@ -24,7 +22,7 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
             this.recipe = recipe;
         }
 
-        public string GetName() 
+        public string GetName()
         {
             return recipe._Name ?? product._productName;
         }
@@ -43,12 +41,12 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
             {
                 updateRecipes(url);
             }
-            else 
+            else
             {
                 throw new Exception("trouble in the RecepieProductHelper");
             }
         }
-        private bool CheckProduct() 
+        private bool CheckProduct()
         {
             return product != null ? true : false;
         }
@@ -59,7 +57,7 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
         }
         private void updateProduct(string url)
         {
-            _ = ProductHandling.AddImage(url,product._id);
+            _ = ProductHandling.AddImage(url, product._id);
         }
 
         private void updateRecipes(string url)

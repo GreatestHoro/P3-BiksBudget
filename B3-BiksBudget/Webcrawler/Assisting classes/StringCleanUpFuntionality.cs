@@ -1,9 +1,7 @@
-﻿using System;
+﻿using HtmlAgilityPack;
+using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
-using System.Net.Http;
-using HtmlAgilityPack;
 
 namespace B3_BiksBudget.Webcrawler.Assisting_classes
 {
@@ -22,13 +20,13 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
         CleanUpOptions CleanUpValues = new CleanUpOptions();
 
         //Default consturcter: will use all the defualt values
-        public StringCleanUpFuntionality() 
+        public StringCleanUpFuntionality()
         {
             options = "default";
         }
 
         //option: custom or addetiv this contructor require lists for each of the required parameters
-        public StringCleanUpFuntionality(string option,List<char> customCharList,List<string> CustomStringSplit,List<string> CustomSubStringToRemove,List<string> CustomRemoveIfFirst, List<string> CustomException)
+        public StringCleanUpFuntionality(string option, List<char> customCharList, List<string> CustomStringSplit, List<string> CustomSubStringToRemove, List<string> CustomRemoveIfFirst, List<string> CustomException)
         {
             options = option;
             this.customCharList = customCharList;
@@ -50,7 +48,7 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
             List<string> splitString = CleanUpValues.StringSplit(options, CustomStringSplit);
             List<string> removeSub = CleanUpValues.SubStringRemove(options, CustomSubStringToRemove);
             List<string> removeIfFisrt = CleanUpValues.RemoveIfFirst(options, CustomRemoveIfFirst);
-            List<string> exeptions = CleanUpValues.Exeptions(options,CustomException);
+            List<string> exeptions = CleanUpValues.Exeptions(options, CustomException);
 
             name = new String(name.Where(c => c != '-' && (c < '0' || c > '9')).ToArray());
 

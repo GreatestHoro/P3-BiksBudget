@@ -1,6 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using BBGatherer.Webcrawler;
-using B3_BiksBudget.Webcrawler.Assisting_classes;
+﻿using B3_BiksBudget.Webcrawler.Assisting_classes;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Linq;
 
