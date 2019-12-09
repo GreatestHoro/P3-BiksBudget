@@ -163,6 +163,15 @@ namespace BBCollection.DBHandling
             return response;
         }
 
+        public async Task<HttpResponseMessage> QuickaddItemToShoppinglist(Product item, string dist)
+        {
+            productString = JsonConvert.SerializeObject(item);
+
+            response = await PutToApi(productString,dist);
+
+            return response;
+        }
+
         #endregion
 
         #region Storage
@@ -332,6 +341,14 @@ namespace BBCollection.DBHandling
         {
             var content = new StringContent(productString, Encoding.UTF8, "application/json");
             response = await Http.PutAsync(connectionSettings.GetApiLink() + dest + "/" + Email, content);
+
+            return response;
+        }
+
+        async Task<HttpResponseMessage> PutToApi(string productString, string dist)
+        {
+            var content = new StringContent(productString, Encoding.UTF8, "application/json");
+            response = await Http.PutAsync(connectionSettings.GetApiLink() + dist + "/" + Email, content);
 
             return response;
         }
