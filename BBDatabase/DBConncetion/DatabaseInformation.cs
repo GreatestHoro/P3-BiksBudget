@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace BBCollection.DBConncetion
+﻿namespace BBCollection.DBConncetion
 {
     public class DatabaseInformation
     {

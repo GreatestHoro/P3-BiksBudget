@@ -1,13 +1,8 @@
-﻿using System;
-using System.IO;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using BBCollection.BBObjects;
 using Microsoft.AspNetCore.Mvc;
-using BBCollection.BBObjects;
-using BBCollection.StoreApi;
 using Newtonsoft.Json;
+using System;
+using System.Threading.Tasks;
 
 
 namespace Backend.Controllers
@@ -27,7 +22,7 @@ namespace Backend.Controllers
 
         // GET: api/Search?searchterm=øl&_keywordFilter=00&_storeFilter=111111111&_loadCount=0
         [HttpGet]
-        public async Task<string> GetProducts(string searchterm = "carlsberg",string _keywordFilter = "00",string _storeFilter="111111111", int _loadCount = 0)
+        public async Task<string> GetProducts(string searchterm = "carlsberg", string _keywordFilter = "00", string _storeFilter = "111111111", int _loadCount = 0)
         {
             bool[] keywordFilter = GetFilters(_keywordFilter);
             bool[] storeFilter = GetFilters(_storeFilter);
@@ -59,7 +54,7 @@ namespace Backend.Controllers
                 {
                     results[i++] = false;
                 }
-                else 
+                else
                 {
                     throw new SystemException("Error in generated link(was not 0 or 1)");
                 }

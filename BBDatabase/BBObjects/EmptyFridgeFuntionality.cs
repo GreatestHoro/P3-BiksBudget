@@ -1,10 +1,7 @@
-﻿using System;
+﻿using BBCollection.DBHandling;
 using System.Collections.Generic;
-using System.Collections;
-using System.Text;
 using System.Linq;
 using System.Threading.Tasks;
-using BBCollection.DBHandling;
 
 namespace BBCollection.BBObjects
 {

@@ -1,14 +1,12 @@
 ﻿using BBCollection.BBObjects;
 using BBCollection.DBConncetion;
+using BBCollection.Queries;
 using MySql.Data.MySqlClient;
-using MySqlX.XDevAPI.Relational;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using BBCollection.Queries;
 
 namespace BBCollection.DBHandling
 {
@@ -49,7 +47,7 @@ namespace BBCollection.DBHandling
             string table = "recipes";
             string collumn = "recipename";
 
-            return await Task.Run(async() =>
+            return await Task.Run(async () =>
             {
                 MySqlCommand msc = new SqlQuerySort().SortMSCInterval(recipeName, table, collumn, limit, offset);
                 DataSet ds = await new SQLConnect().DynamicSimpleListSQL(msc);
@@ -78,7 +76,7 @@ namespace BBCollection.DBHandling
 
             MySqlCommand msc = new MySqlCommand(ingredientsToRecipeQuery);
             msc.Parameters.AddWithValue("@RecipeID", recipeID);
-            return await Task.Run(async() =>
+            return await Task.Run(async () =>
             {
                 DataSet ds = await new SQLConnect().DynamicSimpleListSQL(msc);
                 foreach (DataRow r in ds.Tables[0].Rows)
@@ -111,13 +109,13 @@ namespace BBCollection.DBHandling
             msc.Parameters.AddWithValue("@RecipeName", recipe._Name);
             msc.Parameters.AddWithValue("@RecipePersons", recipe._PerPerson);
             msc.Parameters.AddWithValue("@RecipeDescription", recipe._description);
-            
+
             await new SQLConnect().NonQueryMSC(msc);
         }
 
         private async Task AddIngredientsToDatabase(List<Ingredient> ingredients)
         {
-            await Task.Run(async() =>
+            await Task.Run(async () =>
             {
                 foreach (Ingredient ingredient in ingredients)
                 {
@@ -136,7 +134,7 @@ namespace BBCollection.DBHandling
 
             msc.Parameters.AddWithValue("@Ingredient", ingredient._ingredientName);
 
-            await Task.Run(async() =>
+            await Task.Run(async () =>
             {
                 await new SQLConnect().NonQueryMSC(msc);
             });
@@ -157,7 +155,7 @@ namespace BBCollection.DBHandling
 
         private async Task CombineRecipeAndIngredient(Recipe recipe)
         {
-            await Task.Run(async() =>
+            await Task.Run(async () =>
             {
                 foreach (Ingredient ingredient in recipe._ingredientList)
                 {
@@ -283,8 +281,8 @@ namespace BBCollection.DBHandling
                 return msc;
             });
 
-            try 
-            { 
+            try
+            {
                 DataSet ds = await new SQLConnect().DynamicSimpleListSQL(msc);
                 foreach (DataRow r in ds.Tables[0].Rows)
                 {
@@ -334,7 +332,7 @@ namespace BBCollection.DBHandling
 
             Console.WriteLine(CRC.Count);
 
-            foreach(ComplexRecipe c in CRC)
+            foreach (ComplexRecipe c in CRC)
             {
                 Console.WriteLine(c._recipeID + " and " + c._complexRecipeComponent.RecipeCost);
                 await UpdatePriceAsync(c._recipeID, c._complexRecipeComponent.RecipeCost);

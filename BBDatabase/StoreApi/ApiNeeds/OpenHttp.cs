@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
@@ -113,31 +112,31 @@ namespace BBCollection.StoreApi
             HttpWebRequest httpWebRequest = APIHttpWebReqeust();
             /*try
             {*/
-                HttpWebResponse response = httpWebRequest.GetResponse() as HttpWebResponse;
+            HttpWebResponse response = httpWebRequest.GetResponse() as HttpWebResponse;
 
-                StreamReader streamReader = new StreamReader(response.GetResponseStream());
+            StreamReader streamReader = new StreamReader(response.GetResponseStream());
 
-                JsonTextReader reader = new JsonTextReader(streamReader);
+            JsonTextReader reader = new JsonTextReader(streamReader);
 
-                reader.SupportMultipleContent = true;
-                T resObject = default(T);
+            reader.SupportMultipleContent = true;
+            T resObject = default(T);
 
-                var serializer = new JsonSerializer();
+            var serializer = new JsonSerializer();
 
-                while (reader.Read())
-                {
-                    if (reader.TokenType == JsonToken.StartObject)
-                    {
-                        resObject = serializer.Deserialize<T>(reader);
-                    }
-                }
-
-                return resObject;
-           /* }
-            catch(Exception e)
+            while (reader.Read())
             {
-                throw (e);
-            }*/
+                if (reader.TokenType == JsonToken.StartObject)
+                {
+                    resObject = serializer.Deserialize<T>(reader);
+                }
+            }
+
+            return resObject;
+            /* }
+             catch(Exception e)
+             {
+                 throw (e);
+             }*/
 
         }
         #endregion

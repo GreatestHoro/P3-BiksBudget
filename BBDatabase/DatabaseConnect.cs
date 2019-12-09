@@ -1,10 +1,4 @@
-﻿using BBCollection.BBObjects;
-using BBCollection.DBConncetion;
-using BBCollection.DBHandling;
-
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using BBCollection.DBHandling;
 
 
 namespace BBCollection

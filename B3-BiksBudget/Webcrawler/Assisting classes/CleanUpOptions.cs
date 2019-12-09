@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace B3_BiksBudget.Webcrawler.Assisting_classes
 {
@@ -14,7 +12,7 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
         /// <returns>returns a list of chars</returns>
         public List<char> CleanUpOptionsChar(string option, List<char> custom)
         {
-            List<char> _default = new List<char>(){ ',', '.', '+', '-', '!', '?', '&', '%', '–', '"', '*', '(', ')', '/', '½' };
+            List<char> _default = new List<char>() { ',', '.', '+', '-', '!', '?', '&', '%', '–', '"', '*', '(', ')', '/', '½' };
             if (option.Equals("default"))
             {
                 return _default;
@@ -36,9 +34,9 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
         /// <param name="option">This is a string, it can be one of tree diffrent values, default, addetiv og custom</param>
         /// <param name="custom">A list of string that will be returned or added to the back of default or simply ignored depending on option</param>
         /// <returns></returns>
-        public List<string> StringSplit(string option, List<string> custom) 
+        public List<string> StringSplit(string option, List<string> custom)
         {
-            List<string> _defualt = new List<string>() {"eller","i","med","gerne","fra","fx","ekstra", "el", "og" , "såsom","uden"};
+            List<string> _defualt = new List<string>() { "eller", "i", "med", "gerne", "fra", "fx", "ekstra", "el", "og", "såsom", "uden" };
             if (option.Equals("default"))
             {
                 return _defualt;
@@ -120,7 +118,7 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
                 _defualt.AddRange(custom);
                 return _defualt;
             }
-            else 
+            else
             {
                 return custom;
             }

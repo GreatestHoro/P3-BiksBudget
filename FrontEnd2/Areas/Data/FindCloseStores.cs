@@ -1,18 +1,6 @@
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
-using System.Globalization;
-using Microsoft.AspNetCore.Http;
-using System.Web;
-using Json.Net;
-using System.IO;
-using Newtonsoft.Json.Linq;
-using FrontEnd2.Data;
 
 namespace FrontEnd2.Data
 {
@@ -37,7 +25,8 @@ namespace FrontEnd2.Data
         List<UnifiedAPIStore> _unifiedAPIStores = new List<UnifiedAPIStore>();
         //public string token = "f0cabde6bb8d4bd78c28270ee203253f";
 
-        public int RadiusInKM {
+        public int RadiusInKM
+        {
             get => _radiusInKM;
             set
             {
@@ -92,9 +81,9 @@ namespace FrontEnd2.Data
         private List<UnifiedAPIStore> UnifiyCoopStores(CoopStoreApi coopStores)
         {
             List<UnifiedAPIStore> unifiedCoopStores = (from store in coopStores.Data
-                                                          select new UnifiedAPIStore(store.RetailGroupName, store.RetailGroupName,
-                                                          new GeoCoordinate(store.Location.coordinates[0], store.Location.coordinates[1]),
-                                                          store.Zipcode.ToString(), store.City, store.Address, StoreChain.coopChain)).ToList();
+                                                       select new UnifiedAPIStore(store.RetailGroupName, store.RetailGroupName,
+                                                       new GeoCoordinate(store.Location.coordinates[0], store.Location.coordinates[1]),
+                                                       store.Zipcode.ToString(), store.City, store.Address, StoreChain.coopChain)).ToList();
 
             return unifiedCoopStores;
         }
@@ -130,9 +119,9 @@ namespace FrontEnd2.Data
 
             // Turn Salling Stores into UnifiedAPIStore
             List<UnifiedAPIStore> unifiedSallingStores = (from store in sallingStores
-                                       select new  UnifiedAPIStore(store.name, store.brand,
-                                       new GeoCoordinate(store.coordinates[0], store.coordinates[1]),
-                                       store.address.zip, store.address.city, store.address.ToString(), StoreChain.sallingChain)).ToList();
+                                                          select new UnifiedAPIStore(store.name, store.brand,
+                                                          new GeoCoordinate(store.coordinates[0], store.coordinates[1]),
+                                                          store.address.zip, store.address.city, store.address.ToString(), StoreChain.sallingChain)).ToList();
 
             return unifiedSallingStores;
 

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace FrontEnd2
+﻿namespace FrontEnd2
 {
     class CoopProduct
     {

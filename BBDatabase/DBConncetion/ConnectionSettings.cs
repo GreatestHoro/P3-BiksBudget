@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace BBCollection.DBConncetion
 {
@@ -25,7 +23,7 @@ namespace BBCollection.DBConncetion
 
         //API Localhost
         private string _LocalApiLink;
-        
+
         public ConnectionSettings()
         {
             _DatabaseName = "BiksBudgetDB";
@@ -33,7 +31,7 @@ namespace BBCollection.DBConncetion
             _MySqlOnlineWithtDB = @"server=biksbudgetdb.mysql.database.azure.com;database=" + _DatabaseName + ";userid=BBAdmin@biksbudgetdb;password=BiksBudget1";
             _MySqlOnlineWithouthDB = @"server=biksbudgetdb.mysql.database.azure.com;userid=BBAdmin @biksbudgetdb; password=BiksBudget1";
 
-            _MySqlLocalWithDB = @"server=localhost;database="+ _DatabaseName +";userid=root;password=BiksBudget123";
+            _MySqlLocalWithDB = @"server=localhost;database=" + _DatabaseName + ";userid=root;password=BiksBudget123";
             _MySqlLocalWithoutDB = @"server=localhost;userid=root;password=BiksBudget123";
 
             //Backend20191127044711 

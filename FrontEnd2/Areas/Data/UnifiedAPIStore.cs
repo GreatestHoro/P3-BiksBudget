@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows;
 
 
 namespace FrontEnd2.Data
@@ -20,7 +16,7 @@ namespace FrontEnd2.Data
         public string _address { get; set; }
         public int _chainID { get; set; }
         public string _logoURL { get; set; }
-        
+
         public UnifiedAPIStore(string storename, string brand, GeoCoordinate geoCoordinate, string zip, string city, string address, StoreChain storeChain)
         {
             _storeName = storename;
@@ -32,7 +28,7 @@ namespace FrontEnd2.Data
             _address = address;
             _chainID = (int)storeChain;
             _logoURL = LogoURL(brand);
-            
+
         }
 
         /// <summary>
@@ -51,11 +47,12 @@ namespace FrontEnd2.Data
             if (Enum.TryParse(processedBrandName, out storeBrand))
             {
                 storeBrandID = (int)storeBrand;
-            } else
+            }
+            else
             {
                 return "";
-            }           
-            
+            }
+
             // checks and returns the relevant path
             switch (storeBrandID)
             {
@@ -85,16 +82,17 @@ namespace FrontEnd2.Data
     /// <summary>
     /// enum to check which store chain it is
     /// </summary>
-    public enum StoreChain 
-    { 
-        sallingChain, 
+    public enum StoreChain
+    {
+        sallingChain,
         coopChain,
     }
 
     /// <summary>
     /// enum to check the brand name
     /// </summary>
-    public enum StoreBrand {
+    public enum StoreBrand
+    {
         Kvickly,
         SuperBrugsen,
         DagliBrugsen,

@@ -1,14 +1,11 @@
 ﻿using BBCollection.BBObjects;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Linq;
 using BBCollection.DBHandling;
-using System.Collections;
-using BBCollection.StoreApi.SallingApi;
 using BBCollection.StoreApi;
 using BBCollection.StoreApi.ApiNeeds;
-using BBCollection;
+using BBCollection.StoreApi.SallingApi;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace BBCollection.Queries
@@ -49,8 +46,9 @@ namespace BBCollection.Queries
 
             List<ComplexRecipe> resultComplexRecipes = new List<ComplexRecipe>();
             //calculate the price of each recipe by calling RecipeCost for each recipe, and create a list of ComplexRecipe objects
-            resultComplexRecipes = (from recipe in recipeList select new ComplexRecipe(recipe._recipeID, recipe._Name,
-                                    recipe._description, recipe._ingredientList, recipe._PerPerson, RecipeCost(productsHashtable, recipe))).ToList();
+            resultComplexRecipes = (from recipe in recipeList
+                                    select new ComplexRecipe(recipe._recipeID, recipe._Name,
+          recipe._description, recipe._ingredientList, recipe._PerPerson, RecipeCost(productsHashtable, recipe))).ToList();
             //sort the list of ComplexRecipes by price
             resultComplexRecipes.Sort((a, b) => a._complexRecipeComponent.RecipeCost.CompareTo(b._complexRecipeComponent.RecipeCost));
 
@@ -82,7 +80,7 @@ namespace BBCollection.Queries
             List<string> ingList = cr._ingredientList.Select(ingredient => ingredient._ingredientName).ToList();
 
             Dictionary<string, List<Product>> prodDict = await MatchingProducts(ingList);
-            
+
             return prodDict;
         }
 
@@ -131,7 +129,7 @@ namespace BBCollection.Queries
         {
             Dictionary<string, List<Product>> resDictionary = new Dictionary<string, List<Product>>();
 
-            foreach(string ingredient in distinctIngredients.Distinct().ToList())
+            foreach (string ingredient in distinctIngredients.Distinct().ToList())
             {
                 resDictionary.Add(ingredient, await Products(ingredient));
             }
@@ -147,11 +145,11 @@ namespace BBCollection.Queries
         {
             List<Product> resProducts = new List<Product>();
             resProducts = await _dc.Product.GetRange(ingredient, _productsToMatch, 0);
-            if (resProducts.Count == 0) 
+            if (resProducts.Count == 0)
             {
                 resProducts = await SlowExsperimentalSearch(ingredient);
             }
-            resProducts.Sort((a,b) => a._price.CompareTo(b._price));
+            resProducts.Sort((a, b) => a._price.CompareTo(b._price));
 
             return resProducts;
         }
@@ -168,11 +166,11 @@ namespace BBCollection.Queries
                 TempListList.Add(await pTest.ReferencesAsync(s));
             }
             TempListList = TempListList.OrderByDescending(x => -x.Count).ToList();
-            if (ProductList.Count == 0) 
+            if (ProductList.Count == 0)
             {
                 foreach (List<Product> Plist in TempListList)
                 {
-                    if (Plist.Count != 0) 
+                    if (Plist.Count != 0)
                     {
                         ProductList = Plist;
                         break;

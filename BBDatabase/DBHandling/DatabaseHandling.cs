@@ -39,10 +39,10 @@ namespace BBCollection.DBHandling
                 DatabaseInformation databaseInformation = new DatabaseInformation();
                 // Because the parameter in ConnectionString is false, the connection string
                 // doesn't contain a database parameter.
-                connection = new MySqlConnection(databaseInformation.ConnectionString(false)); 
+                connection = new MySqlConnection(databaseInformation.ConnectionString(false));
                 connection.Open();
 
-                string databaseExist = "CREATE DATABASE IF NOT EXISTS `"+ connectionSettings._DatabaseName +"`;";
+                string databaseExist = "CREATE DATABASE IF NOT EXISTS `" + connectionSettings._DatabaseName + "`;";
 
                 MySqlCommand msc = new MySqlCommand(databaseExist, connection);
 

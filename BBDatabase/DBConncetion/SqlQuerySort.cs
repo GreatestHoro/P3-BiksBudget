@@ -1,7 +1,4 @@
 ﻿using MySql.Data.MySqlClient;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace BBCollection.DBConncetion
 {
@@ -10,7 +7,7 @@ namespace BBCollection.DBConncetion
         public MySqlCommand SortMSC(string sortItem, string table, string collumn)
         {
             string recipesQuery =
-                "SELECT * FROM "+ table + " WHERE "+ collumn +" LIKE @itemName " +
+                "SELECT * FROM " + table + " WHERE " + collumn + " LIKE @itemName " +
                 " ORDER BY case " +
                 "WHEN " + collumn + " like @itemNameSort1 then 1 " +
                 "WHEN " + collumn + " like @itemNameSort2 then 2 " +
