@@ -23,7 +23,7 @@
                     <Field IsHorizontal="true">
                         <FieldLabel ColumnSize="ColumnSize.Is12" Class="text-left">Username</FieldLabel>
                         <FieldBody ColumnSize="ColumnSize.Is12">
-                            <Validation Validator="@(async(e)=>await ValidateUsername(e))">
+                            <Validation Validator="@ValidateUsername">
                                 <TextEdit Placeholder="Enter Username" @bind-Text="@username" @onkeyup="OnKeyPress">
                                     <Feedback>
                                         <ValidationError>@errorMessage</ValidationError>
@@ -36,7 +36,8 @@
                 <Field IsHorizontal="true">
                     <FieldLabel ColumnSize="ColumnSize.Is12" Class="text-left">Password</FieldLabel>
                     <FieldBody ColumnSize="ColumnSize.Is12">
-                        <TextEdit Role="TextRole.Password" Placeholder="Enter Password" @bind-Text="@password" @onkeyup="OnKeyPress"></TextEdit>
+                        <TextEdit Role="TextRole.Password" Placeholder="Enter Password" @bind-Text="@password" @onkeyup="OnKeyPress">
+                        </TextEdit>
                     </FieldBody>
                 </Field>
                 <Field IsHorizontal="true" JustifyContent="JustifyContent.End">
@@ -62,8 +63,9 @@
     Validations annotationsValidations;
 
     string username;
-    string errorMessage = "Unrecognized Username or Password";
+    string errorMessage;
     string createAccount = "No Account? Click Here to Register!";
+    string passwordError = "Please write your password";
     HttpResponseMessage response = new HttpResponseMessage();
 
     string email;
@@ -88,6 +90,8 @@
 
     protected async Task AutorizeLogin()
     {
+        isLogginIn = true;
+
         User user = new User(username, password);
 
         response = await account.Login(user);
@@ -101,8 +105,14 @@
         }
         else
         {
+            if (validations.ValidateAll())
+            {
+                validations.ClearAll();
+            }
             await localStorage.RemoveItemAsync("Email");
         }
+
+        isLogginIn = false;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -120,21 +130,23 @@
         email = await localStorage.GetItemAsync<string>("Email");
     }
 
-    public async Task ValidateUsername(ValidatorEventArgs e)
+    public void ValidateUsername(ValidatorEventArgs e)
     {
         username = e.Value.ToString();
 
-        User user = new User(username, password);
-
-        response = await account.Login(user);
-
-        if (response.IsSuccessStatusCode)
+        if (isLogginIn)
         {
-            e.Status = ValidationStatus.Success;
+            errorMessage = "Unrecognized Username or Password";
+            e.Status = ValidationStatus.Error;
+        }
+        else if (String.IsNullOrEmpty(username) ||String.IsNullOrWhiteSpace(username))
+        {
+            errorMessage = "Please Write A Username";
+            e.Status = ValidationStatus.Error;
         }
         else
         {
-            e.Status = ValidationStatus.Error;
+            e.Status = ValidationStatus.Success;
         }
     }
 
