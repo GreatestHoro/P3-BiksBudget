@@ -102,6 +102,7 @@ namespace BBGatherer_TEST
             Assert.AreEqual(result, exspected);
         }
 
+        #region Helper Merhods
         private List<Product> InstantiateStorage() 
         {
             Product product = new Product();
@@ -151,6 +152,7 @@ namespace BBGatherer_TEST
             Done:;
             return result;
         }
-        
+        #endregion
+
     }
 }
