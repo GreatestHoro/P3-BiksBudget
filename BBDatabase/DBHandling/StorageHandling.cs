@@ -4,7 +4,6 @@ using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BBCollection.DBHandling
@@ -29,7 +28,7 @@ namespace BBCollection.DBHandling
         }
 
         /// <summary>
-        /// The GetList method in StorageHandling, serves the purpose of retrieving a List of products linked to the user 
+        /// The GetListAsync method in StorageHandling, serves the purpose of retrieving a List of products linked to the user 
         /// that are logged in.
         /// </summary>
         /// <param name="username"></param> The username parameter, is the username of the person logged in.
@@ -42,7 +41,7 @@ namespace BBCollection.DBHandling
             List<Product> productList = new List<Product>();
             string storageQuery;
 
-            // The first step in the GetList method, is to see if there's a product with the ID
+            // The first step in the GetListAsync method, is to see if there's a product with the ID
             // inside the storage. We use two strings, one where the custom_name collumn is included,
             // and one where it is not. We then add the query as the command in MySqlCommand, 
             // and the username as the first and only parameter on both queries.
@@ -125,6 +124,7 @@ namespace BBCollection.DBHandling
         {
             await Task.Run(async () =>
             {
+
                 foreach (Product p in storage)
                 {
                     // The AddList method, takes use of two queries, the productQuery and the checkExist.
@@ -134,27 +134,14 @@ namespace BBCollection.DBHandling
                     // The second query, which is also saved in a string, is the checkExist, it checks if the products already exists in the user's storage.
                     string productQuery = "INSERT INTO `userstorage`(`username`,`prodid`,`custom_name`,`amountstored`,`state`) " +
                                           "VALUES(@Username,@ProductID,@CustomName,@AmountStored,@State);";
-                    string checkExist = "SELECT COUNT(*) FROM userstorage WHERE prodid = @ProductID or custom_name = @CustomName AND username = @Username;";
 
-                    // Then the checkExist MySqlCommand is created, where the sql command is the string, and the placeholder's values is specified.
-                    MySqlCommand exist = new MySqlCommand(checkExist);
-                    exist.Parameters.AddWithValue("@ProductID", p._id);
-                    exist.Parameters.AddWithValue("@CustomName", p._customname);
-                    exist.Parameters.AddWithValue("@Username", username);
-
-                    //If the product doesn't exist, the product is added to the user's storage.
-                    if (!await new SQLConnect().CheckRecordExist(exist))
-                    {
-
-                        MySqlCommand msc = new MySqlCommand(productQuery);
-
-                        msc.Parameters.AddWithValue("@Username", username);
-                        msc.Parameters.AddWithValue("@ProductID", p._id);
-                        msc.Parameters.AddWithValue("@CustomName", p._customname);
-                        msc.Parameters.AddWithValue("@AmountStored", p._amountleft);
-                        msc.Parameters.AddWithValue("@State", p._state);
-                        await new SQLConnect().NonQueryMSC(msc);
-                    }
+                    MySqlCommand msc = new MySqlCommand(productQuery);
+                    msc.Parameters.AddWithValue("@Username", username);
+                    msc.Parameters.AddWithValue("@ProductID", p._id);
+                    msc.Parameters.AddWithValue("@CustomName", p._customname);
+                    msc.Parameters.AddWithValue("@AmountStored", p._amountleft);
+                    msc.Parameters.AddWithValue("@State", p._state);
+                    await new SQLConnect().NonQueryMSC(msc);
                 }
             });
         }

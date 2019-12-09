@@ -68,7 +68,7 @@ namespace BBCollection.Queries
 
             List<ComplexRecipe> complexRecipes = await _dc.Recipe.GetPriceAsync(searchTerm, _productsPerLoad, _productsPerLoad * _loadCount);
 
-            //List<Recipe> recipes = await _dc.Recipe.GetList(searchTerm);
+            //List<Recipe> recipes = await _dc.Recipe.GetListAsync(searchTerm);
 
             _loadCount++;
 
@@ -131,7 +131,7 @@ namespace BBCollection.Queries
         {
             Dictionary<string, List<Product>> resDictionary = new Dictionary<string, List<Product>>();
 
-            foreach(string ingredient in distinctIngredients)
+            foreach(string ingredient in distinctIngredients.Distinct().ToList())
             {
                 resDictionary.Add(ingredient, await Products(ingredient));
             }
