@@ -17,7 +17,7 @@
     <div class="row d-flex justify-content-center">
         <div class="col-sm-10 col-md-8 col-lg-7 col-xl-5" id="recipeSearchBox">
             <div class="form-check-inline center_div recipe-search-bar mb-2">
-                <input type="text" @bind="searchTerm" @onkeyup="OnKeyPress" disabled="@viewRecipes" class="form-control recipe-search-input" id="recipeSearchInput" placeholder="Search recipe" autofocus />
+                <input type="text" @bind="searchTerm" @onkeyup="OnKeyPress" class="form-control recipe-search-input" id="recipeSearchInput" placeholder="Search recipe" />
                 <button class="btn btn-success recipe-search-button" @onclick="(() => Search())">
                     <i class="fa fa-search"></i>
                 </button>
@@ -90,22 +90,19 @@
     }
     <!-- #endregion -->
 </div>
-
-
-
 <!-- #region Recipe view -->
 <Accordion>
-    <Modal @ref="recipeRef" >
+    <Modal @ref="recipeRef">
         <ModalBackdrop />
         <ModalContent IsCentered="true" Size="ModalSize.Large">
             <ModalHeader>
-                <ModalTitle Size="1"> @recipeName </ModalTitle>
+                <ModalTitle Size="1" Style="font-weight:bolder"> @recipeName </ModalTitle>
                 <CloseButton Clicked="hideModal" />
             </ModalHeader>
             <Card>
                 <CardHeader>
                     <Heading Size="HeadingSize.Is5" Class="text-center">
-                        <Button Clicked="@(()=>isOpen1 = !isOpen1)">Description</Button>
+                        <Button Clicked="@(()=>isOpen1 = !isOpen1)" style="font-weight:bold">Description</Button>
                     </Heading>
                 </CardHeader>
                 <Collapse IsOpen="@isOpen1">
@@ -195,13 +192,14 @@
         </ModalContent>
     </Modal>
 </Accordion>
-
 <!-- #endregion -->
 
 
 @code {
     #region fields
 
+    private Snackbar snackbar;
+    private Snackbar snackbar2;
     private Modal recipeRef;
 
     string searchTerm;
@@ -299,6 +297,7 @@
         AddedItem._amountleft = actualAmout;
 
         disableButton = await AwaitButton();
+        snackbar.Show();
         StateHasChanged();
     }
 
@@ -359,6 +358,8 @@
         }
 
         returnList.Clear();
+        snackbar2.Show();
+
     }
 
     public async void QuickAddListToSL(List<Product> ingredientList)
@@ -594,7 +595,7 @@
         }
         showModal();
         viewRecipes = true;
-        viewRecipeList = false;
+        //viewRecipeList = false;
     }
     #endregion
 
