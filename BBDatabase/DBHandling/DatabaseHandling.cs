@@ -200,9 +200,9 @@ namespace BBCollection.DBHandling
         private async Task CreateIngredientLink()
         {
             string linkQuery =
-                "CREATE TABLE `Ingredient_store_link`(`ingredientID` int unique," +
+                "CREATE TABLE `Ingredient_store_link`(`ingredientName` varchar(255) unique," +
                 "`bilka` varchar(255),`superbrugsen` varchar(255),`fakta` varchar(255)," +
-                "FOREIGN KEY(ingredientID) REFERENCES ingredients(id), " +
+                "FOREIGN KEY(ingredientName) REFERENCES ingredients(ingredientname), " +
                 "FOREIGN KEY(bilka) REFERENCES products(id)," +
                 "FOREIGN KEY(superbrugsen) REFERENCES products(id)," +
                 "FOREIGN KEY(fakta) REFERENCES products(id))";

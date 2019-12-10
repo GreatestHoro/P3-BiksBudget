@@ -6,6 +6,8 @@ using B3_BiksBudget.Webcrawler.Assisting_classes;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using BBCollection.Queries;
+using BBCollection.BBObjects;
 
 namespace BBGatherer
 {
@@ -13,22 +15,26 @@ namespace BBGatherer
     {
         static void Main(string[] args)
         {
-            productImages productImages = new productImages();
+            /*productImages productImages = new productImages();
             string name = Console.ReadLine();
 
-            productImages.SaveImagesFromLink(productImages.GetImageUrls(name, "bing").Result);
-            //DataHandling dh = new DataHandling();
+            productImages.SaveImagesFromLink(productImages.GetImageUrls(name, "bing").Result);*/
+            
+            DataHandling dh = new DataHandling();
 
-            //try
-            //{
-            //    dh.GenerateDatabase().Wait();
-            //    //dh.GenerateData(false, false, true).Wait();
-            //    //dh.TestCollection().Wait();
-            //}
-            //catch (Exception e)
-            //{
-            //    Console.WriteLine(e);
-            //}
+            try
+            {
+                RecipeQuery recipeQuery = new RecipeQuery();
+
+                recipeQuery.CheapestCRecipes("").Wait();
+                //dh.GenerateDatabase().Wait();
+                //dh.GenerateData(true, false, false).Wait();
+                //dh.TestCollection().Wait();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
         }
     }
 
@@ -49,18 +55,12 @@ namespace BBGatherer
                 CoopDoStuff tryCoop = new CoopDoStuff("d0b9a5266a2749cda99d4468319b6d9f");
 
                 List<CoopProduct> coopProducts = tryCoop.CoopFindEverythingInStore("24073");
-
-
-
                 int count = 0;
-                coopProducts.AddRange(tryCoop.CoopFindEverythingInStore("2096"));
-
-                count = 0;
                 foreach (CoopProduct c in coopProducts)
                 {
                     count++;
                     Console.WriteLine(count);
-                    //dbConnect.AddProduct(new Product("B" + c.Ean, c.Navn, c.Navn2, c.Pris, "", "SuperBrugsen"));
+                    await dbConnect.Product.Add(new Product("F" + c.Ean, c.Navn, c.Navn2, c.Pris, "", "Fakta"));
                 }
             }
             //_test.UpdateProductTable(new DatabaseInformation("localhost", "biksbudgetDB", "root", "BiksBudget123"));

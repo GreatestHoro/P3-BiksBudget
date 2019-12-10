@@ -148,8 +148,8 @@ namespace BBCollection.DBHandling
                 {
                     foreach (DataRow r in ds.Tables[0].Rows)
                     {
-
-                        Product product = new Product((string)r[0], (string)r[1], (string)r[2], Convert.ToDouble(r[3]), (string)r[6]);
+                        //(string id, string productName, string amount, double price, string image, string storeName, int amountleft, string customField)
+                        Product product = new Product(r[0].ToString(), r[1].ToString(), r[2].ToString(), Convert.ToDouble(r[3]), r[4].ToString(), r[5].ToString(), 0, r[6].ToString()) ;
                         products.Add(product);
                     }
                 }
@@ -224,5 +224,6 @@ namespace BBCollection.DBHandling
 
             await Task.Run(() => new SQLConnect().NonQueryMSC(msc));
         }
+
     }
 }
