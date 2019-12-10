@@ -9,17 +9,53 @@ namespace BBCollection.BBObjects
     {
         public List<List<string>> allRefs = new List<List<string>>();
         public List<WeightedRecipies> WeightedRecipies = new List<WeightedRecipies>();
+        public List<WeightedRecipies> LoadList = new List<WeightedRecipies>();
+        int LoadTime;
+        int DefaultReturnAmount = 10;
 
         public EmptyFridgeFuntionality(List<Product> products)
         {
             allRefs = GetAllProductRefs(products);
         }
+        public async Task<List<WeightedRecipies>> GetRecepies()
+        {
+            if (WeightedRecipies.Count == 0)
+            {
+                await CalculateWeightedRecipies();
+            }
 
-        public async Task<List<WeightedRecipies>> GetRelevantRecepiesFromProd(List<string> prodRefs)
+            return await LimitRecepieReturn();
+        }
+
+        public async Task<List<WeightedRecipies>> GetAllRecepies()
+        {
+            return WeightedRecipies;
+        }
+
+        private async Task CalculateWeightedRecipies() 
+        {
+            foreach (List<string> refs in allRefs)
+            {
+                WeightedRecipies.AddRange(await GetRelevantRecepiesFromProd(refs));
+            }
+        }
+
+        private async Task<List<WeightedRecipies>> GetRelevantRecepiesFromProd(List<string> prodRefs)
         {
             return await GetRelevantRecpies(prodRefs);
         }
 
+        private async Task<List<WeightedRecipies>> LimitRecepieReturn() 
+        {
+            LoadTime++;
+            LoadList.Clear();
+            WeightedRecipies[] arr = WeightedRecipies.ToArray();
+            for (int i = (LoadTime* DefaultReturnAmount) - DefaultReturnAmount; i < LoadTime; i++)
+            {
+                LoadList.Add(arr[i]);
+            }
+            return LoadList;
+        }
         public async Task<List<WeightedRecipies>> GetSortedList()
         {
             return WeightedRecipies;

@@ -419,6 +419,7 @@ else
     Recipe selectedRecepie = new Recipe();
     List<string> ItemState = new List<string>() { "Full", "Almost Full", "Half Full", "Almost Empty" };
     ControllerFuncionality features = new ControllerFuncionality();
+    BiksFoodHandling biksFoodHandling = new BiksFoodHandling();
     //ShoppinlistFunctionality ShopList = new ShoppinlistFunctionality("api/Shoppinglist");
 
     private delegate bool compareWR(WeightedRecipies r1, WeightedRecipies r2);
@@ -591,6 +592,7 @@ else
         int HasBeenLoaded = 0;
         this.StateHasChanged();
         EmptyFridgeFuntionality emptyFridgeFuntionality = new EmptyFridgeFuntionality(ListFunc.CombinedList);
+        InitializeBiksFood(ListFunc.CombinedList);
         foreach (List<string> prodRefs in emptyFridgeFuntionality.allRefs)
         {
             recpies.AddRange(await emptyFridgeFuntionality.GetRelevantRecepiesFromProd(prodRefs));
@@ -765,6 +767,11 @@ else
         }
 
         return new List<Product>();
+    }
+
+    public async void InitializeBiksFood(List<Product> storage)
+    {
+        biksFoodHandling.InitializeBiksFoodProcces(storage);
     }
 
 }
