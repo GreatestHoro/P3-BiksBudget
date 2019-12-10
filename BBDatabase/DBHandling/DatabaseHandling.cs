@@ -26,6 +26,7 @@ namespace BBCollection.DBHandling
             await GenerateShoppingListTables();
             await UpdateProductTable();
             await UpdateRecipesTable();
+            await CreateIngredientLink();
         }
 
         /// <summary>
@@ -195,6 +196,20 @@ namespace BBCollection.DBHandling
             await new SQLConnect().NonQueryString(newColumnQuery);
             await new SQLConnect().NonQueryString(newColumnQuery2);
         }
+
+        private async Task CreateIngredientLink()
+        {
+            string linkQuery =
+                "CREATE TABLE `Ingredient_store_link`(`ingredientID` int unique," +
+                "`bilka` varchar(255),`superbrugsen` varchar(255),`fakta` varchar(255)," +
+                "FOREIGN KEY(ingredientID) REFERENCES ingredients(id), " +
+                "FOREIGN KEY(bilka) REFERENCES products(id)," +
+                "FOREIGN KEY(superbrugsen) REFERENCES products(id)," +
+                "FOREIGN KEY(fakta) REFERENCES products(id))";
+
+            await new SQLConnect().NonQueryString(linkQuery);
+        } 
+
         #endregion
     }
 }
