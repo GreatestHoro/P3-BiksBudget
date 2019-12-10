@@ -225,5 +225,15 @@ namespace BBCollection.DBHandling
             await Task.Run(() => new SQLConnect().NonQueryMSC(msc));
         }
 
+       /* public async Task<double> CheapestPrice(string ingredient, )
+        {
+            string ingredientQuery =
+                "SELECT * FROM ingredient_store_link WHERE ingredientName = @Ingredient";
+
+            MySqlCommand msc = new MySqlCommand(ingredientQuery);
+
+            msc.Parameters.AddWithValue("@Ingredient", ingredient)
+
+        }*/
     }
 }
