@@ -84,7 +84,7 @@ namespace BBCollection.Queries
             return complexRecipes;
         }
 
-        public async Task<List<ComplexRecipe>> CheapestRecipeDB2(string searchTerm)
+        public async Task<List<ComplexRecipe>> CheapestRecipeDB2(string searchTerm, Chain chainFilter)
         {
             if (_loadCount == 0)
             {
@@ -102,21 +102,21 @@ namespace BBCollection.Queries
             //calculate the price of each recipe by calling RecipeCost for each recipe, and create a list of ComplexRecipe objects
             resultComplexRecipes = (from recipe in recipeList
                                     select new ComplexRecipe(recipe._recipeID, recipe._Name,
-          recipe._description, recipe._ingredientList, recipe._PerPerson, RecipeCostDB(recipe))).ToList();
+          recipe._description, recipe._ingredientList, recipe._PerPerson, RecipeCostDB(recipe, chainFilter))).ToList();
             //sort the list of ComplexRecipes by price
             resultComplexRecipes.Sort((a, b) => a._complexRecipeComponent.RecipeCost.CompareTo(b._complexRecipeComponent.RecipeCost));
 
             throw new NotImplementedException();
         }
 
-        private ComplexRecipeComponent RecipeCostDB(Recipe recipe)
+        private ComplexRecipeComponent RecipeCostDB(Recipe recipe, Chain chainFilter)
         {
             double recipeCost = 0;
             ComplexRecipeComponent cRP = new ComplexRecipeComponent();
 
             foreach (var ing in recipe._ingredientList)
             {
-                //recipeCost += BjarkeGivMePRcie(ing);
+                //recipeCost += BjarkeGivMePRcie(ing, chainFilter);
             }
 
             cRP.RecipeCost = recipeCost;
@@ -190,7 +190,7 @@ namespace BBCollection.Queries
         private async Task<Dictionary<string, List<Product>>> MatchingProductsChain(List<string> distinctIngredients, string chain)
         {
             Dictionary<string, List<Product>> resDictionary = new Dictionary<string, List<Product>>();
-            
+
             double count = -1;
 
             double prevPercent = 0;
@@ -312,4 +312,17 @@ namespace BBCollection.Queries
             return distinctIngredients;
         }
     }
+
+
+    //Flags enum allows for allowing multiple options to be selected simultaneously in a neat way, since each option is represented by the state (1 or 0) of a bit position
+    //look up the documentation for more
+    [Flags]
+    public enum Chain
+    {
+        none = 0,
+        bilka = 1,
+        superBrugsen = 2,
+        fakta = 4
+    }
+
 }
