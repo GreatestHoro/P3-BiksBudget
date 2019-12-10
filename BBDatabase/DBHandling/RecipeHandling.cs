@@ -361,6 +361,33 @@ namespace BBCollection.DBHandling
 
             await Task.Run(() => new SQLConnect().NonQueryMSC(msc));
         }
+
+        public async Task PopulateIngredientLink()
+        {
+            string copyColumn =
+                "INSERT INTO ingredient_store_link (ingredientName)" +
+                "SELECT ingredientName FROM ingredients";
+
+            await new SQLConnect().NonQueryString(copyColumn);
+        }
+
+        public async Task InsertIngredientLink(Dictionary<string, List<Product>> ingredientToProducts, string store)
+        {
+            string updateLink =
+                "Update `ingredient_store_link` SET `"+ store +"` = @ProductID WHERE ingredientName = @IngredientName";
+
+            foreach (KeyValuePair <string, List<Product>> pair in ingredientToProducts)
+            {
+                if (pair.Value.Count != 0)
+                {
+                    MySqlCommand msc = new MySqlCommand(updateLink);
+                    msc.Parameters.AddWithValue("@ProductID", pair.Value.First()._id);
+                    msc.Parameters.AddWithValue("@IngredientName", pair.Key);
+
+                    await new SQLConnect().NonQueryMSC(msc);
+                }
+            }
+        }
     }
 }
 

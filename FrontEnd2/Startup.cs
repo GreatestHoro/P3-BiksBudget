@@ -1,22 +1,20 @@
 using Blazored.LocalStorage;
+using Blazored.Modal;
+using Blazorise;
+using Blazorise.Bootstrap;
+using Blazorise.Icons.FontAwesome;
 using FrontEnd2.Areas.Identity;
 using FrontEnd2.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Net.Http;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
-using Blazored.Modal;
-using Blazorise;
-using Blazorise.Bootstrap;
-using Blazorise.Components;
-using Blazorise.Icons.FontAwesome;
 namespace FrontEnd2
 {
     public class Startup

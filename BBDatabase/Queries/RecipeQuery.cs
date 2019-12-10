@@ -3,6 +3,7 @@ using BBCollection.DBHandling;
 using BBCollection.StoreApi;
 using BBCollection.StoreApi.ApiNeeds;
 using BBCollection.StoreApi.SallingApi;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,20 +40,30 @@ namespace BBCollection.Queries
             //Func products matching to the ingredients
             //want to make it multithreaded later
             //Find x sallingAPIProducts per distinct ingredient
-            Dictionary<string, List<Product>> productsDict = await MatchingProducts(distinctIngredients);
-            //Turns the dictionary into a hashtable
-            Hashtable productsHashtable = new Hashtable(productsDict);
+            //Dictionary<string, List<Product>> productsDict = await MatchingProducts(distinctIngredients);
+            //Dictionary<string, List<Product>> productsDictBilka = await MatchingProductsChain(distinctIngredients, "Bilka");
+            Dictionary<string, List<Product>> productsDictFakta = await MatchingProductsChain(distinctIngredients, "Fakta");
+            //Dictionary<string, List<Product>> productsDictSuperBrugsen = await MatchingProductsChain(distinctIngredients, "SuperBrugsen");
+
+            // put into db here
+            //await new DatabaseConnect().Recipe.InsertIngredientLink(productsDictBilka, "bilka");
+            await new DatabaseConnect().Recipe.InsertIngredientLink(productsDictFakta, "fakta");
+            //await new DatabaseConnect().Recipe.InsertIngredientLink(productsDictSuperBrugsen, "superbrugsen");
+
+            /*
+                        //Turns the dictionary into a hashtable
+                        Hashtable productsHashtable = new Hashtable(productsDict);
 
 
-            List<ComplexRecipe> resultComplexRecipes = new List<ComplexRecipe>();
-            //calculate the price of each recipe by calling RecipeCost for each recipe, and create a list of ComplexRecipe objects
-            resultComplexRecipes = (from recipe in recipeList
-                                    select new ComplexRecipe(recipe._recipeID, recipe._Name,
-          recipe._description, recipe._ingredientList, recipe._PerPerson, RecipeCost(productsHashtable, recipe))).ToList();
-            //sort the list of ComplexRecipes by price
-            resultComplexRecipes.Sort((a, b) => a._complexRecipeComponent.RecipeCost.CompareTo(b._complexRecipeComponent.RecipeCost));
-
-            return resultComplexRecipes;
+                        List<ComplexRecipe> resultComplexRecipes = new List<ComplexRecipe>();
+                        //calculate the price of each recipe by calling RecipeCost for each recipe, and create a list of ComplexRecipe objects
+                        resultComplexRecipes = (from recipe in recipeList
+                                                select new ComplexRecipe(recipe._recipeID, recipe._Name,
+                      recipe._description, recipe._ingredientList, recipe._PerPerson, RecipeCost(productsHashtable, recipe))).ToList();
+                        //sort the list of ComplexRecipes by price
+                        resultComplexRecipes.Sort((a, b) => a._complexRecipeComponent.RecipeCost.CompareTo(b._complexRecipeComponent.RecipeCost));
+            */
+            return new List<ComplexRecipe>();
 
         }
 
@@ -71,6 +82,46 @@ namespace BBCollection.Queries
             _loadCount++;
 
             return complexRecipes;
+        }
+
+        public async Task<List<ComplexRecipe>> CheapestRecipeDB2(string searchTerm, Chain chainFilter)
+        {
+            if (_loadCount == 0)
+            {
+                _prevSearch = searchTerm;
+
+            }
+
+            //Get recipes matching searchTerm and Filters
+            List<Recipe> recipeList = await Recipes(searchTerm);
+
+            //Make an array of distinct ingredients
+            List<string> distinctIngredients = DistinctIngredients(recipeList);
+
+            List<ComplexRecipe> resultComplexRecipes = new List<ComplexRecipe>();
+            //calculate the price of each recipe by calling RecipeCost for each recipe, and create a list of ComplexRecipe objects
+            resultComplexRecipes = (from recipe in recipeList
+                                    select new ComplexRecipe(recipe._recipeID, recipe._Name,
+          recipe._description, recipe._ingredientList, recipe._PerPerson, RecipeCostDB(recipe, chainFilter))).ToList();
+            //sort the list of ComplexRecipes by price
+            resultComplexRecipes.Sort((a, b) => a._complexRecipeComponent.RecipeCost.CompareTo(b._complexRecipeComponent.RecipeCost));
+
+            throw new NotImplementedException();
+        }
+
+        private ComplexRecipeComponent RecipeCostDB(Recipe recipe, Chain chainFilter)
+        {
+            double recipeCost = 0;
+            ComplexRecipeComponent cRP = new ComplexRecipeComponent();
+
+            foreach (var ing in recipe._ingredientList)
+            {
+                //recipeCost += BjarkeGivMePRcie(ing, chainFilter);
+            }
+
+            cRP.RecipeCost = recipeCost;
+
+            return cRP;
         }
 
         public async Task<Dictionary<string, List<Product>>> GetProductsForRecipe(int recipeID, List<ComplexRecipe> complexRecipes)
@@ -132,6 +183,36 @@ namespace BBCollection.Queries
             foreach (string ingredient in distinctIngredients.Distinct().ToList())
             {
                 resDictionary.Add(ingredient, await Products(ingredient));
+            }
+            return resDictionary;
+        }
+
+        private async Task<Dictionary<string, List<Product>>> MatchingProductsChain(List<string> distinctIngredients, string chain)
+        {
+            Dictionary<string, List<Product>> resDictionary = new Dictionary<string, List<Product>>();
+
+            double count = -1;
+
+            double prevPercent = 0;
+            foreach (string ingredient in distinctIngredients.Distinct().ToList())
+            {
+                count++;
+                double percent = (count / distinctIngredients.Count) * 100;
+                if (prevPercent != Math.Round(percent,0))
+                {
+                    prevPercent = Math.Round(percent, 0);
+                    Console.WriteLine($"Computing {prevPercent}%...");
+
+                } else
+                {
+                    Console.WriteLine($"Computing {prevPercent}%.. ");
+                }
+                Console.SetCursorPosition(Console.CursorLeft, Console.CursorTop - 1);
+
+                List<Product> productList = await Products(ingredient);
+                var filteredList = productList.Where(product => product._storeName == chain).ToList();
+                filteredList.Sort((p1, p2) => p1._price.CompareTo(p2._price));
+                resDictionary.Add(ingredient, filteredList);
             }
             return resDictionary;
         }
@@ -231,4 +312,17 @@ namespace BBCollection.Queries
             return distinctIngredients;
         }
     }
+
+
+    //Flags enum allows for allowing multiple options to be selected simultaneously in a neat way, since each option is represented by the state (1 or 0) of a bit position
+    //look up the documentation for more
+    [Flags]
+    public enum Chain
+    {
+        none = 0,
+        bilka = 1,
+        superBrugsen = 2,
+        fakta = 4
+    }
+
 }

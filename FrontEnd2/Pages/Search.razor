@@ -10,7 +10,7 @@
 @inject HttpClient Http
 @inject IJSRuntime JsRuntime
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
-
+<!-- #region Search Bar -->
 <div class="container-fluid">
     <div class="row d-flex justify-content-center">
         <div class="col-sm-10 col-md-8 col-lg-7 col-xl-5">
@@ -27,7 +27,7 @@
             {
                 <div class="form-check-inline center_div" id="acSearchBar">
                     <div class="center_div" id="adSearchBBox">
-                        <div type="text" id="acProductSearchInput" class="product-search-input">
+                        <div type="text" id="acProductSearchInput" class="product-search-input" style="overflow:hidden; overflow-y:scroll">
                             <Autocomplete Data="@prodData"
                                           TextField="@((item)=>item.textField)"
                                           ValueField="@((item)=>item.textField)"
@@ -35,7 +35,8 @@
                                           SelectedValueChanged="@searchHandler"
                                           Placeholder="Search..."
                                           Filter="AutocompleteFilter.Contains"
-                                          />
+                                          MinLength="2" />
+
                         </div>
                         <button class="btn btn-success acSearchButton" @onclick="(() => SearchBar())">
                             <i class="fa fa-search"></i>
@@ -52,40 +53,41 @@
                     Autocomplete (BETA)
                     <input type="checkbox" value="viewAdvancedSearch" @onclick="toggleAutocomplete" />
                 </label>
-            </div>            
+            </div>
         </div>
     </div>
 </div>
-
+<!-- #endregion -->
+<!-- #region Filters -->
 @if (viewAdvancedSearch)
 {
-<div class="d-flex flex-sm-row flex-column searchAdvancedText">
+    <div class="d-flex flex-sm-row flex-column searchAdvancedText">
 
-    @foreach (AdvancedFilterList a in filterLists)
-    {
-    <div class="p-2">
-        <div class="input-group">
-            <select id="sortorderSelect" class="custom-select" @onchange="((e)=>AssignFilter(e, a.optionsList, a.label))">
-                <option disabled="disabled" selected="selected">@a.optionsname</option>
-                @foreach (FilterItem o in a.optionsList)
-                {
-                    if (o.IsEnabled)
-                    {
-                        <option style="color:green" value="@o.FilterName"> @o.FilterName </option>
-                    }
-                    else
-                    {
-                        <option style="color:red" value="@o.FilterName"> @o.FilterName </option>
-                    }
-                }
-                @if (!string.IsNullOrEmpty(a.lastOption))
-                {
-                    <option value="all">Select All</option>
-                }
-            </select>
-        </div>
-    </div>
-            }
+        @foreach (AdvancedFilterList a in filterLists)
+        {
+            <div class="p-2">
+                <div class="input-group">
+                    <select id="sortorderSelect" class="custom-select" @onchange="((e)=>AssignFilter(e, a.optionsList, a.label))">
+                        <option disabled="disabled" selected="selected">@a.optionsname</option>
+                        @foreach (FilterItem o in a.optionsList)
+                        {
+                            if (o.IsEnabled)
+                            {
+                                <option style="color:green" value="@o.FilterName"> @o.FilterName </option>
+                            }
+                            else
+                            {
+                                <option style="color:red" value="@o.FilterName"> @o.FilterName </option>
+                            }
+                        }
+                        @if (!string.IsNullOrEmpty(a.lastOption))
+                        {
+                            <option value="all">Select All</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        }
 
         <div class="p-2">
             <h5>Distance @(radius / 1000) Km:</h5>
@@ -105,14 +107,16 @@
         </div>
     </div>
 }
-
+<!-- #endregion -->
+<!-- #region Searching animation -->
 @if (isSearching)
 {
     <div class="center_div lds-roller">
         <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
     </div>
 }
-
+<!-- #endregion -->
+<!-- #region Product Cards -->
 @if (_viewProducts)
 {
     <div class="container">
@@ -189,6 +193,9 @@
         @*<button id="myBtn" class="btn btn-rounded btn-success"><a href="search" style="color: white; font-size:12px;">Top</a></button>*@
     </div>
 }
+<!-- #endregion -->
+
+<!-- #region Loadmore btn -->
 @if (_viewLoadMore)
 {
     <div class="row mt-4 d-flex justify-content-center">
@@ -200,9 +207,19 @@ else if (!isSearching && !_viewProducts)
 {
     <p>@messageToUser</p>
 }
+<!-- #endregion -->
+
+
+<Snackbar @ref="snackbar">
+    <SnackbarBody>
+        @tempProductName added to your shopping list. Your total is @String.Format("{0:0.00}", (SLFunc.CompletePrice() + tempTotalCost)) DKK.
+    </SnackbarBody>
+</Snackbar>
 
 @code{
     #region fields
+    private Snackbar snackbar;
+
     static TaskCompletionSource<GeoCoordinate> tcsUserLocation = new TaskCompletionSource<GeoCoordinate>();
     static GeoCoordinate userGeoLocation = new GeoCoordinate(0, 0);
 
@@ -233,6 +250,7 @@ else if (!isSearching && !_viewProducts)
 
     Product[] slArray = new Product[10];
     string shopString;
+    string tempProductName = " ";
 
     bool viewAdvancedSearch = false;
     bool _viewProducts = false;
@@ -252,6 +270,7 @@ else if (!isSearching && !_viewProducts)
     int printCount = 9;
     int printStartIndex = 0;
 
+    double tempTotalCost = 0;
     double _minPrice = 0;
     double _maxPrice = 5000;
     double priceLimit = 10000;
@@ -467,6 +486,8 @@ else if (!isSearching && !_viewProducts)
         StateHasChanged();
 
         AddedItem._amountleft++;
+        tempProductName = AddedItem._productName;
+        tempTotalCost += AddedItem._price;
 
         int actualAmout = AddedItem._amountleft;
 
@@ -486,6 +507,7 @@ else if (!isSearching && !_viewProducts)
         AddedItem._amountleft = actualAmout;
 
         disableButton = await AwaitButton();
+        snackbar.Show();
         StateHasChanged();
     }
 
@@ -709,6 +731,8 @@ else if (!isSearching && !_viewProducts)
             AutocompleteList = await CallApiForProducts(tempSearchword);
 
             loadProdName();
+            //prodData = Enumerable.Range(1, prodName.Length)
+            //    .Select(x => new AutocompleteSearch { textField = prodName[x - 1], valueField = x });
             prodData = Enumerable.Range(1, prodName.Length)
                 .Select(x => new AutocompleteSearch { textField = prodName[x - 1], valueField = x });
 
@@ -975,5 +999,3 @@ else if (!isSearching && !_viewProducts)
     }
     #endregion
 }
-
-
