@@ -84,7 +84,7 @@ namespace BBCollection.Queries
             return complexRecipes;
         }
 
-        public async Task<List<ComplexRecipe>> CheapestRecipeDB2(string searchTerm)
+        public async Task<List<ComplexRecipe>> CheapestRecipeDB2(string searchTerm, Chain chainFilter)
         {
             if (_loadCount == 0)
             {
@@ -102,21 +102,21 @@ namespace BBCollection.Queries
             //calculate the price of each recipe by calling RecipeCost for each recipe, and create a list of ComplexRecipe objects
             resultComplexRecipes = (from recipe in recipeList
                                     select new ComplexRecipe(recipe._recipeID, recipe._Name,
-          recipe._description, recipe._ingredientList, recipe._PerPerson, RecipeCostDB(recipe))).ToList();
+          recipe._description, recipe._ingredientList, recipe._PerPerson, RecipeCostDB(recipe, chainFilter))).ToList();
             //sort the list of ComplexRecipes by price
             resultComplexRecipes.Sort((a, b) => a._complexRecipeComponent.RecipeCost.CompareTo(b._complexRecipeComponent.RecipeCost));
 
             throw new NotImplementedException();
         }
 
-        private ComplexRecipeComponent RecipeCostDB(Recipe recipe)
+        private ComplexRecipeComponent RecipeCostDB(Recipe recipe, Chain chainFilter)
         {
             double recipeCost = 0;
             ComplexRecipeComponent cRP = new ComplexRecipeComponent();
 
             foreach (var ing in recipe._ingredientList)
             {
-                //recipeCost += BjarkeGivMePRcie(ing);
+                //recipeCost += BjarkeGivMePRcie(ing, chainFilter);
             }
 
             cRP.RecipeCost = recipeCost;
