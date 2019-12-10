@@ -3,6 +3,7 @@ using BBCollection.DBHandling;
 using BBCollection.StoreApi;
 using BBCollection.StoreApi.ApiNeeds;
 using BBCollection.StoreApi.SallingApi;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,7 +42,9 @@ namespace BBCollection.Queries
             //Find x sallingAPIProducts per distinct ingredient
             //Dictionary<string, List<Product>> productsDict = await MatchingProducts(distinctIngredients);
             Dictionary<string, List<Product>> productsDict = await MatchingProductsChain(distinctIngredients, "bilka");
-            
+            Dictionary<string, List<Product>> productsDictFakta = await MatchingProductsChain(distinctIngredients, "fakta");
+            Dictionary<string, List<Product>> productsDictBrugsen = await MatchingProductsChain(distinctIngredients, "brugsen");
+
             // put into db here
 
 
@@ -250,4 +253,17 @@ namespace BBCollection.Queries
             return distinctIngredients;
         }
     }
+
+
+    //Flags enum allows for allowing multiple options to be selected simultaneously in a neat way, since each option is represented by the state (1 or 0) of a bit position
+    //look up the documentation for more
+    [Flags]
+    public enum Chain
+    {
+        none = 0,
+        bilka = 1,
+        superBrugsen = 2,
+        fakta = 4
+    }
+
 }
