@@ -33,7 +33,9 @@
                                           ValueField="@((item)=>item.textField)"
                                           SelectedValue="@selectedSearchValue"
                                           SelectedValueChanged="@searchHandler"
-                                          Placeholder="Search..." />
+                                          Placeholder="Search..."
+                                          Filter="AutocompleteFilter.Contains"
+                                          />
                         </div>
                         <button class="btn btn-success acSearchButton" @onclick="(() => SearchBar())">
                             <i class="fa fa-search"></i>
@@ -118,56 +120,62 @@
             @*<div class="flexContainer">*@
             @*<CardGroup>*@
 
-            @foreach (Product p in productsToPrint)
-            {
-                if (p._price > minPrice && p._price < maxPrice)
+            <Row>
+                @foreach (Product p in productsToPrint)
                 {
-                    @*<Row>
-                    <Card style="width: 18rem;" Margin="Margin.Is1" Padding="Padding.Is1">
-                        <CardImage Class="card-imgNew" Source="@p._image" style="display:block; max-height:280px; max-width: 280px; width: auto; height: auto;"></CardImage>
-                        <CardBody>
-                            <CardTitle Size="5" Class="w-100"><h4 style="overflow-wrap:break-word">@p._productName</h4></CardTitle>
-                            <CardText>
+                    if (p._price > minPrice && p._price < maxPrice)
+                    {
+
+                        <Column ColumnSize="ColumnSize.Is4.OnTablet.Is4.OnWidescreen.Is12.OnMobile">
+                            <Card Margin="Margin.Is4.FromBottom">
+                                <CardImage Source="@p._image">
+                                </CardImage>
+                                <CardBody Class="d-flex flex-column">
+                                    <CardTitle Class="w-100" Margin="Margin.Is4" Size="5">@p._productName</CardTitle>
+                                    <CardText>
+                                        <ListGroup IsFlush="true">
+                                            <ListGroupItem>Amount: @p._amount</ListGroupItem>
+                                            <ListGroupItem>Store: @p._storeName</ListGroupItem>
+                                            <ListGroupItem>Amount Added: @p._amountleft</ListGroupItem>
+                                        </ListGroup>
+                                    </CardText>
+                                    <Button Margin="Margin.Is4" Color="Color.Primary" @onclick="(() => AddProductToSL(p))">Add To Shoppinglist</Button>
+                                </CardBody>
+                            </Card>
+                        </Column>
+
+                        @*<div class="col-12 col-sm-8 col-md-6 col-lg-4 top-margin">
+                    <div class="card w-100 h-100">
+                        <img src="@p._image" class="card-img-top  picture" alt="..." style="display:block; max-height:280px; max-width: 280px; width: auto; height: auto;">
+                        <div class="card-body h-50 w-100 bg-light rounded mx-auto">
+                            <h5 class="card-title w-100 headlineCard">@p._productName</h5>
+                            <p class="card-text ">
+                                From @p._storeName <hr />
                                 @p._amount
-                                Amount: @p._amountleft
-                                Store: @p._storeName
-                            </CardText>
-                            <Button Color="Color.Primary" @onclick="(() => AddProductToSL(p))">Add To Shoppinglist</Button>
-                        </CardBody>
-                    </Card>
-                </Row>*@
-
-                    <div class="col-12 col-sm-8 col-md-6 col-lg-4 top-margin">
-                        <div class="card w-100 h-100">
-                            <img src="@p._image" class="card-img-top  picture" alt="..." style="display:block; max-height:280px; max-width: 280px; width: auto; height: auto;">
-                            <div class="card-body h-50 w-100 bg-light rounded mx-auto">
-                                <h5 class="card-title w-100 headlineCard">@p._productName</h5>
-                                <p class="card-text ">
-                                    From @p._storeName <hr />
-                                    @p._amount
-                                </p>
-                                <div class="buy d-flex justify-content-between align-items-center">
-                                    <div class="price"><h5 class="mt-4">@p._price kr.</h5></div>
-                                    <div class="amount">
-                                        <div class="valueClass text-center">
-                                            <p>@p._amountleft</p>
-                                        </div>
+                            </p>
+                            <div class="buy d-flex justify-content-between align-items-center">
+                                <div class="price"><h5 class="mt-4">@p._price kr.</h5></div>
+                                <div class="amount">
+                                    <div class="valueClass text-center">
+                                        <p>@p._amountleft</p>
                                     </div>
-                                    @if (!disableButton)
-                                    {
-                                        <button @onclick="(() => AddProductToSL(p))" class="btn btn-success mt-3 buttonPlace"><i class="oi oi-cart"></i> Shopping list</button>
-                                    }
-                                    else
-                                    {
-                                        <button class="btn btn-success mt-3 buttonPlace"><i class="oi oi-cart"></i> Shopping list</button>
-
-                                    }
                                 </div>
+                                @if (!disableButton)
+                                {
+                                    <button @onclick="(() => AddProductToSL(p))" class="btn btn-success mt-3 buttonPlace"><i class="oi oi-cart"></i> Shopping list</button>
+                                }
+                                else
+                                {
+                                    <button class="btn btn-success mt-3 buttonPlace"><i class="oi oi-cart"></i> Shopping list</button>
+
+                                }
                             </div>
                         </div>
                     </div>
+                </div>*@
+                    }
                 }
-            }
+            </Row>
             @*</CardGroup>*@
             @if (_viewLoadMoreSpinner)
             {
@@ -211,7 +219,8 @@ else if (!isSearching && !_viewProducts)
     List<Product> ToShoppinglist = new List<Product>();
     List<Product> productsToPrint = new List<Product>();
     List<Product> tempProductList = new List<Product>();
-    List<AdvancedFilterList> filterLists = new List<AdvancedFilterList>(); // Is not used yet
+    List<AdvancedFilterList> filterLists = new List<AdvancedFilterList>();
+    List<Product> AutocompleteList = new List<Product>();
 
     FilterItem tempFilteritem = new FilterItem();
 
@@ -336,6 +345,7 @@ else if (!isSearching && !_viewProducts)
 
         if (tempFilteritem.IsSortable)
         {
+
             productsToPrint = DecideOrderFilter(tempFilteritem.FilterName);
         }
         else
@@ -487,17 +497,17 @@ else if (!isSearching && !_viewProducts)
 
     public async Task GetAndSetLocalStorage(Product AddedItem)
     {
-            ToShoppinglist = await GetLocalStorage();
+        ToShoppinglist = await GetLocalStorage();
 
-            ToShoppinglist.Add(AddedItem);
+        ToShoppinglist.Add(AddedItem);
 
-            ToShoppinglist = features.HandleDublicats(ToShoppinglist);
+        ToShoppinglist = features.HandleDublicats(ToShoppinglist);
 
-            await localStorage.RemoveItemAsync("ProductString");
+        await localStorage.RemoveItemAsync("ProductString");
 
-            shopString = JsonConvert.SerializeObject(ToShoppinglist);
+        shopString = JsonConvert.SerializeObject(ToShoppinglist);
 
-            await localStorage.SetItemAsync("ProductString", shopString);
+        await localStorage.SetItemAsync("ProductString", shopString);
     }
 
     #endregion
@@ -508,7 +518,6 @@ else if (!isSearching && !_viewProducts)
     {
         productsToPrint.Clear();
         printStartIndex = 0;
-        itemList.Clear();
 
         _viewLoadMore = false;
         isSearching = true;
@@ -568,7 +577,6 @@ else if (!isSearching && !_viewProducts)
 
     public List<Product> AddProductsToPrint()
     {
-        tempProductList.Clear();
         tempProductList = itemList.GetRange(printStartIndex, printCount);
 
         printStartIndex += printCount;
@@ -606,6 +614,7 @@ else if (!isSearching && !_viewProducts)
         {
             _viewLoadMore = false;
         }
+
         _viewLoadMoreSpinner = false;
         this.StateHasChanged();
     }
@@ -697,13 +706,13 @@ else if (!isSearching && !_viewProducts)
                 ToShoppinglist = await GetLocalStorage();
             }
 
-            itemList = await CallApiForProducts(tempSearchword);
+            AutocompleteList = await CallApiForProducts(tempSearchword);
+
             loadProdName();
             prodData = Enumerable.Range(1, prodName.Length)
                 .Select(x => new AutocompleteSearch { textField = prodName[x - 1], valueField = x });
 
-
-            //.Where(x => x.textField.Contains(selectedSearchValue.ToString()));
+            AutocompleteList.Clear();
 
             this.StateHasChanged();
         }
