@@ -116,7 +116,7 @@ namespace BBCollection.Queries
 
             foreach (var ing in recipe._ingredientList)
             {
-                recipeCost += BjarkeGivMePRcie(ing);
+                //recipeCost += BjarkeGivMePRcie(ing);
             }
 
             cRP.RecipeCost = recipeCost;
