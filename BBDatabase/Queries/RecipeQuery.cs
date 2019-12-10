@@ -39,7 +39,12 @@ namespace BBCollection.Queries
             //Func products matching to the ingredients
             //want to make it multithreaded later
             //Find x sallingAPIProducts per distinct ingredient
-            Dictionary<string, List<Product>> productsDict = await MatchingProducts(distinctIngredients);
+            //Dictionary<string, List<Product>> productsDict = await MatchingProducts(distinctIngredients);
+            Dictionary<string, List<Product>> productsDict = await MatchingProductsChain(distinctIngredients, "bilka");
+            
+            // put into db here
+
+
             //Turns the dictionary into a hashtable
             Hashtable productsHashtable = new Hashtable(productsDict);
 
@@ -132,6 +137,20 @@ namespace BBCollection.Queries
             foreach (string ingredient in distinctIngredients.Distinct().ToList())
             {
                 resDictionary.Add(ingredient, await Products(ingredient));
+            }
+            return resDictionary;
+        }
+
+        private async Task<Dictionary<string, List<Product>>> MatchingProductsChain(List<string> distinctIngredients, string chain)
+        {
+            Dictionary<string, List<Product>> resDictionary = new Dictionary<string, List<Product>>();
+
+            foreach (string ingredient in distinctIngredients.Distinct().ToList())
+            {
+                List<Product> productList = await Products(ingredient);
+                var filteredList = productList.Where(product => product._storeName == chain).ToList();
+                filteredList.Sort((p1, p2) => p1._price.CompareTo(p2._price));
+                resDictionary.Add(ingredient, filteredList);
             }
             return resDictionary;
         }
