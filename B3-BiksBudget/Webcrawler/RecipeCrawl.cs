@@ -81,7 +81,7 @@ namespace BBGatherer.Webcrawler
 
                             await dc.Recipe.AddList(recipe);
 
-                            recipeImages.AssingItemImage(new RecepieProductHelper(recipe));
+                            recipeImages.AssingItemImage(new RecepieProductHelper(recipe), "bing");
                         }
                         else
                         {

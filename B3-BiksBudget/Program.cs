@@ -2,6 +2,7 @@ using BBCollection;
 using BBCollection.DBHandling;
 using BBCollection.StoreApi.CoopApi;
 using BBGatherer.Webcrawler;
+using B3_BiksBudget.Webcrawler.Assisting_classes;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -12,19 +13,22 @@ namespace BBGatherer
     {
         static void Main(string[] args)
         {
+            productImages productImages = new productImages();
+            string name = Console.ReadLine();
 
-            DataHandling dh = new DataHandling();
+            productImages.SaveImagesFromLink(productImages.GetImageUrls(name, "bing").Result);
+            //DataHandling dh = new DataHandling();
 
-            try
-            {
-                dh.GenerateDatabase().Wait();
-                //dh.GenerateData(false, false, true).Wait();
-                //dh.TestCollection().Wait();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
+            //try
+            //{
+            //    dh.GenerateDatabase().Wait();
+            //    //dh.GenerateData(false, false, true).Wait();
+            //    //dh.TestCollection().Wait();
+            //}
+            //catch (Exception e)
+            //{
+            //    Console.WriteLine(e);
+            //}
         }
     }
 

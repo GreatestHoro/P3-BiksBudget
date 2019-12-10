@@ -89,7 +89,7 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
                     newRefrence = _refs.UpdateProductRefrence(newRefrence, Searchterm);
                     newRefrence = _refs.InterpretAndEditProductRef(newRefrence);
                     dc.Product.AddReference(newRefrence, p._id);
-                    productImages.AssingItemImage(new RecepieProductHelper(p));
+                    productImages.AssingItemImage(new RecepieProductHelper(p),"bing");
                 }
             }
             else

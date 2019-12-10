@@ -14,10 +14,12 @@ namespace BBGatherer.Webcrawler
     abstract class ImageRetriever
     {
         string searchterm;
+        string searchEngine;
 
-        public async Task<List<string>> GetImageUrls(string searchterm)
+        public async Task<List<string>> GetImageUrls(string searchterm, string searchEngine)
         {
             this.searchterm = searchterm;
+            this.searchEngine = searchEngine;
             string url = CreateLink(assembleSearchName(searchterm));
             HtmlNodeCollection nodes = GetImagePlacement(url).Result;
             List<string> imageLinks = ExtractImageURL(nodes);
@@ -25,10 +27,28 @@ namespace BBGatherer.Webcrawler
             return imageLinks;
         }
 
-        public abstract bool AssingItemImage(RecepieProductHelper recepiesProduct);
-        private string CreateLink(string Name)
+        public abstract bool AssingItemImage(RecepieProductHelper recepiesProduct, string searchEngine);
+        private string CreateLink(string name)
+        {
+            switch (searchEngine.ToLower())
+            {
+                case "google":
+                    return GoogleLink(name);
+                case "bing":
+                    return BingLink(name);
+                default: break;
+            }
+            return GoogleLink(name);
+        }
+
+        private string GoogleLink(string Name) 
         {
             return ("https://www.google.dk/search?q=" + assembleSearchName(Name) + "&sxsrf=ACYBGNQ4PfY5BhIxB_xA0-2uOBOLIunI8w:1575640228751&source=lnms&tbm=isch&sa=X&ved=2ahUKEwjsooOhlaHmAhXCLlAKHRo-CBUQ_AUoAXoECBQQAw&biw=1536&bih=751");
+        }
+
+        private string BingLink(string Name) 
+        {
+            return "https://www.bing.com/images/search?q="+ assembleSearchName(Name)+ "&FORM=HDRSC2";
         }
 
         private string assembleSearchName(string name)
@@ -42,6 +62,19 @@ namespace BBGatherer.Webcrawler
         }
         private async Task<HtmlNodeCollection> GetImagePlacement(string url)
         {
+            switch (searchEngine.ToLower())
+            {
+                case "google":
+                    return await GetGoogleImagePlacement(url);
+                case "bing":
+                    return await GetBingImagePlacement(url);
+                default: break;
+            }
+            return await GetGoogleImagePlacement(url);
+        }
+
+        private async Task<HtmlNodeCollection> GetGoogleImagePlacement(string url) 
+        {
             HttpClient HttpClient = new HttpClient();
             string html = await HttpClient.GetStringAsync(url);
             HtmlDocument htmlDocument = new HtmlDocument();
@@ -50,7 +83,29 @@ namespace BBGatherer.Webcrawler
             return htmlDocument.DocumentNode.SelectNodes("/html[1]/body[1]/table[1]/tbody[1]/tr[1]");
         }
 
+        private async Task<HtmlNodeCollection> GetBingImagePlacement(string url) 
+        {
+            HttpClient HttpClient = new HttpClient();
+            string html = await HttpClient.GetStringAsync(url);
+            HtmlDocument htmlDocument = new HtmlDocument();
+            htmlDocument.LoadHtml(html);
+            return htmlDocument.DocumentNode.SelectNodes("/html[1]/body[1]/div[2]");
+        }
+
         private List<string> ExtractImageURL(HtmlNodeCollection htmlNodes)
+        {
+            switch (searchEngine.ToLower())
+            {
+                case "google":
+                    return ExtractGoogleImageURL(htmlNodes);
+                case "bing":
+                    return ExtractBingImageURL(htmlNodes);
+                default: break;
+            }
+            return ExtractGoogleImageURL(htmlNodes);
+        }
+
+        private List<string> ExtractGoogleImageURL(HtmlNodeCollection htmlNodes) 
         {
             string Innerhtml = htmlNodes.ElementAt<HtmlNode>(0).InnerHtml;
             string identifier = "encrypted";
@@ -59,6 +114,14 @@ namespace BBGatherer.Webcrawler
             imageLinks = imageLinks.Where(x => x.Contains(identifier)).ToList();
             imageLinks = LinkCleanUp(imageLinks);
 
+            return imageLinks;
+        }
+
+        private List<string> ExtractBingImageURL(HtmlNodeCollection htmlNodes) 
+        {
+            string Innerhtml = htmlNodes.ElementAt<HtmlNode>(0).InnerHtml;
+            List<string> imageLinks = ExtractLinks(Innerhtml);
+            imageLinks = LinkCleanUp(imageLinks);
             return imageLinks;
         }
 
@@ -112,26 +175,36 @@ namespace BBGatherer.Webcrawler
             WebClient client = new WebClient();
             foreach (string links in SortedLinks)
             {
-                Stream stream = client.OpenRead(links);
-                Bitmap bitmap; bitmap = new Bitmap(stream);
 
-                if (bitmap != null)
+
+                try
                 {
-                    bitmap.Save(@"C:\Users\jeppe\Desktop\Images_BBGathere\" + assemblefilename(searchterm) + i++ + ".jpg");
+                    Stream stream = client.OpenRead(links);
+                    Bitmap bitmap;
+                    bitmap = new Bitmap(stream);
+                    if (bitmap != null)
+                    {
+                        bitmap.Save(@"C:\Users\jeppe\Desktop\Images_BBGathere\" + assemblefilename(searchterm) + i++ + ".jpg");
+                    }
+                    stream.Flush();
+                    stream.Close();
+                    client.Dispose();
+                }
+                catch(Exception) 
+                {
+
                 }
 
-                stream.Flush();
-                stream.Close();
-                client.Dispose();
+
             }
         }
     }
 
     class productImages : ImageRetriever
     {
-        public override bool AssingItemImage(RecepieProductHelper recepiesProduct)
+        public override bool AssingItemImage(RecepieProductHelper recepiesProduct,string searchEngine)
         {
-            string url = recepiesProduct.GetImage() ?? GetImageUrls(recepiesProduct.GetName()).Result.First();
+            string url = recepiesProduct.GetImage() ?? GetImageUrls(recepiesProduct.GetName(), searchEngine).Result.First();
             recepiesProduct.UpdateImage(url);
             return true;
         }
@@ -139,9 +212,9 @@ namespace BBGatherer.Webcrawler
 
     class recipeImages : ImageRetriever
     {
-        public override bool AssingItemImage(RecepieProductHelper recepiesProduct)
+        public override bool AssingItemImage(RecepieProductHelper recepiesProduct, string searchEngine)
         {
-            string url = recepiesProduct.GetImage() ?? GetImageUrls(recepiesProduct.GetName()).Result.First();
+            string url = recepiesProduct.GetImage() ?? GetImageUrls(recepiesProduct.GetName(), searchEngine).Result.First();
             recepiesProduct.UpdateImage(url);
             return true;
         }
