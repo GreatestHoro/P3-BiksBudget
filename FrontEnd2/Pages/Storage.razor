@@ -25,84 +25,96 @@
     else
     {
         @* Storage table *@
-        <div class="container">
-            <div class="row">
-                <div class="col-sm-12">
-                    <table class="table table-hover table-condensed">
-                        <thead>
-                            <tr>
-                                <th style="width:35%">Product</th>
-                                <th style="width:10%" class="textForTable">Quantity</th>
-                                <th style="width:15%" class="textForTable">Amount remaining</th>
-                                <th style="width:10%" class="textForTable">Date added</th>
-                                <th style="width:10%" class="textForTable">Delete</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (Product p in ListFunc.CombinedList)
-                            {
+
+        @if (viewTitle == false)
+        {
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <table class="table table-hover table-condensed">
+                            <thead>
                                 <tr>
-                                    <td data-th="Product">@p._productName</td>
-                                    <td data-th="Amount" class="textForTable">
-                                        <input type="number" id="number" value="@p._amountleft" />
-                                        @*@p._amount*@
-                                    </td>
-                                    <td data-th="Amount remaining" class="textForTable">
-                                        <div class="input-group">
-                                            <div class="input-group-prepend">
-                                            </div>
-                                            <select class="custom-select" @onchange="((e) => AssignScalar(e, p))">
-                                                <option value="@p._state">@p._state</option>
-                                                @foreach (string state in ItemState)
-                                                {
-                                                    <option value="@state"> @state </option>
-                                                }
-                                            </select>
-                                        </div>
-                                    </td>
-                                    <td data-th="Date added" class="textForTable">@p._timeAdded</td>
-                                    <td data-th="Delete" class="textForTable">
-                                        <div>
-                                            <button class="btn btn-rounded btn-danger btn-sm" title="Delete one @p._productName from storage" @onclick="(() => ChangeItemAmout(p))"><i class="oi oi-trash"></i></button>
-                                            @if (p._amountleft > 1)
-                                            {
-                                                <button class="btn btn-rounded btn-danger btn-sm" title="Delete all @p._amountleft @p._productName from storage" @onclick="(() => DeleteItem(p))"><i class="oi oi-trash"></i>(All)</button>
-                                            }
-                                            else
-                                            {
-                                                <button disabled class="btn btn-rounded btn-danger btn-sm invisibleBtn"><i class="oi oi-trash"></i>(All)</button>
-                                            }
-                                        </div>
-                                    </td>
+                                    <th style="width:35%">Product</th>
+                                    <th style="width:10%" class="textForTable">Quantity</th>
+                                    <th style="width:15%" class="textForTable">Amount remaining</th>
+                                    <th style="width:10%" class="textForTable">Date added</th>
+                                    <th style="width:10%" class="textForTable">Delete</th>
                                 </tr>
-                                <br />
-                            }
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @foreach (Product p in ListFunc.CombinedList)
+                                {
+                                    <tr>
+                                        <td data-th="Product">@p._productName</td>
+                                        <td data-th="Amount" class="textForTable">
+                                            <input type="number" id="number" value="@p._amountleft" />
+                                        </td>
+                                        <td data-th="Amount remaining" class="textForTable">
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                </div>
+                                                <select class="custom-select" @onchange="((e) => AssignScalar(e, p))">
+                                                    <option value="@p._state">@p._state</option>
+                                                    @foreach (string state in ItemState)
+                                                    {
+                                                        <option value="@state"> @state </option>
+                                                    }
+                                                </select>
+                                            </div>
+                                        </td>
+                                        <td data-th="Date added" class="textForTable">@p._timeAdded</td>
+                                        <td data-th="Delete" class="textForTable">
+                                            <div>
+                                                <button class="btn btn-rounded btn-danger btn-sm" title="Delete one @p._productName from storage" @onclick="(() => ChangeItemAmout(p))"><i class="oi oi-trash"></i></button>
+                                                @if (p._amountleft > 1)
+                                                {
+                                                    <button class="btn btn-rounded btn-danger btn-sm" title="Delete all @p._amountleft @p._productName from storage" @onclick="(() => DeleteItem(p))"><i class="oi oi-trash"></i>(All)</button>
+                                                }
+                                                else
+                                                {
+                                                    <button disabled class="btn btn-rounded btn-danger btn-sm invisibleBtn"><i class="oi oi-trash"></i>(All)</button>
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-            @* Buttons *@
-            <div class="row">
+        }
+    }
 
-                @*<div class="col-sm-4 of">
-                        <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>ListFunc.AddFuncList())">Save storage</button>
-                    </div>*@
-                <div class="col-sm-4">
-                    <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => ListFunc.DeleteStorage())">Delete storage</button>
-                </div>
-                <div class="col-sm-4">
-                    <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => FindRecipies())">Empty my Fridge</button>
-                </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-4">
+                <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => ListFunc.DeleteStorage())">Delete storage</button>
             </div>
+            <div class="col-sm-4">
+                <Tooltip Text="Find a recipe that utilizes your products">
+                <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => FindRecipies())">BiksFood</button>
+                </Tooltip>
+            </div>
+            <div class="col-sm-4">
+                @if (viewTitle == true)
+                {
+                    <button class="btn btn-block btn-light rounded-0" @onclick="(() => closeRecipies())">Back to storage</button>
+                }
+            </div>
+        </div>
+    </div>
 
-            @if (_viewEmptyFridgeLoadSpinner)
+            @*@if (_viewEmptyFridgeLoadSpinner)
             {
                 <div class="center_div lds-roller">
                     <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
                 </div>
-            }
+            }*@
+
             @if (loadingbar)
             {
+
                 <div class="progress mb-3">
                     <!--!-->
                     <!--!-->
@@ -114,12 +126,10 @@
                     <!--!-->
                 </div>
             }
-        </div>
-    }
     @*</div>*@
 
     <!-- #region Old recipe view -->
-    <div class="container-fluid top-margin">
+    @*<div class="container-fluid top-margin">
         @if (recpies == null)
         {
             <p>Sorry, you dont have enough products</p>
@@ -205,11 +215,11 @@
                     <p> @recipeDescription </p>
                 </div>
             }
-        </div>
+        </div>*@
         <!--Scroll to top button   -->
-        <button id="myBtn" class="btn btn-rounded btn-success"><a href="storage" style="color: white; font-size:12px;">Top</a></button>
-    </div>
+    @*</div>*@
     <!-- #endregion -->
+
     <!-- #region Recipe card lists -->
     @if (viewTitle == true)
     {
@@ -522,8 +532,7 @@ else
 
     void closeRecipies()
     {
-        viewTitle = false;
-        viewIngredients = false;
+        viewTitle = !viewTitle;
     }
 
     void retriveInfo(Recipe rep)
@@ -591,12 +600,11 @@ else
             LoadingManager(++HasBeenLoaded, ListFunc.CombinedList.Count);
             this.StateHasChanged();
         }
-
+        viewTitle = true;
         _viewEmptyFridgeLoadSpinner = false;
         await disableLoad();
-        viewTitle = true;
     }
-    private async void LoadingManager(int currentLoad, int TotalToLoad)
+    private void LoadingManager(int currentLoad, int TotalToLoad)
     {
         LoadingBarProggres = currentLoad == TotalToLoad ? 100 : ((int)(100 * ((float)currentLoad / (float)TotalToLoad)));
     }
