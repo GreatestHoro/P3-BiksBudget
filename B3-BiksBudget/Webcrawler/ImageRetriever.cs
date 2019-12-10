@@ -184,7 +184,7 @@ namespace BBGatherer.Webcrawler
                     bitmap = new Bitmap(stream);
                     if (bitmap != null)
                     {
-                        bitmap.Save(@"C:\Users\jeppe\Desktop\Images_BBGathere\" + assemblefilename(searchterm) + i++ + ".jpg");
+                        bitmap.Save(@"C:\Users\jeppe\OneDrive\Skrivebord\Images_BBGathere\" + assemblefilename(searchterm) + i++ + ".jpg");
                     }
                     stream.Flush();
                     stream.Close();
