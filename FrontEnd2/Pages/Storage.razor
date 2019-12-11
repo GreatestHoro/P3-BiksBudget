@@ -83,9 +83,19 @@
                 <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => user.storage.DeleteStorage())">Delete storage</button>
             </div>
             <div class="col-sm-4">
-                <Tooltip Text="Find a recipe that utilizes your products">
-                <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => FindRecipies())">BiksFood</button>
-                </Tooltip>
+                @if (StorageExists())
+                {
+                    <Tooltip Text="Find a recipe that utilizes your products">
+                        <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => FindRecipies())">BiksFood</button>
+                    </Tooltip>
+
+                }
+                else
+                {
+                    <Tooltip Text="Add products to storage to use BiksFood">
+                        <button disabled class="btn btn-block btn-light recipeDivDisplay rounded-0 invisibleBtn">BiksFood</button>
+                    </Tooltip>
+                }
             </div>
             <div class="col-sm-4">
                 @if (viewTitle == true)
@@ -418,6 +428,10 @@ else
 
     #region StorageMethods
 
+    public bool StorageExists()
+    {
+        return user.storage.storageList.Count > 0;
+    }
 
     /// <summary>
     /// The state of an item is changed.

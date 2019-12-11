@@ -268,11 +268,13 @@
                 // THis means he has a shoppinglist, and this will be called throuhg the api
                 await user.shoppinglist.GetWhenLoggedIn();
             }
-            else if (!String.IsNullOrEmpty(shopString))
+            else
             {
                 user = new UserData();
-                // If the user is not logged in, and there is products in the localstorage
-                // this will be put into the shoppinglist
+            }
+
+            if (!String.IsNullOrEmpty(shopString))
+            {
                 user.shoppinglist.GetWhenNotLoggedIn(shopString);
             }
 
@@ -323,11 +325,11 @@
 
     public async Task SaveLocalStorage()
     {
-            productString = JsonConvert.SerializeObject(user.shoppinglist.shoppinglist);
+        productString = JsonConvert.SerializeObject(user.shoppinglist.shoppinglist);
 
-            await localStorage.RemoveItemAsync("ProductString");
+        await localStorage.RemoveItemAsync("ProductString");
 
-            await localStorage.SetItemAsync("ProductString", productString);
+        await localStorage.SetItemAsync("ProductString", productString);
     }
 
     #endregion
