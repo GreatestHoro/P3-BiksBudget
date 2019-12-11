@@ -6,11 +6,11 @@ namespace BBCollection.BBObjects
     {
         public List<FilterItem> optionsList = new List<FilterItem>()
         {
-            new FilterItem("Most relevant", true, true),
-            new FilterItem("Price (Low to High)", false, true),
-            new FilterItem("Price (High to Low)", false, true),
-            new FilterItem("Alphabetical order (A - Z)", false, true),
-            new FilterItem("Alphabetical order (Z - A)", false, true),
+            new FilterItem("Relevance", true, true),
+            new FilterItem("Lowest price", false, true),
+            new FilterItem("Heighest price", false, true),
+            new FilterItem("Product (A-Z)", false, true),
+            new FilterItem("Product (Z-A)", false, true),
             new FilterItem("Store (A - Z)", false, true),
             new FilterItem("Store (Z - A", false, true)
         };
