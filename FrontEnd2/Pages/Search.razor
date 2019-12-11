@@ -176,12 +176,12 @@
                                     <CardTitle Class="w-100" Margin="Margin.Is4" Size="5">@p._productName</CardTitle>
                                     <CardText>
                                         <ListGroup IsFlush="true">
-                                            <ListGroupItem>Amount Added: @p._amountleft</ListGroupItem>
+                                            <ListGroupItem>Description: @p._amount</ListGroupItem>
                                             <ListGroupItem>Price: @p._price</ListGroupItem>
                                             <ListGroupItem>Store: @p._storeName</ListGroupItem>
                                         </ListGroup>
                                     </CardText>
-                                    <Button Margin="Margin.Is4" Color="Color.Primary" @onclick="(() => AddProductToSL(p))">Add To Shoppinglist (@p._amountleft)</Button>
+                                    <Button IsDisabled="disableButton" Margin="Margin.Is4" Color="Color.Primary" @onclick="(() => AddProductToSL(p))">Add To Shoppinglist (@p._amountleft)</Button>
                                 </CardBody>
                             </Card>
                         </Column>
@@ -274,7 +274,7 @@ else if (!isSearching && !_viewProducts)
     List<Product> tempProductList = new List<Product>();
     List<AdvancedFilterList> filterLists = new List<AdvancedFilterList>();
     List<Product> AutocompleteList = new List<Product>();
-    List<FilterItem> tempList = new List<FilterItem>();
+    List<FilterItem> tempFilterlist = new List<FilterItem>();
     SortBy sort = new SortBy();
     List<Product> tempToShowList = new List<Product>();
 
@@ -515,20 +515,12 @@ else if (!isSearching && !_viewProducts)
     /// in the local storage.
     /// </summary>
     /// <param name="AddedItem"></param>
-    public async void AddProductToSL(Product AddedItem)
+    public async Task AddProductToSL(Product AddedItem)
     {
         disableButton = true;
         StateHasChanged();
 
         AddedItem._amountleft++;
-        tempProductName = AddedItem._productName;
-        tempTotalCost += AddedItem._price;
-
-        int actualAmout = AddedItem._amountleft;
-
-        AddedItem._amountleft = 1;
-
-        //AddedItem._image = features.SetOnePicture(AddedItem._image);
 
         if (String.IsNullOrEmpty(email))
         {
@@ -539,8 +531,6 @@ else if (!isSearching && !_viewProducts)
             await user.shoppinglist.AddProduct(AddedItem);
         }
 
-        AddedItem._amountleft = actualAmout;
-
         disableButton = await AwaitButton();
         //snackbar.Show();
         StateHasChanged();
@@ -548,7 +538,7 @@ else if (!isSearching && !_viewProducts)
 
     public async Task<bool> AwaitButton()
     {
-        await Task.Delay(40);
+        await Task.Delay(30);
         return false;
     }
 
@@ -635,19 +625,19 @@ else if (!isSearching && !_viewProducts)
 
     public void OrderResulsts()
     {
-        tempList = FindStoreList();
+        tempFilterlist = FindFilterList(optionLabel);
 
-        DecideOrderFilter(FindActiveSortFilter(tempList));
+        DecideOrderFilter(FindActiveSortFilter(tempFilterlist));
     }
 
-    public List<FilterItem> FindStoreList()
+    public List<FilterItem> FindFilterList(string label)
     {
-        return filterLists[StoreIndex()].optionsList;
+        return filterLists[StoreIndex(label)].optionsList;
     }
 
-    public int StoreIndex()
+    public int StoreIndex(string label)
     {
-        return filterLists.FindIndex(x => x.label == optionLabel);
+        return filterLists.FindIndex(x => x.label == label);
     }
 
     public List<Product> AddProductsToPrint()
@@ -768,8 +758,8 @@ else if (!isSearching && !_viewProducts)
 
             if (userGeoLocation._latitude == 0 && userGeoLocation._longitude == 0)
             {
-                await GetUserLocation();
-                await tcsUserLocation.Task;
+                //await GetUserLocation();
+                //await tcsUserLocation.Task;
             }
 
             if (!String.IsNullOrEmpty(email))
@@ -788,13 +778,30 @@ else if (!isSearching && !_viewProducts)
             //prodData = Enumerable.Range(1, prodName.Length)
             //    .Select(x => new AutocompleteSearch { textField = prodName[x - 1], valueField = x });
             prodData = Enumerable.Range(1, prodName.Length)
-                .Select(x => new AutocompleteSearch { textField = prodName[x - 1], valueField = x });
+                .Select(x => new AutocompleteSearch { textField = prodName[x - 1], valueField = x }).Where(x=> AutcompleteWordFilters(x.textField));
 
-            AutocompleteList.Clear();
+            /*.Where(x=> x.textField.Contains("øko") AutcompleteWordFilters(x.textField) == true)*/
+
+            //AutocompleteList.Clear();
 
             this.StateHasChanged();
         }
 
+    }
+
+    public bool AutcompleteWordFilters(string s)
+    {
+        tempFilterlist = FindFilterList(wordLabel);
+
+        foreach (FilterItem f in tempFilterlist)
+        {
+            if (!s.Contains(f.SearchName) && f.IsEnabled)
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public async Task<List<Product>> GetLocalStorage()
@@ -848,7 +855,7 @@ else if (!isSearching && !_viewProducts)
 
     void loadProdName()
     {
-        prodName = itemList.Select(p => Convert.ToString(p._productName)).ToArray();
+        prodName = AutocompleteList.Select(p => Convert.ToString(p._productName + " " + p._amount)).ToArray();
 
         prodName = prodName.Select(s => s.ToLowerInvariant()).ToArray();
 
