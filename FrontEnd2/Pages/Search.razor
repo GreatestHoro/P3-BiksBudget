@@ -61,6 +61,31 @@
 <!-- #region Filters -->
 @if (viewAdvancedSearch)
 {
+    <div class="container-fluid">
+        <div class="row no-gutters">
+            @foreach (AdvancedFilterList af in filterLists)
+            {
+                <Field ColumnSize="ColumnSize.Is1.OnDesktop">
+                    <!-- #region Choose stores filter -->
+                    <Label> @af.optionsname</Label>
+                    @foreach (FilterItem fi in af.optionsList)
+                    {
+                        if (fi.IsSortable)
+                        {
+                            <CheckEdit RadioGroup="dsjdskjdsk" @onchange="(() => AssignFilter(fi.FilterName, af.optionsList, af.label))" Checked="true"> @fi.FilterName</CheckEdit>
+                        }
+                        else
+                        {
+                        <CheckEdit @onchange="(() => AssignFilter(fi.FilterName, af.optionsList, af.label))" Checked="true"> @fi.FilterName</CheckEdit>
+                        }
+                    }
+                    <!-- #endregion -->
+                </Field>
+            }
+
+        </div>
+    </div>
+
     <div class="d-flex flex-sm-row flex-column searchAdvancedText">
 
         @foreach (AdvancedFilterList a in filterLists)
@@ -194,7 +219,6 @@
     </div>
 }
 <!-- #endregion -->
-
 <!-- #region Loadmore btn -->
 @if (_viewLoadMore)
 {
@@ -347,6 +371,18 @@ else if (!isSearching && !_viewProducts)
         else
         {
             ChangeState(test, filterList, label);
+         }
+    }
+
+        private void AssignFilter(string e, List<FilterItem> filterList, string label)
+    {
+        if (e.Equals("all"))
+        {
+            SelectAll(filterList);
+        }
+        else
+        {
+            ChangeState(e, filterList, label);
         }
     }
 
@@ -363,6 +399,7 @@ else if (!isSearching && !_viewProducts)
     public void ChangeState(string name, List<FilterItem> list, string label)
     {
         tempFilteritem = FindFilteritem(list, name);
+        tempFilteritem.IsEnabled = !tempFilteritem.IsEnabled;
 
         if (tempFilteritem.IsSortable)
         {
