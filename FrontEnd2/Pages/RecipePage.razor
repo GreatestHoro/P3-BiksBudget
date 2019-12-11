@@ -221,17 +221,17 @@
                     </CardBody>
                 </Collapse>
             </Card>
-            <Snackbar @ref="snackbar" ismultiline="true">
+            @*<Snackbar @ref="snackbar" IsMultiline="true">
                 <SnackbarBody>
                     @tempProductName added to your shopping list. your total is @string.Format("{0:0.00}", (user.shoppinglist.CompletePrice() + tempTotalCost)) dkk.
                 </SnackbarBody>
             </Snackbar>
 
-            <Snackbar @ref="snackbar2" ismultiline="true">
+            <Snackbar @ref="snackbar2" IsMultiline="true">
                 <SnackbarBody>
                     you've added @amountOfProducts items to your shopping list. your total cost is now @string.Format("{0:0.00}", (user.shoppinglist.CompletePrice() + tempTotalCostQuickList)) dkk.
                 </SnackbarBody>
-            </Snackbar>
+            </Snackbar>*@
         </ModalContent>
     </Modal>
 </Accordion>
