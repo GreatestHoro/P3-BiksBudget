@@ -223,7 +223,7 @@
             </Card>
             <Snackbar @ref="snackbar" IsMultiline="true">
                 <SnackbarBody>
-                    @tempProductName added to your shopping list. your total is @string.Format("{0:0.00}", (user.shoppinglist.CompletePrice() + tempTotalCost)) dkk.
+                    @tempProductName added to your shopping list. your total is @string.Format("{0:0.00}", (tempTotalCost)) dkk.
                 </SnackbarBody>
             </Snackbar>
 
@@ -236,7 +236,7 @@
                 <SnackbarBody>
                     @tempProductName added to your shopping list. your total is @string.Format("{0:0.00}", (ronisDouble + tempTotalCost)) dkk.
                 </SnackbarBody>
-            </Snackbar>
+            </Snackbar>*@
         </ModalContent>
     </Modal>
 </Accordion>
@@ -269,7 +269,7 @@
 
     double tempTotalCostQuickList = 0;
     double tempTotalCost = 0;
-    double ronisDouble; 
+    double ronisDouble;
 
     bool isOpen1 = true;
     bool isOpen2 = true;
@@ -484,7 +484,7 @@
             }
 
             double completePrice = user.shoppinglist.CompletePrice();
-            ronisDouble = completePrice; 
+            ronisDouble = completePrice;
 
             StateHasChanged();
         }

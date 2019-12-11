@@ -60,11 +60,11 @@
                             {
                                 if (fi.IsSortable)
                                 {
-                                    <CheckEdit ColumnSize="ColumnSize.IsAuto" IsInline="false" RadioGroup="Yeet1" @onchange="(() => AssignFilter(fi.FilterName, af.optionsList, af.label))" Checked="true"> @fi.FilterName</CheckEdit>
+                                    <CheckEdit ColumnSize="ColumnSize.IsAuto" IsInline="@fi.IsEnabled" RadioGroup="Yeet1" @onchange="(() => AssignFilter(fi.FilterName, af.optionsList, af.label))" Checked="true"> @fi.FilterName</CheckEdit>
                                 }
                                 else
                                 {
-                                    <CheckEdit IsInline="false" @onchange="(() => AssignFilter(fi.FilterName, af.optionsList, af.label))" Checked="true"> @fi.FilterName</CheckEdit>
+                                    <CheckEdit IsInline="false" @onchange="(() => AssignFilter(fi.FilterName, af.optionsList, af.label))" Checked="@fi.IsEnabled"> @fi.FilterName</CheckEdit>
                                 }
                             }
                         </Field>
@@ -156,6 +156,7 @@
     List<Product> AutocompleteList = new List<Product>();
     List<FilterItem> tempFilterlist = new List<FilterItem>();
     SortBy sort = new SortBy();
+    SortNames sortBy = new SortNames();
     List<Product> tempToShowList = new List<Product>();
 
     UserData user;
@@ -342,25 +343,25 @@
     {
         switch (filterName.ToLower())
         {
-            case "most relevant":
+            case "Relevance":
                 itemList = sort.SortByMostRelevant(itemList);
                 break;
-            case "price (low to high)":
+            case "Lowest price":
                 itemList = sort.SortByPriceLH(itemList);
                 break;
-            case "price (high to low)":
+            case "Heighest price":
                 itemList = sort.SortBypriceHL(itemList);
                 break;
-            case "alphabetical order (a - z)":
+            case "Product (A-Z)":
                 itemList = sort.SortByNameAZ(itemList);
                 break;
-            case "alphabetical order (z - a)":
+            case "Product (Z-A)":
                 itemList = sort.SortByNameZA(itemList);
                 break;
-            case "store (a - z)":
+            case "Store (A-Z)":
                 itemList = sort.SortByStoreAZ(itemList);
                 break;
-            case "store (z - a":
+            case "Store (Z-A)":
                 itemList = sort.SortByStoreZA(itemList);
                 break;
         }
@@ -747,7 +748,7 @@
 
     void loadProdName()
     {
-        prodName = AutocompleteList.Select(p => Convert.ToString(p._productName + " " + p._amount)).ToArray();
+        prodName = AutocompleteList.Select(p => Convert.ToString(p._productName)).ToArray();
 
         prodName = prodName.Select(s => s.ToLowerInvariant()).ToArray();
 
