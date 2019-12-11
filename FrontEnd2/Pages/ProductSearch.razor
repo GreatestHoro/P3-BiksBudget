@@ -40,6 +40,7 @@
     </Column>
 </Row>
 <!-- #endregion -->
+<!-- #region Filters -->
 <Modal @ref="filterModal">
     <ModalBackdrop /> 
     <ModalContent IsCentered="true" Size="ModalSize.ExtraLarge">
@@ -100,7 +101,6 @@
         </ModalBody>
     </ModalContent>
 </Modal>
-<!-- #region Filters -->
 
 <!-- #endregion -->
 
@@ -109,9 +109,11 @@
 
 @code{
     #region fields
+    //private Snackbar snackbar;
     private Snackbar snackbar;
     private Modal filterModal;
-    private bool locationBox; 
+    private bool locationBox;
+
 
     static TaskCompletionSource<GeoCoordinate> tcsUserLocation = new TaskCompletionSource<GeoCoordinate>();
     static GeoCoordinate userGeoLocation = new GeoCoordinate(0, 0);
@@ -120,7 +122,6 @@
     StoreFilterList storeFilters = new StoreFilterList();
     WordFilterList wordFIlters = new WordFilterList();
     FindCloseStores closeStore;
-    //ShoppinlistFunctionality SLFunc = new ShoppinlistFunctionality("api/Shoppinglist");
     ControllerFuncionality features = new ControllerFuncionality();
 
     List<FilterItem> optionsList = new List<FilterItem>();
@@ -131,6 +132,9 @@
     List<Product> tempProductList = new List<Product>();
     List<AdvancedFilterList> filterLists = new List<AdvancedFilterList>();
     List<Product> AutocompleteList = new List<Product>();
+    List<FilterItem> tempFilterlist = new List<FilterItem>();
+    SortBy sort = new SortBy();
+    List<Product> tempToShowList = new List<Product>();
 
     UserData user;
 
@@ -156,6 +160,9 @@
     bool _viewLoadMoreSpinner = false;
     bool disableButton = false;
     bool viewAutoComplete = false;
+    bool isFindingList = false;
+
+    FilterItem filter = new FilterItem();
 
     int value = 1;
     int radius = 1000;
@@ -164,10 +171,11 @@
     int _loadCount = 0;
     int printCount = 9;
     int printStartIndex = 0;
+    int availabelProducts;
 
     double tempTotalCost = 0;
     double _minPrice = 0;
-    double _maxPrice = 3000;
+    double _maxPrice = 5000;
     double priceLimit = 10000;
 
     string searchBox;
@@ -227,8 +235,7 @@
 
     #endregion
 
-    #region Filter modal view methods
-
+    #region Modal
     private void showModal()
     {
         filterModal.Show();
@@ -238,9 +245,6 @@
     {
         filterModal.Hide();
     }
-
-
-
     #endregion
 
     #region ChangeFilterControl
@@ -284,12 +288,11 @@
     public void ChangeState(string name, List<FilterItem> list, string label)
     {
         tempFilteritem = FindFilteritem(list, name);
-        tempFilteritem.IsEnabled = !tempFilteritem.IsEnabled;
 
         if (tempFilteritem.IsSortable)
         {
-
-            productsToPrint = DecideOrderFilter(tempFilteritem.FilterName);
+            list = AssignNewBools(list, tempFilteritem.FilterName);
+            DecideOrderFilter(tempFilteritem.FilterName);
         }
         else
         {
@@ -297,36 +300,51 @@
         }
     }
 
+    private List<FilterItem> AssignNewBools(List<FilterItem> list, string name)
+    {
+        foreach (FilterItem f in list)
+        {
+            if (f.FilterName.Equals(name))
+            {
+                f.IsEnabled = true;
+            }
+            else
+            {
+                f.IsEnabled = false;
+            }
+        }
+        return list;
+    }
 
-    public List<Product> DecideOrderFilter(string filterName)
+    public void DecideOrderFilter(string filterName)
     {
         switch (filterName.ToLower())
         {
             case "most relevant":
-                SortByMostRelevant();
+                itemList = sort.SortByMostRelevant(itemList);
                 break;
             case "price (low to high)":
-                SortByPriceLH();
+                itemList = sort.SortByPriceLH(itemList);
                 break;
             case "price (high to low)":
-                SortBypriceHL();
+                itemList = sort.SortBypriceHL(itemList);
                 break;
             case "alphabetical order (a - z)":
-                SortByNameAZ();
+                itemList = sort.SortByNameAZ(itemList);
                 break;
             case "alphabetical order (z - a)":
-                SortByNameZA();
+                itemList = sort.SortByNameZA(itemList);
                 break;
             case "store (a - z)":
-                SortByStoreAZ();
+                itemList = sort.SortByStoreAZ(itemList);
                 break;
             case "store (z - a":
-                SortByStoreZA();
+                itemList = sort.SortByStoreZA(itemList);
                 break;
-
         }
 
-        return ApplySortFilterToResults();
+        productsToPrint = ApplySortFilterToResults();
+
     }
 
     public List<Product> ApplySortFilterToResults()
@@ -358,43 +376,6 @@
 
     #endregion
 
-    #region Product Sort Filters
-    public void SortByMostRelevant()
-    {
-        itemList.Sort((a, b) => a._productName.Length.CompareTo(b._productName.Length));
-    }
-
-    public void SortByPriceLH()
-    {
-        itemList.Sort((a, b) => a._price.CompareTo(b._price));
-    }
-
-    public void SortBypriceHL()
-    {
-        itemList.Sort((a, b) => b._price.CompareTo(a._price));
-    }
-
-    public void SortByStoreAZ()
-    {
-        itemList.Sort((a, b) => a._storeName.CompareTo(b._storeName));
-    }
-
-    public void SortByStoreZA()
-    {
-        itemList.Sort((a, b) => b._storeName.CompareTo(a._storeName));
-    }
-
-    public void SortByNameAZ()
-    {
-        itemList.Sort((a, b) => a._productName.CompareTo(b._productName));
-    }
-
-    public void SortByNameZA()
-    {
-        itemList.Sort((a, b) => b._productName.CompareTo(a._productName));
-    }
-    #endregion
-
     #region ProductToShoppinglistMethod
 
     /// <summary>
@@ -404,20 +385,12 @@
     /// in the local storage.
     /// </summary>
     /// <param name="AddedItem"></param>
-    public async void AddProductToSL(Product AddedItem)
+    public async Task AddProductToSL(Product AddedItem)
     {
         disableButton = true;
         StateHasChanged();
 
         AddedItem._amountleft++;
-        tempProductName = AddedItem._productName;
-        tempTotalCost += AddedItem._price;
-
-        int actualAmout = AddedItem._amountleft;
-
-        AddedItem._amountleft = 1;
-
-        //AddedItem._image = features.SetOnePicture(AddedItem._image);
 
         if (String.IsNullOrEmpty(email))
         {
@@ -428,8 +401,6 @@
             await user.shoppinglist.AddProduct(AddedItem);
         }
 
-        AddedItem._amountleft = actualAmout;
-
         disableButton = await AwaitButton();
         //snackbar.Show();
         StateHasChanged();
@@ -437,7 +408,7 @@
 
     public async Task<bool> AwaitButton()
     {
-        await Task.Delay(40);
+        await Task.Delay(30);
         return false;
     }
 
@@ -481,6 +452,8 @@
 
         if (itemList.Count != 0)
         {
+            OrderResulsts();
+
 
             if (itemList.Count > printCount)
             {
@@ -491,7 +464,6 @@
                 productsToPrint.AddRange(AddProductsToPrint(itemList.Count));
             }
 
-            productsToPrint = DecideOrderFilter(FindActiveSortFilter());
 
             _viewProducts = true;
             if (itemList.Count > productsToPrint.Count)
@@ -519,6 +491,23 @@
 
         isSearching = false;
         this.StateHasChanged();
+    }
+
+    public void OrderResulsts()
+    {
+        tempFilterlist = FindFilterList(optionLabel);
+
+        DecideOrderFilter(FindActiveSortFilter(tempFilterlist));
+    }
+
+    public List<FilterItem> FindFilterList(string label)
+    {
+        return filterLists[StoreIndex(label)].optionsList;
+    }
+
+    public int StoreIndex(string label)
+    {
+        return filterLists.FindIndex(x => x.label == label);
     }
 
     public List<Product> AddProductsToPrint()
@@ -659,13 +648,30 @@
             //prodData = Enumerable.Range(1, prodName.Length)
             //    .Select(x => new AutocompleteSearch { textField = prodName[x - 1], valueField = x });
             prodData = Enumerable.Range(1, prodName.Length)
-                .Select(x => new AutocompleteSearch { textField = prodName[x - 1], valueField = x });
+                .Select(x => new AutocompleteSearch { textField = prodName[x - 1], valueField = x }).Where(x=> AutcompleteWordFilters(x.textField));
+
+            /*.Where(x=> x.textField.Contains("øko") AutcompleteWordFilters(x.textField) == true)*/
 
             //AutocompleteList.Clear();
 
             this.StateHasChanged();
         }
 
+    }
+
+    public bool AutcompleteWordFilters(string s)
+    {
+        tempFilterlist = FindFilterList(wordLabel);
+
+        foreach (FilterItem f in tempFilterlist)
+        {
+            if (!s.Contains(f.SearchName) && f.IsEnabled)
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public async Task<List<Product>> GetLocalStorage()
@@ -719,7 +725,7 @@
 
     void loadProdName()
     {
-        prodName = AutocompleteList.Select(p => Convert.ToString(p._productName)).ToArray();
+        prodName = AutocompleteList.Select(p => Convert.ToString(p._productName + " " + p._amount)).ToArray();
 
         prodName = prodName.Select(s => s.ToLowerInvariant()).ToArray();
 
@@ -752,9 +758,9 @@
     /// come from the database
     /// </summary>
     /// <returns></returns>
-    public string FindActiveSortFilter()
+    public string FindActiveSortFilter(List<FilterItem> filterList)
     {
-        foreach (FilterItem o in optionsList)
+        foreach (FilterItem o in filterList)
         {
             if (o.IsEnabled)
             {
@@ -921,6 +927,88 @@
             // It is only run on the first render.
             tcsUserLocation.SetResult(userGeoLocation);
         }
+    }
+    #endregion
+
+    #region Price
+
+    public void CheckMinPrice(ChangeEventArgs e)
+    {
+        isFindingList = true;
+        StateHasChanged();
+
+        minPrice = Convert.ToInt32(e.Value.ToString());
+
+        if (ListExists(itemList))
+        {
+            productsToPrint = FindNewProducts();
+        }
+
+        isFindingList = false;
+        StateHasChanged();
+    }
+
+
+    public void CheckMaxPrice(ChangeEventArgs e)
+    {
+        isFindingList = true;
+        StateHasChanged();
+
+        minPrice = Convert.ToInt32(e.Value.ToString());
+
+        if (ListExists(itemList))
+        {
+            productsToPrint = FindNewProducts();
+        }
+
+        isFindingList = false;
+        StateHasChanged();
+    }
+
+    public List<Product> FindNewProducts()
+    {
+        tempToShowList.Clear();
+        int i = 0;
+        i = printStartIndex;
+
+        double price;
+        while (tempToShowList.Count < printCount)
+        {
+            price = itemList[i]._price;
+
+            if (minPrice < price && maxPrice > price)
+            {
+                tempToShowList.Add(itemList[i]);
+            }
+
+            if (i > itemList.Count)
+            {
+                break;
+            }
+
+            i++;
+
+        }
+
+        return tempToShowList;
+    }
+
+    public bool ListExists(List<Product> list)
+    {
+        return list.Count > 0;
+    }
+
+    public int CountAvailableProducts()
+    {
+        int i = 0;
+        foreach (Product p in itemList)
+        {
+            if (minPrice < p._price && maxPrice > p._price)
+            {
+                availabelProducts++;
+            }
+        }
+        return i;
     }
     #endregion
 }
