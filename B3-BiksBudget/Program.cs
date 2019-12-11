@@ -27,8 +27,8 @@ namespace BBGatherer
 
                 //recipeQuery.CheapestCRecipes("").Wait();
                 //dh.GenerateDatabase().Wait();
-                //dh.GenerateData(true, false, false).Wait();
-                dh.TestCollection().Wait();
+                dh.GenerateData(false, true, false).Wait();
+                //dh.TestCollection().Wait();
             }
             catch (Exception e)
             {
