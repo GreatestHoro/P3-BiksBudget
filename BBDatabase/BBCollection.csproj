@@ -5,13 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Blazorise" Version="0.8.7.1" />
+    <PackageReference Include="Blazorise" Version="0.8.7.2" />
     <PackageReference Include="Blazorise.Bootstrap" Version="0.8.7.1" />
-    <PackageReference Include="Blazorise.Components" Version="0.8.7.1" />
+    <PackageReference Include="Blazorise.Components" Version="0.8.7.2" />
     <PackageReference Include="Blazorise.DataGrid" Version="0.8.7.1" />
-    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.8.7.1" />
-    <PackageReference Include="Blazorise.Icons.Material" Version="0.8.7.1" />
-    <PackageReference Include="Blazorise.Snackbar" Version="0.8.7.1" />
+    <PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.8.7.2" />
+    <PackageReference Include="Blazorise.Icons.Material" Version="0.8.7.2" />
+    <PackageReference Include="Blazorise.Snackbar" Version="0.8.7.2" />
     <PackageReference Include="Json.Net" Version="1.0.16" />
     <PackageReference Include="Microsoft.AspNet.Identity.Core" Version="2.2.2" />
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
