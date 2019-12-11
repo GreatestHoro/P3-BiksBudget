@@ -243,15 +243,15 @@ namespace BBCollection.DBHandling
             }
             else
             {
-                if (filter == Chain.bilka)
+                if ((filter & Chain.bilka) == Chain.bilka)
                 {
                     price.Add(bilkaPrice);
                 }
-                if (filter == Chain.fakta)
+                if ((filter & Chain.fakta) == Chain.fakta)
                 {
                     price.Add(faktaPrice);
                 }
-                if (filter == Chain.superBrugsen)
+                if ((filter & Chain.superBrugsen) == Chain.superBrugsen)
                 {
                     price.Add(sbPrice);
                 }
