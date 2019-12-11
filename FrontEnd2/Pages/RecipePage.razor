@@ -187,7 +187,7 @@
                                         <TableRowCell Style="width:150px"><Button Class="btn btn-block btn-light" @onclick="(() => retriveIngredient(ing))">@ing._ingredientName</Button></TableRowCell>
                                     </TableRow>
                                 }
-                                <TableRowCell ColumnSpan="2"> <Button Class="btn btn-block btn-outline-success" Clicked="()=>QuickAddToShoppinglist(ingredients)"> <Icon Name="@(FontAwesomeIcons.ShoppingCart)"></Icon></Button> </TableRowCell>
+                                <TableRowCell ColumnSpan="2"> <Button Class="btn btn-block btn-outline-success" IsDisabled="@quickaddEnabled" Clicked="()=>QuickAddToShoppinglist(ingredients)"> <Icon Name="@(FontAwesomeIcons.ShoppingCart)"></Icon></Button> </TableRowCell>
                             </TableBody>
                         </Table>
                     </CardBody>
@@ -211,7 +211,7 @@
                             {
                                 <Table Theme="Theme.Light" IsBordered="true">
                                     <TableBody>
-                                        <TableRowHeader Style="width:5%"><Button Class="btn btn-block btn-outline-success" Clicked="()=>AddProductToSL(p)"> <Icon Name="@(FontAwesomeIcons.ShoppingCart)"></Icon></Button> </TableRowHeader>
+                                        <TableRowHeader Style="width:5%"><Button Class="btn btn-block btn-outline-success" IsDisabled="@quickaddEnabled" Clicked="()=>AddProductToSL(p)"> <Icon Name="@(FontAwesomeIcons.ShoppingCart)"></Icon></Button> </TableRowHeader>
                                         <TableRowCell Style="width:25%">@p._price Kr.</TableRowCell>
                                         <TableRowCell Style="width:70%">@p._productName</TableRowCell>
                                     </TableBody>
@@ -271,6 +271,7 @@
     double tempTotalCost = 0;
     double ronisDouble;
 
+    bool quickaddEnabled = false;
     bool isOpen1 = true;
     bool isOpen2 = true;
     bool isOpen3 = true;
@@ -375,6 +376,8 @@
 
     public void QuickAddToShoppinglist(List<Ingredient> ingredient)
     {
+        quickaddEnabled = true;
+
         bool firstRun;
         Product temp = new Product();
         List<Product> productsToAddSL = new List<Product>();
@@ -411,6 +414,7 @@
 
         returnList.Clear();
         snackbar2.Show();
+        quickaddEnabled = false;
     }
 
     public async void QuickAddListToSL(List<Product> ingredientList)
