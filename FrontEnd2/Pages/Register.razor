@@ -125,6 +125,7 @@
     string password;
     string repPassword;
     string username;
+    string verifiedUsername;
     string email;
     string readTerms = "Click here to read";
 
@@ -179,7 +180,7 @@
     {
         username = e.Value.ToString();
 
-        checkUsername = verification.VerifyUsername(username);
+        checkUsername = verification.VerifyUsername(username, verifiedUsername);
 
         if (checkUsername.Item1 == true)
         {
@@ -196,10 +197,11 @@
         isLoading = true;
         if (!String.IsNullOrEmpty(username) && !String.IsNullOrEmpty(password) && !String.IsNullOrEmpty(repPassword))
         {
+            validations.ClearAll();
+
             if (validations.ValidateAll())
             {
                 await RegisterUser(username);
-                validations.ClearAll();
             }
         }
         isLoading = false;
@@ -232,6 +234,16 @@
         {
             await SetupWhenRegistered(addEmail);
             NavigationManager.NavigateTo("shoppinglist");
+            validations.ClearAll();
+        }
+        else
+        {
+            verifiedUsername = username;
+
+            if (validations.ValidateAll())
+            {
+                validations.ClearAll();
+            }
         }
     }
 

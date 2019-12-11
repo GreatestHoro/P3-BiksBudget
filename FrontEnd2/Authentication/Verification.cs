@@ -60,7 +60,7 @@ namespace FrontEnd2.Authentication
             }
         }
 
-        public Tuple<bool, string> VerifyUsername(string username)
+        public Tuple<bool, string> VerifyUsername(string username, string verifiedUsername)
         {
             if (String.IsNullOrEmpty(username) || String.IsNullOrWhiteSpace(username))
             {
@@ -77,6 +77,10 @@ namespace FrontEnd2.Authentication
             else if (!new Regex("^[a-zA-Z0-9 ]*$").IsMatch(username))
             {
                 return Tuple.Create(false, "Please refrain from using symbols.");
+            }
+            else if (username.Equals(verifiedUsername))
+            {
+                return Tuple.Create(false, "This Username is already being used");
             }
             else
             {

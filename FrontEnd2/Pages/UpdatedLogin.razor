@@ -90,6 +90,8 @@
 
     protected async Task AutorizeLogin()
     {
+        validations.ClearAll();
+
         isLogginIn = true;
 
         User user = new User(username, password);
@@ -100,19 +102,19 @@
         {
             await localStorage.SetItemAsync("Email", username);
             await localStorage.RemoveItemAsync("ProductString");
-
             NavigationManager.NavigateTo("shoppinglist");
+            validations.ClearAll();
+            isLogginIn = false;
         }
         else
         {
+            isLogginIn = false;
             if (validations.ValidateAll())
             {
                 validations.ClearAll();
             }
             await localStorage.RemoveItemAsync("Email");
         }
-
-        isLogginIn = false;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -149,11 +151,7 @@
     {
         if (!String.IsNullOrEmpty(password) && !String.IsNullOrEmpty(username))
         {
-            if (validations.ValidateAll())
-            {
-                await AutorizeLogin();
-                validations.ClearAll();
-            }
+            await AutorizeLogin();
         }
     }
 }
