@@ -396,7 +396,7 @@
     RecipeQuery recipeQuery = new RecipeQuery();
 
     HttpResponseMessage responseMessage = new HttpResponseMessage();
-    ShoppinlistFunctionality ShopList = new ShoppinlistFunctionality("api/Shoppinglist");
+    UserData user;
 
     #endregion
 
@@ -438,7 +438,7 @@
         else
         {
             AddedItem._amountleft = 1;
-            await ShopList.QuickaddItemToShoppinglist(AddedItem);
+            await user.shoppinglist.AddProduct(AddedItem);
         }
     }
 
@@ -448,7 +448,7 @@
         Product temp = new Product();
         List<Product> productsToAddSL = new List<Product>();
         GetProductLists(ingredient);
-            
+
         foreach (List<Product> pro in returnList)
         {
             if (pro.Count != 0)
@@ -485,7 +485,7 @@
             {
                 p._amountleft = 1;
             }
-            await ShopList.QuickaddListToShoppinglist(ingredientList);
+            await user.shoppinglist.AddList(ingredientList);
         }
     }
 
@@ -523,14 +523,14 @@
         {
             Debug.WriteLine("User: -> " + await localStorage.GetItemAsync<string>("Email"));
             await GetLocalSession();
-            localStorage.Changed += (sender, e) =>
-            {
-                Console.WriteLine($"Value for key {e.Key} changed from {e.OldValue} to {e.NewValue}");
-            };
 
             if (!String.IsNullOrEmpty(email))
             {
-                responseMessage = await ShopList.GetShoppinglistOnStart(email);
+                user = new UserData(email);
+            }
+            else
+            {
+                user = new UserData();
             }
 
             StateHasChanged();

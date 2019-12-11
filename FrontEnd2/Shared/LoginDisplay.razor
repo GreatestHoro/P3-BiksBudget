@@ -24,12 +24,15 @@ else
 }
 
 @code{
-    string email;
+        string email;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await GetLocalSession();
-        StateHasChanged();
+        if (firstRender)
+        {
+            await GetLocalSession();
+            StateHasChanged();
+        }
     }
 
     async Task GetLocalSession()

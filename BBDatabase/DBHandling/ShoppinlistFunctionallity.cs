@@ -10,11 +10,11 @@ using System.Threading.Tasks;
 
 namespace BBCollection.DBHandling
 {
-    public class ShoppinlistFunctionality
+    public class ShoppinlistFunctionalityNotWorking
     {
 
         #region Fields
-        public ShoppinlistFunctionality(string _dest)
+        public ShoppinlistFunctionalityNotWorking(string _dest)
         {
             dest = _dest;
         }

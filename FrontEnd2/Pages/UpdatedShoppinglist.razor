@@ -8,14 +8,8 @@
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject HttpClient Http
 
-
-
-<h1>Shopping List</h1>
-@if (ListFunc.CombinedList == null)
-{
-    <p><em> Loading list .. </em></p>
-}
-else
+    <h1>Shopping List</h1>
+@if (user != null)
 {
     <div class="container">
         <div class="row">
@@ -35,7 +29,7 @@ else
                     <!-- #endregion -->
                     <!-- #region TableBody -->
                     <tbody>
-                        @foreach (Product item in ListFunc.CombinedList)
+                        @foreach (Product p in user.shoppinglist.shoppinglist)
                         {
                             <tr>
                                 <td data-th="Product">
@@ -43,45 +37,45 @@ else
 
                                         <div class="col-sm-10">
                                             @*@if (item._image.Length == 0)
-                                            {
-                                                <img style="width:100px; height:auto; " class="card-img-top " src="https://cdn.discordapp.com/attachments/519096261408718908/649685312083197973/coopdicoop.jpg">
-                                            }
-                                            else
-                                            {
-                                                <img style="width: auto; height: auto; max-height:100px; max-width: 100px;"
-                                                     class="card-img-top" src="@ProductImage(item._image)">
-                                            }*@
+                                                {
+                                                    <img style="width:100px; height:auto; " class="card-img-top " src="https://cdn.discordapp.com/attachments/519096261408718908/649685312083197973/coopdicoop.jpg">
+                                                }
+                                                else
+                                                {
+                                                    <img style="width: auto; height: auto; max-height:100px; max-width: 100px;"
+                                                         class="card-img-top" src="@ProductImage(item._image)">
+                                                }*@
 
                                             <img style="width: auto; height: auto; max-height:100px; max-width: 100px;"
-                                                 class="card-img-top" src="@item._image">
-                                            <h6 class="nomargin">@item._productName</h6>
-                                            <p>@item._amount</p>
+                                                 class="card-img-top" src="@p._image">
+                                            <h6 class="nomargin">@p._productName</h6>
+                                            <p>@p._amount</p>
                                         </div>
                                     </div>
                                 </td>
 
-                                <td data-th="Price" class="textForTable">@item._price kr. per unit</td>
+                                <td data-th="Price" class="textForTable">@p._price kr. per unit</td>
                                 <td data-th="Quantity">
                                     <div class="valueClass text-center">
-                                        <div class="value-button" id="increase" @onclick="(() => DecrementAmount(item))" value="Increase @value"> - </div>
-                                        <input type="number" id="number" value="@item._amountleft" />
-                                        <div class="value-button" id="decrease" @onclick="(() => IncrementAmount(item))" value="Decrease @value"> + </div>
+                                        <div class="value-button" id="increase" @onclick="(() => DecrementAmount(p))" value="Increase @value"> - </div>
+                                        <input type="number" id="number" value="@p._amountleft" />
+                                        <div class="value-button" id="decrease" @onclick="(() => IncrementAmount(p))" value="Decrease @value"> + </div>
                                     </div>
                                 </td>
-                                <td data-th="Subtotal" class="text-center">@String.Format("{0:0.00}", ListFunc.FindSubtotal(item)) kr.</td>
+                                <td data-th="Subtotal" class="text-center">@String.Format("{0:0.00}", user.shoppinglist.FindSubtotal(p)) kr.</td>
                                 <td class="actions textForTable" data-th="">
                                     @if (!String.IsNullOrEmpty(email))
                                     {
-                                        <button class="btn btn-rounded btn-success btn-padding btn-sm" title="Add one @item._productName to your Storage" @onclick="(() => AddOneItemToStorage(item))"><i class="oi oi-box"></i></button>
+                                        <button class="btn btn-rounded btn-success btn-padding btn-sm" title="Add one @p._productName to your Storage" @onclick="(() => AddOneItemToStorage(p))"><i class="oi oi-box"></i></button>
                                     }
                                     else
                                     {
                                         <button disabled class="btn btn-rounded btn-success btn-padding btn-sm invisibleBtn" title="Log in to access storage"><i class="oi oi-box"></i></button>
                                     }
 
-                                    @if (item._amountleft > 1 && !String.IsNullOrEmpty(email))
+                                    @if (p._amountleft > 1 && !String.IsNullOrEmpty(email))
                                     {
-                                        <button class="btn btn-rounded btn-success btn-padding btn-sm addMore" title="Add @item._amountleft @item._productName to your Storage" @onclick="(() => AddItemToStorage(item))">
+                                        <button class="btn btn-rounded btn-success btn-padding btn-sm addMore" title="Add @p._amountleft @p._productName to your Storage" @onclick="(() => AddItemToStorage(p))">
                                             <i class="oi oi-box"></i> (All)
                                         </button>
                                     }
@@ -94,10 +88,10 @@ else
                                         <button disabled class="btn btn-rounded btn-success btn-padding btn-sm invisibleBtn"><i class="oi oi-box"></i> (All)</button>
                                     }
 
-                                    <button class="btn btn-rounded btn-danger btn-padding btn-sm" title="Delete one @item._productName from your shopping list" @onclick="(() => ChangeAmount(item))"><i class="oi oi-trash"></i></button>
-                                    @if (item._amountleft > 1)
+                                    <button class="btn btn-rounded btn-danger btn-padding btn-sm" title="Delete one @p._productName from your shopping list" @onclick="(() => DecrementProduct(p))"><i class="oi oi-trash"></i></button>
+                                    @if (p._amountleft > 1)
                                     {
-                                        <button class="btn btn-rounded btn-danger btn-padding btn-sm" title="Delete @item._amountleft @item._productName from your shopping list" @onclick="(() => DeleteItem(item))"><i class="oi oi-trash"></i> (All)</button>
+                                        <button class="btn btn-rounded btn-danger btn-padding btn-sm" title="Delete @p._amountleft @p._productName from your shopping list" @onclick="(() => DeleteProduct(p))"><i class="oi oi-trash"></i> (All)</button>
                                     }
                                     else
                                     {
@@ -111,7 +105,7 @@ else
                     <!-- #region TableFoot -->
                     <tfoot>
                         <tr class="visible-xs">
-                            <td class="text-center"><strong>Total @String.Format("{0:0.0}", ListFunc.CompletePrice())</strong></td>
+                            <td class="text-center"><strong>Total @String.Format("{0:0.0}", user.shoppinglist.CompletePrice())</strong></td>
                         </tr>
                     </tfoot>
                     <!-- #endregion -->
@@ -122,11 +116,11 @@ else
         <div class="row">
             <div class="col-sm-4">
                 <!-- #region Buttons -->
-                @if (ListFunc.CombinedList.Count == 0 && isLoggedIn)
+                @if (user.shoppinglist.shoppinglist.Count == 0 && isLoggedIn)
                 {
                     <button disabled class="btn btn-block btn-light recipeDivDisplay rounded-0" title="You Cannot Add an Empty Shopping list to Storage">Add to storage</button>
                 }
-                else if (isLoggedIn && ListFunc.CombinedList.Count >= 1)
+                else if (isLoggedIn && user.shoppinglist.shoppinglist.Count >= 1)
                 {
                     <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>AddListToStorage())">Add to storage</button>
                 }
@@ -142,7 +136,7 @@ else
                         <button class="btn btn-block btn-danger recipeDivDisplay rounded-0" @onclick="(() =>SaveShoppinglist())">Save shopping list</button>
                     </Tooltip>
                 }
-                else if (ListFunc.CombinedList.Count != 0 && !remindToSave)
+                else if (user.shoppinglist.shoppinglist.Count != 0 && !remindToSave)
                 {
                     <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() =>SaveShoppinglist())">Save shopping list</button>
                 }
@@ -152,7 +146,7 @@ else
                 }
             </div>
             <div class="col-sm-4">
-                @if (ListFunc.CombinedList.Count == 0)
+                @if (user.shoppinglist.shoppinglist.Count == 0)
                 {
                     <button class="btn btn-block btn-light recipeDivDisplay rounded-0" disabled title="You Cannot Delete an Empty Shopping list">Delete shopping list</button>
 
@@ -169,11 +163,15 @@ else
     </div>
 }
 
+
+
+
 @code {
 
     #region Fields
-    ShoppinlistFunctionality ListFunc = new ShoppinlistFunctionality("api/Shoppinglist");
+    //ShoppinlistFunctionality ListFunc = new ShoppinlistFunctionality("api/Shoppinglist");
     HttpResponseMessage responseMessage = new HttpResponseMessage();
+    UserData user;
 
     List<Product> ToShoppinglist = new List<Product>();
     List<Product> ToStorageList = new List<Product>();
@@ -219,35 +217,28 @@ else
         {
             item._amountleft--;
         }
-
     }
 
-    public void DeleteItem(Product item)
-    {
-        item._amountleft = 1;
-        ChangeAmount(item);
-    }
-
-    public void ChangeAmount(Product item)
+    public void DeleteProduct(Product p)
     {
         remindToSave = true;
-        if (item._amountleft == 1)
+
+        user.shoppinglist.DeleteItem(p);
+    }
+
+    public void DecrementProduct(Product p)
+    {
+        remindToSave = true;
+        if (p._amountleft > 1)
         {
-            // If there is only one left, delete it
-            try
-            {
-                ListFunc.CombinedList.Remove(ListFunc.CombinedList.First(x => x._id == item._id));
-            }
-            catch (System.InvalidOperationException)
-            {
-                Console.WriteLine("Invalid operation in the shoppinglist");
-            }
+            user.shoppinglist.DecrementProduct(p);
         }
         else
         {
-            // Else count the amount left
-            item._amountleft--;
+            user.shoppinglist.DeleteItem(p);
         }
+
+        StateHasChanged();
     }
 
     #endregion
@@ -272,15 +263,17 @@ else
             {
                 isLoggedIn = true;
 
+                user = new UserData(email);
+
                 // THis means he has a shoppinglist, and this will be called throuhg the api
-                responseMessage = await ListFunc.GetShoppinglistOnStart(email);
+                await user.shoppinglist.GetWhenLoggedIn();
             }
             else if (!String.IsNullOrEmpty(shopString))
             {
+                user = new UserData();
                 // If the user is not logged in, and there is products in the localstorage
                 // this will be put into the shoppinglist
-                ToShoppinglist = JsonConvert.DeserializeObject<List<Product>>(shopString);
-                ListFunc.GetShoppinglistWhileNotLoggedIn(ToShoppinglist);
+                user.shoppinglist.GetWhenNotLoggedIn(shopString);
             }
 
             StateHasChanged();
@@ -320,16 +313,21 @@ else
 
         if (String.IsNullOrEmpty(email))
         {
-            productString = JsonConvert.SerializeObject(ListFunc.CombinedList);
+            await SaveLocalStorage();
+        }
+        else
+        {
+            await user.shoppinglist.Save();
+        }
+    }
+
+    public async Task SaveLocalStorage()
+    {
+            productString = JsonConvert.SerializeObject(user.shoppinglist.shoppinglist);
 
             await localStorage.RemoveItemAsync("ProductString");
 
             await localStorage.SetItemAsync("ProductString", productString);
-        }
-        else
-        {
-            await ListFunc.SaveShoppinglist();
-        }
     }
 
     #endregion
@@ -341,46 +339,35 @@ else
     /// It reminds the user to save the shoppinglist before moving on.
     /// Deletes the shoppinglist, and adds it to storage.
     /// </summary>
-    public async void AddListToStorage()
+    public async Task AddListToStorage()
     {
-        //remindToSave = true;
-        await ListFunc.AddShoppinlistToStorage();
-        ListFunc.CombinedList.Clear();
-        await ListFunc.SaveShoppinglist();
-        StateHasChanged();
+        responseMessage = await user.ShoppinglistToStrage();
     }
 
     public void DeleteShoppinglist()
     {
         remindToSave = true;
-        ListFunc.CombinedList.Clear();
-    }
+        user.shoppinglist.DeleteList();
 
-    public async void AddItemToStorage(Product AddedItem)
-    {
-        remindToSave = true;
-
-        await ListFunc.AddItemToStorage(AddedItem);
-        DeleteItem(AddedItem);
         StateHasChanged();
     }
 
-    public async void AddOneItemToStorage(Product AddedItem)
+    public async void AddItemToStorage(Product p)
     {
         remindToSave = true;
-        if (AddedItem._amountleft > 1)
-        {
-            // If there is more than one left, the amount is decremented and one
-            // product is added
-            AddedItem._amountleft--;
-            await ListFunc.AddOneItemToStorage(AddedItem);
-        }
-        else
-        {
-            // If there is only one left, the product is deleted in shoppinglist
-            // and added to storage.
-            AddItemToStorage(AddedItem);
-        }
+
+        await user.ProductSLToStrage(p);
+
+        StateHasChanged();
+    }
+
+    public async void AddOneItemToStorage(Product p)
+    {
+        remindToSave = true;
+
+        await user.ProductSLToStrage(p, 1);
+
+        StateHasChanged();
     }
 
     #endregion
