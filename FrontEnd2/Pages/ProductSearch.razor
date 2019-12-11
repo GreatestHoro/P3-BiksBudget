@@ -60,7 +60,7 @@
                             {
                                 if (fi.IsSortable)
                                 {
-                                    <CheckEdit ColumnSize="ColumnSize.IsAuto" IsInline="@fi.IsEnabled" RadioGroup="Yeet1" @onchange="(() => AssignFilter(fi.FilterName, af.optionsList, af.label))" Checked="true"> @fi.FilterName</CheckEdit>
+                                    <CheckEdit ColumnSize="ColumnSize.IsAuto" IsInline="false" RadioGroup="Yeet1" @onchange="(() => AssignFilter(fi.FilterName, af.optionsList, af.label))" Checked="@fi.IsEnabled"> @fi.FilterName</CheckEdit>
                                 }
                                 else
                                 {
@@ -93,7 +93,7 @@
             <Row>
                 <Column ColumnSize="ColumnSize.Is12.OnDesktop">
                     <Field JustifyContent="JustifyContent.Center">
-                        <Button Color="Color.Info"><Icon Name="@(FontAwesomeIcons.Adjust)"></Icon> Apply changes</Button>
+                        <Button @onclick="(()=>ApplyChanges())" Color="Color.Info"><Icon Name="@(FontAwesomeIcons.Adjust)"></Icon> Apply changes</Button>
                     </Field>
                 </Column>
             </Row>
@@ -210,6 +210,7 @@
     string storeLabel = "store";
     string optionLabel = "option";
     string imageUrl;
+    string oldSearchterm;
     string replacementUlr = "https://cdn.discordapp.com/attachments/519096261408718908/649685312083197973/coopdicoop.jpg";
 
     public double minPrice
@@ -454,6 +455,17 @@
 
     #region SearchMethods
 
+    public async Task ApplyChanges()
+    {
+        searchBox = oldSearchterm;
+
+        await SearchBar();
+
+        // handle itemlist
+    }
+
+
+
     private async Task SearchBar()
     {
         productsToPrint.Clear();
@@ -498,19 +510,14 @@
                 _viewLoadMore = false;
             }
 
-            //// This is done to save the applied search order.
-            //// Should not be done if it is sorted by "most relevant"
-            ////since that calls this method again.
-            //if (!(FindActiveSortFilter() == "Most relevant"))
-            //{
-            //    DecideOrderFilter(FindActiveSortFilter());
-            //}
         }
         else
         {
             _viewProducts = false;
             _viewLoadMore = false;
         }
+
+        oldSearchterm = searchBox;
 
         isSearching = false;
         this.StateHasChanged();
