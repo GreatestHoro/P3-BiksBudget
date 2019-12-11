@@ -1,13 +1,12 @@
 using BBCollection;
+using BBCollection.BBObjects;
 using BBCollection.DBHandling;
+using BBCollection.Queries;
 using BBCollection.StoreApi.CoopApi;
 using BBGatherer.Webcrawler;
-using B3_BiksBudget.Webcrawler.Assisting_classes;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using BBCollection.Queries;
-using BBCollection.BBObjects;
 
 namespace BBGatherer
 {
@@ -19,17 +18,17 @@ namespace BBGatherer
             string name = Console.ReadLine();
 
             productImages.SaveImagesFromLink(productImages.GetImageUrls(name, "bing").Result);*/
-            
+
             DataHandling dh = new DataHandling();
 
             try
             {
-                RecipeQuery recipeQuery = new RecipeQuery();
+                //RecipeQuery recipeQuery = new RecipeQuery();
 
-                recipeQuery.CheapestCRecipes("").Wait();
+                //recipeQuery.CheapestCRecipes("").Wait();
                 //dh.GenerateDatabase().Wait();
                 //dh.GenerateData(true, false, false).Wait();
-                //dh.TestCollection().Wait();
+                dh.TestCollection().Wait();
             }
             catch (Exception e)
             {
@@ -85,7 +84,11 @@ namespace BBGatherer
         public async Task TestCollection()
         {
             DatabaseConnect dc = new DatabaseConnect();
-            await dc.Recipe.GenerateTotalPriceAsync();
+            string searchTerm = "brun farin";
+
+            double price = await dbConnect.Product.CheapestPrice(searchTerm, Chain.none);
+
+            Console.WriteLine(price);
 
             /*
             List<string> strings = new List<String>();

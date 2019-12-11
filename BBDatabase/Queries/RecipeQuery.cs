@@ -40,30 +40,31 @@ namespace BBCollection.Queries
             //Func products matching to the ingredients
             //want to make it multithreaded later
             //Find x sallingAPIProducts per distinct ingredient
-            //Dictionary<string, List<Product>> productsDict = await MatchingProducts(distinctIngredients);
+            Dictionary<string, List<Product>> productsDict = await MatchingProducts(distinctIngredients);
             //Dictionary<string, List<Product>> productsDictBilka = await MatchingProductsChain(distinctIngredients, "Bilka");
-            Dictionary<string, List<Product>> productsDictFakta = await MatchingProductsChain(distinctIngredients, "Fakta");
+            //Dictionary<string, List<Product>> productsDictFakta = await MatchingProductsChain(distinctIngredients, "Fakta");
             //Dictionary<string, List<Product>> productsDictSuperBrugsen = await MatchingProductsChain(distinctIngredients, "SuperBrugsen");
 
             // put into db here
             //await new DatabaseConnect().Recipe.InsertIngredientLink(productsDictBilka, "bilka");
-            await new DatabaseConnect().Recipe.InsertIngredientLink(productsDictFakta, "fakta");
+            //await new DatabaseConnect().Recipe.InsertIngredientLink(productsDictFakta, "fakta");
             //await new DatabaseConnect().Recipe.InsertIngredientLink(productsDictSuperBrugsen, "superbrugsen");
 
-            /*
-                        //Turns the dictionary into a hashtable
+
+            //Turns the dictionary into a hashtable
                         Hashtable productsHashtable = new Hashtable(productsDict);
 
 
-                        List<ComplexRecipe> resultComplexRecipes = new List<ComplexRecipe>();
-                        //calculate the price of each recipe by calling RecipeCost for each recipe, and create a list of ComplexRecipe objects
-                        resultComplexRecipes = (from recipe in recipeList
-                                                select new ComplexRecipe(recipe._recipeID, recipe._Name,
-                      recipe._description, recipe._ingredientList, recipe._PerPerson, RecipeCost(productsHashtable, recipe))).ToList();
-                        //sort the list of ComplexRecipes by price
+            List<ComplexRecipe> resultComplexRecipes = new List<ComplexRecipe>();
+            //calculate the price of each recipe by calling RecipeCost for each recipe, and create a list of ComplexRecipe objects
+
+            resultComplexRecipes = (from recipe in recipeList
+                                    select new ComplexRecipe(recipe._recipeID, recipe._Name,
+          recipe._description, recipe._ingredientList, recipe._PerPerson, RecipeCost(productsHashtable, recipe))).ToList();
+            //sort the list of ComplexRecipes by price
                         resultComplexRecipes.Sort((a, b) => a._complexRecipeComponent.RecipeCost.CompareTo(b._complexRecipeComponent.RecipeCost));
-            */
-            return new List<ComplexRecipe>();
+            return resultComplexRecipes;
+            //return new List<ComplexRecipe>();
 
         }
 
@@ -98,25 +99,32 @@ namespace BBCollection.Queries
             //Make an array of distinct ingredients
             List<string> distinctIngredients = DistinctIngredients(recipeList);
 
-            List<ComplexRecipe> resultComplexRecipes = new List<ComplexRecipe>();
-            //calculate the price of each recipe by calling RecipeCost for each recipe, and create a list of ComplexRecipe objects
-            resultComplexRecipes = (from recipe in recipeList
-                                    select new ComplexRecipe(recipe._recipeID, recipe._Name,
-          recipe._description, recipe._ingredientList, recipe._PerPerson, RecipeCostDB(recipe, chainFilter))).ToList();
-            //sort the list of ComplexRecipes by price
-            resultComplexRecipes.Sort((a, b) => a._complexRecipeComponent.RecipeCost.CompareTo(b._complexRecipeComponent.RecipeCost));
+            List<ComplexRecipe> complexList = new List<ComplexRecipe>();
 
-            throw new NotImplementedException();
+            //calculate the price of each recipe by calling RecipeCost for each recipe, and create a list of ComplexRecipe objects
+            foreach(Recipe recipe in recipeList)
+            {
+                complexList.Add(new ComplexRecipe(recipe._recipeID, recipe._Name, recipe._description, recipe._ingredientList, recipe._PerPerson, await RecipeCostDB(recipe, chainFilter)));
+            }
+
+
+
+            //sort the list of ComplexRecipes by price
+            complexList.Sort((a, b) => a._complexRecipeComponent.RecipeCost.CompareTo(b._complexRecipeComponent.RecipeCost));
+            
+            return complexList;
         }
 
-        private ComplexRecipeComponent RecipeCostDB(Recipe recipe, Chain chainFilter)
+        private async Task<ComplexRecipeComponent> RecipeCostDB(Recipe recipe, Chain chainFilter)
         {
             double recipeCost = 0;
             ComplexRecipeComponent cRP = new ComplexRecipeComponent();
 
+            
             foreach (var ing in recipe._ingredientList)
             {
-                //recipeCost += BjarkeGivMePRcie(ing, chainFilter);
+                double cost = await _dc.Product.CheapestPrice(ing._ingredientName, chainFilter);
+                recipeCost += cost;
             }
 
             cRP.RecipeCost = recipeCost;

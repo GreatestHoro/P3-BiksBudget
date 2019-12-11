@@ -1,5 +1,6 @@
 ﻿using BBCollection.BBObjects;
 using BBCollection.DBConncetion;
+using BBCollection.Queries;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -189,6 +190,17 @@ namespace BBCollection.DBHandling.Tests
             Assert.IsTrue(recipes.Count > 0);
             CollectionAssert.AllItemsAreUnique(recipes);
         }
+
+        [TestMethod()]
+        public async Task GetCheapestPriceNoFilter()
+        {
+            string searchTerm = "brun farin";
+
+            double price = await databaseConnect.Product.CheapestPrice(searchTerm, Chain.none);
+
+            Assert.IsTrue(price > 0);
+        }
+
 
         [TestMethod()]
         public void GetListTest()

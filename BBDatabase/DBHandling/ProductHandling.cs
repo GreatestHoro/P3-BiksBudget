@@ -1,9 +1,11 @@
 using BBCollection.BBObjects;
 using BBCollection.DBConncetion;
+using BBCollection.Queries;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace BBCollection.DBHandling
@@ -149,7 +151,7 @@ namespace BBCollection.DBHandling
                     foreach (DataRow r in ds.Tables[0].Rows)
                     {
                         //(string id, string productName, string amount, double price, string image, string storeName, int amountleft, string customField)
-                        Product product = new Product(r[0].ToString(), r[1].ToString(), r[2].ToString(), Convert.ToDouble(r[3]), r[4].ToString(), r[5].ToString(), 0, r[6].ToString()) ;
+                        Product product = new Product(r[0].ToString(), r[1].ToString(), r[2].ToString(), Convert.ToDouble(r[3]), r[4].ToString(), r[5].ToString(), 0, r[6].ToString());
                         products.Add(product);
                     }
                 }
@@ -225,15 +227,60 @@ namespace BBCollection.DBHandling
             await Task.Run(() => new SQLConnect().NonQueryMSC(msc));
         }
 
-       /* public async Task<double> CheapestPrice(string ingredient, )
+        public async Task<double> CheapestPrice(string ingredient, Chain filter)
+        {
+            List<double> price = new List<double>();
+
+            double bilkaPrice = await GetStorePrice("bilka", ingredient);
+            double faktaPrice = await GetStorePrice("fakta", ingredient);
+            double sbPrice = await GetStorePrice("superbrugsen", ingredient);
+
+            if (filter == Chain.none)
+            {
+                price.Add(bilkaPrice);
+                price.Add(faktaPrice);
+                price.Add(sbPrice);
+            }
+            else
+            {
+                if (filter == Chain.bilka)
+                {
+                    price.Add(bilkaPrice);
+                }
+                if (filter == Chain.fakta)
+                {
+                    price.Add(faktaPrice);
+                }
+                if (filter == Chain.superBrugsen)
+                {
+                    price.Add(sbPrice);
+                }
+            }
+            if (price.Max() == 0) return 0;
+            return price.Where(x => x > 0).Min(x => x);
+        }
+
+        private async Task<double> GetStorePrice(string store, string ingredient)
         {
             string ingredientQuery =
-                "SELECT * FROM ingredient_store_link WHERE ingredientName = @Ingredient";
+                "SELECT products.price FROM ingredient_store_link " +
+                "INNER JOIN products on ingredient_store_link." + store + " = products.id " +
+                "WHERE ingredientName = @Ingredient";
 
             MySqlCommand msc = new MySqlCommand(ingredientQuery);
 
-            msc.Parameters.AddWithValue("@Ingredient", ingredient)
+            msc.Parameters.AddWithValue("@Ingredient", ingredient);
 
-        }*/
+            DataSet ds = await new SQLConnect().DynamicSimpleListSQL(msc);
+
+            if(ds.Tables.Count != 0) {
+                DataTable dt = ds.Tables[0];
+            if (dt.Rows.Count != 0)
+            {
+                return Convert.ToDouble(ds.Tables[0].Rows[0][0]);
+            }
+            }
+            return 0;
+        }
     }
 }
