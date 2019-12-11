@@ -1,23 +1,23 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace BBCollection.BBObjects
 {
-    public class WeightedRecipies
+    public class WeightedRecipies : TypeConverter
     {
-        public Recipe _recipie { get; set; }
-        public int complexity { get; set; }
-        public float pMatch { get; set; }
-        public int matchingIngrdientsNum { get; set; }
+        public Recipe _recipie;
+        public int complexity;
+        public float pMatch;
+        public int matchingIngrdientsNum;
         public List<Ingredient> matchingIngrdient = new List<Ingredient>();
-        public Dictionary<Ingredient, List<string>> ingrdients = new Dictionary<Ingredient, List<string>>();
+        //private Dictionary<Ingredient, List<string>> ingrdients = new Dictionary<Ingredient, List<string>>();
         public List<string> custmomRef = new List<string>();
-        public List<Product> products = new List<Product>();
+        //public List<Product> products = new List<Product>();
 
         public WeightedRecipies(Recipe _recipie, Dictionary<Ingredient, List<string>> ingrdients)
         {
             this._recipie = _recipie;
-            this.ingrdients = ingrdients;
             matchingIngrdient.AddRange(ingrdients.Keys);
             foreach (Ingredient i in ingrdients.Keys)
             {

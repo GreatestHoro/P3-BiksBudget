@@ -13,33 +13,19 @@ namespace BBCollection.DBHandling
     {
         readonly ConnectionSettings connectionSettings = new ConnectionSettings();
         HttpResponseMessage response = new HttpResponseMessage();
+        string WeightedRecipiesList;
+        List<WeightedRecipies> WeightedList = new List<WeightedRecipies>();
         HttpClient Http = new HttpClient();
 
-        public async Task<List<WeightedRecipies>> InitializeBiksFoodProcces(List<Product> storage) 
+        public async Task<List<WeightedRecipies>> GetWeihtedRecipes(string id)
         {
-            await SendProductList(ConvertProductsToString(storage));
-            return null;
+            WeightedRecipiesList = await Http.GetStringAsync(connectionSettings.GetApiLink() + "api/biksfood" + "/"+id);
+            WeightedList = JsonConvert.DeserializeObject<List<WeightedRecipies>>(WeightedRecipiesList);
+
+            return WeightedList;
         }
 
-        private string ConvertProductsToString(List<Product> storage) 
-        {
-            return JsonConvert.SerializeObject(storage);
-        }
 
-        async Task<HttpResponseMessage> SendProductList(string productString)
-        {
-            var content = new StringContent(productString, Encoding.UTF8, "application/json");
-            response = await Http.PostAsync(connectionSettings.GetApiLink() + "api/biksfood" + "/", content);
-
-            return response;
-        }
-
-        async Task<WeightedRecipies> RecieveRecipes()
-        {
-            
-
-            return null;
-        }
 
     }
 }

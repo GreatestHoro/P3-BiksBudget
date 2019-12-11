@@ -420,6 +420,7 @@ else
     List<string> ItemState = new List<string>() { "Full", "Almost Full", "Half Full", "Almost Empty" };
     ControllerFuncionality features = new ControllerFuncionality();
     BiksFoodHandling biksFoodHandling = new BiksFoodHandling();
+    List<WeightedRecipies> WeightedRecipies;
     //ShoppinlistFunctionality ShopList = new ShoppinlistFunctionality("api/Shoppinglist");
 
     private delegate bool compareWR(WeightedRecipies r1, WeightedRecipies r2);
@@ -591,17 +592,10 @@ else
         _viewEmptyFridgeLoadSpinner = true;
         int HasBeenLoaded = 0;
         this.StateHasChanged();
-        EmptyFridgeFuntionality emptyFridgeFuntionality = new EmptyFridgeFuntionality(ListFunc.CombinedList);
-        InitializeBiksFood(ListFunc.CombinedList);
-        foreach (List<string> prodRefs in emptyFridgeFuntionality.allRefs)
-        {
-            recpies.AddRange(await emptyFridgeFuntionality.GetRelevantRecepiesFromProd(prodRefs));
-            emptyFridgeFuntionality.SortByPmatch(recpies);
-            recpies = await emptyFridgeFuntionality.GetSortedList();
-            loadingbar = true;
-            LoadingManager(++HasBeenLoaded, ListFunc.CombinedList.Count);
-            this.StateHasChanged();
-        }
+        recpies = await GetRecpies(email);
+        loadingbar = true;
+        this.StateHasChanged();
+        
         viewTitle = true;
         _viewEmptyFridgeLoadSpinner = false;
         await disableLoad();
@@ -769,9 +763,9 @@ else
         return new List<Product>();
     }
 
-    public async void InitializeBiksFood(List<Product> storage)
+    public async Task<List<WeightedRecipies>> GetRecpies(string id)
     {
-        biksFoodHandling.InitializeBiksFoodProcces(storage);
+        return await biksFoodHandling.GetWeihtedRecipes(id);
     }
 
 }
