@@ -26,6 +26,38 @@
         <!--Scroll to top button   -->
         <button id="myBtn" class="btn btn-rounded btn-success"><a href="recipe" style="color: white; font-size:12px;">Top</a></button>
     </div>
+
+    <div class="row d-flex justify-content-center mt-3">
+        <div class="col-sm-10 col-md-8 col-lg-7 col-xl-5">
+            @if (!_showFilters)
+            {
+                <button class="btn btn-outline-success" @onclick="ToggleFilters">
+                    Show Filters <i class="fa fa-long-arrow-alt-down"></i>
+                </button>
+            }
+            else
+            {
+                <div class="d-block">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" name="bilka" type="checkbox" id="bilkaCheckBox" value=@Chain.bilka @bind="_bilkaSelected" />
+                        <label class="form-check-label" for="bilkaCheckBox">Bilka</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" name="fakta" type="checkbox" id="faktaCheckBox" value=@Chain.fakta @bind="_faktaSelected" />
+                        <label class="form-check-label" for="faktaCheckBox">Fakta</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" name="superBrugsen" type="checkbox" id="superBrugsenCheckBox" value=@Chain.superBrugsen @bind="_superBrugsenSelected" />
+                        <label class="form-check-label" for="superBrugsenCheckBox">SuperBrugsen</label>
+                    </div>
+                </div>
+                <button class="btn btn-outline-success" @onclick="ToggleFilters">
+                    Hide Filters <i class="fa fa-long-arrow-alt-up"></i>
+                </button>
+            }
+        </div>
+    </div>
+
     @if (isSearching == true)
     {
         <div class="row d-flex justify-content-center top-margin">
@@ -246,7 +278,11 @@
     bool _viewLoadMore = true;
     bool productSuggestions = true;
     bool disableButton = false;
-    Chain chainFilter = Chain.none;
+    bool _showFilters = false;
+    bool _bilkaSelected = false;
+    bool _superBrugsenSelected = false;
+    bool _faktaSelected = false;
+    Chain _chainFilter = Chain.none;
 
     List<ComplexRecipe> complexRecipes = new List<ComplexRecipe>();
     List<Ingredient> ingredients = new List<Ingredient>();
@@ -263,6 +299,19 @@
     ControllerFuncionality features = new ControllerFuncionality();
 
     #endregion
+
+    private void ToggleFilters()
+    {
+        _showFilters = !_showFilters;
+        this.StateHasChanged();
+    }
+
+    private void ReadChainFilters()
+    {
+        _chainFilter = _bilkaSelected ? _chainFilter | Chain.bilka : _chainFilter & ~Chain.bilka;
+        _chainFilter = _faktaSelected ? _chainFilter | Chain.fakta : _chainFilter & ~Chain.fakta;
+        _chainFilter = _superBrugsenSelected ? _chainFilter | Chain.superBrugsen : _chainFilter & ~Chain.superBrugsen;
+    }
 
     #region Get products and sent products
 
@@ -617,9 +666,10 @@
         isSearching = true;
         StateHasChanged();
         recipeQuery._loadCount = 0;
-        complexRecipes = await recipeQuery.CheapestCRecipes(searchTerm);
+        ReadChainFilters();
+        complexRecipes = await recipeQuery.CheapestRecipeDB2(searchTerm, _chainFilter);
 
-            viewRecipeList = true;
+        viewRecipeList = true;
         isSearching = false;
         StateHasChanged();
     }
@@ -629,7 +679,8 @@
         _viewLoadMoreSpinner = true;
         _viewLoadMore = false;
         this.StateHasChanged();
-        complexRecipes.AddRange(await recipeQuery.CheapestRecipeDB2(searchTerm,chainFilter));
+        ReadChainFilters();
+        complexRecipes.AddRange(await recipeQuery.CheapestRecipeDB2(searchTerm,_chainFilter));
         _viewLoadMoreSpinner = false;
         _viewLoadMore = true;
         this.StateHasChanged();

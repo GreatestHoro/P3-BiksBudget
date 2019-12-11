@@ -76,9 +76,11 @@ namespace BBCollection.BBObjects
             IsSortable = _isSortable;
         }
 
-        public FilterItem()
-        {
+        public FilterItem() { }
 
+        public List<Product> Sort(List<Product> inputList)
+        {
+            return new List<Product>();
         }
     }
 }

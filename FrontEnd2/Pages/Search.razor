@@ -72,17 +72,16 @@
                     {
                         if (fi.IsSortable)
                         {
-                            <CheckEdit RadioGroup="dsjdskjdsk" @onchange="(() => AssignFilter(fi.FilterName, af.optionsList, af.label))" Checked="true"> @fi.FilterName</CheckEdit>
+                            <CheckEdit RadioGroup="Options" @onchange="(() => AssignFilter(fi.FilterName, af.optionsList, af.label))" Checked="@fi.IsEnabled"> @fi.FilterName</CheckEdit>
                         }
                         else
                         {
-                        <CheckEdit @onchange="(() => AssignFilter(fi.FilterName, af.optionsList, af.label))" Checked="true"> @fi.FilterName</CheckEdit>
+                            <CheckEdit @onchange="(() => AssignFilter(fi.FilterName, af.optionsList, af.label))" Checked="@fi.IsEnabled"> @fi.FilterName</CheckEdit>
                         }
                     }
                     <!-- #endregion -->
                 </Field>
             }
-
         </div>
     </div>
 
@@ -118,14 +117,29 @@
             <h5>Distance @(radius / 1000) Km:</h5>
             <input type="range" min="0" max="5000" @bind="radius" step="1000" />
         </div>
-        <div class="p-2">
-            <label for="minPriceB">Minimum Price:</label>
-            <input type="number" class="form-control" placeholder="Min Price" @bind="minPrice" />
-        </div>
-        <div class="p-2">
-            <label for="maxPriceB">Maximum Price:</label>
-            <input type="number" class="form-control" placeholder="Max Price" @bind="maxPrice" />
-        </div>
+        @if (!isFindingList)
+        {
+            <div class="p-2">
+                <label for="minPriceB">Minimum Price:</label>
+
+                <input type="number" class="form-control" placeholder="Min Price" @onchange="@((e)=>CheckMinPrice(e))" value="@minPrice" />
+            </div>
+            <div class="p-2">
+                <label for="maxPriceB">Maximum Price:</label>
+                <input type="number" class="form-control" placeholder="Max Price" @onchange="@((e)=>CheckMaxPrice(e))" value="@maxPrice" />
+            </div>
+        }
+        else
+        {
+            <div class="p-2">
+                <label for="minPriceB">Minimum Price:</label>
+                <input disabled type="number" class="form-control" placeholder="Min Price" value="@minPrice" />
+            </div>
+            <div class="p-2">
+                <label for="maxPriceB">Maximum Price:</label>
+                <input disabled type="number" class="form-control" placeholder="Max Price" value="@maxPrice" />
+            </div>
+        }
         <div class="p-2">
             <p>Use Location:</p>
             <input type="checkbox" class="locationCheckBox" bind="@IsLocationEnabled" @onclick="toggle" />
@@ -154,7 +168,6 @@
                 {
                     if (p._price > minPrice && p._price < maxPrice)
                     {
-
                         <Column ColumnSize="ColumnSize.Is4.OnTablet.Is4.OnWidescreen.Is12.OnMobile">
                             <Card Margin="Margin.Is4.FromBottom">
                                 <CardImage Source="@p._image">
@@ -163,12 +176,12 @@
                                     <CardTitle Class="w-100" Margin="Margin.Is4" Size="5">@p._productName</CardTitle>
                                     <CardText>
                                         <ListGroup IsFlush="true">
-                                            <ListGroupItem>Amount: @p._amount</ListGroupItem>
-                                            <ListGroupItem>Store: @p._storeName</ListGroupItem>
                                             <ListGroupItem>Amount Added: @p._amountleft</ListGroupItem>
+                                            <ListGroupItem>Price: @p._price</ListGroupItem>
+                                            <ListGroupItem>Store: @p._storeName</ListGroupItem>
                                         </ListGroup>
                                     </CardText>
-                                    <Button Margin="Margin.Is4" Color="Color.Primary" @onclick="(() => AddProductToSL(p))">Add To Shoppinglist</Button>
+                                    <Button Margin="Margin.Is4" Color="Color.Primary" @onclick="(() => AddProductToSL(p))">Add To Shoppinglist (@p._amountleft)</Button>
                                 </CardBody>
                             </Card>
                         </Column>
@@ -251,7 +264,6 @@ else if (!isSearching && !_viewProducts)
     StoreFilterList storeFilters = new StoreFilterList();
     WordFilterList wordFIlters = new WordFilterList();
     FindCloseStores closeStore;
-    //ShoppinlistFunctionality SLFunc = new ShoppinlistFunctionality("api/Shoppinglist");
     ControllerFuncionality features = new ControllerFuncionality();
 
     List<FilterItem> optionsList = new List<FilterItem>();
@@ -262,6 +274,9 @@ else if (!isSearching && !_viewProducts)
     List<Product> tempProductList = new List<Product>();
     List<AdvancedFilterList> filterLists = new List<AdvancedFilterList>();
     List<Product> AutocompleteList = new List<Product>();
+    List<FilterItem> tempList = new List<FilterItem>();
+    SortBy sort = new SortBy();
+    List<Product> tempToShowList = new List<Product>();
 
     UserData user;
 
@@ -287,6 +302,9 @@ else if (!isSearching && !_viewProducts)
     bool _viewLoadMoreSpinner = false;
     bool disableButton = false;
     bool viewAutoComplete = false;
+    bool isFindingList = false;
+
+    FilterItem filter = new FilterItem();
 
     int value = 1;
     int radius = 1000;
@@ -295,6 +313,7 @@ else if (!isSearching && !_viewProducts)
     int _loadCount = 0;
     int printCount = 9;
     int printStartIndex = 0;
+    int availabelProducts;
 
     double tempTotalCost = 0;
     double _minPrice = 0;
@@ -371,10 +390,10 @@ else if (!isSearching && !_viewProducts)
         else
         {
             ChangeState(test, filterList, label);
-         }
+        }
     }
 
-        private void AssignFilter(string e, List<FilterItem> filterList, string label)
+    private void AssignFilter(string e, List<FilterItem> filterList, string label)
     {
         if (e.Equals("all"))
         {
@@ -399,12 +418,11 @@ else if (!isSearching && !_viewProducts)
     public void ChangeState(string name, List<FilterItem> list, string label)
     {
         tempFilteritem = FindFilteritem(list, name);
-        tempFilteritem.IsEnabled = !tempFilteritem.IsEnabled;
 
         if (tempFilteritem.IsSortable)
         {
-
-            productsToPrint = DecideOrderFilter(tempFilteritem.FilterName);
+            list = AssignNewBools(list, tempFilteritem.FilterName);
+            DecideOrderFilter(tempFilteritem.FilterName);
         }
         else
         {
@@ -412,36 +430,51 @@ else if (!isSearching && !_viewProducts)
         }
     }
 
+    private List<FilterItem> AssignNewBools(List<FilterItem> list, string name)
+    {
+        foreach (FilterItem f in list)
+        {
+            if (f.FilterName.Equals(name))
+            {
+                f.IsEnabled = true;
+            }
+            else
+            {
+                f.IsEnabled = false;
+            }
+        }
+        return list;
+    }
 
-    public List<Product> DecideOrderFilter(string filterName)
+    public void DecideOrderFilter(string filterName)
     {
         switch (filterName.ToLower())
         {
             case "most relevant":
-                SortByMostRelevant();
+                itemList = sort.SortByMostRelevant(itemList);
                 break;
             case "price (low to high)":
-                SortByPriceLH();
+                itemList = sort.SortByPriceLH(itemList);
                 break;
             case "price (high to low)":
-                SortBypriceHL();
+                itemList = sort.SortBypriceHL(itemList);
                 break;
             case "alphabetical order (a - z)":
-                SortByNameAZ();
+                itemList = sort.SortByNameAZ(itemList);
                 break;
             case "alphabetical order (z - a)":
-                SortByNameZA();
+                itemList = sort.SortByNameZA(itemList);
                 break;
             case "store (a - z)":
-                SortByStoreAZ();
+                itemList = sort.SortByStoreAZ(itemList);
                 break;
             case "store (z - a":
-                SortByStoreZA();
+                itemList = sort.SortByStoreZA(itemList);
                 break;
-
         }
 
-        return ApplySortFilterToResults();
+        productsToPrint = ApplySortFilterToResults();
+
     }
 
     public List<Product> ApplySortFilterToResults()
@@ -471,43 +504,6 @@ else if (!isSearching && !_viewProducts)
         }
     }
 
-    #endregion
-
-    #region Product Sort Filters
-    public void SortByMostRelevant()
-    {
-        itemList.Sort((a, b) => a._productName.Length.CompareTo(b._productName.Length));
-    }
-
-    public void SortByPriceLH()
-    {
-        itemList.Sort((a, b) => a._price.CompareTo(b._price));
-    }
-
-    public void SortBypriceHL()
-    {
-        itemList.Sort((a, b) => b._price.CompareTo(a._price));
-    }
-
-    public void SortByStoreAZ()
-    {
-        itemList.Sort((a, b) => a._storeName.CompareTo(b._storeName));
-    }
-
-    public void SortByStoreZA()
-    {
-        itemList.Sort((a, b) => b._storeName.CompareTo(a._storeName));
-    }
-
-    public void SortByNameAZ()
-    {
-        itemList.Sort((a, b) => a._productName.CompareTo(b._productName));
-    }
-
-    public void SortByNameZA()
-    {
-        itemList.Sort((a, b) => b._productName.CompareTo(a._productName));
-    }
     #endregion
 
     #region ProductToShoppinglistMethod
@@ -596,6 +592,8 @@ else if (!isSearching && !_viewProducts)
 
         if (itemList.Count != 0)
         {
+            OrderResulsts();
+
 
             if (itemList.Count > printCount)
             {
@@ -606,7 +604,6 @@ else if (!isSearching && !_viewProducts)
                 productsToPrint.AddRange(AddProductsToPrint(itemList.Count));
             }
 
-            productsToPrint = DecideOrderFilter(FindActiveSortFilter());
 
             _viewProducts = true;
             if (itemList.Count > productsToPrint.Count)
@@ -634,6 +631,23 @@ else if (!isSearching && !_viewProducts)
 
         isSearching = false;
         this.StateHasChanged();
+    }
+
+    public void OrderResulsts()
+    {
+        tempList = FindStoreList();
+
+        DecideOrderFilter(FindActiveSortFilter(tempList));
+    }
+
+    public List<FilterItem> FindStoreList()
+    {
+        return filterLists[StoreIndex()].optionsList;
+    }
+
+    public int StoreIndex()
+    {
+        return filterLists.FindIndex(x => x.label == optionLabel);
     }
 
     public List<Product> AddProductsToPrint()
@@ -867,9 +881,9 @@ else if (!isSearching && !_viewProducts)
     /// come from the database
     /// </summary>
     /// <returns></returns>
-    public string FindActiveSortFilter()
+    public string FindActiveSortFilter(List<FilterItem> filterList)
     {
-        foreach (FilterItem o in optionsList)
+        foreach (FilterItem o in filterList)
         {
             if (o.IsEnabled)
             {
@@ -1038,4 +1052,88 @@ else if (!isSearching && !_viewProducts)
         }
     }
     #endregion
+
+    #region Price
+
+    public void CheckMinPrice(ChangeEventArgs e)
+    {
+        isFindingList = true;
+        StateHasChanged();
+
+        minPrice = Convert.ToInt32(e.Value.ToString());
+
+        if (ListExists(itemList))
+        {
+            productsToPrint = FindNewProducts();
+        }
+
+        isFindingList = false;
+        StateHasChanged();
+    }
+
+
+    public void CheckMaxPrice(ChangeEventArgs e)
+    {
+        isFindingList = true;
+        StateHasChanged();
+
+        minPrice = Convert.ToInt32(e.Value.ToString());
+
+        if (ListExists(itemList))
+        {
+            productsToPrint = FindNewProducts();
+        }
+
+        isFindingList = false;
+        StateHasChanged();
+    }
+
+    public List<Product> FindNewProducts()
+    {
+        tempToShowList.Clear();
+        int i = 0;
+        i = printStartIndex;
+
+        double price;
+        while (tempToShowList.Count < printCount)
+        {
+            price = itemList[i]._price;
+
+            if (minPrice < price && maxPrice > price)
+            {
+                tempToShowList.Add(itemList[i]);
+            }
+
+            if (i > itemList.Count)
+            {
+                break;
+            }
+
+            i++;
+
+        }
+
+        return tempToShowList;
+    }
+
+    public bool ListExists(List<Product> list)
+    {
+        return list.Count > 0;
+    }
+
+    public int CountAvailableProducts()
+    {
+        int i = 0;
+        foreach (Product p in itemList)
+        {
+            if (minPrice < p._price && maxPrice > p._price)
+            {
+                availabelProducts++;
+            }
+        }
+        return i;
+    }
+
+    #endregion
+
 }
