@@ -221,6 +221,8 @@
 
     public void DeleteProduct(Product p)
     {
+        remindToSave = true;
+
         user.shoppinglist.DeleteItem(p);
     }
 
