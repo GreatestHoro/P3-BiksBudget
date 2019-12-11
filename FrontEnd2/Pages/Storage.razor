@@ -229,7 +229,7 @@
                 @foreach (WeightedRecipies rep in recpies)
                 {
                     <div class="center_div card w-100" id="recipeCard">
-                        <a @onclick="(() => retriveInfo(rep._recipie))" class="stretched-link"></a>
+                        <a @onclick="(() => retriveInfo(rep))" class="stretched-link"></a>
                         <div class="card-header" style="padding-bottom: 0.25rem;">
                             <div class="card-title w-100">
                                 <h6 style="font-weight:bold;">
@@ -315,15 +315,23 @@
                                 <TableBody>
                                     @foreach (Ingredient ing in ingredients)
                                     {
-                                        <TableRow>
-                                            @if (runCounter <= ingredients.Count) //comback and fix
-                                            {
-                                                runCounter++;
-                                                scalar = recipePerPerson;
-                                            }
-                                            <TableRowCell Style="width:50px">@(String.Format("{0:0.0}", (ing._amount / recipePerPerson) * scalar)) @ing._unit</TableRowCell>
-                                            <TableRowCell Style="width:150px"><Button Class="btn btn-block btn-light" @onclick="(() => retriveIngredient(ing))">@ing._ingredientName</Button></TableRowCell>
-                                        </TableRow>
+                                    <TableRow>
+                                        @if (runCounter <= ingredients.Count) //comback and fix
+                                        {
+                                            runCounter++;
+                                            scalar = recipePerPerson;
+                                        }
+                                        <TableRowCell Style="width:50px">@(String.Format("{0:0.0}", (ing._amount / recipePerPerson) * scalar)) @ing._unit</TableRowCell>
+                                        @if (ingrdientDict.ContainsKey(ing))
+                                        {
+                                            <TableRowCell Style="width:150px"><Button Class="btn btn-block btn-success" @onclick="(() => retriveIngredient(ing))"><i style="text-align:left; padding-right:150px" class="text-left fa fa-home"></i>@ing._ingredientName</Button></TableRowCell>
+                                        }
+                                        else
+                                        {
+                                            <TableRowCell Style="width:150px"><Button Class="btn btn-block btn-danger" @onclick="(() => retriveIngredient(ing))">@ing._ingredientName</Button></TableRowCell>
+                                        }
+
+                                    </TableRow>
                                     }
                                 </TableBody>
                             </Table>
@@ -392,7 +400,7 @@ else
     int scalar;
     int runCounter = 0;
     int Timesload = 0;
-    int defualtAmountLoad = 10; 
+    int defualtAmountLoad = 10;
 
     bool found = true;
     bool viewTitle = false;
@@ -424,6 +432,7 @@ else
     Recipe selectedRecepie = new Recipe();
     List<string> ItemState = new List<string>() { "Full", "Almost Full", "Half Full", "Almost Empty" };
     ControllerFuncionality features = new ControllerFuncionality();
+    Dictionary<Ingredient, List<string>> ingrdientDict = new Dictionary<Ingredient, List<string>>();
     //ShoppinlistFunctionality ShopList = new ShoppinlistFunctionality("api/Shoppinglist");
 
     private delegate bool compareWR(WeightedRecipies r1, WeightedRecipies r2);
@@ -529,14 +538,15 @@ else
         viewTitle = !viewTitle;
     }
 
-    void retriveInfo(Recipe rep)
+    void retriveInfo(WeightedRecipies rep)
     {
         //Recipe show = _recpies.First(x => x._recipeID == ID);
-        selectedRecepie = rep;
-        recipeName = rep._Name;
-        recipeDescription = rep._description;
-        ingredients = rep._ingredientList;
-        recipePerPerson = (int)rep._PerPerson;
+        ingrdientDict = rep.ingrdients;
+        selectedRecepie = rep._recipie;
+        recipeName = rep._recipie._Name;
+        recipeDescription = rep._recipie._description;
+        ingredients = rep._recipie._ingredientList;
+        recipePerPerson = (int)rep._recipie._PerPerson;
         selectedValue = recipePerPerson;
         found = true;
         showModal();
