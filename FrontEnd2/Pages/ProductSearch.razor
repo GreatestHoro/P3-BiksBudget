@@ -10,7 +10,6 @@
 @inject HttpClient Http
 @inject IJSRuntime JsRuntime
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
-
 <!-- #region Search Bar -->
 <Row>
     <Column ColumnSize="ColumnSize.Is8">
@@ -42,7 +41,7 @@
 <!-- #endregion -->
 <!-- #region Filters -->
 <Modal @ref="filterModal">
-    <ModalBackdrop /> 
+    <ModalBackdrop />
     <ModalContent IsCentered="true" Size="ModalSize.ExtraLarge">
         <ModalHeader>
             <ModalTitle Style="font-weight:bolder"> Advanced Filters</ModalTitle>
@@ -61,11 +60,11 @@
                             {
                                 if (fi.IsSortable)
                                 {
-                                    <CheckEdit ColumnSize="ColumnSize.IsAuto" IsInline="false" RadioGroup="Yeet1" @onchange="(() => AssignFilter(fi.FilterName, af.optionsList, af.label))" Checked="true"> @fi.FilterName</CheckEdit>
+                                    <CheckEdit ColumnSize="ColumnSize.IsAuto" IsInline="@fi.IsEnabled" RadioGroup="Yeet1" @onchange="(() => AssignFilter(fi.FilterName, af.optionsList, af.label))" Checked="true"> @fi.FilterName</CheckEdit>
                                 }
                                 else
                                 {
-                                    <CheckEdit IsInline="false" @onchange="(() => AssignFilter(fi.FilterName, af.optionsList, af.label))" Checked="true"> @fi.FilterName</CheckEdit>
+                                    <CheckEdit IsInline="false" @onchange="(() => AssignFilter(fi.FilterName, af.optionsList, af.label))" Checked="@fi.IsEnabled"> @fi.FilterName</CheckEdit>
                                 }
                             }
                         </Field>
@@ -92,7 +91,7 @@
                 </Column>
             </Row>
             <Row>
-                <Column ColumnSize="ColumnSize.Is12.OnDesktop" >
+                <Column ColumnSize="ColumnSize.Is12.OnDesktop">
                     <Field JustifyContent="JustifyContent.Center">
                         <Button Color="Color.Info"><Icon Name="@(FontAwesomeIcons.Adjust)"></Icon> Apply changes</Button>
                     </Field>
@@ -101,10 +100,33 @@
         </ModalBody>
     </ModalContent>
 </Modal>
-
 <!-- #endregion -->
-
 <!-- #region Product Cards -->
+<Row>
+    @foreach (Product p in productsToPrint)
+    {
+        if (p._price > minPrice && p._price < maxPrice)
+        {
+            <Column  ColumnSize="ColumnSize.Is4.OnTablet.Is4.OnWidescreen.Is12.OnMobile">
+                <Card Margin="Margin.Is4.FromBottom">
+                    <CardImage Source="@p._image">
+                    </CardImage>
+                    <CardBody>
+                        <CardTitle Class="w-100" Margin="Margin.Is4" Size="5">@p._productName</CardTitle>
+                        <CardText>
+                            <ListGroup IsFlush="true">
+                                <ListGroupItem>Description: @p._amount</ListGroupItem>
+                                <ListGroupItem>Price: @p._price</ListGroupItem>
+                                <ListGroupItem>Store: @p._storeName</ListGroupItem>
+                            </ListGroup>
+                        </CardText>
+                        <Button IsDisabled="disableButton" Margin="Margin.Is4" Color="Color.Success" @onclick="(() => AddProductToSL(p))">Add To Shoppinglist (@p._amountleft)</Button>
+                    </CardBody>
+                </Card>
+            </Column>
+        }
+    }
+</Row>
 <!-- #endregion -->
 
 @code{
@@ -134,6 +156,7 @@
     List<Product> AutocompleteList = new List<Product>();
     List<FilterItem> tempFilterlist = new List<FilterItem>();
     SortBy sort = new SortBy();
+    SortNames sortBy = new SortNames();
     List<Product> tempToShowList = new List<Product>();
 
     UserData user;
@@ -320,25 +343,25 @@
     {
         switch (filterName.ToLower())
         {
-            case "most relevant":
+            case "Relevance":
                 itemList = sort.SortByMostRelevant(itemList);
                 break;
-            case "price (low to high)":
+            case "Lowest price":
                 itemList = sort.SortByPriceLH(itemList);
                 break;
-            case "price (high to low)":
+            case "Heighest price":
                 itemList = sort.SortBypriceHL(itemList);
                 break;
-            case "alphabetical order (a - z)":
+            case "Product (A-Z)":
                 itemList = sort.SortByNameAZ(itemList);
                 break;
-            case "alphabetical order (z - a)":
+            case "Product (Z-A)":
                 itemList = sort.SortByNameZA(itemList);
                 break;
-            case "store (a - z)":
+            case "Store (A-Z)":
                 itemList = sort.SortByStoreAZ(itemList);
                 break;
-            case "store (z - a":
+            case "Store (Z-A)":
                 itemList = sort.SortByStoreZA(itemList);
                 break;
         }
@@ -402,7 +425,7 @@
         }
 
         disableButton = await AwaitButton();
-        //snackbar.Show();
+        snackbar.Show();
         StateHasChanged();
     }
 
@@ -648,7 +671,7 @@
             //prodData = Enumerable.Range(1, prodName.Length)
             //    .Select(x => new AutocompleteSearch { textField = prodName[x - 1], valueField = x });
             prodData = Enumerable.Range(1, prodName.Length)
-                .Select(x => new AutocompleteSearch { textField = prodName[x - 1], valueField = x }).Where(x=> AutcompleteWordFilters(x.textField));
+                .Select(x => new AutocompleteSearch { textField = prodName[x - 1], valueField = x }).Where(x => AutcompleteWordFilters(x.textField));
 
             /*.Where(x=> x.textField.Contains("øko") AutcompleteWordFilters(x.textField) == true)*/
 
@@ -725,7 +748,7 @@
 
     void loadProdName()
     {
-        prodName = AutocompleteList.Select(p => Convert.ToString(p._productName + " " + p._amount)).ToArray();
+        prodName = AutocompleteList.Select(p => Convert.ToString(p._productName)).ToArray();
 
         prodName = prodName.Select(s => s.ToLowerInvariant()).ToArray();
 
