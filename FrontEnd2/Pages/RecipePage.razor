@@ -246,6 +246,7 @@
     bool _viewLoadMore = true;
     bool productSuggestions = true;
     bool disableButton = false;
+    Chain chainFilter = Chain.none;
 
     List<ComplexRecipe> complexRecipes = new List<ComplexRecipe>();
     List<Ingredient> ingredients = new List<Ingredient>();
@@ -616,9 +617,9 @@
         isSearching = true;
         StateHasChanged();
         recipeQuery._loadCount = 0;
-        complexRecipes = await recipeQuery.CheapestRecipeDB(searchTerm);
+        complexRecipes = await recipeQuery.CheapestCRecipes(searchTerm);
 
-        viewRecipeList = true;
+            viewRecipeList = true;
         isSearching = false;
         StateHasChanged();
     }
@@ -628,7 +629,7 @@
         _viewLoadMoreSpinner = true;
         _viewLoadMore = false;
         this.StateHasChanged();
-        complexRecipes.AddRange(await recipeQuery.CheapestRecipeDB(searchTerm));
+        complexRecipes.AddRange(await recipeQuery.CheapestRecipeDB2(searchTerm,chainFilter));
         _viewLoadMoreSpinner = false;
         _viewLoadMore = true;
         this.StateHasChanged();
