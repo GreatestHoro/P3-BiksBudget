@@ -365,8 +365,8 @@ namespace BBCollection.DBHandling
         public async Task PopulateIngredientLink()
         {
             string copyColumn =
-                "INSERT INTO ingredient_store_link (ingredientID)" +
-                "SELECT id FROM ingredients";
+                "INSERT INTO ingredient_store_link (ingredientName)" +
+                "SELECT ingredientName FROM ingredients";
 
             await new SQLConnect().NonQueryString(copyColumn);
         }
@@ -374,15 +374,18 @@ namespace BBCollection.DBHandling
         public async Task InsertIngredientLink(Dictionary<string, List<Product>> ingredientToProducts, string store)
         {
             string updateLink =
-                "Update `ingredient_store_link` SET `"+ store +"` = @ProductID WHERE ingredientID = @IngredientID";
+                "Update `ingredient_store_link` SET `"+ store +"` = @ProductID WHERE ingredientName = @IngredientName";
 
             foreach (KeyValuePair <string, List<Product>> pair in ingredientToProducts)
             {
-                MySqlCommand msc = new MySqlCommand(updateLink);
-                msc.Parameters.AddWithValue("@ProductID", pair.Value.First());
-                msc.Parameters.AddWithValue("@IngredientID", pair.Key);
+                if (pair.Value.Count != 0)
+                {
+                    MySqlCommand msc = new MySqlCommand(updateLink);
+                    msc.Parameters.AddWithValue("@ProductID", pair.Value.First()._id);
+                    msc.Parameters.AddWithValue("@IngredientName", pair.Key);
 
-                await new SQLConnect().NonQueryMSC(msc);
+                    await new SQLConnect().NonQueryMSC(msc);
+                }
             }
         }
     }
