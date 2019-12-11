@@ -381,6 +381,8 @@ else
     int x;
     int scalar;
     int runCounter = 0;
+    int Timesload = 0;
+    int defualtAmountLoad = 10; 
 
     bool found = true;
     bool viewTitle = false;
@@ -405,6 +407,7 @@ else
     List<float> recipeAmount = new List<float>();
     List<Ingredient> ingredients = new List<Ingredient>();
     List<WeightedRecipies> recpies = new List<WeightedRecipies>();
+    List<WeightedRecipies> Allrecpies = new List<WeightedRecipies>();
     List<Recipe> _recpies = new List<Recipe>();
     List<Product> products = new List<Product>();
     List<Product> ToShoppinglist = new List<Product>();
@@ -568,15 +571,12 @@ else
         int HasBeenLoaded = 0;
         this.StateHasChanged();
         EmptyFridgeFuntionality emptyFridgeFuntionality = new EmptyFridgeFuntionality(user.storage.storageList);
-        foreach (List<string> prodRefs in emptyFridgeFuntionality.allRefs)
-        {
-            recpies.AddRange(await emptyFridgeFuntionality.GetRelevantRecepiesFromProd(prodRefs));
-            emptyFridgeFuntionality.SortByPmatch(recpies);
-            recpies = await emptyFridgeFuntionality.GetSortedList();
-            loadingbar = true;
-            LoadingManager(++HasBeenLoaded, user.storage.storageList.Count);
-            this.StateHasChanged();
-        }
+        Allrecpies = await emptyFridgeFuntionality.GetWeightedRecipies();
+        LoadMoreRecepies(defualtAmountLoad);
+        loadingbar = true;
+        LoadingManager(++HasBeenLoaded, user.storage.storageList.Count);
+        this.StateHasChanged();
+
         viewTitle = true;
         _viewEmptyFridgeLoadSpinner = false;
         await disableLoad();
@@ -744,4 +744,9 @@ else
         return new List<Product>();
     }
 
+    public void LoadMoreRecepies(int x)
+    {
+        Timesload++;
+        recpies = Allrecpies.GetRange(0,x*Timesload);
+    }
 }

@@ -14,8 +14,21 @@ namespace BBCollection.BBObjects
         {
             allRefs = GetAllProductRefs(products);
         }
+        public async Task<List<WeightedRecipies>> GetWeightedRecipies() 
+        {
+            if (WeightedRecipies.Count == 0) 
+            {
+                foreach (List<string> prodRefs in allRefs)
+                {
+                    WeightedRecipies.AddRange(await GetRelevantRecepiesFromProd(prodRefs));
+                }
+                SortByPmatch(WeightedRecipies);
+            }
 
-        public async Task<List<WeightedRecipies>> GetRelevantRecepiesFromProd(List<string> prodRefs)
+            
+            return WeightedRecipies;
+        }
+        private async Task<List<WeightedRecipies>> GetRelevantRecepiesFromProd(List<string> prodRefs)
         {
             return await GetRelevantRecpies(prodRefs);
         }
