@@ -16,14 +16,6 @@
 
 @if (email != null)
 {
-    @if (ListFunc.CombinedList == null)
-    {
-        <p>
-            <em>Your fridge is empty</em>
-        </p>
-    }
-    else
-    {
         @* Storage table *@
 
         @if (viewTitle == false)
@@ -42,7 +34,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach (Product p in ListFunc.CombinedList)
+                                @foreach (Product p in user.storage.storageList)
                                 {
                                     <tr>
                                         <td data-th="Product">@p._productName</td>
@@ -68,7 +60,7 @@
                                                 <button class="btn btn-rounded btn-danger btn-sm" title="Delete one @p._productName from storage" @onclick="(() => ChangeItemAmout(p))"><i class="oi oi-trash"></i></button>
                                                 @if (p._amountleft > 1)
                                                 {
-                                                    <button class="btn btn-rounded btn-danger btn-sm" title="Delete all @p._amountleft @p._productName from storage" @onclick="(() => DeleteItem(p))"><i class="oi oi-trash"></i>(All)</button>
+                                                    <button class="btn btn-rounded btn-danger btn-sm" title="Delete all @p._amountleft @p._productName from storage" @onclick="(() => DeleteProduct(p))"><i class="oi oi-trash"></i>(All)</button>
                                                 }
                                                 else
                                                 {
@@ -84,12 +76,11 @@
                 </div>
             </div>
         }
-    }
-
+    
     <div class="container-fluid">
         <div class="row">
             <div class="col-sm-4">
-                <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => ListFunc.DeleteStorage())">Delete storage</button>
+                <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => user.storage.DeleteStorage())">Delete storage</button>
             </div>
             <div class="col-sm-4">
                 <Tooltip Text="Find a recipe that utilizes your products">
@@ -405,7 +396,8 @@ else
     bool _viewEmptyFridgeLoadSpinner = false;
     bool loadingbar = false;
 
-    ShoppinlistFunctionality ListFunc = new ShoppinlistFunctionality("api/Storage");
+    //ShoppinlistFunctionality ListFunc = new ShoppinlistFunctionality("api/Storage");
+    UserData user;
     HttpResponseMessage responseMessage = new HttpResponseMessage();
     Product tempProduct = new Product();
 
@@ -432,27 +424,20 @@ else
     /// </summary>
     /// <param name="item">The item of which the state shouold be changes</param>
     /// <param name="state">The state to chaneg to</param>
-    public async void ChangeItemState(Product item, string state)
+    public async Task ChangeProductState(Product p, string state)
     {
         // Finds the index of the input item
-        int index = FindIdex(item);
-        item._state = state;
+        p._state = state;
 
         // Change the state in the storage list
-        await ListFunc.ChangeItemInStorage(ListFunc.CombinedList[index]);
+        //await ListFunc.ChangeItemInStorage(ListFunc.CombinedList[index]);
+        await user.storage.EditProduct(p);
     }
 
-    public int FindIdex(Product item)
+    public async Task DeleteProduct(Product p)
     {
-        // Returns the index of the input item
-        return ListFunc.CombinedList.FindIndex(ind => ind.Equals(item));
-    }
-
-    public void DeleteItem(Product item)
-    {
-        // The amountleft is set to 1, and ChangeItemAmout is called, removing items where only 1 remains.
-        item._amountleft = 1;
-        ChangeItemAmout(item);
+        await user.storage.DeleteProduct(p);
+        StateHasChanged();
     }
 
 
@@ -462,19 +447,10 @@ else
     /// Else the amount left is decremented.
     /// </summary>
     /// <param name="item"></param>
-    public async void ChangeItemAmout(Product item)
+    public async Task ChangeItemAmout(Product p)
     {
-        int index = FindIdex(item);
-        int left = ListFunc.CombinedList[index]._amountleft;
-
-        if (left == 1)
-        {
-            ListFunc.CombinedList.RemoveAt(index);
-
-        }
-        item._amountleft--;
-
-        await ListFunc.ChangeItemInStorage(item);
+        await user.storage.DeleteProduct(p, 1);
+        StateHasChanged();
     }
     #endregion
 
@@ -494,7 +470,8 @@ else
 
             if (email != null)
             {
-                responseMessage = await ListFunc.GetStorageOnStart(email);
+                user = new UserData(email);
+                await user.storage.Get();
             }
 
             StateHasChanged();
@@ -590,14 +567,14 @@ else
         _viewEmptyFridgeLoadSpinner = true;
         int HasBeenLoaded = 0;
         this.StateHasChanged();
-        EmptyFridgeFuntionality emptyFridgeFuntionality = new EmptyFridgeFuntionality(ListFunc.CombinedList);
+        EmptyFridgeFuntionality emptyFridgeFuntionality = new EmptyFridgeFuntionality(user.storage.storageList);
         foreach (List<string> prodRefs in emptyFridgeFuntionality.allRefs)
         {
             recpies.AddRange(await emptyFridgeFuntionality.GetRelevantRecepiesFromProd(prodRefs));
             emptyFridgeFuntionality.SortByPmatch(recpies);
             recpies = await emptyFridgeFuntionality.GetSortedList();
             loadingbar = true;
-            LoadingManager(++HasBeenLoaded, ListFunc.CombinedList.Count);
+            LoadingManager(++HasBeenLoaded, user.storage.storageList.Count);
             this.StateHasChanged();
         }
         viewTitle = true;
@@ -623,9 +600,9 @@ else
 
     #endregion
 
-    private void AssignScalar(ChangeEventArgs e, Product p)
+    private async Task AssignScalar(ChangeEventArgs e, Product p)
     {
-        ChangeItemState(p, e.Value.ToString());
+        await ChangeProductState(p, e.Value.ToString());
     }
 
     private void showModal()
@@ -725,7 +702,7 @@ else
         }
         else
         {
-            await ListFunc.QuickaddItemToShoppinglist(AddedItem,"api/Shoppinglist");
+            await user.shoppinglist.AddProduct(AddedItem);
         }
 
         AddedItem._amountleft = actualAmout;

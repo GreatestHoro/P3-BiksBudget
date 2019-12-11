@@ -210,15 +210,15 @@ else if (!isSearching && !_viewProducts)
 <!-- #endregion -->
 
 
-<Snackbar @ref="snackbar">
+@*<Snackbar @ref="snackbar">
     <SnackbarBody>
-        @tempProductName added to your shopping list. Your total is @String.Format("{0:0.00}", (SLFunc.CompletePrice() + tempTotalCost)) DKK.
+        @tempProductName added to your shopping list. Your total is @String.Format("{0:0.00}", (user.shoppinglist.CompletePrice() + tempTotalCost)) DKK.
     </SnackbarBody>
-</Snackbar>
+</Snackbar>*@
 
 @code{
     #region fields
-    private Snackbar snackbar;
+    //private Snackbar snackbar;
 
     static TaskCompletionSource<GeoCoordinate> tcsUserLocation = new TaskCompletionSource<GeoCoordinate>();
     static GeoCoordinate userGeoLocation = new GeoCoordinate(0, 0);
@@ -227,7 +227,7 @@ else if (!isSearching && !_viewProducts)
     StoreFilterList storeFilters = new StoreFilterList();
     WordFilterList wordFIlters = new WordFilterList();
     FindCloseStores closeStore;
-    ShoppinlistFunctionality SLFunc = new ShoppinlistFunctionality("api/Shoppinglist");
+    //ShoppinlistFunctionality SLFunc = new ShoppinlistFunctionality("api/Shoppinglist");
     ControllerFuncionality features = new ControllerFuncionality();
 
     List<FilterItem> optionsList = new List<FilterItem>();
@@ -238,6 +238,8 @@ else if (!isSearching && !_viewProducts)
     List<Product> tempProductList = new List<Product>();
     List<AdvancedFilterList> filterLists = new List<AdvancedFilterList>();
     List<Product> AutocompleteList = new List<Product>();
+
+    UserData user;
 
     FilterItem tempFilteritem = new FilterItem();
 
@@ -501,13 +503,13 @@ else if (!isSearching && !_viewProducts)
         }
         else
         {
-            await SLFunc.QuickaddItemToShoppinglist(AddedItem);
+            await user.shoppinglist.AddProduct(AddedItem);
         }
 
         AddedItem._amountleft = actualAmout;
 
         disableButton = await AwaitButton();
-        snackbar.Show();
+        //snackbar.Show();
         StateHasChanged();
     }
 
@@ -721,11 +723,12 @@ else if (!isSearching && !_viewProducts)
 
             if (!String.IsNullOrEmpty(email))
             {
-                await SLFunc.GetShoppinglistOnStart(email);
+                user = new UserData(email);
             }
             else
             {
                 ToShoppinglist = await GetLocalStorage();
+                user = new UserData();
             }
 
             AutocompleteList = await CallApiForProducts(tempSearchword);
