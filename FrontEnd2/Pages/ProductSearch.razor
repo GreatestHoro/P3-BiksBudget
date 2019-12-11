@@ -1,0 +1,1014 @@
+﻿@page "/productSearch"
+
+@using BBCollection.BBObjects;
+@using BBCollection.DBHandling;
+@using FrontEnd2.Data
+@using Newtonsoft.Json
+@using FrontEnd2.Areas.Data
+@using Blazorise.Components;
+
+@inject HttpClient Http
+@inject IJSRuntime JsRuntime
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+
+<!-- #region Search Bar -->
+<Row>
+    <Column ColumnSize="ColumnSize.Is8">
+        <Field IsHorizontal="true" JustifyContent="JustifyContent.Start">
+            <FieldLabel ColumnSize="ColumnSize.Is2.OnDesktop.Is5.OnMobile" Margin="Margin.Is0.FromRight"> Search for products</FieldLabel>
+            <FieldBody ColumnSize="ColumnSize.Is6.OnDesktop.Is7.OnMobile" Margin="Margin.Is0.FromLeft">
+                <Autocomplete Data="@prodData"
+                              TextField="@((item)=>item.textField)"
+                              ValueField="@((item)=>item.textField)"
+                              SelectedValue="@selectedSearchValue"
+                              SelectedValueChanged="@searchHandler"
+                              Placeholder="Enter a product name..."
+                              Filter="AutocompleteFilter.Contains"
+                              MinLength="2" />
+            </FieldBody>
+        </Field>
+    </Column>
+</Row>
+<Row>
+    <Column ColumnSize="ColumnSize.Is5.OnDesktop.Is8.OnMobile">
+        <Field IsHorizontal="true" JustifyContent="JustifyContent.Start">
+            <FieldBody ColumnSize="ColumnSize.Is1.OnDesktop.Is1.OnMobile">
+                <Button Clicked="showModal" Color="Color.Success"> <Icon Name="@(FontAwesomeIcons.Filter)"> </Icon></Button>
+            </FieldBody>
+            <FieldLabel ColumnSize="ColumnSize.Is3.OnDesktop.Is3.OnMobile">Advanced</FieldLabel>
+        </Field>
+    </Column>
+</Row>
+<!-- #endregion -->
+<!-- #region Filters -->
+<Modal @ref="filterModal">
+    <ModalBackdrop /> 
+    <ModalContent IsCentered="true" Size="ModalSize.ExtraLarge">
+        <ModalHeader>
+            <ModalTitle Style="font-weight:bolder"> Advanced Filters</ModalTitle>
+            <CloseButton Clicked="hideModal" />
+        </ModalHeader>
+        <ModalBody>
+            <Row>
+                @foreach (AdvancedFilterList af in filterLists)
+                {
+                    <Column ColumnSize="ColumnSize.Is2.OnDesktop">
+                        <Field>
+                            <FieldLabel Style="font-weight:bolder"> @af.optionsname</FieldLabel>
+                        </Field>
+                        <Field ColumnSize="ColumnSize.IsAuto.OnDesktop">
+                            @foreach (FilterItem fi in af.optionsList)
+                            {
+                                if (fi.IsSortable)
+                                {
+                                    <CheckEdit ColumnSize="ColumnSize.IsAuto" IsInline="false" RadioGroup="Yeet1" @onchange="(() => AssignFilter(fi.FilterName, af.optionsList, af.label))" Checked="true"> @fi.FilterName</CheckEdit>
+                                }
+                                else
+                                {
+                                    <CheckEdit IsInline="false" @onchange="(() => AssignFilter(fi.FilterName, af.optionsList, af.label))" Checked="true"> @fi.FilterName</CheckEdit>
+                                }
+                            }
+                        </Field>
+                    </Column>
+                }
+                <Column ColumnSize="ColumnSize.Is3.OnDesktop">
+                    <Field>
+                        <FieldBody>
+                            <FieldLabel> Maximum radius: @(radius / 1000) km </FieldLabel>
+                            <input type="range" min="0" max="3000" @bind="radius" step="1000" />
+                            <FieldHelp> Slide to change </FieldHelp>
+                            <CheckEdit @onchange="(() => toggle())"> apply radius</CheckEdit>
+                        </FieldBody>
+                    </Field>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is3.OnDesktop">
+                    <Field>
+                        <FieldBody>
+                            <FieldLabel> Maximum price: @maxPrice kr</FieldLabel>
+                            <input type="range" min="0" max="3000" @bind="maxPrice" step="10" />
+                            <FieldHelp> Slide to change</FieldHelp>
+                        </FieldBody>
+                    </Field>
+                </Column>
+            </Row>
+            <Row>
+                <Column ColumnSize="ColumnSize.Is12.OnDesktop" >
+                    <Field JustifyContent="JustifyContent.Center">
+                        <Button Color="Color.Info"><Icon Name="@(FontAwesomeIcons.Adjust)"></Icon> Apply changes</Button>
+                    </Field>
+                </Column>
+            </Row>
+        </ModalBody>
+    </ModalContent>
+</Modal>
+
+<!-- #endregion -->
+
+<!-- #region Product Cards -->
+<!-- #endregion -->
+
+@code{
+    #region fields
+    //private Snackbar snackbar;
+    private Snackbar snackbar;
+    private Modal filterModal;
+    private bool locationBox;
+
+
+    static TaskCompletionSource<GeoCoordinate> tcsUserLocation = new TaskCompletionSource<GeoCoordinate>();
+    static GeoCoordinate userGeoLocation = new GeoCoordinate(0, 0);
+
+    SortoptionsList sortOptions = new SortoptionsList();
+    StoreFilterList storeFilters = new StoreFilterList();
+    WordFilterList wordFIlters = new WordFilterList();
+    FindCloseStores closeStore;
+    ControllerFuncionality features = new ControllerFuncionality();
+
+    List<FilterItem> optionsList = new List<FilterItem>();
+    List<UnifiedAPIStore> allStoresUnified = new List<UnifiedAPIStore>();
+    List<Product> itemList = new List<Product>();
+    List<Product> ToShoppinglist = new List<Product>();
+    List<Product> productsToPrint = new List<Product>();
+    List<Product> tempProductList = new List<Product>();
+    List<AdvancedFilterList> filterLists = new List<AdvancedFilterList>();
+    List<Product> AutocompleteList = new List<Product>();
+    List<FilterItem> tempFilterlist = new List<FilterItem>();
+    SortBy sort = new SortBy();
+    List<Product> tempToShowList = new List<Product>();
+
+    UserData user;
+
+    FilterItem tempFilteritem = new FilterItem();
+
+    string[] prodName;
+    IEnumerable<AutocompleteSearch> prodData;
+    object selectedSearchValue { get; set; }
+
+    bool[] EnabledStores;
+    bool[] EnabledKeywords;
+
+    Product[] slArray = new Product[10];
+    string shopString;
+    string tempProductName = " ";
+
+    bool viewAdvancedSearch = false;
+    bool _viewProducts = false;
+    bool IsLocationEnabled = false;
+    bool FatalFalure = false;
+    bool isSearching = false;
+    bool _viewLoadMore = false;
+    bool _viewLoadMoreSpinner = false;
+    bool disableButton = false;
+    bool viewAutoComplete = false;
+    bool isFindingList = false;
+
+    FilterItem filter = new FilterItem();
+
+    int value = 1;
+    int radius = 1000;
+    int lastRadius = 0;
+    int _productsToMatch = int.MaxValue;
+    int _loadCount = 0;
+    int printCount = 9;
+    int printStartIndex = 0;
+    int availabelProducts;
+
+    double tempTotalCost = 0;
+    double _minPrice = 0;
+    double _maxPrice = 5000;
+    double priceLimit = 10000;
+
+    string searchBox;
+    string email;
+    string messageToUser;
+    string productString;
+    string tempSearchword = "";
+    string wordLabel = "word";
+    string storeLabel = "store";
+    string optionLabel = "option";
+    string imageUrl;
+    string replacementUlr = "https://cdn.discordapp.com/attachments/519096261408718908/649685312083197973/coopdicoop.jpg";
+
+    public double minPrice
+    {
+        get => _minPrice;
+        set
+        {
+            if (value < 0)
+            {
+                _minPrice = 0;
+            }
+            else if (value > maxPrice)
+            {
+                _minPrice = maxPrice;
+            }
+            else
+            {
+                _minPrice = value;
+            }
+        }
+    }
+
+    public double maxPrice
+    {
+        get => _maxPrice;
+        set
+        {
+            if (value < 0)
+            {
+                _maxPrice = 0;
+            }
+            else if (value > priceLimit)
+            {
+                _maxPrice = priceLimit;
+            }
+            else if (value < minPrice)
+            {
+                _maxPrice = minPrice;
+            }
+            else
+            {
+                _maxPrice = value;
+            }
+        }
+    }
+
+    #endregion
+
+    #region Modal
+    private void showModal()
+    {
+        filterModal.Show();
+    }
+
+    private void hideModal()
+    {
+        filterModal.Hide();
+    }
+    #endregion
+
+    #region ChangeFilterControl
+
+    private void AssignFilter(ChangeEventArgs e, List<FilterItem> filterList, string label)
+    {
+        string test = e.Value.ToString();
+
+        if (test.Equals("all"))
+        {
+            SelectAll(filterList);
+        }
+        else
+        {
+            ChangeState(test, filterList, label);
+        }
+    }
+
+    private void AssignFilter(string e, List<FilterItem> filterList, string label)
+    {
+        if (e.Equals("all"))
+        {
+            SelectAll(filterList);
+        }
+        else
+        {
+            ChangeState(e, filterList, label);
+        }
+    }
+
+    void toggleAdvancedCheckBox()
+    {
+        viewAdvancedSearch = !viewAdvancedSearch;
+    }
+
+    void toggleAutocomplete()
+    {
+        viewAutoComplete = !viewAutoComplete;
+    }
+
+    public void ChangeState(string name, List<FilterItem> list, string label)
+    {
+        tempFilteritem = FindFilteritem(list, name);
+
+        if (tempFilteritem.IsSortable)
+        {
+            list = AssignNewBools(list, tempFilteritem.FilterName);
+            DecideOrderFilter(tempFilteritem.FilterName);
+        }
+        else
+        {
+            tempFilteritem.IsEnabled = !tempFilteritem.IsEnabled;
+        }
+    }
+
+    private List<FilterItem> AssignNewBools(List<FilterItem> list, string name)
+    {
+        foreach (FilterItem f in list)
+        {
+            if (f.FilterName.Equals(name))
+            {
+                f.IsEnabled = true;
+            }
+            else
+            {
+                f.IsEnabled = false;
+            }
+        }
+        return list;
+    }
+
+    public void DecideOrderFilter(string filterName)
+    {
+        switch (filterName.ToLower())
+        {
+            case "most relevant":
+                itemList = sort.SortByMostRelevant(itemList);
+                break;
+            case "price (low to high)":
+                itemList = sort.SortByPriceLH(itemList);
+                break;
+            case "price (high to low)":
+                itemList = sort.SortBypriceHL(itemList);
+                break;
+            case "alphabetical order (a - z)":
+                itemList = sort.SortByNameAZ(itemList);
+                break;
+            case "alphabetical order (z - a)":
+                itemList = sort.SortByNameZA(itemList);
+                break;
+            case "store (a - z)":
+                itemList = sort.SortByStoreAZ(itemList);
+                break;
+            case "store (z - a":
+                itemList = sort.SortByStoreZA(itemList);
+                break;
+        }
+
+        productsToPrint = ApplySortFilterToResults();
+
+    }
+
+    public List<Product> ApplySortFilterToResults()
+    {
+        try
+        {
+            return itemList.GetRange(0, productsToPrint.Count);
+        }
+        catch (System.ArgumentException)
+        {
+            Console.WriteLine("Filters does not works");
+        }
+
+        return new List<Product>();
+    }
+
+    void toggle()
+    {
+        IsLocationEnabled = !IsLocationEnabled;
+    }
+
+    public void SelectAll(List<FilterItem> list)
+    {
+        foreach (var item in list)
+        {
+            item.IsEnabled = true;
+        }
+    }
+
+    #endregion
+
+    #region ProductToShoppinglistMethod
+
+    /// <summary>
+    /// When a product is added to shoppinglist, there are two ways of doing so.
+    /// One is if the user is logged in, and it is sent to the database.
+    /// The other is when the user is not logged in, and the product is saved
+    /// in the local storage.
+    /// </summary>
+    /// <param name="AddedItem"></param>
+    public async Task AddProductToSL(Product AddedItem)
+    {
+        disableButton = true;
+        StateHasChanged();
+
+        AddedItem._amountleft++;
+
+        if (String.IsNullOrEmpty(email))
+        {
+            await GetAndSetLocalStorage(AddedItem);
+        }
+        else
+        {
+            await user.shoppinglist.AddProduct(AddedItem);
+        }
+
+        disableButton = await AwaitButton();
+        //snackbar.Show();
+        StateHasChanged();
+    }
+
+    public async Task<bool> AwaitButton()
+    {
+        await Task.Delay(30);
+        return false;
+    }
+
+    public async Task GetAndSetLocalStorage(Product AddedItem)
+    {
+        ToShoppinglist = await GetLocalStorage();
+
+        ToShoppinglist.Add(AddedItem);
+
+        ToShoppinglist = features.HandleDublicats(ToShoppinglist);
+
+        await localStorage.RemoveItemAsync("ProductString");
+
+        shopString = JsonConvert.SerializeObject(ToShoppinglist);
+
+        await localStorage.SetItemAsync("ProductString", shopString);
+    }
+
+    #endregion
+
+    #region SearchMethods
+
+    private async Task SearchBar()
+    {
+        productsToPrint.Clear();
+        printStartIndex = 0;
+
+        _viewLoadMore = false;
+        isSearching = true;
+        this.StateHasChanged();
+
+        _loadCount = 0;
+        itemList = await SearchForProducts();
+        itemList = features.SetAllPicture(itemList);
+
+
+        if (itemList.Count == 0)
+        {
+            messageToUser = "No Products Found With These Filters";
+        }
+
+        if (itemList.Count != 0)
+        {
+            OrderResulsts();
+
+
+            if (itemList.Count > printCount)
+            {
+                productsToPrint.AddRange(AddProductsToPrint());
+            }
+            else
+            {
+                productsToPrint.AddRange(AddProductsToPrint(itemList.Count));
+            }
+
+
+            _viewProducts = true;
+            if (itemList.Count > productsToPrint.Count)
+            {
+                _viewLoadMore = true;
+            }
+            else
+            {
+                _viewLoadMore = false;
+            }
+
+            //// This is done to save the applied search order.
+            //// Should not be done if it is sorted by "most relevant"
+            ////since that calls this method again.
+            //if (!(FindActiveSortFilter() == "Most relevant"))
+            //{
+            //    DecideOrderFilter(FindActiveSortFilter());
+            //}
+        }
+        else
+        {
+            _viewProducts = false;
+            _viewLoadMore = false;
+        }
+
+        isSearching = false;
+        this.StateHasChanged();
+    }
+
+    public void OrderResulsts()
+    {
+        tempFilterlist = FindFilterList(optionLabel);
+
+        DecideOrderFilter(FindActiveSortFilter(tempFilterlist));
+    }
+
+    public List<FilterItem> FindFilterList(string label)
+    {
+        return filterLists[StoreIndex(label)].optionsList;
+    }
+
+    public int StoreIndex(string label)
+    {
+        return filterLists.FindIndex(x => x.label == label);
+    }
+
+    public List<Product> AddProductsToPrint()
+    {
+        tempProductList = itemList.GetRange(printStartIndex, printCount);
+
+        printStartIndex += printCount;
+
+        return tempProductList;
+    }
+
+    public List<Product> AddProductsToPrint(int newAmount)
+    {
+        tempProductList.Clear();
+        tempProductList = itemList.GetRange(printStartIndex, newAmount);
+
+        printStartIndex += printCount;
+
+        return tempProductList;
+    }
+
+    private void LoadMoreProducts()
+    {
+        _viewLoadMoreSpinner = true;
+        this.StateHasChanged();
+        _loadCount++;
+
+        if (productsToPrint.Count != 0 && productsToPrint.Count != 0 && productsToPrint.Count() + printCount > itemList.Count() && productsToPrint.Count() + printCount % printCount != 0)
+        {
+            productsToPrint.AddRange(AddProductsToPrint(itemList.Count() % printCount));
+            _viewLoadMore = false;
+        }
+        else if (productsToPrint.Count != 0 && productsToPrint.Count != 0 && productsToPrint.Count() < itemList.Count())
+        {
+            productsToPrint.AddRange(AddProductsToPrint());
+            _viewLoadMore = true;
+        }
+        else
+        {
+            _viewLoadMore = false;
+        }
+
+        _viewLoadMoreSpinner = false;
+        this.StateHasChanged();
+    }
+
+    /// <summary>
+    /// This method applies the different filters, and sends a request to the database
+    /// for the relevant products.
+    /// </summary>
+    /// <returns></returns>
+
+    private async Task<List<Product>> SearchForProducts()
+    {
+        if (!String.IsNullOrEmpty(searchBox) && !String.IsNullOrWhiteSpace(searchBox))
+        {
+            return await CallApiForProducts(searchBox);
+        }
+        else
+        {
+            messageToUser = "You Need To Write A Searhcword";
+            return new List<Product>();
+        }
+    }
+
+    public async Task<List<Product>> CallApiForProducts(string searchTerm)
+    {
+        updateFilters();
+
+        ProductSearchLinkConstructer link = new ProductSearchLinkConstructer(searchTerm, ConvertBoolArrToStr(EnabledKeywords), ConvertBoolArrToStr(EnabledStores), _loadCount);
+
+        productString = await Http.GetStringAsync(link.GetURL());
+
+        return JsonConvert.DeserializeObject<List<Product>>(productString);
+    }
+
+    /// <summary>
+    /// Returns a list of all stores close based on geo location and radius
+    /// </summary>
+
+    public void FindStoreFunc()
+    {
+        closeStore = new FindCloseStores(userGeoLocation, radius);
+        allStoresUnified = closeStore.GetStore();
+        lastRadius = radius;
+    }
+
+    private async Task KeyPressed(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await SearchBar();
+        }
+    }
+    #endregion
+
+    #region OnStart
+
+    /// <summary>
+    /// On first render the getolocation is set, and it is decided whether or not the user
+    /// is logged in, to find out where to put products if they go to the shoppinglist.
+    /// The different filters are also initialized.
+    /// </summary>
+    /// <param name="firstRender"></param>
+    /// <returns></returns>
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await GetLocalSession();
+
+            filterLists.Add(new AdvancedFilterList(storeLabel, "Find Store", storeFilters.GetStoreList(), "all"));
+            filterLists.Add(new AdvancedFilterList(wordLabel, "Word Filter", wordFIlters.GetWordList(), "all"));
+            filterLists.Add(new AdvancedFilterList(optionLabel, "Sort By", sortOptions.GetSortList()));
+
+            InitializeBoolArrays(FindListAmount(storeLabel), FindListAmount(wordLabel));
+
+            if (userGeoLocation._latitude == 0 && userGeoLocation._longitude == 0)
+            {
+                //await GetUserLocation();
+                //await tcsUserLocation.Task;
+            }
+
+            if (!String.IsNullOrEmpty(email))
+            {
+                user = new UserData(email);
+            }
+            else
+            {
+                ToShoppinglist = await GetLocalStorage();
+                user = new UserData();
+            }
+
+            AutocompleteList = await CallApiForProducts(tempSearchword);
+
+            loadProdName();
+            //prodData = Enumerable.Range(1, prodName.Length)
+            //    .Select(x => new AutocompleteSearch { textField = prodName[x - 1], valueField = x });
+            prodData = Enumerable.Range(1, prodName.Length)
+                .Select(x => new AutocompleteSearch { textField = prodName[x - 1], valueField = x }).Where(x=> AutcompleteWordFilters(x.textField));
+
+            /*.Where(x=> x.textField.Contains("øko") AutcompleteWordFilters(x.textField) == true)*/
+
+            //AutocompleteList.Clear();
+
+            this.StateHasChanged();
+        }
+
+    }
+
+    public bool AutcompleteWordFilters(string s)
+    {
+        tempFilterlist = FindFilterList(wordLabel);
+
+        foreach (FilterItem f in tempFilterlist)
+        {
+            if (!s.Contains(f.SearchName) && f.IsEnabled)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public async Task<List<Product>> GetLocalStorage()
+    {
+        shopString = await localStorage.GetItemAsync<string>("ProductString");
+
+        if (!String.IsNullOrEmpty(shopString))
+        {
+            return JsonConvert.DeserializeObject<List<Product>>(shopString);
+        }
+
+        return new List<Product>();
+    }
+
+    public int FindListAmount(string label)
+    {
+        return filterLists.Find(x => x.label.Equals(label)).optionsList.Count;
+    }
+
+    public int FindListIndex(string label)
+    {
+        return filterLists.FindIndex(x => x.label.Equals(label));
+    }
+
+    public FilterItem FindFilteritem(List<FilterItem> list, string name)
+    {
+        tempFilteritem = list.Find(x => x.FilterName.Equals(name));
+
+        return tempFilteritem;
+    }
+
+    /// <summary>
+    /// email (if logged in) and shopString (if not logged in) is requested
+    /// to find out whether or not the user is logged in.
+    /// </summary>
+    /// <returns></returns>
+
+    async Task GetLocalSession()
+    {
+        email = await localStorage.GetItemAsync<string>("Email");
+        shopString = await localStorage.GetItemAsync<string>("ProductString");
+
+        if (!String.IsNullOrEmpty(shopString))
+        {
+            ToShoppinglist = JsonConvert.DeserializeObject<List<Product>>(shopString);
+        }
+    }
+    #endregion
+
+    #region Autocomplete_Search
+
+    void loadProdName()
+    {
+        prodName = AutocompleteList.Select(p => Convert.ToString(p._productName + " " + p._amount)).ToArray();
+
+        prodName = prodName.Select(s => s.ToLowerInvariant()).ToArray();
+
+        prodName = prodName.Distinct().ToArray();
+    }
+
+
+    private async void searchHandler(object newValue)
+    {
+        try
+        {
+            selectedSearchValue = newValue;
+            searchBox = newValue.ToString();
+            await SearchBar();
+        }
+        catch (System.NullReferenceException)
+        {
+            Console.WriteLine("The searh was empty. Pls do not press ESC");
+        }
+    }
+
+    #endregion
+
+    #region BoolArrayMethods
+
+    /// <summary>
+    /// Finds out which sorting filter is active
+    /// Returns the "most relecant" if none are active
+    /// (although that is not possible) since that is how they
+    /// come from the database
+    /// </summary>
+    /// <returns></returns>
+    public string FindActiveSortFilter(List<FilterItem> filterList)
+    {
+        foreach (FilterItem o in filterList)
+        {
+            if (o.IsEnabled)
+            {
+                return o.FilterName;
+            }
+        }
+        return "Most Relevant";
+    }
+
+    /// <summary>
+    /// When searching the filters are updated
+    /// The store filter is also compared to the stores which are
+    /// actually located close, if geo location is activated.
+    /// </summary>
+    public void updateFilters()
+    {
+        EnabledStores = updateEachFilter(storeFilters.GetStoreArray());
+        EnabledKeywords = updateEachFilter(wordFIlters.GetWordArray());
+
+        if (IsLocationEnabled)
+        {
+            // If the radius is the same as the last time there was a search
+            // the stores close are the same as before.
+            if (radius != lastRadius)
+            {
+                try
+                {
+                    FindStoreFunc();
+                }
+                catch (System.Exception)
+                {
+                    FatalFalure = true;
+                }
+
+                lastRadius = radius;
+            }
+
+            // If the stores close cannot be found nothing this step is skipped.
+            if (!FatalFalure)
+            {
+                bool[] closeStoreBool = new bool[EnabledStores.Length];
+
+                closeStoreBool = SetAllFilters(closeStoreBool, false);
+                closeStoreBool = CompareBoolArr();
+
+                EnabledStores = closeStoreBool;
+            }
+        }
+
+    }
+
+    /// <summary>
+    /// The filters are updated to how the user set them, and is returned.
+    /// This is done because we only need the boolean value when requesting the api,
+    /// and the filtername is irelevant.
+    /// </summary>
+    /// <param name="filterArray"></param>
+    /// <returns></returns>
+
+    public bool[] updateEachFilter(FilterItem[] filterArray)
+    {
+        bool[] resultFilterArr = new bool[filterArray.Length];
+        for (int i = 0; i < filterArray.Length; i++)
+        {
+            resultFilterArr[i] = filterArray[i].IsEnabled;
+        }
+
+        return resultFilterArr;
+    }
+
+    /// <summary>
+    /// This compares the stores the users wanted to see, and the stores actually
+    /// located close enought the the user (based on set radius) and returns
+    /// a bool array of cases where the close was close enough, and the user wanted
+    /// to see it.
+    /// </summary>
+    /// <returns></returns>
+
+    public bool[] CompareBoolArr()
+    {
+        bool[] arr = new bool[EnabledStores.Length];
+        arr = SetAllFilters(arr, false);
+
+        foreach (var item in allStoresUnified)
+        {
+            for (int i = 0; i < storeFilters.GetStoreArray().Length; i++)
+            {
+                if (item._brand.ToLower().Equals(storeFilters.GetStoreArray()[i].FilterName.ToLower()) && EnabledStores[i])
+                {
+                    arr[i] = true;
+                    break;
+                }
+            }
+
+        }
+        return arr;
+    }
+
+    /// <summary>
+    /// This method initializes the two different bool arrays, one for stores and one for keywords.
+    /// The input shows how long the arrays are.
+    /// At last all stores are set to true, and all keywords set to false.
+    /// </summary>
+    /// <param name="stores"></param>
+    /// <param name="words"></param>
+
+    public void InitializeBoolArrays(int stores, int words)
+    {
+        EnabledStores = new bool[stores];
+        EnabledKeywords = new bool[words];
+
+        EnabledStores = SetAllFilters(EnabledStores, true);
+        EnabledKeywords = SetAllFilters(EnabledKeywords, false);
+    }
+
+    /// <summary>
+    /// Sets all indexes in an array to the input bool value.
+    /// </summary>
+    /// <param name="arr">The array to set</param>
+    /// <param name="setTo">The bool all indexes should have</param>
+    /// <returns></returns>
+
+    public bool[] SetAllFilters(bool[] arr, bool setTo)
+    {
+        for (int i = 0; i < arr.Length; i++)
+        {
+            arr[i] = setTo;
+        }
+        return arr;
+    }
+
+    /// <summary>
+    /// When the api is called, the url is created. The url cannot take a bool array as input
+    /// and therefore this array is converted to a string of 1 and 0.
+    /// </summary>
+    /// <param name="arr"></param>
+    /// <returns></returns>
+
+    public string ConvertBoolArrToStr(bool[] arr)
+    {
+        char[] returnChar = new char[arr.Length];
+        for (int i = 0; i < arr.Length; i++)
+        {
+            returnChar[i] = arr[i] ? '1' : '0';
+        }
+        return new string(returnChar);
+    }
+    #endregion
+
+    #region UserLocation
+    async Task GetUserLocation()
+    {
+        await JsRuntime.InvokeVoidAsync(identifier: "getCoordinates");
+    }
+
+    [JSInvokable]
+    public static void UpdateUserLocation(double latitude, double longitude)
+    {
+        userGeoLocation._latitude = latitude;
+        userGeoLocation._longitude = longitude;
+        if (!tcsUserLocation.Task.IsCompleted)
+        {
+            // This ensures the page waits to continue before the userlocation is set.
+            // It is only run on the first render.
+            tcsUserLocation.SetResult(userGeoLocation);
+        }
+    }
+    #endregion
+
+    #region Price
+
+    public void CheckMinPrice(ChangeEventArgs e)
+    {
+        isFindingList = true;
+        StateHasChanged();
+
+        minPrice = Convert.ToInt32(e.Value.ToString());
+
+        if (ListExists(itemList))
+        {
+            productsToPrint = FindNewProducts();
+        }
+
+        isFindingList = false;
+        StateHasChanged();
+    }
+
+
+    public void CheckMaxPrice(ChangeEventArgs e)
+    {
+        isFindingList = true;
+        StateHasChanged();
+
+        minPrice = Convert.ToInt32(e.Value.ToString());
+
+        if (ListExists(itemList))
+        {
+            productsToPrint = FindNewProducts();
+        }
+
+        isFindingList = false;
+        StateHasChanged();
+    }
+
+    public List<Product> FindNewProducts()
+    {
+        tempToShowList.Clear();
+        int i = 0;
+        i = printStartIndex;
+
+        double price;
+        while (tempToShowList.Count < printCount)
+        {
+            price = itemList[i]._price;
+
+            if (minPrice < price && maxPrice > price)
+            {
+                tempToShowList.Add(itemList[i]);
+            }
+
+            if (i > itemList.Count)
+            {
+                break;
+            }
+
+            i++;
+
+        }
+
+        return tempToShowList;
+    }
+
+    public bool ListExists(List<Product> list)
+    {
+        return list.Count > 0;
+    }
+
+    public int CountAvailableProducts()
+    {
+        int i = 0;
+        foreach (Product p in itemList)
+        {
+            if (minPrice < p._price && maxPrice > p._price)
+            {
+                availabelProducts++;
+            }
+        }
+        return i;
+    }
+    #endregion
+}

@@ -221,17 +221,17 @@
                     </CardBody>
                 </Collapse>
             </Card>
-            @*<Snackbar @ref="snackbar" IsMultiline="true">
+            <Snackbar @ref="snackbar" ismultiline="true">
                 <SnackbarBody>
-                    @tempProductName added to your shopping list. Your total is @String.Format("{0:0.00}", (user.shoppinglist.CompletePrice() + tempTotalCost)) DKK.
+                    @tempProductName added to your shopping list. your total is @string.Format("{0:0.00}", (user.shoppinglist.CompletePrice() + tempTotalCost)) dkk.
                 </SnackbarBody>
             </Snackbar>
 
-            <Snackbar @ref="snackbar2" IsMultiline="true">
+            <Snackbar @ref="snackbar2" ismultiline="true">
                 <SnackbarBody>
-                    You've added @amountOfProducts items to your shopping list. Your total cost is now @String.Format("{0:0.00}", (user.shoppinglist.CompletePrice() + tempTotalCostQuickList)) DKK.
+                    you've added @amountOfProducts items to your shopping list. your total cost is now @string.Format("{0:0.00}", (user.shoppinglist.CompletePrice() + tempTotalCostQuickList)) dkk.
                 </SnackbarBody>
-            </Snackbar>*@
+            </Snackbar>
         </ModalContent>
     </Modal>
 </Accordion>
@@ -241,8 +241,8 @@
 @code {
     #region fields
 
-    //private Snackbar snackbar;
-    //private Snackbar snackbar2;
+    private Snackbar snackbar;
+    private Snackbar snackbar2;
     private Modal recipeRef;
 
     string searchTerm;
@@ -342,7 +342,7 @@
         AddedItem._amountleft = actualAmout;
 
         disableButton = await AwaitButton();
-        //snackbar.Show();
+        snackbar.Show();
         StateHasChanged();
     }
 
@@ -404,7 +404,7 @@
         }
 
         returnList.Clear();
-        //snackbar2.Show();
+        snackbar2.Show();
     }
 
     public async void QuickAddListToSL(List<Product> ingredientList)

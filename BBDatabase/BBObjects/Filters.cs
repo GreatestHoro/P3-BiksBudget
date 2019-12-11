@@ -199,18 +199,26 @@ namespace BBCollection.BBObjects
         /// <returns></returns>
         private List<Product> keyWorkFilters(List<Product> products, AppliedFiltersList keywords)
         {
+            bool filterFound = true;
+
             List<Product> returnProducts = new List<Product>();
             foreach (Product p in products)
             {
+                filterFound = true;
                 foreach (AppliedFilters a in keywords.AppliedFilters)
                 {
-                    if (p._productName.ToLower().Contains(a.name) || p._amount.ToLower().Contains(a.name))
+                    if (!p._productName.ToLower().Contains(a.name) && !p._amount.ToLower().Contains(a.name))
                     {
                         // If the keyword is in either the _amout (used for descirption sometimes in the api)
                         // or the _productname it is added.
-                        returnProducts.Add(p);
+                        //returnProducts.Add(p);
+                        filterFound = false;
                         break;
                     }
+                }
+                if (filterFound)
+                {
+                    returnProducts.Add(p);
                 }
             }
             return returnProducts;
