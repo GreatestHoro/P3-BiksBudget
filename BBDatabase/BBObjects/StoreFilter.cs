@@ -34,7 +34,7 @@ namespace BBCollection.BBObjects
         public List<FilterItem> wordFilterlist = new List<FilterItem>()
         {
             new FilterItem("Organic", "øko", false),
-            new FilterItem("Glutenfree", "glutenfri", false),
+            new FilterItem("Glutenfree", "gluten", false),
             new FilterItem("Lactose free", "laktosefri", false)
         };
 
