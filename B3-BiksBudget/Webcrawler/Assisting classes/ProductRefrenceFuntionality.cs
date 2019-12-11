@@ -124,6 +124,10 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
 
         public string CheckRefrenceContent(string CurrentRefrence)
         {
+            if (string.IsNullOrEmpty(CurrentRefrence)) 
+            {
+                CurrentRefrence = "";
+            }
             string[] _ref = CurrentRefrence.Split(",");
             string returnString = "";
             foreach (string s in _ref)

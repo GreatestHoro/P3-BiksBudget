@@ -20,16 +20,4 @@ namespace BBCollection.BBObjects
             return optionsList;
         }
     }
-    public class Options
-    {
-        public Options(string _filterName, bool _isEnabled)
-        {
-            FilterName = _filterName;
-            IsEnabled = _isEnabled;
-        }
-
-        public string FilterName { get; set; }
-        public bool IsEnabled { get; set; }
-
-    }
 }
