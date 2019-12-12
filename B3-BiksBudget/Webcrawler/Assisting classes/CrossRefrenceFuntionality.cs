@@ -82,6 +82,7 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
             if (!string.IsNullOrWhiteSpace(Searchterm))
             {
                 ProductsWithRef = dc.Product.GetList(Searchterm);
+                //Bjarkes secound name method
                 foreach (Product p in ProductsWithRef)
                 {
                     newRefrence = _refs.CheckRefrenceContent(p._CustomReferenceField);

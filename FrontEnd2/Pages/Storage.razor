@@ -36,39 +36,41 @@
                         <tbody>
                             @foreach (Product p in user.storage.storageList)
                             {
-                                <tr>
-                                    <td data-th="Product">@p._productName</td>
-                                    <td data-th="Amount" class="textForTable">
-                                        <input type="number" id="number" value="@p._amountleft" />
-                                    </td>
-                                    <td data-th="Amount remaining" class="textForTable">
-                                        <div class="input-group">
-                                            <div class="input-group-prepend">
-                                            </div>
-                                            <select class="custom-select" @onchange="((e) => AssignScalar(e, p))">
-                                                <option value="@p._state">@p._state</option>
-                                                @foreach (string state in ItemState)
-                                                {
-                                                    <option value="@state"> @state </option>
-                                                }
-                                            </select>
+                                
+                            <tr>
+                                <Button @onclick="()=>updateSelectedProducts(p)"></Button>
+                                <td data-th="Product">@p._productName</td>
+                                <td data-th="Amount" class="textForTable">
+                                    <input type="number" id="number" value="@p._amountleft" />
+                                </td>
+                                <td data-th="Amount remaining" class="textForTable">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
                                         </div>
-                                    </td>
-                                    <td data-th="Date added" class="textForTable">@p._timeAdded</td>
-                                    <td data-th="Delete" class="textForTable">
-                                        <div>
-                                            <button class="btn btn-rounded btn-danger btn-sm" title="Delete one @p._productName from storage" @onclick="(() => ChangeItemAmout(p))"><i class="oi oi-trash"></i></button>
-                                            @if (p._amountleft > 1)
+                                        <select class="custom-select" @onchange="((e) => AssignScalar(e, p))">
+                                            <option value="@p._state">@p._state</option>
+                                            @foreach (string state in ItemState)
                                             {
-                                                <button class="btn btn-rounded btn-danger btn-sm" title="Delete all @p._amountleft @p._productName from storage" @onclick="(() => DeleteProduct(p))"><i class="oi oi-trash"></i>(All)</button>
+                                                <option value="@state"> @state </option>
                                             }
-                                            else
-                                            {
-                                                <button disabled class="btn btn-rounded btn-danger btn-sm invisibleBtn"><i class="oi oi-trash"></i>(All)</button>
-                                            }
-                                        </div>
-                                    </td>
-                                </tr>
+                                        </select>
+                                    </div>
+                                </td>
+                                <td data-th="Date added" class="textForTable">@p._timeAdded</td>
+                                <td data-th="Delete" class="textForTable">
+                                    <div>
+                                        <button class="btn btn-rounded btn-danger btn-sm" title="Delete one @p._productName from storage" @onclick="(() => ChangeItemAmout(p))"><i class="oi oi-trash"></i></button>
+                                        @if (p._amountleft > 1)
+                                        {
+                                            <button class="btn btn-rounded btn-danger btn-sm" title="Delete all @p._amountleft @p._productName from storage" @onclick="(() => DeleteProduct(p))"><i class="oi oi-trash"></i>(All)</button>
+                                        }
+                                        else
+                                        {
+                                            <button disabled class="btn btn-rounded btn-danger btn-sm invisibleBtn"><i class="oi oi-trash"></i>(All)</button>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
                             }
                         </tbody>
                     </table>
@@ -87,7 +89,7 @@
                 {
                 <Field IsHorizontal="true" JustifyContent="JustifyContent.Start">
                     <Tooltip Text="Find a recipe that utilizes your products">
-                        <button class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => FindRecipies())">BiksFood</button>
+                        <Button IsDisabled="@(!_FoodBiskEnabled)"  Class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => FindRecipies())">BiksFood</Button>
                     </Tooltip>
                     @if (!_showFilters)
                     {
@@ -460,6 +462,7 @@ else
     bool _showFilters = false;
     bool pmatch = true;
     bool OverallMatch = false;
+    bool _FoodBiskEnabled = false;
 
     //ShoppinlistFunctionality ListFunc = new ShoppinlistFunctionality("api/Storage");
     UserData user;
@@ -479,6 +482,7 @@ else
     List<string> ItemState = new List<string>() { "Full", "Almost Full", "Half Full", "Almost Empty" };
     ControllerFuncionality features = new ControllerFuncionality();
     Dictionary<Ingredient, List<string>> ingrdientDict = new Dictionary<Ingredient, List<string>>();
+    Dictionary<Product, bool> SelectedProducts = new Dictionary<Product, bool>();
     //ShoppinlistFunctionality ShopList = new ShoppinlistFunctionality("api/Shoppinglist");
 
     private delegate bool compareWR(WeightedRecipies r1, WeightedRecipies r2);
@@ -545,7 +549,7 @@ else
                 user = new UserData(email);
                 await user.storage.Get();
             }
-
+            intailizeAllProducts(user.storage.storageList);
             StateHasChanged();
         }
 
@@ -641,7 +645,7 @@ else
         _viewEmptyFridgeLoadSpinner = true;
         int HasBeenLoaded = 0;
         this.StateHasChanged();
-        EmptyFridgeFuntionality emptyFridgeFuntionality = new EmptyFridgeFuntionality(user.storage.storageList);
+        EmptyFridgeFuntionality emptyFridgeFuntionality = new EmptyFridgeFuntionality(CreateCurrentSelctedList());
         Allrecpies = await emptyFridgeFuntionality.GetWeightedRecipies();
         LoadMoreRecepies();
         loadingbar = true;
@@ -859,5 +863,51 @@ else
     {
         recpies = Allrecpies.OrderByDescending(x => x.matchingIngrdientsNum).ToList().GetRange(0,NewAmount);
         StateHasChanged();
+    }
+    public void CheckIfAnySelected()
+    {
+        List<Product> returnList = new List<Product>();
+        foreach (Product key in SelectedProducts.Keys)
+        {
+            if (SelectedProducts[key])
+            {
+                returnList.Add(key);
+            }
+        }
+
+        _FoodBiskEnabled = returnList.Count != 0 ? true : false;
+    }
+
+    public void intailizeAllProducts(List<Product> products)
+    {
+        foreach (Product product in products)
+        {
+            SelectedProducts.Add(product, false);
+        }
+    }
+
+    public List<Product> CreateCurrentSelctedList()
+    {
+        List<Product> returnList = new List<Product>();
+        foreach (Product key in SelectedProducts.Keys)
+        {
+            if (SelectedProducts[key])
+            {
+                returnList.Add(key);
+            }
+        }
+
+        return returnList;
+    }
+
+    public void updateSelectedProducts(Product product)
+    {
+        SelectedProducts[product] = Toggelbool(SelectedProducts[product]);
+        CheckIfAnySelected();
+    }
+
+    public bool Toggelbool(bool _bool)
+    {
+        return !_bool;
     }
 }
