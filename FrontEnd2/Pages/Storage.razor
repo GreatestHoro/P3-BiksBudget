@@ -315,27 +315,33 @@
                                 <TableBody>
                                     @foreach (Ingredient ing in ingredients)
                                     {
-                                        <TableRow>
-                                            @if (runCounter <= ingredients.Count) //comback and fix
-                                            {
-                                                runCounter++;
-                                                scalar = recipePerPerson;
-                                            }
-                                            <TableRowCell Style="width:50px">@(String.Format("{0:0.0}", (ing._amount / recipePerPerson) * scalar)) @ing._unit</TableRowCell>
-                                            @if (ingrdientDict.ContainsKey(ing))
-                                            {
-                                                <TableRowCell Style="width:150px">
-                                                    <Button Class="btn btn-block btn-success" @onclick="(() => retriveIngredient(ing))"><Icon Padding="Padding.Is1.FromTop" Float="Float.Left" Name="@(FontAwesomeIcons.CheckCircle)"></Icon> @ing._ingredientName</Button>
-                                                </TableRowCell>
-                                            }
-                                            else
-                                            {
-                                                <TableRowCell Style="width:150px">
-                                                    <Button Class="btn btn-block btn-light" @onclick="(() => retriveIngredient(ing))"><Icon Padding="Padding.Is1.FromTop" Float="Float.Left" Name="@(FontAwesomeIcons.CartPlus)"></Icon>@ing._ingredientName</Button>
-                                                </TableRowCell>
-                                            }
+                                    <TableRow>
+                                        @if (runCounter <= ingredients.Count) //comback and fix
+                                        {
+                                            runCounter++;
+                                            scalar = recipePerPerson;
+                                        }
+                                        <TableRowCell Style="width:50px">@(String.Format("{0:0.0}", (ing._amount / recipePerPerson) * scalar)) @ing._unit</TableRowCell>
+                                        @if (ingrdientDict.ContainsKey(ing))
+                                        {
+                                            <TableRowCell Style="width:150px">
+                                                <Button Class="btn btn-block btn-success" @onclick="(() => retriveIngredient(ing))"><Icon Padding="Padding.Is1.FromTop" Float="Float.Left" Name="@(FontAwesomeIcons.CheckCircle)"></Icon> @ing._ingredientName</Button>
+                                            </TableRowCell>
+                                        }
+                                        else if (InshoppingList.Contains(ing))
+                                        {
+                                            <TableRowCell Style="width:150px">
+                                                <Button Color="Color.Success" IsOutline="true" Class="btn btn-block btn-light" @onclick="(() => retriveIngredient(ing))"><Icon Padding="Padding.Is1.FromTop" Float="Float.Left" Name="@(FontAwesomeIcons.ShoppingCart)"></Icon>@ing._ingredientName</Button>
+                                            </TableRowCell>
+                                        }
+                                        else
+                                        {
+                                            <TableRowCell Style="width:150px">
+                                                <Button Class="btn btn-block btn-light" @onclick="(() => retriveIngredient(ing))"><Icon Padding="Padding.Is1.FromTop" Float="Float.Left" Name="@(FontAwesomeIcons.CartPlus)"></Icon>@ing._ingredientName</Button>
+                                            </TableRowCell>
+                                        }
 
-                                        </TableRow>
+                                    </TableRow>
                                     }
                                 </TableBody>
                             </Table>
@@ -432,7 +438,8 @@ else
     UserData user;
     HttpResponseMessage responseMessage = new HttpResponseMessage();
     Product tempProduct = new Product();
-
+    Ingredient currentlySelectedIngredient;
+    List<Ingredient> InshoppingList = new List<Ingredient>();
 
     List<float> recipeAmount = new List<float>();
     List<Ingredient> ingredients = new List<Ingredient>();
@@ -661,6 +668,7 @@ else
 
     private void retriveIngredient(Ingredient ID)
     {
+        currentlySelectedIngredient = ID;
         viewProducts = true;
         Ingredient ing = ingredients.First(x => x._ingredientName == ID._ingredientName);
         tempIngredientName = ing._ingredientName;
@@ -725,7 +733,7 @@ else
     {
         disableButton = true;
         StateHasChanged();
-
+        InshoppingList.Add(currentlySelectedIngredient);
         AddedItem._amountleft++;
 
         int actualAmout = AddedItem._amountleft;
