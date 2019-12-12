@@ -218,13 +218,30 @@ headlineCard {
     width: 10rem;
 }
 
-.card-imgNew {
+.card-imgProduct {
     width: auto;
     height:auto;
     max-width: 280px;
     max-height: 280px;
     justify-content:center;
 }
+
+.card-headerProduct{
+    height:300px;
+    justify-content:center;
+    background-color:white;
+}
+
+.card-bodyProduct{
+    height:250px;
+}
+
+.card-footerProduct{
+    height:100px;
+    vertical-align:central;
+}
+
+
 
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
