@@ -143,39 +143,6 @@
             </ModalFooter>
         </ModalContent>
         <ModalBackdrop />
-        @*<ModalContent IsCentered="true" Size="ModalSize.Default">
-                <Card>
-                    <CardHeader>
-                        <CardSubtitle Class="text-center">Close stores</CardSubtitle>
-                    </CardHeader>
-                    <CardBody>
-                        <Field>
-                            <FieldBody>
-                                <FieldLabel> Maximum radius: @(radius / 1000) km </FieldLabel>
-                                <input class="text-center" type="range" min="0" max="3000" @bind="radius" step="1000" />
-                                <Button IsBlock="true" IsOutline="true" Color="Color.Success" @onclick="FindStoreFunc">Apply new radius</Button>
-                            </FieldBody>
-                        </Field>
-                        <CardText Class="overflow-auto">
-                            <ListGroup IsFlush="true">
-                                @foreach (UnifiedAPIStore s in allStoresUnified)
-                                {
-                                    <ListGroupItem>
-                                        <p>
-                                            Storename: @s._storeName <br />
-                                            Adress: @s._address <br />
-                                            City @s._city <br />
-                                        </p>
-                                    </ListGroupItem>
-                                }
-                            </ListGroup>
-                        </CardText>
-                    </CardBody>
-                    <CardBody Class="text-center">
-                        <Button IsBlock="true" Color="Color.Secondary" IsOutline="true" Clicked="@hideStoreModal">Close</Button>
-                    </CardBody>
-                </Card>
-            </ModalContent>*@
     </Modal>
 </Accordion>
 
@@ -186,36 +153,31 @@
     {
         @foreach (Product p in productsToPrint)
         {
-            if (p._price > minPrice && p._price < maxPrice)
-            {
-
-                <Column ColumnSize="ColumnSize.IsQuarter.OnDesktop.IsFull.OnMobile">
-                    <Card Background="Background.Transparent">
-                        <CardHeader>
-                            <Field JustifyContent="JustifyContent.Center">
-                                <CardImage Source="@p._image" Class="card-imgNew" />
-                            </Field>
-                        </CardHeader>
-                        <CardBody>
-                            <Field JustifyContent="JustifyContent.Start">
-                                <FieldLabel>
-                                    <CardSubtitle Size="5" Float="Float.Right">@p._storeName</CardSubtitle>
-                                </FieldLabel>
-                                <FieldBody>
-                                    <CardTitle Size="4" Style="width:100%" Float="Float.Left">@p._productName</CardTitle>
-                                    <CardText>@p._amount</CardText>
-                                </FieldBody>
-                            </Field>
-                        </CardBody>
-                        <CardFooter>
-                            <Field JustifyContent="JustifyContent.Center">
-                                <Button IsDisabled="disableButton" Margin="Margin.Is4" Color="Color.Success" @onclick="(() => AddProductToSL(p))">Add To Shoppinglist (@p._amountleft)</Button>
-                            </Field>
-                        </CardFooter>
-                    </Card>
-                </Column>
-
-            }
+            <Column ColumnSize="ColumnSize.IsQuarter.OnDesktop.IsFull.OnMobile">
+                <Card Background="Background.Transparent">
+                    <CardHeader>
+                        <Field JustifyContent="JustifyContent.Center">
+                            <CardImage Source="@p._image" Class="card-imgNew" />
+                        </Field>
+                    </CardHeader>
+                    <CardBody >
+                        <Field JustifyContent="JustifyContent.Start">
+                            <FieldLabel>
+                                <CardSubtitle Size="5" Float="Float.Right">@p._storeName</CardSubtitle>
+                            </FieldLabel>
+                            <FieldBody >
+                                <CardTitle Size="4" Style="width:100%" Float="Float.Left">@p._productName</CardTitle>
+                                <CardText >@p._amount</CardText>
+                            </FieldBody>
+                        </Field>
+                    </CardBody>
+                    <CardFooter>
+                        <Field JustifyContent="JustifyContent.Center">
+                        <Button IsDisabled="disableButton" Margin="Margin.Is4" Color="Color.Success" @onclick="(() => AddProductToSL(p))">Add To Shoppinglist (@p._amountleft)</Button>
+                        </Field>
+                    </CardFooter>
+                </Card>
+            </Column>
         }
     }
 </Row>
@@ -584,33 +546,9 @@
     {
         hideFilterModal();
 
-        //  = oldSearchterm;
-        _viewProducts = false;
-
-        searchBox = "";
-
         await SearchBar();
 
-        itemList = HandleNewList();
-
         StateHasChanged();
-
-        InitializeAutocorrect();
-    }
-
-    public List<Product> HandleNewList()
-    {
-        tempProductList.Clear();
-
-        foreach (Product p in itemList)
-        {
-            if (p._price > minPrice && p._price < maxPrice)
-            {
-                tempProductList.Add(p);
-            }
-        }
-
-        return tempProductList;
     }
 
     private async Task SearchBar()
