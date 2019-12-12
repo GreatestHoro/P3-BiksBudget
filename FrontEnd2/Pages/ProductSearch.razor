@@ -2,6 +2,7 @@
 
 @using BBCollection.BBObjects;
 @using BBCollection.DBHandling;
+@using BBCollection.Queries; 
 @using FrontEnd2.Data
 @using Newtonsoft.Json
 @using FrontEnd2.Areas.Data
@@ -634,7 +635,7 @@
             }
 
 
-            //_viewProducts = true;
+            _viewProducts = true;
             if (itemList.Count > productsToPrint.Count)
             {
                 _viewLoadMore = true;
@@ -786,6 +787,10 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        ProductHandling ph = new ProductHandling();
+
+        prodName = await ph.AddRefCol();
+
         if (firstRender)
         {
             await GetLocalSession();
@@ -821,9 +826,14 @@
 
     }
 
+    public void InitializeAutocompleteNew()
+    {
+
+    }
+
     public void InitializeAutocorrect()
     {
-        loadProdName();
+        //loadProdName();
 
         prodData = Enumerable.Range(1, prodName.Length)
             .Select(x => new AutocompleteSearch { textField = prodName[x - 1], valueField = x }).Where(x => AutcompleteWordFilters(x.textField));

@@ -227,6 +227,26 @@ namespace BBCollection.DBHandling
             await Task.Run(() => new SQLConnect().NonQueryMSC(msc));
         }
 
+        public int stringLength(string s)
+        {
+            int i = s.IndexOf(',');
+            return i;
+        }
+
+        public async Task<string[]>  AddRefCol()
+        {
+            List<Product> products = await ReferencesAsync("");
+            string[] prodRefs = new string[products.Count];
+            products.ForEach(x => x._CustomReferenceField.ToLower());
+            products.ForEach(x => x._CustomReferenceField = x._CustomReferenceField.Split(",").First());
+            prodRefs = products.Select(p => Convert.ToString(p._CustomReferenceField)).ToArray();
+            prodRefs = prodRefs.Distinct().ToArray();
+            Array.Sort(prodRefs, (x,y) => x.Length.CompareTo(y.Length));
+
+            return prodRefs; 
+
+        }
+
         public async Task<double> CheapestPrice(string ingredient, Chain filter)
         {
             List<double> price = new List<double>();
