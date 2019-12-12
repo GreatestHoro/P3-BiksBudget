@@ -79,7 +79,6 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
         {
             string newRefrence;
             List<Product> ProductsWithRef = new List<Product>();
-            productImages productImages = new productImages();
             if (!string.IsNullOrWhiteSpace(Searchterm))
             {
                 ProductsWithRef = dc.Product.GetList(Searchterm);

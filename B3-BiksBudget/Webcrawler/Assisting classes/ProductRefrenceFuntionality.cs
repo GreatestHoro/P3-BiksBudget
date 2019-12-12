@@ -106,20 +106,19 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
         /// <returns>returns the new refrence string taht will get added to the database later</returns>
         public string UpdateProductRefrence(string CurrentRefrence, string searchterm)
         {
-            if (!String.IsNullOrWhiteSpace(CurrentRefrence))
+            if (checkForBannedRefs(searchterm)) 
             {
-                if (!CurrentRefrence.Contains(searchterm + ","))
+                if (!String.IsNullOrWhiteSpace(CurrentRefrence))
                 {
+                    if (!CurrentRefrence.Contains(searchterm + ","))
+                    {
 
-                    CurrentRefrence += searchterm + ",";
+                        CurrentRefrence += searchterm + ",";
+                    }
+                    return CurrentRefrence;
                 }
-                return CurrentRefrence;
             }
-            else
-            {
-                return searchterm + ",";
-            }
-
+            return searchterm;
         }
 
         public string CheckRefrenceContent(string CurrentRefrence)
@@ -139,6 +138,20 @@ namespace B3_BiksBudget.Webcrawler.Assisting_classes
             }
 
             return returnString;
+        }
+
+        public bool checkForBannedRefs(string _ref) 
+        {
+            string[] Banned = new string[] { "glutenfri","gluten","øko","økologisk","coop"};
+
+            foreach (string ban in Banned) 
+            {
+                if (_ref.Equals(ban)) 
+                {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }
