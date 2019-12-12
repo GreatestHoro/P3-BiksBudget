@@ -33,7 +33,8 @@
     <Column ColumnSize="ColumnSize.Is5.OnDesktop.Is8.OnMobile">
         <Field IsHorizontal="true" JustifyContent="JustifyContent.Start">
             <FieldBody ColumnSize="ColumnSize.Is1.OnDesktop.Is1.OnMobile">
-                <Button Clicked="showModal" Color="Color.Success"> <Icon Name="@(FontAwesomeIcons.Filter)"> </Icon></Button>
+                <Button Clicked="showFilterModal" Color="Color.Success"> <Icon Name="@(FontAwesomeIcons.Filter)"> </Icon></Button>
+                <Button Clicked="@(()=>showStoreModal( ModalSize.Default, 30, true ))" Color="Color.Success"> <Icon Name="@(FontAwesomeIcons.Store)"> </Icon></Button>
             </FieldBody>
             <FieldLabel ColumnSize="ColumnSize.Is3.OnDesktop.Is3.OnMobile">Advanced</FieldLabel>
         </Field>
@@ -41,12 +42,13 @@
 </Row>
 <!-- #endregion -->
 <!-- #region Filters -->
+
 <Modal @ref="filterModal">
     <ModalBackdrop />
     <ModalContent IsCentered="true" Size="ModalSize.ExtraLarge">
         <ModalHeader>
             <ModalTitle Style="font-weight:bolder"> Advanced Filters</ModalTitle>
-            <CloseButton Clicked="hideModal" />
+            <CloseButton Clicked="hideFilterModal" />
         </ModalHeader>
         <ModalBody>
             <Row>
@@ -101,14 +103,92 @@
         </ModalBody>
     </ModalContent>
 </Modal>
+
+<Accordion>
+    <Modal @ref="storeModal">
+        <ModalBackdrop />
+        <ModalContent Size="@modalSize" IsCentered="@isCentered">
+            <ModalHeader>
+                <ModalTitle>
+                    <Icon Name="@(FontAwesomeIcons.Store)" />
+                    Close Stores
+                </ModalTitle>
+                <CloseButton Clicked="@hideStoreModal" />
+            </ModalHeader>
+            <ModalBody>
+                <Field>
+                    <FieldBody>
+                        <FieldLabel> Maximum radius: @(radius / 1000) km </FieldLabel>
+                        <input type="range" min="0" max="3000" @bind="radius" step="1000" />
+                        <Button IsBlock="true" IsOutline="true" Color="Color.Success" @onclick="FindStoreFunc">Apply new radius</Button>
+                    </FieldBody>
+                </Field>
+            </ModalBody>
+            <ModalBody MaxHeight="@maxHeight">
+                <ListGroup IsFlush="true">
+                    @foreach (UnifiedAPIStore s in allStoresUnified)
+                    {
+                        <ListGroupItem>
+                            <p>
+                                Storename: @s._storeName <br />
+                                Adress: @s._address <br />
+                                City @s._city <br />
+                            </p>
+                        </ListGroupItem>
+                    }
+                </ListGroup>
+            </ModalBody>
+            <ModalFooter>
+                <Button Color="Color.Secondary" Clicked="@hideStoreModal">Close</Button>
+            </ModalFooter>
+        </ModalContent>
+        <ModalBackdrop />
+        @*<ModalContent IsCentered="true" Size="ModalSize.Default">
+            <Card>
+                <CardHeader>
+                    <CardSubtitle Class="text-center">Close stores</CardSubtitle>
+                </CardHeader>
+                <CardBody>
+                    <Field>
+                        <FieldBody>
+                            <FieldLabel> Maximum radius: @(radius / 1000) km </FieldLabel>
+                            <input class="text-center" type="range" min="0" max="3000" @bind="radius" step="1000" />
+                            <Button IsBlock="true" IsOutline="true" Color="Color.Success" @onclick="FindStoreFunc">Apply new radius</Button>
+                        </FieldBody>
+                    </Field>
+                    <CardText Class="overflow-auto">
+                        <ListGroup IsFlush="true">
+                            @foreach (UnifiedAPIStore s in allStoresUnified)
+                            {
+                                <ListGroupItem>
+                                    <p>
+                                        Storename: @s._storeName <br />
+                                        Adress: @s._address <br />
+                                        City @s._city <br />
+                                    </p>
+                                </ListGroupItem>
+                            }
+                        </ListGroup>
+                    </CardText>
+                </CardBody>
+                <CardBody Class="text-center">
+                    <Button IsBlock="true" Color="Color.Secondary" IsOutline="true" Clicked="@hideStoreModal">Close</Button>
+                </CardBody>
+            </Card>
+        </ModalContent>*@
+    </Modal>
+</Accordion>
+
 <!-- #endregion -->
 <!-- #region Product Cards -->
 <Row>
+@if (_viewProducts)
+{
     @foreach (Product p in productsToPrint)
     {
         if (p._price > minPrice && p._price < maxPrice)
         {
-            
+
             <Column ColumnSize="ColumnSize.IsQuarter.OnDesktop.IsFull.OnMobile">
                 <Card Background="Background.Transparent">
                     <CardHeader>
@@ -134,9 +214,10 @@
                     </CardFooter>
                 </Card>
             </Column>
-            
+
         }
     }
+}
 </Row>
 <!-- #endregion -->
 
@@ -144,6 +225,7 @@
     #region fields
     //private Snackbar snackbar;
     private Snackbar snackbar;
+    private Modal storeModal;
     private Modal filterModal;
     private bool locationBox;
 
@@ -171,6 +253,11 @@
     List<Product> tempToShowList = new List<Product>();
 
     UserData user;
+
+    bool isCentered = false;
+    ModalSize modalSize = ModalSize.Default;
+    int? maxHeight = null;
+
 
     FilterItem tempFilteritem = new FilterItem();
 
@@ -271,14 +358,28 @@
     #endregion
 
     #region Modal
-    private void showModal()
+    private void showFilterModal()
     {
         filterModal.Show();
     }
 
-    private void hideModal()
+    private void hideFilterModal()
     {
         filterModal.Hide();
+    }
+
+    private void showStoreModal(ModalSize modalSize, int? maxHeight = null, bool isCentered = false)
+    {
+        this.isCentered = isCentered;
+        this.modalSize = modalSize;
+        this.maxHeight = maxHeight;
+
+        storeModal.Show();
+    }
+
+    private void hideStoreModal()
+    {
+        storeModal.Hide();
     }
     #endregion
 
@@ -468,14 +569,36 @@
 
     public async Task ApplyChanges()
     {
-        searchBox = oldSearchterm;
+        hideFilterModal();
+
+        //  = oldSearchterm;
+        _viewProducts = false;
+
+        searchBox = "";
 
         await SearchBar();
 
-        // handle itemlist
+        itemList = HandleNewList();
+
+        StateHasChanged();
+
+        InitializeAutocorrect();
     }
 
+    public List<Product> HandleNewList()
+    {
+        tempProductList.Clear();
 
+        foreach (Product p in itemList)
+        {
+            if (p._price > minPrice && p._price < maxPrice)
+            {
+                tempProductList.Add(p);
+            }
+        }
+
+        return tempProductList;
+    }
 
     private async Task SearchBar()
     {
@@ -511,7 +634,7 @@
             }
 
 
-            _viewProducts = true;
+            //_viewProducts = true;
             if (itemList.Count > productsToPrint.Count)
             {
                 _viewLoadMore = true;
@@ -603,15 +726,15 @@
 
     private async Task<List<Product>> SearchForProducts()
     {
-        if (!String.IsNullOrEmpty(searchBox) && !String.IsNullOrWhiteSpace(searchBox))
+        //if (!String.IsNullOrEmpty(searchBox) && !String.IsNullOrWhiteSpace(searchBox))
         {
             return await CallApiForProducts(searchBox);
         }
-        else
-        {
-            messageToUser = "You Need To Write A Searhcword";
-            return new List<Product>();
-        }
+        //else
+        //{
+        //    messageToUser = "You Need To Write A Searhcword";
+        //    return new List<Product>();
+        //}
     }
 
     public async Task<List<Product>> CallApiForProducts(string searchTerm)
@@ -641,6 +764,12 @@
         if (e.Key == "Enter")
         {
             await SearchBar();
+
+            if (itemList.Count > 0)
+            {
+                _viewProducts = true;
+                StateHasChanged();
+            }
         }
     }
     #endregion
@@ -669,8 +798,8 @@
 
             if (userGeoLocation._latitude == 0 && userGeoLocation._longitude == 0)
             {
-                //await GetUserLocation();
-                //await tcsUserLocation.Task;
+                await GetUserLocation();
+                await tcsUserLocation.Task;
             }
 
             if (!String.IsNullOrEmpty(email))
@@ -683,21 +812,21 @@
                 user = new UserData();
             }
 
-            AutocompleteList = await CallApiForProducts(tempSearchword);
+            itemList = await CallApiForProducts(tempSearchword);
 
-            loadProdName();
-            //prodData = Enumerable.Range(1, prodName.Length)
-            //    .Select(x => new AutocompleteSearch { textField = prodName[x - 1], valueField = x });
-            prodData = Enumerable.Range(1, prodName.Length)
-                .Select(x => new AutocompleteSearch { textField = prodName[x - 1], valueField = x }).Where(x => AutcompleteWordFilters(x.textField));
-
-            /*.Where(x=> x.textField.Contains("øko") AutcompleteWordFilters(x.textField) == true)*/
-
-            //AutocompleteList.Clear();
+            InitializeAutocorrect();
 
             this.StateHasChanged();
         }
 
+    }
+
+    public void InitializeAutocorrect()
+    {
+        loadProdName();
+
+        prodData = Enumerable.Range(1, prodName.Length)
+            .Select(x => new AutocompleteSearch { textField = prodName[x - 1], valueField = x }).Where(x => AutcompleteWordFilters(x.textField));
     }
 
     public bool AutcompleteWordFilters(string s)
@@ -766,7 +895,7 @@
 
     void loadProdName()
     {
-        prodName = AutocompleteList.Select(p => Convert.ToString(p._productName)).ToArray();
+        prodName = itemList.Select(p => Convert.ToString(p._productName)).ToArray();
 
         prodName = prodName.Select(s => s.ToLowerInvariant()).ToArray();
 

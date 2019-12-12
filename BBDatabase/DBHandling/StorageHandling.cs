@@ -4,6 +4,7 @@ using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace BBCollection.DBHandling
@@ -58,59 +59,67 @@ namespace BBCollection.DBHandling
 
             // After this we have two if statements equal to eachother, one where the custom name null 
             // and one where it is not. 
-            return await Task.Run(async () =>
+
+            if (await new SQLConnect().CheckRecordExist(prodmsc))
             {
-                if (await new SQLConnect().CheckRecordExist(prodmsc))
+                // We first make the storageQuery, where we select collumns from both the products and userstorage tables,
+                // we do that by joining the tables together with a INNER JOIN, with foreign key 'userstorage.prodid' from userstorage linked with the product 
+                // id from the primary key in "Products", the WHERE clause specifies that it is the user that we want to get the storage from.
+                storageQuery =
+                    "SELECT userstorage.prodid, products.productname , products.amount, products.price, products.image, products.store, userstorage.amountStored, userstorage.timeadded, userstorage.state, products.ingredient_reference " +
+                    "FROM userstorage INNER JOIN products ON userstorage.prodid = products.id " +
+                    "WHERE userstorage.username = @Username AND prodid IS NOT NULL";
+
+                // Then we add the query and parameter to the MySqlCommand and get the data from the database
+                // and inserts it in a dataset. We do that with the DynamicSimpleListSQL method from the SQLConnect class.
+                MySqlCommand msc = new MySqlCommand(storageQuery);
+                msc.Parameters.AddWithValue("@Username", username);
+                DataSet ds = await new SQLConnect().DynamicSimpleListSQL(msc);
+
+                // Afterwards we loop through the dataset and add the products to the productList.
+                if (ds.Tables.Count != 0)
                 {
-                    // We first make the storageQuery, where we select collumns from both the products and userstorage tables,
-                    // we do that by joining the tables together with a INNER JOIN, with foreign key 'userstorage.prodid' from userstorage linked with the product 
-                    // id from the primary key in "Products", the WHERE clause specifies that it is the user that we want to get the storage from.
-                    storageQuery =
-                        "SELECT userstorage.prodid, products.productname , products.amount, products.price, products.image, products.store, userstorage.amountStored, userstorage.timeadded, userstorage.state, products.ingredient_reference " +
-                        "FROM userstorage INNER JOIN products ON userstorage.prodid = products.id " +
-                        "WHERE userstorage.username = @Username AND prodid IS NOT NULL";
-
-                    // Then we add the query and parameter to the MySqlCommand and get the data from the database
-                    // and inserts it in a dataset. We do that with the DynamicSimpleListSQL method from the SQLConnect class.
-                    MySqlCommand msc = new MySqlCommand(storageQuery);
-                    msc.Parameters.AddWithValue("@Username", username);
-                    DataSet ds = await new SQLConnect().DynamicSimpleListSQL(msc);
-
-                    // Afterwards we loop through the dataset and add the products to the productList.
-                    if (ds.Tables.Count != 0)
+                    try
                     {
                         foreach (DataRow r in ds.Tables[0].Rows)
                         {
-                            Product product = new Product((string)r[0], (string)r[1], (string)r[2], Convert.ToDouble(r[3]), (string)r[4], (string)r[5], (int)r[6], Convert.ToString(r[7]), (string)r[8], (string)r[9]);
+                            
+                            Product product = new Product(r[0].ToString(), r[1].ToString(), r[2].ToString(), Convert.ToDouble(r[3]), 
+                                         r[4].ToString(), r[5].ToString(), Convert.ToInt32(r[6]), Convert.ToString(r[7]), r[8].ToString(), r[9].ToString());
                             productList.Add(product);
                         }
                     }
-                }
-                if (await new SQLConnect().CheckRecordExist(custmsc))
-                {
-                    // The steps from the previous if statement is repeated, just without a inner join.
-                    storageQuery =
-                        "SELECT userstorage.custom_name, userstorage.amountStored, userstorage.timeadded, userstorage.state " +
-                        "FROM userstorage " +
-                        "WHERE username = @Username AND custom_name IS NOT NULL;";
-                    MySqlCommand msc = new MySqlCommand(storageQuery);
-                    msc.Parameters.AddWithValue("@Username", username);
-                    DataSet ds = await new SQLConnect().DynamicSimpleListSQL(msc);
-
-
-                    if (ds.Tables.Count != 0)
+                    catch(Exception e)
                     {
-                        foreach (DataRow r in ds.Tables[0].Rows)
-                        {
-                            Product product = new Product("", (string)r[0], (int)r[1], Convert.ToString(r[2]), (string)r[3]);
-                            productList.Add(product);
-                        }
+                        Debug.WriteLine(e);
+                    }
+                    
+                }
+            }
+            if (await new SQLConnect().CheckRecordExist(custmsc))
+            {
+                // The steps from the previous if statement is repeated, just without a inner join.
+                storageQuery =
+                    "SELECT userstorage.custom_name, userstorage.amountStored, userstorage.timeadded, userstorage.state " +
+                    "FROM userstorage " +
+                    "WHERE username = @Username AND custom_name IS NOT NULL;";
+                MySqlCommand msc = new MySqlCommand(storageQuery);
+                msc.Parameters.AddWithValue("@Username", username);
+                DataSet ds = await new SQLConnect().DynamicSimpleListSQL(msc);
+
+
+                if (ds.Tables.Count != 0)
+                {
+                    foreach (DataRow r in ds.Tables[0].Rows)
+                    {
+                        Product product = new Product("", (string)r[0], (int)r[1], Convert.ToString(r[2]), (string)r[3]);
+                        productList.Add(product);
                     }
                 }
+            }
 
-                // The method finishes by returning the productList.
-                return productList;
-            });
+            // The method finishes by returning the productList.
+            return productList;
         }
 
         /// <summary>
