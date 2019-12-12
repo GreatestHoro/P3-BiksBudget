@@ -63,10 +63,10 @@
                                 <CheckEdit>
                                     <ChildContent>
                                         Accept terms and conditions.
-                                        <Button IsBlock="true" Size="ButtonSize.Small" Clicked="@showModal" Color="Color.Link">@readTerms</Button>
+                                            <Button Size="ButtonSize.Small" Clicked="@showModal" Color="Color.Link">@readTerms</Button>
                                     </ChildContent>
                                     <Feedback>
-                                        <ValidationError>You must check me out!</ValidationError>
+                                        <ValidationError>You have to read accept Terms and Conditoins</ValidationError>
                                     </Feedback>
                                 </CheckEdit>
                             </Validation>
@@ -75,7 +75,7 @@
                     <Field IsHorizontal="true" JustifyContent="JustifyContent.End">
                         <FieldLabel ColumnSize="ColumnSize.IsFull"></FieldLabel>
                         <FieldBody ColumnSize="ColumnSize.IsFull">
-                            <Button IsBlock="true" Color="Color.Success" Clicked="@RegisterAccount" IsLoading="@isLoading"><i class="oi oi-person"></i> Register</Button>
+                            <Button  IsBlock="true"  Color="Color.Success" Clicked="@RegisterAccount" IsLoading="@isLoading"><i class="oi oi-person"></i> Register</Button>
                         </FieldBody>
                     </Field>
                 </Validations>
@@ -87,17 +87,25 @@
 <Accordion>
     <Modal @ref="termsAndConditions">
         <ModalBackdrop />
-        <ModalContent IsCentered="true" Size="ModalSize.Large">
+        <ModalContent IsCentered="true" Size="ModalSize.Small">
             <Card>
                 <CardHeader>
                     <CardSubtitle Class="text-center">Terms and Conditions</CardSubtitle>
                 </CardHeader>
                 <CardBody>
                     <ChildContent>
-                        All your information will be sold the Chinese.
+                        <p>
+                            All your information will be sold the Chinese. <br />
+                            No joke. <br />
+                            Nothing in life is free. <br />
+                            Also, we know where you live, so please dont write any bad reviews about BiksBudget anywhere, or talk in any way negative about 
+                            the app with anyone you know or do not know.
+                        </p>
                     </ChildContent>
                 </CardBody>
-                <Button IsBlock="true" Color="Color.Success" Clicked="@hideModal">That is okay!</Button>
+                <CardBody Class="text-center">
+                    <Button IsBlock="true" Color="Color.Secondary" IsOutline="true" Clicked="@hideModal">Close</Button>
+                </CardBody>
             </Card>
         </ModalContent>
     </Modal>
@@ -108,6 +116,8 @@
     bool goodPassword = false;
     bool goodRePassword = false;
     bool goodUsername = false;
+    bool isAccepted = false;
+    bool termsRead = true;
 
     private Modal termsAndConditions;
 
@@ -155,9 +165,9 @@
         }
     }
 
-    void ValidateTermsAndConditions( ValidatorEventArgs e )
+    void ValidateTermsAndConditions(ValidatorEventArgs e)
     {
-        e.Status = Convert.ToBoolean( e.Value ) ? ValidationStatus.Success : ValidationStatus.Error;
+        e.Status = Convert.ToBoolean(e.Value) ? ValidationStatus.Success : ValidationStatus.Error;
     }
 
     void ValidateRepPassword(ValidatorEventArgs e)

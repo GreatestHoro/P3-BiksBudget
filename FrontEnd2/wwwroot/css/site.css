@@ -222,8 +222,8 @@ headlineCard {
     width: auto;
     height:auto;
     max-width: 280px;
-    min-height: 280px;
-    
+    max-height: 280px;
+    justify-content:center;
 }
 
 html, body {
@@ -587,11 +587,6 @@ ul.fixed {
 .buttonPadding{
    margin: 10px;
 }
-.card-img {
-    width: 200%;
-    height: 30px;
-    object-fit: cover;
-}
 
 .amount p{
     font-weight:bold;
@@ -602,17 +597,6 @@ ul.fixed {
     color:black;
 }
 
-/*.card-img-top {
-    max-width: 200%;
-    min-width: 50px;
-    height: 30px;
-}*/
-
-
-.card-title {
-    width: 100px;
-    word-break:break-all;
-}
 
 .productListDisplay {
     max-height: 400px;
@@ -1135,9 +1119,6 @@ logo-header-wrapper {
             padding-right: 10px;
             white-space: nowrap;
         }
-        /*.card-img-top{
-            display:none;
-        }*/
 }
 
 @media (min-width: 768px) {
