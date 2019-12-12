@@ -189,7 +189,7 @@
         @if (_viewLoadMore)
         {
             <Field JustifyContent="JustifyContent.Between">
-                <Button Color="Color.Info" Clicked="LoadMoreProducts"><Icon Float="Float.Left"></Icon> load more products</Button>
+                <Button Color="Color.Info" Clicked="LoadMoreProducts" Visibility="Visibility.Default"><Icon Float="Float.Left"></Icon> load more products</Button>
             </Field>
         }
     </Column>
@@ -650,23 +650,46 @@
         this.StateHasChanged();
         _loadCount++;
 
-        if (productsToPrint.Count != 0 && productsToPrint.Count != 0 && productsToPrint.Count() + printCount > itemList.Count() && productsToPrint.Count() + printCount % printCount != 0)
-        {
-            productsToPrint.AddRange(AddProductsToPrint(itemList.Count() % printCount));
-            _viewLoadMore = false;
-        }
-        else if (productsToPrint.Count != 0 && productsToPrint.Count != 0 && productsToPrint.Count() < itemList.Count())
-        {
-            productsToPrint.AddRange(AddProductsToPrint());
-            _viewLoadMore = true;
-        }
-        else
-        {
-            _viewLoadMore = false;
-        }
+        productsToPrint.AddRange(FindNextToLoad(printStartIndex, printCount));
+
+        //if (productsToPrint.Count != 0 && productsToPrint.Count != 0 && productsToPrint.Count() + printCount > itemList.Count() && productsToPrint.Count() + printCount % printCount != 0)
+        //{
+        //    productsToPrint.AddRange(AddProductsToPrint(itemList.Count() % printCount));
+        //    _viewLoadMore = false;
+        //}
+        //else if (productsToPrint.Count != 0 && productsToPrint.Count != 0 && productsToPrint.Count() < itemList.Count())
+        //{
+        //    productsToPrint.AddRange(AddProductsToPrint());
+        //    _viewLoadMore = true;
+        //}
+        //else
+        //{
+        //    _viewLoadMore = false;
+        //}
 
         _viewLoadMoreSpinner = false;
         this.StateHasChanged();
+    }
+
+    public List<Product> FindNextToLoad(int startIndex, int amountToAdd)
+    {
+        List<Product> pList = new List<Product>();
+        int i = startIndex;
+
+        while (productsToPrint.Count < amountToAdd)
+        {
+            if (true)
+            {
+
+            }
+
+            if (i > itemList.Count)
+            {
+                break;
+            }
+        }
+
+        return pList;
     }
 
     /// <summary>
