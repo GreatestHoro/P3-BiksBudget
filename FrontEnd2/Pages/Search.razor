@@ -1043,21 +1043,21 @@ else if (!isSearching && !_viewProducts)
     #region UserLocation
     async Task GetUserLocation()
     {
-        await JsRuntime.InvokeVoidAsync(identifier: "getCoordinates");
+        //await JsRuntime.InvokeVoidAsync(identifier: "getCoordinates");
     }
 
-    [JSInvokable]
-    public static void UpdateUserLocation(double latitude, double longitude)
-    {
-        userGeoLocation._latitude = latitude;
-        userGeoLocation._longitude = longitude;
-        if (!tcsUserLocation.Task.IsCompleted)
-        {
-            // This ensures the page waits to continue before the userlocation is set.
-            // It is only run on the first render.
-            tcsUserLocation.SetResult(userGeoLocation);
-        }
-    }
+    //[JSInvokable]
+    //public static void UpdateUserLocation(double latitude, double longitude)
+    //{
+    //    userGeoLocation._latitude = latitude;
+    //    userGeoLocation._longitude = longitude;
+    //    if (!tcsUserLocation.Task.IsCompleted)
+    //    {
+    //        // This ensures the page waits to continue before the userlocation is set.
+    //        // It is only run on the first render.
+    //        tcsUserLocation.SetResult(userGeoLocation);
+    //    }
+    //}
     #endregion
 
     #region Price
