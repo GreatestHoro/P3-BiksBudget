@@ -102,31 +102,29 @@
 </Modal>
 <!-- #endregion -->
 <!-- #region Product Cards -->
-<Row>
     @foreach (Product p in productsToPrint)
     {
         if (p._price > minPrice && p._price < maxPrice)
         {
-            <Column  ColumnSize="ColumnSize.Is4.OnTablet.Is4.OnWidescreen.Is12.OnMobile">
-                <Card Margin="Margin.Is4.FromBottom">
-                    <CardImage Source="@p._image">
-                    </CardImage>
-                    <CardBody>
-                        <CardTitle Class="w-100" Margin="Margin.Is4" Size="5">@p._productName</CardTitle>
-                        <CardText>
-                            <ListGroup IsFlush="true">
-                                <ListGroupItem>Description: @p._amount</ListGroupItem>
-                                <ListGroupItem>Price: @p._price</ListGroupItem>
-                                <ListGroupItem>Store: @p._storeName</ListGroupItem>
-                            </ListGroup>
-                        </CardText>
-                        <Button IsDisabled="disableButton" Margin="Margin.Is4" Color="Color.Success" @onclick="(() => AddProductToSL(p))">Add To Shoppinglist (@p._amountleft)</Button>
-                    </CardBody>
-                </Card>
-            </Column>
+            <Card ColumnSize="ColumnSize.IsQuarter.OnDesktop.IsFull.OnMobile" Style="height:100px">
+                <CardHeader>
+                    <CardImage Source="@p._image" Class="card-imgNew"/>
+                </CardHeader>
+                <CardBody>
+                    <CardTitle Margin="Margin.Is4" Size="5">@p._productName</CardTitle>
+                    <CardText>
+                        <ListGroup IsFlush="true">
+                            <ListGroupItem>Description: @p._amount</ListGroupItem>
+                            <ListGroupItem>Price: @p._price</ListGroupItem>
+                            <ListGroupItem>Store: @p._storeName</ListGroupItem>
+                        </ListGroup>
+                    </CardText>
+                    <Button IsDisabled="disableButton" Margin="Margin.Is4" Color="Color.Success" @onclick="(() => AddProductToSL(p))">Add To Shoppinglist (@p._amountleft)</Button>
+                </CardBody>
+            </Card>
         }
     }
-</Row>
+
 <!-- #endregion -->
 
 @code{
@@ -425,7 +423,7 @@
         }
 
         disableButton = await AwaitButton();
-        snackbar.Show();
+        //snackbar.Show();
         StateHasChanged();
     }
 

@@ -1135,9 +1135,9 @@ logo-header-wrapper {
             padding-right: 10px;
             white-space: nowrap;
         }
-        .card-img-top{
+        /*.card-img-top{
             display:none;
-        }
+        }*/
 }
 
 @media (min-width: 768px) {
