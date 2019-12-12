@@ -5,11 +5,12 @@
 @using FrontEnd2.Data
 @using Newtonsoft.Json
 @using FrontEnd2.Areas.Data
-@using Blazorise.Components;
+@using Blazorise.Components
 
 @inject HttpClient Http
 @inject IJSRuntime JsRuntime
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
+
 <!-- #region Search Bar -->
 <Row>
     <Column ColumnSize="ColumnSize.Is8">
@@ -180,33 +181,44 @@
 
 <!-- #endregion -->
 <!-- #region Product Cards -->
+<Row>
 @if (_viewProducts)
 {
     @foreach (Product p in productsToPrint)
     {
         if (p._price > minPrice && p._price < maxPrice)
         {
-            <Card ColumnSize="ColumnSize.IsQuarter.OnDesktop.IsFull.OnMobile" Style="height:100px">
-                <CardHeader>
-                    <CardImage Source="@p._image" Class="card-imgNew" />
-                </CardHeader>
-                <CardBody>
-                    <CardTitle Margin="Margin.Is4" Size="5">@p._productName</CardTitle>
-                    <CardText>
-                        <ListGroup IsFlush="true">
-                            <ListGroupItem>Description: @p._amount</ListGroupItem>
-                            <ListGroupItem>Price: @p._price</ListGroupItem>
-                            <ListGroupItem>Store: @p._storeName</ListGroupItem>
-                        </ListGroup>
-                    </CardText>
-                    <Button IsDisabled="disableButton" Margin="Margin.Is4" Color="Color.Success" @onclick="(() => AddProductToSL(p))">Add To Shoppinglist (@p._amountleft)</Button>
-                </CardBody>
-            </Card>
+
+            <Column ColumnSize="ColumnSize.IsQuarter.OnDesktop.IsFull.OnMobile">
+                <Card Background="Background.Transparent">
+                    <CardHeader>
+                        <Field JustifyContent="JustifyContent.Center">
+                            <CardImage Source="@p._image" Class="card-imgNew" />
+                        </Field>
+                    </CardHeader>
+                    <CardBody >
+                        <Field JustifyContent="JustifyContent.Start">
+                            <FieldLabel>
+                                <CardSubtitle Size="5" Float="Float.Right">@p._storeName</CardSubtitle>
+                            </FieldLabel>
+                            <FieldBody >
+                                <CardTitle Size="4" Style="width:100%" Float="Float.Left">@p._productName</CardTitle>
+                                <CardText >@p._amount</CardText>
+                            </FieldBody>
+                        </Field>
+                    </CardBody>
+                    <CardFooter>
+                        <Field JustifyContent="JustifyContent.Center">
+                        <Button IsDisabled="disableButton" Margin="Margin.Is4" Color="Color.Success" @onclick="(() => AddProductToSL(p))">Add To Shoppinglist (@p._amountleft)</Button>
+                        </Field>
+                    </CardFooter>
+                </Card>
+            </Column>
+
         }
     }
 }
-
-
+</Row>
 <!-- #endregion -->
 
 @code{
