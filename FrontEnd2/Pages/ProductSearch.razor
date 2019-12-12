@@ -144,52 +144,16 @@
             </ModalFooter>
         </ModalContent>
         <ModalBackdrop />
-        @*<ModalContent IsCentered="true" Size="ModalSize.Default">
-            <Card>
-                <CardHeader>
-                    <CardSubtitle Class="text-center">Close stores</CardSubtitle>
-                </CardHeader>
-                <CardBody>
-                    <Field>
-                        <FieldBody>
-                            <FieldLabel> Maximum radius: @(radius / 1000) km </FieldLabel>
-                            <input class="text-center" type="range" min="0" max="3000" @bind="radius" step="1000" />
-                            <Button IsBlock="true" IsOutline="true" Color="Color.Success" @onclick="FindStoreFunc">Apply new radius</Button>
-                        </FieldBody>
-                    </Field>
-                    <CardText Class="overflow-auto">
-                        <ListGroup IsFlush="true">
-                            @foreach (UnifiedAPIStore s in allStoresUnified)
-                            {
-                                <ListGroupItem>
-                                    <p>
-                                        Storename: @s._storeName <br />
-                                        Adress: @s._address <br />
-                                        City @s._city <br />
-                                    </p>
-                                </ListGroupItem>
-                            }
-                        </ListGroup>
-                    </CardText>
-                </CardBody>
-                <CardBody Class="text-center">
-                    <Button IsBlock="true" Color="Color.Secondary" IsOutline="true" Clicked="@hideStoreModal">Close</Button>
-                </CardBody>
-            </Card>
-        </ModalContent>*@
     </Modal>
 </Accordion>
 
 <!-- #endregion -->
 <!-- #region Product Cards -->
 <Row>
-@if (_viewProducts)
-{
-    @foreach (Product p in productsToPrint)
+    @if (_viewProducts)
     {
-        if (p._price > minPrice && p._price < maxPrice)
+        @foreach (Product p in productsToPrint)
         {
-
             <Column ColumnSize="ColumnSize.IsQuarter.OnDesktop.IsFull.OnMobile">
                 <Card Background="Background.Transparent">
                     <CardHeader>
@@ -215,10 +179,8 @@
                     </CardFooter>
                 </Card>
             </Column>
-
         }
     }
-}
 </Row>
 <!-- #endregion -->
 
@@ -572,33 +534,9 @@
     {
         hideFilterModal();
 
-        //  = oldSearchterm;
-        _viewProducts = false;
-
-        searchBox = "";
-
         await SearchBar();
 
-        itemList = HandleNewList();
-
         StateHasChanged();
-
-        InitializeAutocorrect();
-    }
-
-    public List<Product> HandleNewList()
-    {
-        tempProductList.Clear();
-
-        foreach (Product p in itemList)
-        {
-            if (p._price > minPrice && p._price < maxPrice)
-            {
-                tempProductList.Add(p);
-            }
-        }
-
-        return tempProductList;
     }
 
     private async Task SearchBar()
