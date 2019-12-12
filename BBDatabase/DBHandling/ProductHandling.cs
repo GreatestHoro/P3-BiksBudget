@@ -302,5 +302,17 @@ namespace BBCollection.DBHandling
             }
             return 0;
         }
+
+        public async Task SetReferenceEmpty(string prodID)
+        {
+            string updateColumn =
+                "UPDATE products SET ingredient_reference = '' WHERE id = @ProdID";
+
+            MySqlCommand msc = new MySqlCommand(updateColumn);
+
+            msc.Parameters.AddWithValue("@ProdID", prodID);
+
+            await new SQLConnect().NonQueryMSC(msc);
+        }
     }
 }

@@ -92,7 +92,7 @@
                     @if (!_showFilters)
                     {
                 <div style="margin-left:10px">
-                    <Button Color="Color.Success" IsOutline="true" Margin="Margin.Is1.FromLeft" @onclick="() =>toggelFilters()"> Sort options <Icon Name="FontAwesomeIcons.ArrowCircleDown"></Icon> </Button>
+                    <Button Color="Color.Success" IsOutline="true" @onclick="() =>toggelFilters()"> Sort options <Icon Name="FontAwesomeIcons.ArrowCircleDown"></Icon> </Button>
                 </div>
                         
                     @*<button class="btn btn-outline-success" @onclick="() =>toggelFilters()">
@@ -441,6 +441,7 @@ else
     int runCounter = 0;
     int Timesload = 0;
     int defualtAmountLoad = 10;
+    int NewAmount;
 
     bool found = true;
     bool viewTitle = false;
@@ -819,7 +820,14 @@ else
     public void LoadMoreRecepies()
     {
         Timesload++;
-        recpies = Allrecpies.GetRange(0, defualtAmountLoad * Timesload);
+        NewAmount = defualtAmountLoad * Timesload;
+        if (!(Allrecpies.Count >= NewAmount))
+        {
+            NewAmount = Allrecpies.Count % NewAmount;
+            _viewLoadMore = false;
+        }
+
+        recpies = Allrecpies.GetRange(0, NewAmount);
     }
 
     public void toggelFilters()
@@ -843,13 +851,13 @@ else
 
     public void SortPmatch()
     {
-        recpies = Allrecpies.OrderByDescending(x => x.pMatch).ToList().GetRange(0,defualtAmountLoad * Timesload);
+        recpies = Allrecpies.OrderByDescending(x => x.pMatch).ToList().GetRange(0,NewAmount);
         StateHasChanged();
     }
 
     public void SortOverallMatch()
     {
-        recpies = Allrecpies.OrderByDescending(x => x.matchingIngrdientsNum).ToList().GetRange(0,defualtAmountLoad * Timesload);
+        recpies = Allrecpies.OrderByDescending(x => x.matchingIngrdientsNum).ToList().GetRange(0,NewAmount);
         StateHasChanged();
     }
 }

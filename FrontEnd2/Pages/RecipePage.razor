@@ -39,16 +39,13 @@
             {
                 <div class="d-block">
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" name="bilka" type="checkbox" id="bilkaCheckBox" value=@Chain.bilka @bind="_bilkaSelected" />
-                        <label class="form-check-label" for="bilkaCheckBox">Bilka</label>
+                        <CheckEdit ColumnSize="ColumnSize.IsAuto" IsInline="false" @onchange="() => ToggleBilka()" Checked="_bilkaSelected"> Bilka</CheckEdit>
                     </div>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" name="fakta" type="checkbox" id="faktaCheckBox" value=@Chain.fakta @bind="_faktaSelected" />
-                        <label class="form-check-label" for="faktaCheckBox">Fakta</label>
+                        <CheckEdit ColumnSize="ColumnSize.IsAuto" IsInline="false" @onchange="() => ToggleFakta()" Checked="_faktaSelected"> Fakta</CheckEdit>
                     </div>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" name="superBrugsen" type="checkbox" id="superBrugsenCheckBox" value=@Chain.superBrugsen @bind="_superBrugsenSelected" />
-                        <label class="form-check-label" for="superBrugsenCheckBox">SuperBrugsen</label>
+                        <CheckEdit ColumnSize="ColumnSize.IsAuto" IsInline="false" @onchange="() => ToggleSuper()" Checked="_superBrugsenSelected"> SuperBrugsen</CheckEdit>
                     </div>
                 </div>
                 <button class="btn btn-outline-success" @onclick="ToggleFilters">
@@ -323,6 +320,24 @@
     {
         _showFilters = !_showFilters;
         this.StateHasChanged();
+    }
+
+    private void ToggleBilka()
+    {
+
+        _bilkaSelected = !_bilkaSelected;
+    }
+
+    private void ToggleFakta()
+    {
+
+        _faktaSelected = !_faktaSelected;
+    }
+
+    private void ToggleSuper()
+    {
+
+        _superBrugsenSelected = !_superBrugsenSelected;
     }
 
     private void ReadChainFilters()

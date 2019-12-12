@@ -27,7 +27,7 @@ namespace BBGatherer
 
                 //recipeQuery.CheapestCRecipes("").Wait();
                 //dh.GenerateDatabase().Wait();
-                dh.GenerateData(false, true, false).Wait();
+                dh.GenerateData(false, false, false,false).Wait();
                 //dh.TestCollection().Wait();
             }
             catch (Exception e)
@@ -45,7 +45,7 @@ namespace BBGatherer
             await dbConnect.Initialize.Start();
         }
 
-        public async Task GenerateData(bool coop, bool salling, bool generatePrice)
+        public async Task GenerateData(bool coop, bool salling, bool generatePrice, bool DeleteRefrences)
         {
             ProductHandling test = new ProductHandling();
             //InitializeDB _test = new InitializeDB();
@@ -78,6 +78,19 @@ namespace BBGatherer
             if (generatePrice == true)
             {
                 await dbConnect.Recipe.GenerateTotalPriceAsync();
+            }
+
+            if (DeleteRefrences == true) 
+            {
+                var yeet = test.GetList("");
+                int i = 0;
+
+                foreach (var yet in yeet)
+                {
+                    _ = test.AddReference("",yet._id);
+                    Console.WriteLine(i++);
+                }
+
             }
         }
 
