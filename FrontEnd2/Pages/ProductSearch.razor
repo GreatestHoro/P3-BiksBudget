@@ -24,7 +24,8 @@
                               SelectedValueChanged="@searchHandler"
                               Placeholder="Enter a product name..."
                               Filter="AutocompleteFilter.Contains"
-                              MinLength="2" />
+                              MinLength="2" 
+                              IsDisabled="FindingAutocorrectlist"/>
             </FieldBody>
         </Field>
     </Column>
@@ -83,8 +84,8 @@
                 <Column ColumnSize="ColumnSize.Is3.OnDesktop">
                     <Field>
                         <FieldBody>
-                            <FieldLabel> Maximum price: @maxPrice kr</FieldLabel>
-                            <input type="range" min="0" max="3000" @bind="maxPrice" step="10" />
+                            <FieldLabel> Maximum price: @tempMaxprice kr</FieldLabel>
+                            <input type="range" min="0" max="3000" @bind="tempMaxprice" step="10" />
                             <FieldHelp> Slide to change</FieldHelp>
                         </FieldBody>
                     </Field>
@@ -206,6 +207,7 @@
 
     static TaskCompletionSource<GeoCoordinate> tcsUserLocation = new TaskCompletionSource<GeoCoordinate>();
     static GeoCoordinate userGeoLocation = new GeoCoordinate(0, 0);
+    ProductHandling ph = new ProductHandling();
 
     SortoptionsList sortOptions = new SortoptionsList();
     StoreFilterList storeFilters = new StoreFilterList();
@@ -256,6 +258,7 @@
     bool disableButton = false;
     bool viewAutoComplete = false;
     bool isFindingList = false;
+    bool FindingAutocorrectlist = true;
 
     FilterItem filter = new FilterItem();
 
@@ -286,22 +289,22 @@
     string oldSearchterm;
     string replacementUlr = "https://cdn.discordapp.com/attachments/519096261408718908/649685312083197973/coopdicoop.jpg";
 
-    public double minPrice
+    double tempMaxprice
     {
-        get => _minPrice;
+        get => _maxPrice;
         set
         {
             if (value < 0)
             {
-                _minPrice = 0;
+                _maxPrice = 0;
             }
-            else if (value > maxPrice)
+            else if (value > priceLimit)
             {
-                _minPrice = maxPrice;
+                _maxPrice = priceLimit;
             }
             else
             {
-                _minPrice = value;
+                _maxPrice = value;
             }
         }
     }
@@ -318,10 +321,6 @@
             else if (value > priceLimit)
             {
                 _maxPrice = priceLimit;
-            }
-            else if (value < minPrice)
-            {
-                _maxPrice = minPrice;
             }
             else
             {
@@ -531,6 +530,7 @@
     {
         hideFilterModal();
 
+        maxPrice = tempMaxprice;
         SetIndexesToReload();
 
         await SetFiltersToSearch();
@@ -570,23 +570,12 @@
             productsToPrint.AddRange(FindNextToLoad());
 
             _viewProducts = true;
-            if (itemList.Count > productsToPrint.Count)
-            {
-                _viewLoadMore = true;
-            }
-            else
-            {
-                _viewLoadMore = false;
-            }
-
         }
         else
         {
             _viewProducts = false;
             _viewLoadMore = false;
         }
-
-        oldSearchterm = searchBox;
 
         isSearching = false;
         this.StateHasChanged();
@@ -621,24 +610,6 @@
         return filterLists.FindIndex(x => x.label == label);
     }
 
-    public List<Product> AddProductsToPrint()
-    {
-        tempProductList = itemList.GetRange(printStartIndex, printCount);
-
-        printStartIndex += printCount;
-
-        return tempProductList;
-    }
-
-    public List<Product> AddProductsToPrint(int newAmount)
-    {
-        tempProductList.Clear();
-        tempProductList = itemList.GetRange(printStartIndex, newAmount);
-
-        printStartIndex += printCount;
-
-        return tempProductList;
-    }
 
     private void LoadMoreProducts()
     {
@@ -673,6 +644,7 @@
 
             i++;
         }
+        Console.WriteLine(prodName[1]);
 
         printStartIndex += i;
         printCount += i;
@@ -682,7 +654,7 @@
 
     public bool ConfirmPrice(Product p)
     {
-        return (p._price > minPrice && p._price < maxPrice);
+        return p._price < maxPrice;
     }
 
     /// <summary>
@@ -693,15 +665,15 @@
 
     private async Task<List<Product>> SearchForProducts()
     {
-        //if (!String.IsNullOrEmpty(searchBox) && !String.IsNullOrWhiteSpace(searchBox))
+        if (!String.IsNullOrEmpty(searchBox) && !String.IsNullOrWhiteSpace(searchBox))
         {
             return await CallApiForProducts(searchBox);
         }
-        //else
-        //{
-        //    messageToUser = "You Need To Write A Searhcword";
-        //    return new List<Product>();
-        //}
+        else
+        {
+            messageToUser = "You Need To Write A Searhcword";
+            return new List<Product>();
+        }
     }
 
     public async Task<List<Product>> CallApiForProducts(string searchTerm)
@@ -731,12 +703,6 @@
         if (e.Key == "Enter")
         {
             await SearchBar();
-
-            if (itemList.Count > 0)
-            {
-                _viewProducts = true;
-                StateHasChanged();
-            }
         }
     }
     #endregion
@@ -750,77 +716,66 @@
     /// </summary>
     /// <param name="firstRender"></param>
     /// <returns></returns>
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        ProductHandling ph = new ProductHandling();
-
-        prodName = await ph.AddRefCol();
-
         if (firstRender)
         {
             await GetLocalSession();
 
-            filterLists.Add(new AdvancedFilterList(storeLabel, "Find Store", storeFilters.GetStoreList(), "all"));
-            filterLists.Add(new AdvancedFilterList(wordLabel, "Word Filter", wordFIlters.GetWordList(), "all"));
-            filterLists.Add(new AdvancedFilterList(optionLabel, "Sort By", sortOptions.GetSortList()));
-
-            InitializeBoolArrays(FindListAmount(storeLabel), FindListAmount(wordLabel));
-
-            if (userGeoLocation._latitude == 0 && userGeoLocation._longitude == 0)
-            {
-                await GetUserLocation();
-                await tcsUserLocation.Task;
-            }
-
-            if (!String.IsNullOrEmpty(email))
-            {
-                user = new UserData(email);
-            }
-            else
-            {
-                ToShoppinglist = await GetLocalStorage();
-                user = new UserData();
-            }
-
-            itemList = await CallApiForProducts(tempSearchword);
-
-            InitializeAutocorrect();
-
+            InitializeFilters();
+            await InitializeLocation();
+            await InitializeUser();
+            await InitializeAutocorrect();
             tempCompleteCost = user.shoppinglist.CompletePrice();
-
 
             this.StateHasChanged();
         }
 
     }
 
-    public void InitializeAutocompleteNew()
+    public async Task InitializeAutocorrect()
     {
+        itemList = await CallApiForProducts(tempSearchword);
 
-    }
-
-    public void InitializeAutocorrect()
-    {
-        //loadProdName();
+        prodName = await ph.AddRefCol();
 
         prodData = Enumerable.Range(1, prodName.Length)
-            .Select(x => new AutocompleteSearch { textField = prodName[x - 1], valueField = x }).Where(x => AutcompleteWordFilters(x.textField));
+            .Select(x => new AutocompleteSearch { textField = prodName[x - 1], valueField = x });
+
+        itemList.Clear();
+
+        FindingAutocorrectlist = false;
     }
 
-    public bool AutcompleteWordFilters(string s)
+    public void InitializeFilters()
     {
-        tempFilterlist = FindFilterList(wordLabel);
+        filterLists.Add(new AdvancedFilterList(storeLabel, "Find Store", storeFilters.GetStoreList(), "all"));
+        filterLists.Add(new AdvancedFilterList(wordLabel, "Word Filter", wordFIlters.GetWordList(), "all"));
+        filterLists.Add(new AdvancedFilterList(optionLabel, "Sort By", sortOptions.GetSortList()));
 
-        foreach (FilterItem f in tempFilterlist)
+        InitializeBoolArrays(FindListAmount(storeLabel), FindListAmount(wordLabel));
+    }
+
+    public async Task InitializeLocation()
+    {
+        if (userGeoLocation._latitude == 0 && userGeoLocation._longitude == 0)
         {
-            if (!s.Contains(f.SearchName) && f.IsEnabled)
-            {
-                return false;
-            }
+            await GetUserLocation();
+            await tcsUserLocation.Task;
         }
+    }
 
-        return true;
+    public async Task InitializeUser()
+    {
+        if (!String.IsNullOrEmpty(email))
+        {
+            user = new UserData(email);
+        }
+        else
+        {
+            ToShoppinglist = await GetLocalStorage();
+            user = new UserData();
+        }
     }
 
     public async Task<List<Product>> GetLocalStorage()
@@ -1083,40 +1038,7 @@
 
     public void getShoppinglistPrice(Product p)
     {
-        tempCompleteCost += p._price; 
-    }
-
-    public void CheckMinPrice(ChangeEventArgs e)
-    {
-        isFindingList = true;
-        StateHasChanged();
-
-        minPrice = Convert.ToInt32(e.Value.ToString());
-
-        if (ListExists(itemList))
-        {
-            productsToPrint = FindNewProducts();
-        }
-
-        isFindingList = false;
-        StateHasChanged();
-    }
-
-
-    public void CheckMaxPrice(ChangeEventArgs e)
-    {
-        isFindingList = true;
-        StateHasChanged();
-
-        minPrice = Convert.ToInt32(e.Value.ToString());
-
-        if (ListExists(itemList))
-        {
-            productsToPrint = FindNewProducts();
-        }
-
-        isFindingList = false;
-        StateHasChanged();
+        tempCompleteCost += p._price;
     }
 
     public List<Product> FindNewProducts()
@@ -1130,7 +1052,7 @@
         {
             price = itemList[i]._price;
 
-            if (minPrice < price && maxPrice > price)
+            if (maxPrice > price)
             {
                 tempToShowList.Add(itemList[i]);
             }
@@ -1157,7 +1079,7 @@
         int i = 0;
         foreach (Product p in itemList)
         {
-            if (minPrice < p._price && maxPrice > p._price)
+            if (maxPrice > p._price)
             {
                 availabelProducts++;
             }
