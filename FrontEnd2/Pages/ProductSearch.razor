@@ -190,7 +190,7 @@
         @if (_viewLoadMore)
         {
             <Field JustifyContent="JustifyContent.Between">
-                <Button Color="Color.Info" Clicked="LoadMoreProducts"><Icon Float="Float.Left"></Icon> load more products</Button>
+                <Button Color="Color.Info" Clicked="LoadMoreProducts" Visibility="Visibility.Default"><Icon Float="Float.Left"></Icon> load more products</Button>
             </Field>
         }
     </Column>
@@ -264,7 +264,7 @@
     int lastRadius = 0;
     int _productsToMatch = int.MaxValue;
     int _loadCount = 0;
-    int printCount = 9;
+    int printCount = 12;
     int printStartIndex = 0;
     int availabelProducts;
 
@@ -429,7 +429,7 @@
 
     public void DecideOrderFilter(string filterName)
     {
-        switch (filterName.ToLower())
+        switch (filterName)
         {
             case "Relevance":
                 itemList = sort.SortByMostRelevant(itemList);
@@ -453,23 +453,6 @@
                 itemList = sort.SortByStoreZA(itemList);
                 break;
         }
-
-        productsToPrint = ApplySortFilterToResults();
-
-    }
-
-    public List<Product> ApplySortFilterToResults()
-    {
-        try
-        {
-            return itemList.GetRange(0, productsToPrint.Count);
-        }
-        catch (System.ArgumentException)
-        {
-            Console.WriteLine("Filters does not works");
-        }
-
-        return new List<Product>();
     }
 
     void toggle()
@@ -548,12 +531,19 @@
     {
         hideFilterModal();
 
-        await SearchBar();
+        SetIndexesToReload();
 
-        StateHasChanged();
+        await SetFiltersToSearch();
     }
 
-    private async Task SearchBar()
+    public async Task SearchBar()
+    {
+        ResetIndexes();
+
+        await SetFiltersToSearch();
+    }
+
+    private async Task SetFiltersToSearch()
     {
         productsToPrint.Clear();
         printStartIndex = 0;
@@ -576,16 +566,8 @@
         {
             OrderResulsts();
 
-
-            if (itemList.Count > printCount)
-            {
-                productsToPrint.AddRange(AddProductsToPrint());
-            }
-            else
-            {
-                productsToPrint.AddRange(AddProductsToPrint(itemList.Count));
-            }
-
+            availabelProducts = itemList.Count;
+            productsToPrint.AddRange(FindNextToLoad());
 
             _viewProducts = true;
             if (itemList.Count > productsToPrint.Count)
@@ -608,6 +590,18 @@
 
         isSearching = false;
         this.StateHasChanged();
+    }
+
+    public void ResetIndexes()
+    {
+        printCount = 12;
+        printStartIndex = 0;
+    }
+
+    public void SetIndexesToReload()
+    {
+        printCount -= 12;
+        printStartIndex = 0;
     }
 
     public void OrderResulsts()
@@ -652,23 +646,43 @@
         this.StateHasChanged();
         _loadCount++;
 
-        if (productsToPrint.Count != 0 && productsToPrint.Count != 0 && productsToPrint.Count() + printCount > itemList.Count() && productsToPrint.Count() + printCount % printCount != 0)
-        {
-            productsToPrint.AddRange(AddProductsToPrint(itemList.Count() % printCount));
-            _viewLoadMore = false;
-        }
-        else if (productsToPrint.Count != 0 && productsToPrint.Count != 0 && productsToPrint.Count() < itemList.Count())
-        {
-            productsToPrint.AddRange(AddProductsToPrint());
-            _viewLoadMore = true;
-        }
-        else
-        {
-            _viewLoadMore = false;
-        }
+        productsToPrint.AddRange(FindNextToLoad());
 
         _viewLoadMoreSpinner = false;
         this.StateHasChanged();
+    }
+
+    public List<Product> FindNextToLoad()
+    {
+        List<Product> pList = new List<Product>();
+        int i = printStartIndex;
+
+        while (productsToPrint.Count < printCount)
+        {
+            if (i >= availabelProducts)
+            {
+                _viewLoadMore = false;
+                StateHasChanged();
+                break;
+            }
+
+            if (ConfirmPrice(itemList[i]))
+            {
+                productsToPrint.Add(itemList[i]);
+            }
+
+            i++;
+        }
+
+        printStartIndex += i;
+        printCount += i;
+
+        return pList;
+    }
+
+    public bool ConfirmPrice(Product p)
+    {
+        return (p._price > minPrice && p._price < maxPrice);
     }
 
     /// <summary>
