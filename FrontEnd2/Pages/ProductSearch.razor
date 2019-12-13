@@ -170,7 +170,7 @@
                         </Field>
                     </CardBody>
                     <CardFooter Class="card-footerProduct text-center" >               
-                            <Button IsDisabled="disableButton" Margin="Margin.IsAuto.FromLeft" Color="Color.Success" @onclick="(() => AddProductToSL(p))">Add To Shoppinglist (@p._amountleft)</Button>
+                            <Button IsDisabled="disableButton" Margin="Margin.IsAuto.FromLeft" Color="Color.Success" @onclick="(() => AddProductToSL(p))"><Icon Name="@(FontAwesomeIcons.ShoppingCart)" /> Add to shopping list (@p._amountleft)</Button>
                     </CardFooter>
                 </Card>
             </Column>
