@@ -374,9 +374,9 @@ namespace BBCollection.DBHandling
         public async Task InsertIngredientLink(Dictionary<string, List<Product>> ingredientToProducts, string store)
         {
             string updateLink =
-                "Update `ingredient_store_link` SET `"+ store +"` = @ProductID WHERE ingredientName = @IngredientName";
+                "Update `ingredient_store_link` SET `" + store + "` = @ProductID WHERE ingredientName = @IngredientName";
 
-            foreach (KeyValuePair <string, List<Product>> pair in ingredientToProducts)
+            foreach (KeyValuePair<string, List<Product>> pair in ingredientToProducts)
             {
                 if (pair.Value.Count != 0)
                 {
@@ -387,6 +387,64 @@ namespace BBCollection.DBHandling
                     await new SQLConnect().NonQueryMSC(msc);
                 }
             }
+        }
+
+        public async Task<List<Recipe>> GetListAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public string MultipleRecipeQuery(List<string> stores)
+        {
+            string mrQuery =
+                "SELECT t1.id, t1.recipeName FROM recipes t1 " +
+                "inner join ingredientsinrecipe t2 on t1.id = t2.recipeID " +
+                "inner join ingredients t3 on t2.ingredientID = t3.id " +
+                "inner join( " +
+                "select " +
+                "isl.ingredientName as ingredientName, least() as price " +
+                "from ingredient_store_link isl " +
+                ") as t4 on t3.ingredientName = t4.ingredientName " +
+                "group by t1.id order by t4.price";
+
+            return mrQuery;
+        }
+
+        private string GetCoalesce(int stores)
+        {
+            string coalesce = "";
+            for (int i = 0; i < stores; i++)
+            {
+                string tc = "";
+                int u = 1; int d = stores;
+                int dl = stores - i; int ul = stores + 1 - i;
+
+                while (u != ul)
+                {
+                    tc += "p" + u + ".price,";
+                    u++;
+                }
+                while (d != dl)
+                {
+                    tc += "p." + d + ".price,"; // d + coalesce;
+                    d--;
+                }
+                tc = tc.Remove(tc.Length - 1);
+                coalesce += "COALESCE(" + tc + "), ";
+            }
+            return coalesce = coalesce.Remove(coalesce.Length - 2);
+        }
+
+        private string GetJoins(List<string> stores)
+        {
+            string joins = "";
+            int count = 1;
+            foreach (string store in stores)
+            {
+                joins += "left join products p" + count + " on p" + count + ".id = isl." + store + " ";
+                count++;
+            }
+            return joins;
         }
     }
 }

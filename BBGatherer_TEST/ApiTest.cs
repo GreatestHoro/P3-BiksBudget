@@ -13,8 +13,8 @@ namespace BBGatherer_TEST
     [TestClass]
     public class ApiTest
     {
-        ShoppinlistFunctionality slFunc = new ShoppinlistFunctionality("api/Shoppinglist");
-        ShoppinlistFunctionality stFunc = new ShoppinlistFunctionality("api/Storage");
+        ShoppinlistFunctionalityNotWorking slFunc = new ShoppinlistFunctionalityNotWorking("api/Shoppinglist");
+        ShoppinlistFunctionalityNotWorking stFunc = new ShoppinlistFunctionalityNotWorking("api/Storage");
         ControllerFuncionality cFunc = new ControllerFuncionality();
         LoginRegister account = new LoginRegister();
         Filters sallingSearch = new Filters();
