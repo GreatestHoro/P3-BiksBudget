@@ -9,7 +9,7 @@
                 <Table IsBorderless="true" IsFullWidth="true" IsHoverable="true">
                     <TableBody>
                         <TableRow Color="Color.Light" Class="align-middle">
-                            <TableRowCell Background="Background.White" Style="width:110px" >
+                            <TableRowCell Background="Background.White" Style="width:110px">
                                 @if (Product._image.Length == 0)
                                 {
                                     <FigureImage Source="https://cdn.discordapp.com/attachments/519096261408718908/649685312083197973/coopdicoop.jpg" />
@@ -29,9 +29,9 @@
                                 <SelectEdit TValue="int" SelectedValue="selectedValue" SelectedValueChanged="OnSelectedValueChanged" Style="max-width:100px;">
                                     @{
                                         int numb = 0;
-                                        @for (int i = 0; i < 100; i++)
+                                        @for (int i = 0; i < 99; i++)
                                         {
-                                            <SelectItem Value="TempScalar">@(numb++)</SelectItem>
+                                            <SelectItem Value="TempScalar">@(++numb)</SelectItem>
                                         }
                                     }
                                 </SelectEdit>
@@ -47,9 +47,19 @@
 </ListGroupItem>
 
 @code {
-    public int selectedValue = 0;
+    public int selectedValue;
     public int scalar;
-    public int TempScalar;
+    public string TempScalar;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            selectedValue = Product._amountleft;
+            StateHasChanged();
+        }
+
+    }
 
     public void OnCheckedChanged(bool isChecked)
     {
@@ -61,7 +71,7 @@
     public void OnSelectedValueChanged(int value)
     {
         selectedValue = value;
-        scalar = selectedValue;
+        Product._amountleft = selectedValue;
     }
 
     [Parameter] public Product Product { get; set; }

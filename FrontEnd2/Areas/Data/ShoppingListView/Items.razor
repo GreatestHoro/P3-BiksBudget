@@ -22,29 +22,23 @@
         <CardBody Padding="Padding.Is0.OnY">
 
             <ListGroup IsFlush="true" Class="text-center">
-                @if (BilkaProducts.Count() != 0)
+                @foreach (string storename in ProductStoreDict.Keys)
                 {
-                <FigureImage Source="../Pictures/salling-store-logos/bilka.png" />
-                }
-                @foreach (Product p in BilkaProducts)
-                {
-                    <Item Product="@p" StatusChanged="@OnStatusChanged"></Item>
-                }
-                @if (FaktaProducts.Count != 0)
-                {
-                 <FigureImage Source="../Pictures/coop-store-logos/fakta.png" />
-                }
-                @foreach (Product p in FaktaProducts)
-                {
-                    <Item Product="@p" StatusChanged="@OnStatusChanged"></Item>
-                }
-                @if (SuperBrugsenProducts.Count != 0)
-                {
-                    <FigureImage Source="../Pictures/coop-store-logos/brugsen.png" />
-                }
-                @foreach (Product p in SuperBrugsenProducts)
-                {
-                    <Item Product="@p" StatusChanged="@OnStatusChanged"></Item>
+                    foreach (Product p in ProductStoreDict[storename])
+                    {
+                        if (ProductStoreDict.Count != 0)
+                        {
+                            if (!StoreLogoFlag)
+                            {
+                                <FigureImage Source="@StorePathFinder(storename)" />
+                                StoreLogoFlag = true;
+                            }
+
+                            <Item Product="@p" StatusChanged="@OnStatusChanged"></Item>
+                        }
+                        
+                    }
+                    StoreLogoFlag = false;
                 }
             </ListGroup>
         </CardBody>
@@ -73,21 +67,23 @@
     HttpResponseMessage responseMessage = new HttpResponseMessage();
     UserData user;
 
+    Dictionary<string, List<Product>> ProductStoreDict = new Dictionary<string, List<Product>>();
     List<Product> ToShoppinglist = new List<Product>();
     List<Product> ToStorageList = new List<Product>();
-    List<Product> BilkaProducts = new List<Product>();
-    List<Product> FaktaProducts = new List<Product>();
-    List<Product> SuperBrugsenProducts = new List<Product>();
+    List<Product> TempProducts = new List<Product>();
     private Modal remindModal;
 
     bool remindToSave = false;
     bool isLoggedIn = false;
+    bool StoreLogoFlag = false;
 
     int value = 1;
 
     string email;
     string shopString;
     string productString;
+
+    List<string> ImagePaths = new List<string>() { "../Pictures/salling-store-logos/bilka.png", "../Pictures/coop-store-logos/fakta.png", "../Pictures/coop-store-logos/superbrugsen.png" };
     #endregion
 
     #region Modal
@@ -120,6 +116,8 @@
             item._amountleft--;
         }
     }
+
+    public void OnCheckedChanged() { }
 
     public void DeleteProduct(Product p)
     {
@@ -169,10 +167,25 @@
 
                 // THis means he has a shoppinglist, and this will be called throuhg the api
                 await user.shoppinglist.GetWhenLoggedIn();
-                BilkaProducts = user.shoppinglist.shoppinglist.Where(x => x._storeName.StartsWith('B')).ToList();
+                user.shoppinglist.shoppinglist = user.shoppinglist.shoppinglist.OrderBy(x => x._storeName).ThenBy(x => x._price).ToList();
+                foreach (Product p in user.shoppinglist.shoppinglist)
+                {
+                    if (ProductStoreDict.ContainsKey(p._storeName.ToLower()))
+                    {
+                        ProductStoreDict[p._storeName.ToLower()].Add(p);
+                    }
+                    else
+                    {
+                        ProductStoreDict.Add((p._storeName.ToLower()),new List<Product>());
+                        ProductStoreDict[p._storeName.ToLower()].Add(p);
+                    }
+
+                }
+
+                /*BilkaProducts = user.shoppinglist.shoppinglist.Where(x => x._storeName.StartsWith('B')).ToList();
                 SuperBrugsenProducts = user.shoppinglist.shoppinglist.Where(x => x._storeName.StartsWith('S')).ToList();
-                FaktaProducts = user.shoppinglist.shoppinglist.Where(x => x._storeName.StartsWith('F')).ToList();
-                
+                FaktaProducts = user.shoppinglist.shoppinglist.Where(x => x._storeName.StartsWith('F')).ToList();*/
+
             }
             else
             {
@@ -186,6 +199,11 @@
 
             StateHasChanged();
         }
+    }
+
+    public string StorePathFinder(string storeName)
+    {
+        return $"../Pictures/salling-store-logos/{storeName.ToLower()}.png";
     }
 
     /// <summary>
@@ -248,6 +266,7 @@
     public async Task AddListToStorage()
     {
         responseMessage = await user.ShoppinglistToStrage();
+        StateHasChanged();
     }
 
     public void DeleteShoppinglist()
@@ -295,6 +314,10 @@
 
     public void OnStatusChanged(bool isChecked)
     {
+        foreach (Product p in user.shoppinglist.Products)
+        {
+
+        }
         StateHasChanged();
     }
 
@@ -302,4 +325,5 @@
     {
         user.shoppinglist.CheckAll(isChecked);
     }
+
 }

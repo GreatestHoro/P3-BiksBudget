@@ -91,7 +91,7 @@ namespace BBCollection.DBHandling
 
         public async Task<HttpResponseMessage> DeleteAndSaveList()
         {
-            DeleteList();
+            shoppinglist = shoppinglist.Where(x=>x._completed==false).ToList();
 
             return await Save();
         }
@@ -128,7 +128,7 @@ namespace BBCollection.DBHandling
 
         public async Task<HttpResponseMessage> Save()
         {
-            shoppinglistString = JsonConvert.SerializeObject(shoppinglistFromAPi[0]._products);
+            shoppinglistString = JsonConvert.SerializeObject(shoppinglist);
 
             return await api.Post(shoppinglistString);
         }

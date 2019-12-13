@@ -12,31 +12,39 @@
 @inject IJSRuntime JsRuntime
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 <!-- #region Search Bar -->
-<Row>
-    <Column ColumnSize="ColumnSize.Is8">
-        <Field IsHorizontal="true" JustifyContent="JustifyContent.Start">
-            <FieldLabel ColumnSize="ColumnSize.Is2.OnDesktop.Is5.OnMobile" Margin="Margin.Is0.FromRight"> Search for products</FieldLabel>
-            <FieldBody ColumnSize="ColumnSize.Is6.OnDesktop.Is7.OnMobile" Margin="Margin.Is0.FromLeft">
-                <Autocomplete Data="@prodData"
-                              TextField="@((item)=>item.textField)"
-                              ValueField="@((item)=>item.textField)"
-                              SelectedValue="@selectedSearchValue"
-                              SelectedValueChanged="@searchHandler"
-                              Placeholder="Enter a product name..."
-                              Filter="AutocompleteFilter.Contains"
-                              MinLength="2" />
-            </FieldBody>
-        </Field>
-    </Column>
-</Row>
+<div class="container-fluid">
+    <div class="row d-flex justify-content-center">
+        <div class="col-sm-10 col-md-8 col-lg-7 col-xl-5">
+            <div class="form-check-inline center_div" id="acSearchBar">
+                <div class="center_div" id="adSearchBBox">
+                        <Autocomplete Data="@prodData"
+                                      TextField="@((item)=>item.textField)"
+                                      ValueField="@((item)=>item.textField)"
+                                      SelectedValue="@selectedSearchValue"
+                                      SelectedValueChanged="@searchHandler"
+                                      Placeholder="Enter a product name..."
+                                      Filter="AutocompleteFilter.Contains"
+                                      MinLength="2"
+                                      IsDisabled="FindingAutocorrectlist"/>
+                    <button class="btn btn-success acSearchButton" @onclick="(() => SearchBar())">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="center_div" id="filterBox">
+            <Field IsHorizontal="true" JustifyContent="JustifyContent.Start">
+                    <FieldBody ColumnSize="ColumnSize.Is1.OnDesktop.Is1.OnMobile">
+                        <Button Clicked="showFilterModal" Color="Color.Success"> <Icon Name="@(FontAwesomeIcons.Filter)"> </Icon></Button>
+                    </FieldBody>
+                    <FieldLabel ColumnSize="ColumnSize.Is3.OnDesktop.Is3.OnMobile">Advanced</FieldLabel>
+            </Field>
+            </div>
+        </div>
+    </div>
+</div>
+
 <Row>
     <Column ColumnSize="ColumnSize.Is5.OnDesktop.Is8.OnMobile">
-        <Field IsHorizontal="true" JustifyContent="JustifyContent.Start">
-            <FieldBody ColumnSize="ColumnSize.Is1.OnDesktop.Is1.OnMobile">
-                <Button Clicked="showFilterModal" Color="Color.Success"> <Icon Name="@(FontAwesomeIcons.Filter)"> </Icon></Button>
-            </FieldBody>
-            <FieldLabel ColumnSize="ColumnSize.Is3.OnDesktop.Is3.OnMobile">Advanced</FieldLabel>
-        </Field>
     </Column>
 </Row>
 <!-- #endregion -->
@@ -83,8 +91,8 @@
                 <Column ColumnSize="ColumnSize.Is3.OnDesktop">
                     <Field>
                         <FieldBody>
-                            <FieldLabel> Maximum price: @maxPrice kr</FieldLabel>
-                            <input type="range" min="0" max="3000" @bind="maxPrice" step="10" />
+                            <FieldLabel> Maximum price: @tempMaxprice kr</FieldLabel>
+                            <input type="range" min="0" max="3000" @bind="tempMaxprice" step="10" />
                             <FieldHelp> Slide to change</FieldHelp>
                         </FieldBody>
                     </Field>
@@ -150,17 +158,17 @@
     {
         @foreach (Product p in productsToPrint)
         {
-            <Column ColumnSize="ColumnSize.IsQuarter.OnDesktop.IsFull.OnMobile.IsThird.OnTablet" Margin="Margin.Is4.FromBottom">
+            <Column ColumnSize="ColumnSize.IsThird.OnDesktop.IsFull.OnMobile.IsThird.OnTablet" Margin="Margin.Is4.FromBottom">
                 <Card Background="Background.White">
                     <CardHeader Margin="Margin.IsAuto" Class="card-headerProduct">
-                            <CardImage Source="@p._image" Class="card-imgProduct" />
+                        <CardImage Source="@p._image" Class="card-imgProduct" />
                     </CardHeader>
                     <CardBody Class="card-bodyProduct">
                         <Field>
                             <FieldLabel>
                                 <CardTitle Size="5" Style="width:100%" Float="Float.Left">@p._productName</CardTitle>
                             </FieldLabel>
-                            <FieldBody> 
+                            <FieldBody>
                                 <ListGroup IsFlush="true">
                                     <ListGroupItem><CardSubtitle>@p._storeName</CardSubtitle></ListGroupItem>
                                     <ListGroupItem><CardText>@p._amount</CardText></ListGroupItem>
@@ -169,8 +177,8 @@
                             </FieldBody>
                         </Field>
                     </CardBody>
-                    <CardFooter Class="card-footerProduct text-center" >               
-                            <Button IsDisabled="disableButton" Margin="Margin.IsAuto.FromLeft" Color="Color.Success" @onclick="(() => AddProductToSL(p))"><Icon Name="@(FontAwesomeIcons.ShoppingCart)" /> Add to shopping list (@p._amountleft)</Button>
+                    <CardFooter Class="card-footerProduct text-center">
+                        <Button IsDisabled="disableButton" Margin="Margin.IsAuto.FromLeft" Color="Color.Success" @onclick="(() => AddProductToSL(p))"><Icon Name="@(FontAwesomeIcons.ShoppingCart)" /> Add to shopping list (@p._amountleft)</Button>
                     </CardFooter>
                 </Card>
             </Column>
@@ -190,7 +198,7 @@
         @if (_viewLoadMore)
         {
             <Field JustifyContent="JustifyContent.Between">
-                <Button Color="Color.Info" Clicked="LoadMoreProducts"><Icon Float="Float.Left"></Icon> load more products</Button>
+                <Button Color="Color.Info" Clicked="LoadMoreProducts" Visibility="Visibility.Default"><Icon Float="Float.Left"></Icon> load more products</Button>
             </Field>
         }
     </Column>
@@ -206,6 +214,7 @@
 
     static TaskCompletionSource<GeoCoordinate> tcsUserLocation = new TaskCompletionSource<GeoCoordinate>();
     static GeoCoordinate userGeoLocation = new GeoCoordinate(0, 0);
+    ProductHandling ph = new ProductHandling();
 
     SortoptionsList sortOptions = new SortoptionsList();
     StoreFilterList storeFilters = new StoreFilterList();
@@ -256,6 +265,7 @@
     bool disableButton = false;
     bool viewAutoComplete = false;
     bool isFindingList = false;
+    bool FindingAutocorrectlist = true;
 
     FilterItem filter = new FilterItem();
 
@@ -264,7 +274,7 @@
     int lastRadius = 0;
     int _productsToMatch = int.MaxValue;
     int _loadCount = 0;
-    int printCount = 9;
+    int printCount = 12;
     int printStartIndex = 0;
     int availabelProducts;
 
@@ -286,22 +296,22 @@
     string oldSearchterm;
     string replacementUlr = "https://cdn.discordapp.com/attachments/519096261408718908/649685312083197973/coopdicoop.jpg";
 
-    public double minPrice
+    double tempMaxprice
     {
-        get => _minPrice;
+        get => _maxPrice;
         set
         {
             if (value < 0)
             {
-                _minPrice = 0;
+                _maxPrice = 0;
             }
-            else if (value > maxPrice)
+            else if (value > priceLimit)
             {
-                _minPrice = maxPrice;
+                _maxPrice = priceLimit;
             }
             else
             {
-                _minPrice = value;
+                _maxPrice = value;
             }
         }
     }
@@ -318,10 +328,6 @@
             else if (value > priceLimit)
             {
                 _maxPrice = priceLimit;
-            }
-            else if (value < minPrice)
-            {
-                _maxPrice = minPrice;
             }
             else
             {
@@ -429,7 +435,7 @@
 
     public void DecideOrderFilter(string filterName)
     {
-        switch (filterName.ToLower())
+        switch (filterName)
         {
             case "Relevance":
                 itemList = sort.SortByMostRelevant(itemList);
@@ -453,23 +459,6 @@
                 itemList = sort.SortByStoreZA(itemList);
                 break;
         }
-
-        productsToPrint = ApplySortFilterToResults();
-
-    }
-
-    public List<Product> ApplySortFilterToResults()
-    {
-        try
-        {
-            return itemList.GetRange(0, productsToPrint.Count);
-        }
-        catch (System.ArgumentException)
-        {
-            Console.WriteLine("Filters does not works");
-        }
-
-        return new List<Product>();
     }
 
     void toggle()
@@ -548,12 +537,20 @@
     {
         hideFilterModal();
 
-        await SearchBar();
+        maxPrice = tempMaxprice;
+        SetIndexesToReload();
 
-        StateHasChanged();
+        await SetFiltersToSearch();
     }
 
-    private async Task SearchBar()
+    public async Task SearchBar()
+    {
+        ResetIndexes();
+
+        await SetFiltersToSearch();
+    }
+
+    private async Task SetFiltersToSearch()
     {
         productsToPrint.Clear();
         printStartIndex = 0;
@@ -576,38 +573,42 @@
         {
             OrderResulsts();
 
-
-            if (itemList.Count > printCount)
-            {
-                productsToPrint.AddRange(AddProductsToPrint());
-            }
-            else
-            {
-                productsToPrint.AddRange(AddProductsToPrint(itemList.Count));
-            }
-
+            availabelProducts = itemList.Count;
+            productsToPrint.AddRange(FindNextToLoad());
 
             _viewProducts = true;
-            if (itemList.Count > productsToPrint.Count)
-            {
-                _viewLoadMore = true;
-            }
-            else
-            {
-                _viewLoadMore = false;
-            }
-
         }
         else
         {
             _viewProducts = false;
-            _viewLoadMore = false;
         }
-
-        oldSearchterm = searchBox;
 
         isSearching = false;
         this.StateHasChanged();
+    }
+
+    public void SetLoadmore()
+    {
+        if (availabelProducts > printStartIndex)
+        {
+            _viewLoadMore = true;
+        }
+        else
+        {
+            _viewLoadMore = false;
+        }
+    }
+
+    public void ResetIndexes()
+    {
+        printCount = 12;
+        printStartIndex = 0;
+    }
+
+    public void SetIndexesToReload()
+    {
+        printCount -= 12;
+        printStartIndex = 0;
     }
 
     public void OrderResulsts()
@@ -627,24 +628,6 @@
         return filterLists.FindIndex(x => x.label == label);
     }
 
-    public List<Product> AddProductsToPrint()
-    {
-        tempProductList = itemList.GetRange(printStartIndex, printCount);
-
-        printStartIndex += printCount;
-
-        return tempProductList;
-    }
-
-    public List<Product> AddProductsToPrint(int newAmount)
-    {
-        tempProductList.Clear();
-        tempProductList = itemList.GetRange(printStartIndex, newAmount);
-
-        printStartIndex += printCount;
-
-        return tempProductList;
-    }
 
     private void LoadMoreProducts()
     {
@@ -652,23 +635,44 @@
         this.StateHasChanged();
         _loadCount++;
 
-        if (productsToPrint.Count != 0 && productsToPrint.Count != 0 && productsToPrint.Count() + printCount > itemList.Count() && productsToPrint.Count() + printCount % printCount != 0)
-        {
-            productsToPrint.AddRange(AddProductsToPrint(itemList.Count() % printCount));
-            _viewLoadMore = false;
-        }
-        else if (productsToPrint.Count != 0 && productsToPrint.Count != 0 && productsToPrint.Count() < itemList.Count())
-        {
-            productsToPrint.AddRange(AddProductsToPrint());
-            _viewLoadMore = true;
-        }
-        else
-        {
-            _viewLoadMore = false;
-        }
+        productsToPrint.AddRange(FindNextToLoad());
 
         _viewLoadMoreSpinner = false;
         this.StateHasChanged();
+    }
+
+    public List<Product> FindNextToLoad()
+    {
+        List<Product> pList = new List<Product>();
+        int i = printStartIndex;
+
+        while (productsToPrint.Count < printCount)
+        {
+            if (i >= availabelProducts)
+            {
+                StateHasChanged();
+                break;
+            }
+
+            if (ConfirmPrice(itemList[i]))
+            {
+                productsToPrint.Add(itemList[i]);
+            }
+
+            i++;
+        }
+
+        printStartIndex += i;
+        printCount += i;
+
+        SetLoadmore();
+
+        return pList;
+    }
+
+    public bool ConfirmPrice(Product p)
+    {
+        return p._price < maxPrice;
     }
 
     /// <summary>
@@ -679,15 +683,15 @@
 
     private async Task<List<Product>> SearchForProducts()
     {
-        //if (!String.IsNullOrEmpty(searchBox) && !String.IsNullOrWhiteSpace(searchBox))
+        if (!String.IsNullOrEmpty(searchBox) && !String.IsNullOrWhiteSpace(searchBox))
         {
             return await CallApiForProducts(searchBox);
         }
-        //else
-        //{
-        //    messageToUser = "You Need To Write A Searhcword";
-        //    return new List<Product>();
-        //}
+        else
+        {
+            messageToUser = "You Need To Write A Searhcword";
+            return new List<Product>();
+        }
     }
 
     public async Task<List<Product>> CallApiForProducts(string searchTerm)
@@ -717,12 +721,6 @@
         if (e.Key == "Enter")
         {
             await SearchBar();
-
-            if (itemList.Count > 0)
-            {
-                _viewProducts = true;
-                StateHasChanged();
-            }
         }
     }
     #endregion
@@ -736,77 +734,66 @@
     /// </summary>
     /// <param name="firstRender"></param>
     /// <returns></returns>
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        ProductHandling ph = new ProductHandling();
-
-        prodName = await ph.AddRefCol();
-
         if (firstRender)
         {
             await GetLocalSession();
 
-            filterLists.Add(new AdvancedFilterList(storeLabel, "Find Store", storeFilters.GetStoreList(), "all"));
-            filterLists.Add(new AdvancedFilterList(wordLabel, "Word Filter", wordFIlters.GetWordList(), "all"));
-            filterLists.Add(new AdvancedFilterList(optionLabel, "Sort By", sortOptions.GetSortList()));
-
-            InitializeBoolArrays(FindListAmount(storeLabel), FindListAmount(wordLabel));
-
-            if (userGeoLocation._latitude == 0 && userGeoLocation._longitude == 0)
-            {
-                await GetUserLocation();
-                await tcsUserLocation.Task;
-            }
-
-            if (!String.IsNullOrEmpty(email))
-            {
-                user = new UserData(email);
-            }
-            else
-            {
-                ToShoppinglist = await GetLocalStorage();
-                user = new UserData();
-            }
-
-            itemList = await CallApiForProducts(tempSearchword);
-
-            InitializeAutocorrect();
-
+            InitializeFilters();
+            await InitializeLocation();
+            await InitializeUser();
+            await InitializeAutocorrect();
             tempCompleteCost = user.shoppinglist.CompletePrice();
-
 
             this.StateHasChanged();
         }
 
     }
 
-    public void InitializeAutocompleteNew()
+    public async Task InitializeAutocorrect()
     {
+        itemList = await CallApiForProducts(tempSearchword);
 
-    }
-
-    public void InitializeAutocorrect()
-    {
-        //loadProdName();
+        prodName = await ph.AddRefCol();
 
         prodData = Enumerable.Range(1, prodName.Length)
-            .Select(x => new AutocompleteSearch { textField = prodName[x - 1], valueField = x }).Where(x => AutcompleteWordFilters(x.textField));
+            .Select(x => new AutocompleteSearch { textField = prodName[x - 1], valueField = x });
+
+        itemList.Clear();
+
+        FindingAutocorrectlist = false;
     }
 
-    public bool AutcompleteWordFilters(string s)
+    public void InitializeFilters()
     {
-        tempFilterlist = FindFilterList(wordLabel);
+        filterLists.Add(new AdvancedFilterList(storeLabel, "Find Store", storeFilters.GetStoreList(), "all"));
+        filterLists.Add(new AdvancedFilterList(wordLabel, "Word Filter", wordFIlters.GetWordList(), "all"));
+        filterLists.Add(new AdvancedFilterList(optionLabel, "Sort By", sortOptions.GetSortList()));
 
-        foreach (FilterItem f in tempFilterlist)
+        InitializeBoolArrays(FindListAmount(storeLabel), FindListAmount(wordLabel));
+    }
+
+    public async Task InitializeLocation()
+    {
+        if (userGeoLocation._latitude == 0 && userGeoLocation._longitude == 0)
         {
-            if (!s.Contains(f.SearchName) && f.IsEnabled)
-            {
-                return false;
-            }
+            await GetUserLocation();
+            await tcsUserLocation.Task;
         }
+    }
 
-        return true;
+    public async Task InitializeUser()
+    {
+        if (!String.IsNullOrEmpty(email))
+        {
+            user = new UserData(email);
+        }
+        else
+        {
+            ToShoppinglist = await GetLocalStorage();
+            user = new UserData();
+        }
     }
 
     public async Task<List<Product>> GetLocalStorage()
@@ -1069,40 +1056,7 @@
 
     public void getShoppinglistPrice(Product p)
     {
-        tempCompleteCost += p._price; 
-    }
-
-    public void CheckMinPrice(ChangeEventArgs e)
-    {
-        isFindingList = true;
-        StateHasChanged();
-
-        minPrice = Convert.ToInt32(e.Value.ToString());
-
-        if (ListExists(itemList))
-        {
-            productsToPrint = FindNewProducts();
-        }
-
-        isFindingList = false;
-        StateHasChanged();
-    }
-
-
-    public void CheckMaxPrice(ChangeEventArgs e)
-    {
-        isFindingList = true;
-        StateHasChanged();
-
-        minPrice = Convert.ToInt32(e.Value.ToString());
-
-        if (ListExists(itemList))
-        {
-            productsToPrint = FindNewProducts();
-        }
-
-        isFindingList = false;
-        StateHasChanged();
+        tempCompleteCost += p._price;
     }
 
     public List<Product> FindNewProducts()
@@ -1116,7 +1070,7 @@
         {
             price = itemList[i]._price;
 
-            if (minPrice < price && maxPrice > price)
+            if (maxPrice > price)
             {
                 tempToShowList.Add(itemList[i]);
             }
@@ -1143,7 +1097,7 @@
         int i = 0;
         foreach (Product p in itemList)
         {
-            if (minPrice < p._price && maxPrice > p._price)
+            if (maxPrice > p._price)
             {
                 availabelProducts++;
             }
