@@ -9,6 +9,7 @@
         public string _image;
         public string _storeName;
         public string _CustomReferenceField;
+        public bool _completed; 
 
         public string _customname;
         public int _amountleft; //Kan navngives anderledes
@@ -25,6 +26,20 @@
             _storeName = storeName;
             _amountleft = amountleft;
             _CustomReferenceField = customField;
+        }
+
+        // Ronis
+        public Product(string id, string productName, string amount, double price, string image, string storeName, int amountleft, string customField, bool completed)
+        {
+            _id = id;
+            _productName = productName;
+            _amount = amount;
+            _price = price;
+            _image = image;
+            _storeName = storeName;
+            _amountleft = amountleft;
+            _CustomReferenceField = customField;
+            _completed = completed; 
         }
 
         public Product(string id, string productName, string amount, double price, string image, string storeName, int amountleft)

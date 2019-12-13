@@ -1,0 +1,305 @@
+﻿@using BBCollection.BBObjects
+@using BBCollection.DBHandling
+@using Newtonsoft.Json
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+
+@if (user != null)
+{
+<Row>
+    <Column>
+        <Card Margin="Margin.Is4.FromTop">
+            <CardHeader Padding="Padding.Is1.FromBottom" Style="position:fixed">
+                <Heading Size="HeadingSize.Is4">My Shoppinglist</Heading>
+            </CardHeader>
+        </Card>
+        <CardBody Padding="Padding.Is0.FromBottom">
+            <Fields>
+                <Column ColumnSize="ColumnSize.Is1">
+                    <CheckEdit Checked="@user.shoppinglist.Products.All(x=>x._completed)" CheckedChanged="user.shoppinglist.CheckAll">All</CheckEdit>
+                </Column>
+            </Fields>
+        </CardBody>
+        <CardBody Padding="Padding.Is0.OnY">
+
+            <ListGroup IsFlush="true" Class="text-center">
+                @if (BilkaProducts.Count() != 0)
+                {
+                <FigureImage Source="../Pictures/salling-store-logos/bilka.png" />
+                }
+                @foreach (Product p in BilkaProducts)
+                {
+                    <Item Product="@p" StatusChanged="@OnStatusChanged"></Item>
+                }
+                @if (FaktaProducts.Count != 0)
+                {
+                 <FigureImage Source="../Pictures/coop-store-logos/fakta.png" />
+                }
+                @foreach (Product p in FaktaProducts)
+                {
+                    <Item Product="@p" StatusChanged="@OnStatusChanged"></Item>
+                }
+                @if (SuperBrugsenProducts.Count != 0)
+                {
+                    <FigureImage Source="../Pictures/coop-store-logos/brugsen.png" />
+                }
+                @foreach (Product p in SuperBrugsenProducts)
+                {
+                    <Item Product="@p" StatusChanged="@OnStatusChanged"></Item>
+                }
+            </ListGroup>
+        </CardBody>
+        <CardFooter Class="card-footerShoppinglist" Padding="Padding.Is3.FromBottom">
+            <Field IsHorizontal="true">
+                <FieldBody ColumnSize="ColumnSize.Is10">
+                    <Buttons Role="ButtonsRole.Addons">
+                        <Button Color="Color.Info" Clicked="@(() => user.shoppinglist.SetFilter(UserShoppinglist.Filter.All))" IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.All)"><Icon Name="@(FontAwesomeIcons.Save)"/></Button>
+                        <Button Color="Color.Info" Clicked="@(() => user.shoppinglist.ClearItems())" IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed)"><Icon Name="@(FontAwesomeIcons.Trash)"/></Button>
+                        <Button Color="Color.Info" Clicked="@(() => user.shoppinglist.SetFilter(UserShoppinglist.Filter.Completed))" IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed)"> ??</Button>
+                    </Buttons>
+                    <Text Class="shoppinglist-Price-Text"> Total  @String.Format("{0:0.0}", user.shoppinglist.CompletePrice()) DKK</Text>
+                </FieldBody>
+                <FieldBody ColumnSize="ColumnSize.Is2">
+                    <Button Color="Color.Warning" Float="Float.Right" Clicked="AddListToStorage" Visibility="@(user.shoppinglist.Products.Any(x=>x._completed) ? Visibility.Always : Visibility.Never)"><Icon Name="@(FontAwesomeIcons.Archive)"/></Button>
+                </FieldBody>
+            </Field>
+        </CardFooter>
+    </Column>
+</Row>
+}
+@code {
+
+    #region Fields
+    //ShoppinlistFunctionality ListFunc = new ShoppinlistFunctionality("api/Shoppinglist");
+    HttpResponseMessage responseMessage = new HttpResponseMessage();
+    UserData user;
+
+    List<Product> ToShoppinglist = new List<Product>();
+    List<Product> ToStorageList = new List<Product>();
+    List<Product> BilkaProducts = new List<Product>();
+    List<Product> FaktaProducts = new List<Product>();
+    List<Product> SuperBrugsenProducts = new List<Product>();
+    private Modal remindModal;
+
+    bool remindToSave = false;
+    bool isLoggedIn = false;
+
+    int value = 1;
+
+    string email;
+    string shopString;
+    string productString;
+    #endregion
+
+    #region Modal
+
+    private void ShowModal()
+    {
+        remindModal.Show();
+    }
+
+    private void HideModal()
+    {
+        remindModal.Hide();
+    }
+
+    #endregion
+
+    #region EditShoppintlistProducts
+    protected void IncrementAmount(Product item)
+    {
+        remindToSave = true;
+        item._amountleft++;
+    }
+
+    protected void DecrementAmount(Product item)
+    {
+        remindToSave = true;
+
+        if (item._amountleft > 1)
+        {
+            item._amountleft--;
+        }
+    }
+
+    public void DeleteProduct(Product p)
+    {
+        remindToSave = true;
+
+        user.shoppinglist.DeleteItem(p);
+    }
+
+    public void DecrementProduct(Product p)
+    {
+        remindToSave = true;
+        if (p._amountleft > 1)
+        {
+            user.shoppinglist.DecrementProduct(p);
+        }
+        else
+        {
+            user.shoppinglist.DeleteItem(p);
+        }
+
+        StateHasChanged();
+    }
+
+    #endregion
+
+    #region LocalStorage
+
+    /// <summary>
+    /// This method will check if the user is logged in.
+    /// If he is, his data will be called from the api.
+    /// If not the local storage will be used.
+    /// </summary>
+    /// <param name="firstRender"></param>
+    /// <returns></returns>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await GetLocalSession();
+
+            // If emain is found, the user is logged in
+            if (!String.IsNullOrEmpty(email))
+            {
+                isLoggedIn = true;
+
+                user = new UserData(email);
+
+                // THis means he has a shoppinglist, and this will be called throuhg the api
+                await user.shoppinglist.GetWhenLoggedIn();
+                BilkaProducts = user.shoppinglist.shoppinglist.Where(x => x._storeName.StartsWith('B')).ToList();
+                SuperBrugsenProducts = user.shoppinglist.shoppinglist.Where(x => x._storeName.StartsWith('S')).ToList();
+                FaktaProducts = user.shoppinglist.shoppinglist.Where(x => x._storeName.StartsWith('F')).ToList();
+                
+            }
+            else
+            {
+                user = new UserData();
+            }
+
+            if (!String.IsNullOrEmpty(shopString))
+            {
+                user.shoppinglist.GetWhenNotLoggedIn(shopString);
+            }
+
+            StateHasChanged();
+        }
+    }
+
+    /// <summary>
+    /// If the user is logged in, the user email is found.
+    /// The email is used for storage and shoppinglist
+    /// If the user is not logged in the local storage will be used to
+    /// get a list of products instead. This list is the shoppinglist
+    /// </summary>
+    /// <returns></returns>
+    async Task GetLocalSession()
+    {
+        email = await localStorage.GetItemAsync<string>("Email");
+
+        if (String.IsNullOrEmpty(email))
+        {
+            shopString = await localStorage.GetItemAsync<string>("ProductString");
+        }
+    }
+    #endregion
+
+    #region Shoppinglist
+    /// <summary>
+    /// This method saves the shoppinglist.
+    /// This is done differently if the user is or is not logged in.
+    /// If he is logged in, the shoppinglist will be saved with the api
+    /// If not logged in the shoppinglist will be saved in local storage
+    /// </summary>
+    public async void SaveShoppinglist()
+    {
+        remindToSave = false;
+
+        if (String.IsNullOrEmpty(email))
+        {
+            await SaveLocalStorage();
+        }
+        else
+        {
+            await user.shoppinglist.Save();
+        }
+    }
+
+    public async Task SaveLocalStorage()
+    {
+        productString = JsonConvert.SerializeObject(user.shoppinglist.shoppinglist);
+
+        await localStorage.RemoveItemAsync("ProductString");
+
+        await localStorage.SetItemAsync("ProductString", productString);
+    }
+
+    #endregion
+
+    #region Storage
+
+    /// <summary>
+    /// This method can only be called if logged in.
+    /// It reminds the user to save the shoppinglist before moving on.
+    /// Deletes the shoppinglist, and adds it to storage.
+    /// </summary>
+    public async Task AddListToStorage()
+    {
+        responseMessage = await user.ShoppinglistToStrage();
+    }
+
+    public void DeleteShoppinglist()
+    {
+        remindToSave = true;
+        user.shoppinglist.DeleteList();
+
+        StateHasChanged();
+    }
+
+    public async void AddItemToStorage(Product p)
+    {
+        remindToSave = true;
+
+        await user.ProductSLToStrage(p);
+
+        StateHasChanged();
+    }
+
+    public async void AddOneItemToStorage(Product p)
+    {
+        remindToSave = true;
+
+        await user.ProductSLToStrage(p, 1);
+
+        StateHasChanged();
+    }
+
+    #endregion
+
+    #region Imagese
+    // Function to get salling products in high resolution
+    private string ProductImage(string prod_image)
+    {
+        if (prod_image.Contains("&imgSize=1080x1080"))
+        {
+            return prod_image;
+        }
+        else
+        {
+            return prod_image + "&imgSize=1080x1080";
+        }
+    }
+    #endregion
+
+    public void OnStatusChanged(bool isChecked)
+    {
+        StateHasChanged();
+    }
+
+    public void SetCheckMarks(bool isChecked)
+    {
+        user.shoppinglist.CheckAll(isChecked);
+    }
+}

@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Linq;
+using Microsoft.AspNetCore.Components;
 
 namespace BBCollection.DBHandling
 {
@@ -19,6 +20,14 @@ namespace BBCollection.DBHandling
 
         public UserShoppinglist() { }
 
+        public enum Filter
+        {
+            All,
+            Active,
+            Completed,
+        }
+
+        public Filter filter = Filter.All;
         string username;
         string url = "api/Shoppinglist";
         string shoppinglistString;
@@ -26,9 +35,36 @@ namespace BBCollection.DBHandling
         int amount;
 
         public List<Product> shoppinglist = new List<Product>();
+        public Dictionary<string, List<Product>> shoppinglistDict = new Dictionary<string, List<Product>>();
         Product tempProduct = new Product();
         List<Shoppinglist> shoppinglistFromAPi = new List<Shoppinglist>();
         ApiCalls api;
+
+        public void SetFilter(Filter filter)
+        {
+            this.filter = filter; 
+        }
+
+        public IEnumerable<Product> Products
+        {
+            get
+            {
+                var query = from p in shoppinglist select p;
+
+                if (filter == Filter.Active)
+                    query = from q in query where !q._completed select q;
+
+                if (filter == Filter.Completed)
+                    query = from q in query where q._completed select q;
+
+                return query;
+            }
+        }
+
+        public void CheckAll(bool isChecked)
+        {
+            shoppinglist.ForEach(x => x._completed = isChecked);
+        }
 
         public async Task GetWhenLoggedIn()
         {
@@ -63,6 +99,12 @@ namespace BBCollection.DBHandling
         public void DeleteList()
         {
             shoppinglist.Clear();
+        }
+
+        public void ClearItems()
+        {
+            shoppinglist.RemoveAll(x => x._completed);
+            filter = Filter.All;
         }
 
         public void DeleteItem(Product p)
