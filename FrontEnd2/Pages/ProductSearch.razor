@@ -24,7 +24,8 @@
                                       SelectedValueChanged="@searchHandler"
                                       Placeholder="Enter a product name..."
                                       Filter="AutocompleteFilter.Contains"
-                                      MinLength="2" />
+                                      MinLength="2"
+                                      IsDisabled="FindingAutocorrectlist"/>
                     <button class="btn btn-success acSearchButton" @onclick="(() => SearchBar())">
                         <i class="fa fa-search"></i>
                     </button>
@@ -580,11 +581,22 @@
         else
         {
             _viewProducts = false;
-            _viewLoadMore = false;
         }
 
         isSearching = false;
         this.StateHasChanged();
+    }
+
+    public void SetLoadmore()
+    {
+        if (availabelProducts > printStartIndex)
+        {
+            _viewLoadMore = true;
+        }
+        else
+        {
+            _viewLoadMore = false;
+        }
     }
 
     public void ResetIndexes()
@@ -638,7 +650,6 @@
         {
             if (i >= availabelProducts)
             {
-                _viewLoadMore = false;
                 StateHasChanged();
                 break;
             }
@@ -650,10 +661,11 @@
 
             i++;
         }
-        Console.WriteLine(prodName[1]);
 
         printStartIndex += i;
         printCount += i;
+
+        SetLoadmore();
 
         return pList;
     }
