@@ -36,10 +36,10 @@
                         <tbody>
                             @foreach (Product p in user.storage.storageList)
                             {
-                                
+
                             <tr>
-                                <Button @onclick="()=>updateSelectedProducts(p)"></Button>
-                                <td data-th="Product">@p._productName</td>
+                                <Button @onclick="()=>updateSelectedProducts(p)">YEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEET</Button>
+                                <td data-th="Product">@p._productName (@p._CustomReferenceField)</td>
                                 <td data-th="Amount" class="textForTable">
                                     <input type="number" id="number" value="@p._amountleft" />
                                 </td>
@@ -96,7 +96,7 @@
                 <div style="margin-left:10px">
                     <Button Color="Color.Success" IsOutline="true" @onclick="() =>toggelFilters()"> Sort options <Icon Name="FontAwesomeIcons.ArrowCircleDown"></Icon> </Button>
                 </div>
-                        
+
                     @*<button class="btn btn-outline-success" @onclick="() =>toggelFilters()">
                         Sort options <i class="fa fa-long-arrow-alt-down"></i>
                     </button>*@
