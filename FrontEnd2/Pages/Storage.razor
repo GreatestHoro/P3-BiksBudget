@@ -89,7 +89,7 @@
                 {
                 <Field IsHorizontal="true" JustifyContent="JustifyContent.Start">
                     <Tooltip Text="Find a recipe that utilizes your products">
-                        <Button IsDisabled="@_FoodBiskEnabled"  Class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => FindRecipies())">BiksFood</Button>
+                        <Button IsDisabled="@(!_FoodBiskEnabled)"  Class="btn btn-block btn-light recipeDivDisplay rounded-0" @onclick="(() => FindRecipies())">BiksFood</Button>
                     </Tooltip>
                     @if (!_showFilters)
                     {
