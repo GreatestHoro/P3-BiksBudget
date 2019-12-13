@@ -27,6 +27,21 @@ headlineCard {
     transition: opacity .15s linear;
 }
 
+.card-footerShoppinglist {
+    position: sticky;
+    width: 100%;
+    z-index: 1030;
+    bottom: 0;
+    background-color: #747d8c;
+}
+
+.figure-img{
+    width: auto;
+    height: auto;
+    max-height: 100px;
+    max-width: 100px;
+}
+
 .funkyradio div {
     clear: both;
     overflow: hidden;
@@ -218,13 +233,30 @@ headlineCard {
     width: 10rem;
 }
 
-.card-imgNew {
+.card-imgProduct {
     width: auto;
     height:auto;
     max-width: 280px;
     max-height: 280px;
     justify-content:center;
 }
+
+.card-headerProduct{
+    height:300px;
+    justify-content:center;
+    background-color:white;
+}
+
+.card-bodyProduct{
+    height:250px;
+}
+
+.card-footerProduct{
+    height:100px;
+    vertical-align:central;
+}
+
+
 
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -743,11 +775,13 @@ app {
 .nav-item:last-of-type {
     padding-bottom: 1rem;
 }
-
+.shoppinglist-Price-Text{
+    font-weight:800;
+}
 logo-header-wrapper {
     width: 100px;
     height: 100px;
-    margin:0px;
+    margin: 0px;
     /*bottom: 40px;*/
 }
 
@@ -1072,6 +1106,10 @@ logo-header-wrapper {
         height: 200px;
         overflow: hidden;
         overflow-y: scroll;
+    }
+
+    .figure-img {
+        text-align: center;
     }
 
     .miniBasket {

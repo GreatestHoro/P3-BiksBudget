@@ -34,7 +34,6 @@
         <Field IsHorizontal="true" JustifyContent="JustifyContent.Start">
             <FieldBody ColumnSize="ColumnSize.Is1.OnDesktop.Is1.OnMobile">
                 <Button Clicked="showFilterModal" Color="Color.Success"> <Icon Name="@(FontAwesomeIcons.Filter)"> </Icon></Button>
-                <Button Clicked="@(()=>showStoreModal( ModalSize.Default, 30, true ))" Color="Color.Success"> <Icon Name="@(FontAwesomeIcons.Store)"> </Icon></Button>
             </FieldBody>
             <FieldLabel ColumnSize="ColumnSize.Is3.OnDesktop.Is3.OnMobile">Advanced</FieldLabel>
         </Field>
@@ -42,7 +41,6 @@
 </Row>
 <!-- #endregion -->
 <!-- #region Filters -->
-
 <Modal @ref="filterModal">
     <ModalBackdrop />
     <ModalContent IsCentered="true" Size="ModalSize.ExtraLarge">
@@ -54,7 +52,7 @@
             <Row>
                 @foreach (AdvancedFilterList af in filterLists)
                 {
-                    <Column ColumnSize="ColumnSize.Is2.OnDesktop">
+                    <Column ColumnSize="ColumnSize.Is2.OnDesktop.Is1.OnMobile">
                         <Field>
                             <FieldLabel Style="font-weight:bolder"> @af.optionsname</FieldLabel>
                         </Field>
@@ -76,10 +74,9 @@
                 <Column ColumnSize="ColumnSize.Is3.OnDesktop">
                     <Field>
                         <FieldBody>
-                            <FieldLabel> Maximum radius: @(radius / 1000) km </FieldLabel>
-                            <input type="range" min="0" max="3000" @bind="radius" step="1000" />
-                            <FieldHelp> Slide to change </FieldHelp>
-                            <CheckEdit @onchange="(() => toggle())"> apply radius</CheckEdit>
+                            <FieldLabel> Finde stores near you</FieldLabel>
+                            <Button Clicked="@(()=>showStoreModal( ModalSize.Default, 30, true ))" Color="Color.Info"> <Icon Name="@(FontAwesomeIcons.LocationArrow)" /> Use my location</Button>
+                            <FieldHelp>When applied, you only get results from theese stores </FieldHelp>
                         </FieldBody>
                     </Field>
                 </Column>
@@ -103,7 +100,8 @@
         </ModalBody>
     </ModalContent>
 </Modal>
-
+<!-- #endregion -->
+<!-- #region User location accordion -->
 <Accordion>
     <Modal @ref="storeModal">
         <ModalBackdrop />
@@ -145,7 +143,6 @@
         <ModalBackdrop />
     </Modal>
 </Accordion>
-
 <!-- #endregion -->
 <!-- #region Product Cards -->
 <Row>
@@ -153,36 +150,40 @@
     {
         @foreach (Product p in productsToPrint)
         {
-            <Column ColumnSize="ColumnSize.IsQuarter.OnDesktop.IsFull.OnMobile">
-                <Card Background="Background.Transparent">
-                    <CardHeader>
-                        <Field JustifyContent="JustifyContent.Center">
-                            <CardImage Source="@p._image" Class="card-imgNew" />
-                        </Field>
+            <Column ColumnSize="ColumnSize.IsQuarter.OnDesktop.IsFull.OnMobile.IsThird.OnTablet" Margin="Margin.Is4.FromBottom">
+                <Card Background="Background.White">
+                    <CardHeader Margin="Margin.IsAuto" Class="card-headerProduct">
+                            <CardImage Source="@p._image" Class="card-imgProduct" />
                     </CardHeader>
-                    <CardBody >
-                        <Field JustifyContent="JustifyContent.Start">
+                    <CardBody Class="card-bodyProduct">
+                        <Field>
                             <FieldLabel>
-                                <CardSubtitle Size="5" Float="Float.Right">@p._storeName</CardSubtitle>
+                                <CardTitle Size="5" Style="width:100%" Float="Float.Left">@p._productName</CardTitle>
                             </FieldLabel>
-                            <FieldBody >
-                                <CardTitle Size="4" Style="width:100%" Float="Float.Left">@p._productName</CardTitle>
-                                <CardText >@p._amount</CardText>
+                            <FieldBody> 
+                                <ListGroup IsFlush="true">
+                                    <ListGroupItem><CardSubtitle>@p._storeName</CardSubtitle></ListGroupItem>
+                                    <ListGroupItem><CardText>@p._amount</CardText></ListGroupItem>
+                                    <ListGroupItem><CardText>@p._price DKK</CardText></ListGroupItem>
+                                </ListGroup>
                             </FieldBody>
                         </Field>
                     </CardBody>
-                    <CardFooter>
-                        <Field JustifyContent="JustifyContent.Center">
-                        <Button IsDisabled="disableButton" Margin="Margin.Is4" Color="Color.Success" @onclick="(() => AddProductToSL(p))">Add To Shoppinglist (@p._amountleft)</Button>
-                        </Field>
+                    <CardFooter Class="card-footerProduct text-center" >               
+                            <Button IsDisabled="disableButton" Margin="Margin.IsAuto.FromLeft" Color="Color.Success" @onclick="(() => AddProductToSL(p))"><Icon Name="@(FontAwesomeIcons.ShoppingCart)" /> Add to shopping list (@p._amountleft)</Button>
                     </CardFooter>
                 </Card>
             </Column>
         }
     }
 </Row>
-<!-- #endregion -->
 
+<Snackbar @ref="snackbar">
+    <SnackbarBody>
+        @tempProductName added to your shopping list. your total is @string.Format("{0:0.00}", (tempCompleteCost + tempTotalCost)) dkk.
+    </SnackbarBody>
+</Snackbar>
+<!-- #endregion -->
 <!-- #region Loadmore -->
 <Row Margin="Margin.Is2.FromTop">
     <Column ColumnSize="ColumnSize.IsFull">
@@ -193,17 +194,15 @@
             </Field>
         }
     </Column>
- </Row>
+</Row>
 <!-- #endregion -->
 
 @code{
     #region fields
-    //private Snackbar snackbar;
     private Snackbar snackbar;
     private Modal storeModal;
     private Modal filterModal;
     private bool locationBox;
-
 
     static TaskCompletionSource<GeoCoordinate> tcsUserLocation = new TaskCompletionSource<GeoCoordinate>();
     static GeoCoordinate userGeoLocation = new GeoCoordinate(0, 0);
@@ -269,7 +268,8 @@
     int printStartIndex = 0;
     int availabelProducts;
 
-    double tempTotalCost = 0;
+    double tempTotalCost;
+    double tempCompleteCost;
     double _minPrice = 0;
     double _maxPrice = 5000;
     double priceLimit = 10000;
@@ -485,6 +485,8 @@
         StateHasChanged();
 
         AddedItem._amountleft++;
+        tempProductName = AddedItem._productName;
+        tempTotalCost += AddedItem._price;
 
         if (String.IsNullOrEmpty(email))
         {
@@ -496,7 +498,7 @@
         }
 
         disableButton = await AwaitButton();
-        //snackbar.Show();
+        snackbar.Show();
         StateHasChanged();
     }
 
@@ -784,6 +786,9 @@
             itemList = await CallApiForProducts(tempSearchword);
 
             InitializeAutocorrect();
+
+            tempCompleteCost = user.shoppinglist.CompletePrice();
+
 
             this.StateHasChanged();
         }
@@ -1075,6 +1080,11 @@
     #endregion
 
     #region Price
+
+    public void getShoppinglistPrice(Product p)
+    {
+        tempCompleteCost += p._price; 
+    }
 
     public void CheckMinPrice(ChangeEventArgs e)
     {

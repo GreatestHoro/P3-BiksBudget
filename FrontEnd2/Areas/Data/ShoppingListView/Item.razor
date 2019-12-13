@@ -1,0 +1,70 @@
+﻿@using BBCollection.BBObjects
+@using BBCollection.DBHandling
+<ListGroupItem>
+    <Field IsHorizontal="true" Padding="Padding.IsAuto.OnAll">
+        <FieldBody ColumnSize="ColumnSize.Is1">
+            <CheckEdit Checked="@Product._completed" CheckedChanged="@OnCheckedChanged"/>
+        </FieldBody>
+        <FieldBody ColumnSize="ColumnSize.IsFull">
+                <Table IsBorderless="true" IsFullWidth="true" IsHoverable="true">
+                    <TableBody>
+                        <TableRow Color="Color.Light" Class="align-middle">
+                            <TableRowCell Background="Background.White" Style="width:110px" >
+                                @if (Product._image.Length == 0)
+                                {
+                                    <FigureImage Source="https://cdn.discordapp.com/attachments/519096261408718908/649685312083197973/coopdicoop.jpg" />
+                                }
+                                else
+                                {
+                                    <FigureImage Source="@Product._image" />
+                                }
+                            </TableRowCell>
+                            <TableRowCell>
+                                <Text Float="Float.Left" Style="width:100px"> @Product._productName  @Product._amount</Text>
+                            </TableRowCell>
+                            @*<TableRowCell>
+                                <Text Float="Float.Left"> @Product._amount</Text>
+                            </TableRowCell>*@
+                            <TableRowCell Style="width:110px">
+                                <SelectEdit TValue="int" SelectedValue="selectedValue" SelectedValueChanged="OnSelectedValueChanged" Style="max-width:100px;">
+                                    @{
+                                        int numb = 0;
+                                        @for (int i = 0; i < 100; i++)
+                                        {
+                                            <SelectItem Value="TempScalar">@(numb++)</SelectItem>
+                                        }
+                                    }
+                                </SelectEdit>
+                            </TableRowCell>
+                            <TableRowCell Style="width:110px">
+                                <Text Color="TextColor.Success"> @Product._price DKK</Text>
+                            </TableRowCell>
+                        </TableRow>
+                    </TableBody>
+                </Table>
+        </FieldBody>
+    </Field>
+</ListGroupItem>
+
+@code {
+    public int selectedValue = 0;
+    public int scalar;
+    public int TempScalar;
+
+    public void OnCheckedChanged(bool isChecked)
+    {
+        Product._completed = isChecked;
+
+        StatusChanged?.Invoke(isChecked);
+    }
+
+    public void OnSelectedValueChanged(int value)
+    {
+        selectedValue = value;
+        scalar = selectedValue;
+    }
+
+    [Parameter] public Product Product { get; set; }
+
+    [Parameter] public Action<bool> StatusChanged { get; set; }
+}
