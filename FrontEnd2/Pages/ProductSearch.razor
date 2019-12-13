@@ -12,31 +12,38 @@
 @inject IJSRuntime JsRuntime
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 <!-- #region Search Bar -->
-<Row>
-    <Column ColumnSize="ColumnSize.Is8">
-        <Field IsHorizontal="true" JustifyContent="JustifyContent.Start">
-            <FieldLabel ColumnSize="ColumnSize.Is2.OnDesktop.Is5.OnMobile" Margin="Margin.Is0.FromRight"> Search for products</FieldLabel>
-            <FieldBody ColumnSize="ColumnSize.Is6.OnDesktop.Is7.OnMobile" Margin="Margin.Is0.FromLeft">
-                <Autocomplete Data="@prodData"
-                              TextField="@((item)=>item.textField)"
-                              ValueField="@((item)=>item.textField)"
-                              SelectedValue="@selectedSearchValue"
-                              SelectedValueChanged="@searchHandler"
-                              Placeholder="Enter a product name..."
-                              Filter="AutocompleteFilter.Contains"
-                              MinLength="2" />
-            </FieldBody>
-        </Field>
-    </Column>
-</Row>
+<div class="container-fluid">
+    <div class="row d-flex justify-content-center">
+        <div class="col-sm-10 col-md-8 col-lg-7 col-xl-5">
+            <div class="form-check-inline center_div" id="acSearchBar">
+                <div class="center_div" id="adSearchBBox">
+                        <Autocomplete Data="@prodData"
+                                      TextField="@((item)=>item.textField)"
+                                      ValueField="@((item)=>item.textField)"
+                                      SelectedValue="@selectedSearchValue"
+                                      SelectedValueChanged="@searchHandler"
+                                      Placeholder="Enter a product name..."
+                                      Filter="AutocompleteFilter.Contains"
+                                      MinLength="2" />
+                    <button class="btn btn-success acSearchButton" @onclick="(() => SearchBar())">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="center_div" id="filterBox">
+            <Field IsHorizontal="true" JustifyContent="JustifyContent.Start">
+                    <FieldBody ColumnSize="ColumnSize.Is1.OnDesktop.Is1.OnMobile">
+                        <Button Clicked="showFilterModal" Color="Color.Success"> <Icon Name="@(FontAwesomeIcons.Filter)"> </Icon></Button>
+                    </FieldBody>
+                    <FieldLabel ColumnSize="ColumnSize.Is3.OnDesktop.Is3.OnMobile">Advanced</FieldLabel>
+            </Field>
+            </div>
+        </div>
+    </div>
+</div>
+
 <Row>
     <Column ColumnSize="ColumnSize.Is5.OnDesktop.Is8.OnMobile">
-        <Field IsHorizontal="true" JustifyContent="JustifyContent.Start">
-            <FieldBody ColumnSize="ColumnSize.Is1.OnDesktop.Is1.OnMobile">
-                <Button Clicked="showFilterModal" Color="Color.Success"> <Icon Name="@(FontAwesomeIcons.Filter)"> </Icon></Button>
-            </FieldBody>
-            <FieldLabel ColumnSize="ColumnSize.Is3.OnDesktop.Is3.OnMobile">Advanced</FieldLabel>
-        </Field>
     </Column>
 </Row>
 <!-- #endregion -->
@@ -153,14 +160,14 @@
             <Column ColumnSize="ColumnSize.IsQuarter.OnDesktop.IsFull.OnMobile.IsThird.OnTablet" Margin="Margin.Is4.FromBottom">
                 <Card Background="Background.White">
                     <CardHeader Margin="Margin.IsAuto" Class="card-headerProduct">
-                            <CardImage Source="@p._image" Class="card-imgProduct" />
+                        <CardImage Source="@p._image" Class="card-imgProduct" />
                     </CardHeader>
                     <CardBody Class="card-bodyProduct">
                         <Field>
                             <FieldLabel>
                                 <CardTitle Size="5" Style="width:100%" Float="Float.Left">@p._productName</CardTitle>
                             </FieldLabel>
-                            <FieldBody> 
+                            <FieldBody>
                                 <ListGroup IsFlush="true">
                                     <ListGroupItem><CardSubtitle>@p._storeName</CardSubtitle></ListGroupItem>
                                     <ListGroupItem><CardText>@p._amount</CardText></ListGroupItem>
@@ -169,8 +176,8 @@
                             </FieldBody>
                         </Field>
                     </CardBody>
-                    <CardFooter Class="card-footerProduct text-center" >               
-                            <Button IsDisabled="disableButton" Margin="Margin.IsAuto.FromLeft" Color="Color.Success" @onclick="(() => AddProductToSL(p))"><Icon Name="@(FontAwesomeIcons.ShoppingCart)" /> Add to shopping list (@p._amountleft)</Button>
+                    <CardFooter Class="card-footerProduct text-center">
+                        <Button IsDisabled="disableButton" Margin="Margin.IsAuto.FromLeft" Color="Color.Success" @onclick="(() => AddProductToSL(p))"><Icon Name="@(FontAwesomeIcons.ShoppingCart)" /> Add to shopping list (@p._amountleft)</Button>
                     </CardFooter>
                 </Card>
             </Column>
@@ -1069,7 +1076,7 @@
 
     public void getShoppinglistPrice(Product p)
     {
-        tempCompleteCost += p._price; 
+        tempCompleteCost += p._price;
     }
 
     public void CheckMinPrice(ChangeEventArgs e)

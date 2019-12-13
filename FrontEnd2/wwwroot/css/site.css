@@ -158,6 +158,18 @@ headlineCard {
     padding: 0px;
 }
 
+.dropdown{
+    display: inline-block;
+    width: calc(100% - 26px) !important;
+    margin: 0px;
+    border-radius: 0px !important;
+    position: absolute !important;
+}
+
+.dropdown-menu.show {
+    position: relative;
+}
+
 #adSearchBBox {
     outline: none;
     border: solid;
