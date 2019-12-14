@@ -27,8 +27,8 @@ namespace BBGatherer
 
                 //recipeQuery.CheapestCRecipes("").Wait();
                 //dh.GenerateDatabase().Wait();
-                dh.GenerateData(false, false, false,false).Wait();
-                //dh.TestCollection().Wait();
+                //dh.GenerateData(false, false, false,false).Wait();
+                dh.TestCollection().Wait();
             }
             catch (Exception e)
             {
@@ -80,14 +80,14 @@ namespace BBGatherer
                 await dbConnect.Recipe.GenerateTotalPriceAsync();
             }
 
-            if (DeleteRefrences == true) 
+            if (DeleteRefrences == true)
             {
                 var yeet = test.GetList("");
                 int i = 0;
 
                 foreach (var yet in yeet)
                 {
-                    _ = test.AddReference("",yet._id);
+                    _ = test.AddReference("", yet._id);
                     Console.WriteLine(i++);
                 }
 
@@ -97,12 +97,21 @@ namespace BBGatherer
         public async Task TestCollection()
         {
             DatabaseConnect dc = new DatabaseConnect();
-            string searchTerm = "brun farin";
 
-            double price = await dbConnect.Product.CheapestPrice(searchTerm, Chain.none);
+            //string b = "bilka";
+            string s = "superbrugsen";
 
-            Console.WriteLine(price);
+            List<string> bs = new List<string>();
 
+            //bs.Add(b);
+            bs.Add(s);
+
+            List<ComplexRecipe> complexRecipes = await dc.Recipe.GetListAsync("kaffe", Chain.none, 10, 0);
+
+            foreach(ComplexRecipe cr in complexRecipes)
+            {
+                Console.WriteLine("NAME: "+ cr._Name +" COST: "+ cr._complexRecipeComponent.RecipeCost);
+            }
             /*
             List<string> strings = new List<String>();
 

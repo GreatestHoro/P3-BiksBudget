@@ -68,7 +68,7 @@ namespace BBCollection.Queries
 
         }
 
-        public async Task<List<ComplexRecipe>> CheapestRecipeDB(string searchTerm)
+        public async Task<List<ComplexRecipe>> CheapestRecipeDB(string searchTerm, Chain chainFilter)
         {
             if (_loadCount == 0)
             {
@@ -76,7 +76,9 @@ namespace BBCollection.Queries
 
             }
 
-            List<ComplexRecipe> complexRecipes = await _dc.Recipe.GetPriceAsync(searchTerm, _productsPerLoad, _productsPerLoad * _loadCount);
+            //List<ComplexRecipe> complexRecipes = await _dc.Recipe.GetPriceAsync(searchTerm, _productsPerLoad, _productsPerLoad * _loadCount);
+
+            List<ComplexRecipe> complexRecipes = await _dc.Recipe.GetListAsync(searchTerm, chainFilter, _productsPerLoad, _productsPerLoad * _loadCount);
 
             //List<Recipe> recipes = await _dc.Recipe.GetListAsync(searchTerm);
 
