@@ -706,7 +706,7 @@
         StateHasChanged();
         recipeQuery._loadCount = 0;
         ReadChainFilters();
-        complexRecipes = await recipeQuery.CheapestRecipeDB2(searchTerm, _chainFilter);
+        complexRecipes = await recipeQuery.CheapestRecipeDB(searchTerm, _chainFilter);
 
         viewRecipeList = true;
         isSearching = false;
@@ -719,7 +719,7 @@
         _viewLoadMore = false;
         this.StateHasChanged();
         ReadChainFilters();
-        complexRecipes.AddRange(await recipeQuery.CheapestRecipeDB2(searchTerm,_chainFilter));
+        complexRecipes.AddRange(await recipeQuery.CheapestRecipeDB(searchTerm,_chainFilter));
         _viewLoadMoreSpinner = false;
         _viewLoadMore = true;
         this.StateHasChanged();

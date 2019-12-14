@@ -419,9 +419,15 @@ namespace BBCollection.DBHandling
             {
                 foreach (DataRow r in ds.Tables[0].Rows)
                 {
+                    double price = 0;
+                    if(r[3] != DBNull.Value)
+                    {
+                        price = Convert.ToDouble(r[4]);
+                    }
+
                     ComplexRecipe recipe = new ComplexRecipe((int)r[0], (string)r[1], (string)r[2],
                         await GetIngredients((int)r[0]), Convert.ToSingle(r[3]),
-                        new ComplexRecipeComponent(Convert.ToDouble(r[4])));
+                        new ComplexRecipeComponent(price));
                     complexRecipes.Add(recipe);
                 }
             }
@@ -438,11 +444,11 @@ namespace BBCollection.DBHandling
                 "inner join(select isl.ingredientName as ingredientName, p1.price as price " +
                 "from ingredient_store_link isl " +
                 "left join products p1 on p1.id = isl." + store + ") as t4 on t3.ingredientName = t4.ingredientName " +
-                "WHERE t1.recipeName like @RecipeName " +
-                "group by t1.id order by min_price LIMIT @Limit offset @Offset";
+                "WHERE t1.recipeName like @RecipeName AND price IS NOT NULL " +
+                "group by t1.id order by min_price LIMIT @Limit OFFSET @Offset";
 
 
-            throw new NotImplementedException();
+            return singleQuery;
         }
 
         private string MultipleRecipeQuery(List<string> stores)
@@ -457,7 +463,7 @@ namespace BBCollection.DBHandling
                 "from ingredient_store_link isl "
                 + GetJoins(stores) +
                 ") as t4 on t3.ingredientName = t4.ingredientName " +
-                "WHERE t1.recipeName like @RecipeName " +
+                "WHERE t1.recipeName like @RecipeName AND price IS NOT NULL " +
                 "group by t1.id order by min_price LIMIT @Limit OFFSET @Offset";
 
             return mrQuery;
