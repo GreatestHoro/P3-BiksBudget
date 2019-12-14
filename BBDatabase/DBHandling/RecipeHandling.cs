@@ -319,7 +319,9 @@ namespace BBCollection.DBHandling
             {
                 foreach (DataRow r in ds.Tables[0].Rows)
                 {
-                    ComplexRecipe recipe = new ComplexRecipe((int)r[0], (string)r[1], (string)r[3], await GetIngredients((int)r[0]), Convert.ToSingle(r[2]), new ComplexRecipeComponent(Convert.ToDouble(r[4])));
+                    ComplexRecipe recipe = new ComplexRecipe((int)r[0], (string)r[1], (string)r[3],
+                        await GetIngredients((int)r[0]), Convert.ToSingle(r[2]),
+                        new ComplexRecipeComponent(Convert.ToDouble(r[4])));
                     complexRecipes.Add(recipe);
                 }
             }
@@ -389,23 +391,74 @@ namespace BBCollection.DBHandling
             }
         }
 
-        public async Task<List<Recipe>> GetListAsync()
+        public async Task<List<ComplexRecipe>> GetListAsync(string recipeName, Chain chain, int limit, int offset)
         {
+            List<ComplexRecipe> complexRecipes = new List<ComplexRecipe>();
+            List<string> stores = ConverteChain(chain);
+            MySqlCommand msc;
+
+            if (stores.Count == 0)
+            {
+                msc = new MySqlCommand(MultipleRecipeQuery(stores));
+            }
+            else if (stores.Count == 1)
+            {
+                msc = new MySqlCommand(SingleRecipeQuery(stores[0]));
+            }
+            else
+            {
+                msc = new MySqlCommand(MultipleRecipeQuery(stores));
+            }
+
+            msc.Parameters.AddWithValue("@RecipeName", "%" + recipeName + "%");
+            msc.Parameters.AddWithValue("@Limit", limit);
+            msc.Parameters.AddWithValue("@Offset", offset);
+
+            DataSet ds = await new SQLConnect().DynamicSimpleListSQL(msc);
+            if (ds.Tables.Count != 0)
+            {
+                foreach (DataRow r in ds.Tables[0].Rows)
+                {
+                    ComplexRecipe recipe = new ComplexRecipe((int)r[0], (string)r[1], (string)r[2],
+                        await GetIngredients((int)r[0]), Convert.ToSingle(r[3]),
+                        new ComplexRecipeComponent(Convert.ToDouble(r[4])));
+                    complexRecipes.Add(recipe);
+                }
+            }
+            return complexRecipes;
+
+        }
+
+        private string SingleRecipeQuery(string store)
+        {
+            string singleQuery =
+                "SELECT t1.id, t1.recipeName, t1.recipeDesc, t1.amountPerson, sum(price) as min_price FROM recipes t1 " +
+                "inner join ingredientsinrecipe t2 on t1.id = t2.recipeID " +
+                "inner join ingredients t3 on t2.ingredientID = t3.id " +
+                "inner join(select isl.ingredientName as ingredientName, p1.price as price " +
+                "from ingredient_store_link isl " +
+                "left join products p1 on p1.id = isl." + store + ") as t4 on t3.ingredientName = t4.ingredientName " +
+                "WHERE t1.recipeName like @RecipeName " +
+                "group by t1.id order by min_price LIMIT @Limit offset @Offset";
+
+
             throw new NotImplementedException();
         }
 
-        public string MultipleRecipeQuery(List<string> stores)
+        private string MultipleRecipeQuery(List<string> stores)
         {
             string mrQuery =
-                "SELECT t1.id, t1.recipeName FROM recipes t1 " +
+                "SELECT t1.id, t1.recipeName, t1.recipeDesc, t1.amountPerson, sum(price) as min_price FROM recipes t1 " +
                 "inner join ingredientsinrecipe t2 on t1.id = t2.recipeID " +
                 "inner join ingredients t3 on t2.ingredientID = t3.id " +
                 "inner join( " +
                 "select " +
-                "isl.ingredientName as ingredientName, least() as price " +
-                "from ingredient_store_link isl " +
+                "isl.ingredientName as ingredientName, least(" + GetCoalesce(stores.Count()) + ") as price " +
+                "from ingredient_store_link isl "
+                + GetJoins(stores) +
                 ") as t4 on t3.ingredientName = t4.ingredientName " +
-                "group by t1.id order by t4.price";
+                "WHERE t1.recipeName like @RecipeName " +
+                "group by t1.id order by min_price LIMIT @Limit OFFSET @Offset";
 
             return mrQuery;
         }
@@ -417,18 +470,19 @@ namespace BBCollection.DBHandling
             {
                 string tc = "";
                 int u = 1; int d = stores;
-                int dl = stores - i; int ul = stores + 1 - i;
+                int ul = stores - i; int dl = (stores + 1) - i;
 
-                while (u != ul)
+                while (d >= dl)
+                {
+                    tc = "p" + d + ".price," + tc; // d + coalesce;
+                    d--;
+                }
+                while (u <= ul)
                 {
                     tc += "p" + u + ".price,";
                     u++;
                 }
-                while (d != dl)
-                {
-                    tc += "p." + d + ".price,"; // d + coalesce;
-                    d--;
-                }
+
                 tc = tc.Remove(tc.Length - 1);
                 coalesce += "COALESCE(" + tc + "), ";
             }
@@ -445,6 +499,33 @@ namespace BBCollection.DBHandling
                 count++;
             }
             return joins;
+        }
+
+        private List<string> ConverteChain(Chain chain)
+        {
+            List<string> chainList = new List<string>();
+            if (chain == Chain.none)
+            {
+                chainList.Add("bilka");
+                chainList.Add("fakta");
+                chainList.Add("superbrugsen");
+            }
+            else
+            {
+                if ((chain & Chain.bilka) == Chain.bilka)
+                {
+                    chainList.Add("bilka");
+                }
+                if ((chain & Chain.fakta) == Chain.fakta)
+                {
+                    chainList.Add("fakta");
+                }
+                if ((chain & Chain.superBrugsen) == Chain.superBrugsen)
+                {
+                    chainList.Add("superbrugsen");
+                }
+            }
+            return chainList;
         }
     }
 }
