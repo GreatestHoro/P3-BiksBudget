@@ -13,8 +13,7 @@ namespace BBGatherer_TEST
     [TestClass]
     public class ApiTest
     {
-        ShoppinlistFunctionalityNotWorking slFunc = new ShoppinlistFunctionalityNotWorking("api/Shoppinglist");
-        ShoppinlistFunctionalityNotWorking stFunc = new ShoppinlistFunctionalityNotWorking("api/Storage");
+        UserData user;
         ControllerFuncionality cFunc = new ControllerFuncionality();
         LoginRegister account = new LoginRegister();
         Filters sallingSearch = new Filters();
@@ -32,7 +31,16 @@ namespace BBGatherer_TEST
         // File: ConnectoinSettings 
         // bool: _onlineAPI
         // This variable needs to be true to run these tests
+        // Also change the username, to ensure a new account is regiseret. Otherwise the register test will fail.
         #region API
+
+        [TestMethod]
+        public async Task TestUserApi()
+        {
+            user = new UserData(username);
+
+            await RegisterUser();
+        }
 
         #region Login
 
@@ -64,26 +72,18 @@ namespace BBGatherer_TEST
         [TestMethod]
         public async Task GetShoppinglist()
         {
-            response = await stFunc.GetShoppinglistOnStart(username);
+            await user.shoppinglist.GetWhenLoggedIn();
 
-
-            Assert.IsTrue(response.IsSuccessStatusCode);
-        }
-
-        public async Task<HttpResponseMessage> HelpGetStorage()
-        {
-            response = await stFunc.GetStorageOnStart(username);
-
-            return response;
+            Assert.IsTrue(user.shoppinglist.shoppinglist.Count > 0);
         }
 
         //// This method tests GetStorageOnStart(string userId)
         [TestMethod]
         public async Task GetStorage()
         {
-            response = await HelpGetStorage();
+            await user.storage.Get();
 
-            Assert.IsTrue(response.IsSuccessStatusCode);
+            Assert.IsTrue(user.storage.storageList.Count > 0);
         }
 
         #endregion
@@ -94,14 +94,12 @@ namespace BBGatherer_TEST
         [TestMethod]
         public async Task PutStorage()
         {
-            await HelpGetStorage();
-
             Product toTest = testList.dummyProductOne;
 
             toTest._amount = "Full";
             toTest._timeAdded = DateTime.Now.ToString();
 
-            response = await stFunc.ChangeItemInStorage(toTest);
+            response = await user.storage.AddProduct(toTest);
 
             Assert.IsTrue(response.IsSuccessStatusCode);
         }
@@ -110,9 +108,7 @@ namespace BBGatherer_TEST
         [TestMethod]
         public async Task TestDeleteStorage()
         {
-            await HelpGetStorage();
-
-            response = await stFunc.DeleteStorage();
+            response = await user.storage.DeleteStorage();
 
             Assert.IsTrue(response.IsSuccessStatusCode);
         }

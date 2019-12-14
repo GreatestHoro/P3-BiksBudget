@@ -126,7 +126,7 @@
                     <FieldBody>
                         <FieldLabel> Maximum radius: @(radius / 1000) km </FieldLabel>
                         <input type="range" min="0" max="3000" @bind="radius" step="1000" />
-                        <Button IsBlock="true" IsOutline="true" Color="Color.Success" @onclick="FindStoreFunc">Apply new radius</Button>
+                        <Button IsBlock="true" IsOutline="true" IsDisabled="@FindStoreButton" Color="Color.Success" @onclick="async ()=>await FindStroresInModal()">Apply new radius</Button>
                     </FieldBody>
                 </Field>
             </ModalBody>
@@ -277,6 +277,7 @@
     bool viewAutoComplete = false;
     bool isFindingList = false;
     bool FindingAutocorrectlist = true;
+    bool FindStoreButton = false;
 
     FilterItem filter = new FilterItem();
 
@@ -727,11 +728,25 @@
     /// Returns a list of all stores close based on geo location and radius
     /// </summary>
 
+    public async Task FindStroresInModal()
+    {
+        FindStoreButton = true;
+        FindStoreFunc();
+        FindStoreButton = await AwaitLongButton();
+
+    }
+
     public void FindStoreFunc()
     {
         closeStore = new FindCloseStores(userGeoLocation, radius);
         allStoresUnified = closeStore.GetStore();
         lastRadius = radius;
+    }
+
+    public async Task<bool> AwaitLongButton()
+    {
+        await Task.Delay(4000);
+        return false;
     }
 
     private async Task KeyPressed(KeyboardEventArgs e)

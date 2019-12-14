@@ -18,10 +18,10 @@ namespace BBGatherer_TEST
 
             bool exspected = true, result = false;
 
-            foreach (var item in emptyFridgeFuntionality.allRefs)
-            {
-                resultRecepies.AddRange(await emptyFridgeFuntionality.GetRelevantRecepiesFromProd(item));
-            }
+            //foreach (var item in emptyFridgeFuntionality.allRefs)
+            //{
+            //    resultRecepies.AddRange(await emptyFridgeFuntionality.GetRelevantRecepiesFromProd(item));
+            //}
             result = CheckIfRerencesArePresentInRecepies(resultRecepies, Storage);
 
             Assert.AreEqual(result, exspected);
@@ -38,10 +38,10 @@ namespace BBGatherer_TEST
             EmptyFridgeFuntionality emptyFridgeFuntionality = new EmptyFridgeFuntionality(Storage);
             List<WeightedRecipies> resultRecepies = new List<WeightedRecipies>();
 
-            foreach (var item in emptyFridgeFuntionality.allRefs)
-            {
-                resultRecepies.AddRange(await emptyFridgeFuntionality.GetRelevantRecepiesFromProd(item));
-            }
+            //foreach (var item in emptyFridgeFuntionality.allRefs)
+            //{
+            //    resultRecepies.AddRange(await emptyFridgeFuntionality.GetRelevantRecepiesFromProd(item));
+            //}
 
             emptyFridgeFuntionality.SortByMatchnum(resultRecepies);
             resultRecepies = await emptyFridgeFuntionality.GetSortedList();
@@ -75,10 +75,10 @@ namespace BBGatherer_TEST
             EmptyFridgeFuntionality emptyFridgeFuntionality = new EmptyFridgeFuntionality(Storage);
             List<WeightedRecipies> resultRecepies = new List<WeightedRecipies>();
 
-            foreach (var item in emptyFridgeFuntionality.allRefs)
-            {
-                resultRecepies.AddRange(await emptyFridgeFuntionality.GetRelevantRecepiesFromProd(item));
-            }
+            //foreach (var item in emptyFridgeFuntionality.allRefs)
+            //{
+            //    resultRecepies.AddRange(await emptyFridgeFuntionality.GetRelevantRecepiesFromProd(item));
+            //}
 
             emptyFridgeFuntionality.SortByPmatch(resultRecepies);
             resultRecepies = await emptyFridgeFuntionality.GetSortedList();
