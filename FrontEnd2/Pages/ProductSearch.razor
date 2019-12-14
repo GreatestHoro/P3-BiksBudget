@@ -1,4 +1,4 @@
-﻿@page "/productSearch"
+﻿@page "/search"
 
 @using BBCollection.BBObjects;
 @using BBCollection.DBHandling;
@@ -186,6 +186,16 @@
     }
 </Row>
 
+<Row Class="text-align: center">
+    <Column ColumnSize="ColumnSize.Is6.Is3.WithOffset" >
+        <Container Class="columnWidth:500px">
+            <Alert Color="Color.Success" IsShow="ShowMessageToUser()" Class="overflow-hidden">
+                @messageToUser
+            </Alert>
+        </Container>
+    </Column>
+</Row>
+
 <Snackbar @ref="snackbar">
     <SnackbarBody>
         @tempProductName added to your shopping list. your total is @string.Format("{0:0.00}", (tempCompleteCost + tempTotalCost)) dkk.
@@ -290,6 +300,7 @@
     int printStartIndex = 0;
     int availabelProducts;
     int LoadMoreProgressbar;
+    int productShown = 0;
 
     double tempTotalCost;
     double tempCompleteCost;
@@ -568,6 +579,7 @@
         productsToPrint.Clear();
         printStartIndex = 0;
 
+        _viewProducts = false;
         _viewLoadMore = false;
         isSearching = true;
         this.StateHasChanged();
@@ -580,20 +592,15 @@
 
         if (itemList.Count == 0)
         {
-            messageToUser = "No Products Found With These Filters";
+            messageToUser = "No Products Found With These Filters. Concider enabeling stores or disabeling keywords.";
         }
-
-        if (itemList.Count != 0)
+        else
         {
             OrderResulsts();
 
             ExpandProductsToPrintList();
 
             _viewProducts = true;
-        }
-        else
-        {
-            _viewProducts = false;
         }
 
         isSearching = false;
@@ -619,13 +626,12 @@
 
     public void ResetIndexes()
     {
-        printCount = 12;
+        productShown = 0;
         printStartIndex = 0;
     }
 
     public void SetIndexesToReload()
     {
-        printCount -= 12;
         printStartIndex = 0;
     }
 
@@ -653,6 +659,7 @@
         _loadCount++;
 
         productsToPrint.AddRange(GetAndUpdateRange());
+        productShown = productsToPrint.Count();
         LoadMoreProgressbar = UpdateLoadMore();
 
         _viewLoadMoreSpinner = false;
@@ -661,19 +668,20 @@
 
     public int UpdateLoadMore()
     {
-        return (int)Math.Round(((double)printStartIndex / (double)availabelProducts) * 100, 1);
+        return (int)Math.Round(((double)productShown / (double)availabelProducts) * 100, 1);
     }
 
     public void ExpandProductsToPrintList()
     {
         availabelProducts = itemList.Count;
         productsToPrint.AddRange(GetAndUpdateRange());
+        productShown = productsToPrint.Count();
         LoadMoreProgressbar = UpdateLoadMore();
     }
 
     public List<Product> GetAndUpdateRange()
     {
-        if (availabelProducts >= printStartIndex + printCount)
+        if (availabelProducts >= productShown + printCount)
         {
             tempProductList = itemList.GetRange(printStartIndex, printCount);
             printStartIndex += printCount;
@@ -784,6 +792,11 @@
 
     }
 
+    public bool ShowMessageToUser()
+    {
+        return !_viewProducts && !String.IsNullOrEmpty(messageToUser);
+    }
+
     public async Task InitializeAutocorrect()
     {
         itemList = await CallApiForProducts(tempSearchword);
@@ -792,8 +805,6 @@
 
         prodData = Enumerable.Range(1, prodName.Length)
             .Select(x => new AutocompleteSearch { textField = prodName[x - 1], valueField = x });
-
-        itemList.Clear();
 
         FindingAutocorrectlist = false;
     }
