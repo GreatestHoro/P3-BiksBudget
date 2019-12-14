@@ -192,13 +192,24 @@
     </SnackbarBody>
 </Snackbar>
 <!-- #endregion -->
+<Row Margin="Margin.Is2.FromTop">
+    @if (_viewProducts)
+    {
+        <Column ColumnSize="ColumnSize.Is6.Is3.WithOffset">
+            <Text Class="text-center">You have seen @productsToPrint.Count out of @itemList.Count() products</Text>
+            <Progress Margin="Margin.Is3.FromBottom" Size="Size.Small">
+                <ProgressBar Background="Background.Success" Value="@LoadMoreProgressbar" />
+            </Progress>
+        </Column>
+    }
+</Row>
 <!-- #region Loadmore -->
 <Row Margin="Margin.Is2.FromTop">
-    <Column ColumnSize="ColumnSize.IsFull">
+    <Column ColumnSize="ColumnSize.Is6.Is3.WithOffset">
         @if (_viewLoadMore)
         {
-            <Field JustifyContent="JustifyContent.Between">
-                <Button Color="Color.Info" Clicked="LoadMoreProducts" Visibility="Visibility.Default"><Icon Float="Float.Left"></Icon> load more products</Button>
+            <Field Class="card-footerProduct text-center">
+                <Button Color="Color.Success" Clicked="LoadMoreProducts" Visibility="Visibility.Default"><Icon Float="Float.Left"></Icon> load more products</Button>
             </Field>
         }
     </Column>
@@ -277,6 +288,7 @@
     int printCount = 12;
     int printStartIndex = 0;
     int availabelProducts;
+    int LoadMoreProgressbar;
 
     double tempTotalCost;
     double tempCompleteCost;
@@ -562,6 +574,7 @@
         _loadCount = 0;
         itemList = await SearchForProducts();
         itemList = features.SetAllPicture(itemList);
+        itemList = FindViableProducts();
 
 
         if (itemList.Count == 0)
@@ -573,8 +586,7 @@
         {
             OrderResulsts();
 
-            availabelProducts = itemList.Count;
-            productsToPrint.AddRange(FindNextToLoad());
+            ExpandProductsToPrintList();
 
             _viewProducts = true;
         }
@@ -585,6 +597,11 @@
 
         isSearching = false;
         this.StateHasChanged();
+    }
+
+    public List<Product> FindViableProducts()
+    {
+        return itemList.FindAll(x=> ConfirmPrice(x));
     }
 
     public void SetLoadmore()
@@ -628,46 +645,47 @@
         return filterLists.FindIndex(x => x.label == label);
     }
 
-
     private void LoadMoreProducts()
     {
         _viewLoadMoreSpinner = true;
         this.StateHasChanged();
         _loadCount++;
 
-        productsToPrint.AddRange(FindNextToLoad());
+        productsToPrint.AddRange(GetAndUpdateRange());
+        LoadMoreProgressbar = UpdateLoadMore();
 
         _viewLoadMoreSpinner = false;
         this.StateHasChanged();
     }
 
-    public List<Product> FindNextToLoad()
+    public int UpdateLoadMore()
     {
-        List<Product> pList = new List<Product>();
-        int i = printStartIndex;
+        return (int)Math.Round(((double)printStartIndex / (double)availabelProducts) * 100, 1);
+    }
 
-        while (productsToPrint.Count < printCount)
+    public void ExpandProductsToPrintList()
+    {
+        availabelProducts = itemList.Count;
+        productsToPrint.AddRange(GetAndUpdateRange());
+        LoadMoreProgressbar = UpdateLoadMore();
+    }
+
+    public List<Product> GetAndUpdateRange()
+    {
+        if (availabelProducts >= printStartIndex + printCount)
         {
-            if (i >= availabelProducts)
-            {
-                StateHasChanged();
-                break;
-            }
-
-            if (ConfirmPrice(itemList[i]))
-            {
-                productsToPrint.Add(itemList[i]);
-            }
-
-            i++;
+            tempProductList = itemList.GetRange(printStartIndex, printCount);
+            printStartIndex += printCount;
+        }
+        else
+        {
+            int i = availabelProducts - printStartIndex;
+            tempProductList = itemList.GetRange(printStartIndex, i);
+            printStartIndex += i;
         }
 
-        printStartIndex += i;
-        printCount += i;
-
         SetLoadmore();
-
-        return pList;
+        return tempProductList;
     }
 
     public bool ConfirmPrice(Product p)
