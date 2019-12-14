@@ -55,6 +55,7 @@ namespace BBCollection.BBObjects
         public string SearchName { get; set; }
         public bool IsEnabled { get; set; }
         public bool IsSortable { get; set; }
+        public int SortOption { get; set; }
 
         public FilterItem(string _filterName, bool _isEnabled)
         {
@@ -69,9 +70,10 @@ namespace BBCollection.BBObjects
             IsEnabled = _isEnabled;
         }
 
-        public FilterItem(string _filterName, bool _isEnabled, bool _isSortable)
+        public FilterItem(string _filterName, int _SortOption, bool _isEnabled, bool _isSortable)
         {
             FilterName = _filterName;
+            SortOption = _SortOption;
             IsEnabled = _isEnabled;
             IsSortable = _isSortable;
         }

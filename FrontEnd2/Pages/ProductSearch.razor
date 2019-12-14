@@ -409,7 +409,7 @@
         if (tempFilteritem.IsSortable)
         {
             list = AssignNewBools(list, tempFilteritem.FilterName);
-            DecideOrderFilter(tempFilteritem.FilterName);
+            DecideOrderFilter(tempFilteritem.SortOption);
         }
         else
         {
@@ -433,29 +433,29 @@
         return list;
     }
 
-    public void DecideOrderFilter(string filterName)
+    public void DecideOrderFilter(int filterName)
     {
         switch (filterName)
         {
-            case "Relevance":
+            case (int)SortNames.Relevance:
                 itemList = sort.SortByMostRelevant(itemList);
                 break;
-            case "Lowest price":
+            case (int)SortNames.LowestPrice:
                 itemList = sort.SortByPriceLH(itemList);
                 break;
-            case "Heighest price":
+            case (int)SortNames.HeigestPrice:
                 itemList = sort.SortBypriceHL(itemList);
                 break;
-            case "Product (A-Z)":
+            case (int)SortNames.ProductAZ:
                 itemList = sort.SortByNameAZ(itemList);
                 break;
-            case "Product (Z-A)":
+            case (int)SortNames.ProductZA:
                 itemList = sort.SortByNameZA(itemList);
                 break;
-            case "Store (A-Z)":
+            case (int)SortNames.StoreAZ:
                 itemList = sort.SortByStoreAZ(itemList);
                 break;
-            case "Store (Z-A)":
+            case (int)SortNames.StoreZA:
                 itemList = sort.SortByStoreZA(itemList);
                 break;
         }
@@ -880,16 +880,16 @@
     /// come from the database
     /// </summary>
     /// <returns></returns>
-    public string FindActiveSortFilter(List<FilterItem> filterList)
+    public int FindActiveSortFilter(List<FilterItem> filterList)
     {
         foreach (FilterItem o in filterList)
         {
             if (o.IsEnabled)
             {
-                return o.FilterName;
+                return o.SortOption;
             }
         }
-        return "Most Relevant";
+        return (int)SortNames.Relevance;
     }
 
     /// <summary>

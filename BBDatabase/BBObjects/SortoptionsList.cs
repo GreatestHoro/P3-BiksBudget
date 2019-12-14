@@ -4,18 +4,17 @@ namespace BBCollection.BBObjects
 {
     public class SortoptionsList
     {
-        public SortNames name = new SortNames();
         public List<FilterItem> optionsList = new List<FilterItem>();
 
         public SortoptionsList()
         {
-            optionsList.Add( new FilterItem(name.relevance, true, true));
-            optionsList.Add(new FilterItem(name.lowToHight, false, true));
-            optionsList.Add(new FilterItem(name.heigestPrice, false, true));
-            optionsList.Add(new FilterItem(name.productAZ, false, true));
-            optionsList.Add(new FilterItem(name.productZA, false, true));
-            optionsList.Add(new FilterItem(name.storeAZ, false, true));
-            optionsList.Add(new FilterItem(name.storeZA, false, true));
+            optionsList.Add(new FilterItem("Relevance", (int)SortNames.Relevance, true, true));
+            optionsList.Add(new FilterItem("Lowest Price", (int)SortNames.LowestPrice, false, true));
+            optionsList.Add(new FilterItem("Heighest Price", (int)SortNames.HeigestPrice, false, true));
+            optionsList.Add(new FilterItem("Producst (A - Z)", (int)SortNames.ProductAZ, false, true));
+            optionsList.Add(new FilterItem("Products (Z - A)", (int)SortNames.ProductZA, false, true));
+            optionsList.Add(new FilterItem("Store (A - Z)", (int)SortNames.StoreAZ, false, true));
+            optionsList.Add(new FilterItem("Store (Z - A)", (int)SortNames.StoreZA, false, true));
         }
 
 
@@ -25,14 +24,14 @@ namespace BBCollection.BBObjects
         }
     }
 
-    public class SortNames
+    public enum SortNames
     {
-        public string relevance = "Relevance";
-        public string lowToHight = "Lowest price";
-        public string heigestPrice = "Heighest price";
-        public string productAZ = "Product (A-Z)";
-        public string productZA = "Product (Z-A)";
-        public string storeAZ = "Store (A-Z)";
-        public string storeZA = "Store (Z-A)";
+        Relevance,
+        LowestPrice,
+        HeigestPrice,
+        ProductAZ,
+        ProductZA,
+        StoreAZ,
+        StoreZA,
     }
 }
