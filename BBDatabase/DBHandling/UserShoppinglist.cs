@@ -100,6 +100,14 @@ namespace BBCollection.DBHandling
         {
             shoppinglist.Clear();
         }
+        public void DeleteList(List<Product> removeList)
+        {
+            foreach (Product p in removeList)
+            {
+                DeleteItem(p);
+            }
+
+        }
 
         public void ClearItems()
         {

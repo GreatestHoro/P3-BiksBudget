@@ -46,14 +46,14 @@
             <Field IsHorizontal="true">
                 <FieldBody ColumnSize="ColumnSize.Is10">
                     <Buttons Role="ButtonsRole.Addons">
-                        <Button Color="Color.Info" Clicked="@(() => user.shoppinglist.SetFilter(UserShoppinglist.Filter.All))" IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.All)"><Icon Name="@(FontAwesomeIcons.Save)"/></Button>
-                        <Button Color="Color.Info" Clicked="@(() => user.shoppinglist.ClearItems())" IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed)"><Icon Name="@(FontAwesomeIcons.Trash)"/></Button>
+                        <Button Color="Color.Info" Clicked="@(()=>SaveShoppinglist())" IsActive="@(!changeHasHappen)"><Icon Name="@(FontAwesomeIcons.Save)"/></Button>
+                        <Button Color="Color.Info" Clicked="@(() => DeleteList())" IsActive="@(!productSelected)"><Icon Name="@(FontAwesomeIcons.Trash)"/></Button>
                         <Button Color="Color.Info" Clicked="@(() => user.shoppinglist.SetFilter(UserShoppinglist.Filter.Completed))" IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed)"> ??</Button>
                     </Buttons>
                     <Text Class="shoppinglist-Price-Text"> Total  @String.Format("{0:0.0}", user.shoppinglist.CompletePrice()) DKK</Text>
                 </FieldBody>
                 <FieldBody ColumnSize="ColumnSize.Is2">
-                    <Button Color="Color.Warning" Float="Float.Right" Clicked="AddListToStorage" Visibility="@(user.shoppinglist.Products.Any(x=>x._completed) ? Visibility.Always : Visibility.Never)"><Icon Name="@(FontAwesomeIcons.Archive)"/></Button>
+                    <Button Color="Color.Warning" Float="Float.Right" Clicked="AddListToStorage" Visibility="@(productSelected ? Visibility.Always : Visibility.Never)"><Icon Name="@(FontAwesomeIcons.Archive)"/></Button>
                 </FieldBody>
             </Field>
         </CardFooter>
@@ -76,6 +76,8 @@
     bool remindToSave = false;
     bool isLoggedIn = false;
     bool StoreLogoFlag = false;
+    bool productSelected = false;
+    bool changeHasHappen = false;
 
     int value = 1;
 
@@ -167,20 +169,7 @@
 
                 // THis means he has a shoppinglist, and this will be called throuhg the api
                 await user.shoppinglist.GetWhenLoggedIn();
-                user.shoppinglist.shoppinglist = user.shoppinglist.shoppinglist.OrderBy(x => x._storeName).ThenBy(x => x._price).ToList();
-                foreach (Product p in user.shoppinglist.shoppinglist)
-                {
-                    if (ProductStoreDict.ContainsKey(p._storeName.ToLower()))
-                    {
-                        ProductStoreDict[p._storeName.ToLower()].Add(p);
-                    }
-                    else
-                    {
-                        ProductStoreDict.Add((p._storeName.ToLower()),new List<Product>());
-                        ProductStoreDict[p._storeName.ToLower()].Add(p);
-                    }
-
-                }
+                UpdateShoppinglist();
 
                 /*BilkaProducts = user.shoppinglist.shoppinglist.Where(x => x._storeName.StartsWith('B')).ToList();
                 SuperBrugsenProducts = user.shoppinglist.shoppinglist.Where(x => x._storeName.StartsWith('S')).ToList();
@@ -318,6 +307,8 @@
         {
 
         }
+        changeHasHappen = true;
+        anySelected();
         StateHasChanged();
     }
 
@@ -326,4 +317,34 @@
         user.shoppinglist.CheckAll(isChecked);
     }
 
+    public void anySelected()
+    {
+        productSelected = user.shoppinglist.Products.Any(x => x._completed);
+    }
+
+    public void DeleteList()
+    {
+        user.shoppinglist.DeleteList(user.shoppinglist.shoppinglist.Where(x=>x._completed == true).ToList());
+        UpdateShoppinglist();
+        StateHasChanged();
+    }
+
+    public void UpdateShoppinglist()
+    {
+        ProductStoreDict.Clear();
+        user.shoppinglist.shoppinglist = user.shoppinglist.shoppinglist.OrderBy(x => x._storeName).ThenBy(x => x._price).ToList();
+        foreach (Product p in user.shoppinglist.shoppinglist)
+        {
+            if (ProductStoreDict.ContainsKey(p._storeName.ToLower()))
+            {
+                ProductStoreDict[p._storeName.ToLower()].Add(p);
+            }
+            else
+            {
+                ProductStoreDict.Add((p._storeName.ToLower()),new List<Product>());
+                ProductStoreDict[p._storeName.ToLower()].Add(p);
+            }
+
+        }
+    }
 }
