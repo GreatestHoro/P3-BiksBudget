@@ -15,7 +15,11 @@
         <CardBody Padding="Padding.Is0.FromBottom">
             <Fields>
                 <Column ColumnSize="ColumnSize.Is1">
-                    <CheckEdit Checked="@user.shoppinglist.Products.All(x=>x._completed)" CheckedChanged="user.shoppinglist.CheckAll">All</CheckEdit>
+                    @if (user.shoppinglist.shoppinglist.Count != 0)
+                    {
+                        <CheckEdit Checked="@user.shoppinglist.Products.All(x=>x._completed)" CheckedChanged="user.shoppinglist.CheckAll">All</CheckEdit>
+                    }
+
                 </Column>
             </Fields>
         </CardBody>
@@ -46,9 +50,11 @@
             <Field IsHorizontal="true">
                 <FieldBody ColumnSize="ColumnSize.Is10">
                     <Buttons Role="ButtonsRole.Addons">
-                        <Button Color="Color.Info" Clicked="@(()=>SaveShoppinglist())" IsActive="@(!changeHasHappen)"><Icon Name="@(FontAwesomeIcons.Save)"/></Button>
-                        <Button Color="Color.Info" Clicked="@(() => DeleteList())" IsActive="@(!productSelected)"><Icon Name="@(FontAwesomeIcons.Trash)"/></Button>
-                        <Button Color="Color.Info" Clicked="@(() => user.shoppinglist.SetFilter(UserShoppinglist.Filter.Completed))" IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed)"> ??</Button>
+                        <Tooltip IsAlwaysActive="@(changeHasHappen)" Text="Dont forget to save">
+                            <Button Color="Color.Info" Clicked="@(()=>SaveShoppinglist())" IsActive="@(!changeHasHappen)"><Icon Name="@(FontAwesomeIcons.Save)" /></Button>
+                        </Tooltip>
+                            <Button Color="Color.Info" Clicked="@(() => DeleteList())" IsActive="@(!productSelected)"><Icon Name="@(FontAwesomeIcons.Trash)" /></Button>
+                            @*<Button Color="Color.Info" Clicked="@(() => user.shoppinglist.SetFilter(UserShoppinglist.Filter.Completed))" IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed)"> ??</Button>*@
                     </Buttons>
                     <Text Class="shoppinglist-Price-Text"> Total  @String.Format("{0:0.0}", user.shoppinglist.CompletePrice()) DKK</Text>
                 </FieldBody>
@@ -254,7 +260,9 @@
     /// </summary>
     public async Task AddListToStorage()
     {
+        remindToSave = true;
         responseMessage = await user.ShoppinglistToStrage();
+        UpdateShoppinglist();
         StateHasChanged();
     }
 
@@ -324,6 +332,7 @@
 
     public void DeleteList()
     {
+        remindToSave = true;
         user.shoppinglist.DeleteList(user.shoppinglist.shoppinglist.Where(x=>x._completed == true).ToList());
         UpdateShoppinglist();
         StateHasChanged();
