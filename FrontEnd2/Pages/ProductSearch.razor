@@ -804,7 +804,7 @@
         prodName = await ph.AddRefCol();
 
         prodData = Enumerable.Range(1, prodName.Length)
-            .Select(x => new AutocompleteSearch { textField = prodName[x - 1], valueField = x });
+        .Select(x => new AutocompleteSearch { textField = prodName[x - 1], valueField = x });
 
         FindingAutocorrectlist = false;
     }

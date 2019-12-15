@@ -227,24 +227,77 @@ namespace BBCollection.DBHandling
             await Task.Run(() => new SQLConnect().NonQueryMSC(msc));
         }
 
-        public int stringLength(string s)
-        {
-            int i = s.IndexOf(',');
-            return i;
-        }
-
         public async Task<string[]>  AddRefCol()
         {
             List<Product> products = await ReferencesAsync("");
-            string[] prodRefs = new string[products.Count];
+            List<string> viableWords = new List<string>();
+            string[] prodRefs;
             products.ForEach(x => x._CustomReferenceField.ToLower());
-            products.ForEach(x => x._CustomReferenceField = x._CustomReferenceField.Split(",").First());
-            prodRefs = products.Select(p => Convert.ToString(p._CustomReferenceField)).ToArray();
+            products.ForEach(x => viableWords.AddRange(FindViableWords(x._CustomReferenceField, x._productName)));
+
+            prodRefs = new string[viableWords.Count];
+            prodRefs = viableWords.Select(p => Convert.ToString(p)).ToArray();
             prodRefs = prodRefs.Distinct().ToArray();
-            Array.Sort(prodRefs, (x,y) => x.Length.CompareTo(y.Length));
+            Array.Sort(prodRefs, (x, y) => x.Length.CompareTo(y.Length));
 
             return prodRefs; 
+        }
 
+        public List<string> FindViableWords(string ReferenceField, string ProductName)
+        {
+            List<string> returnList = new List<string>();
+            string[] refArray = ReferenceField.Split(",");
+
+            returnList.Add(ReferenceField.Split(",").First());
+
+            foreach (string sOne in refArray)
+            {
+                foreach (string sTwo in refArray)
+                {
+                    if (WordsVerified(sOne, sTwo))
+                    {
+                        returnList.AddRange(CheckAll(sOne, sTwo, ProductName.ToLower()));
+                    }
+                }
+            }
+
+            return returnList;
+        }
+
+        public bool WordsVerified(string sOne, string sTwo)
+        {
+            return !String.IsNullOrEmpty(sOne) && !String.IsNullOrEmpty(sTwo) && sOne != sTwo;
+        }
+
+        public List<string> CheckAll(string wordOne, string wordTwo, string prodname)
+        {
+            List<string> returnList = new List<string>();
+            string[] test = { "", " ", " i ", " med ", " fra ", " m." };
+            string returnString = "";
+
+            foreach (string s in test)
+            {
+                returnString = CheckCombination(wordOne, wordTwo, s, prodname);
+
+                if (!String.IsNullOrEmpty(returnString))
+                {
+                    returnList.Add(returnString);
+                }
+            }
+
+            return returnList;
+        }
+
+        public string CheckCombination(string wordOne, string wordTwo, string split, string prodName)
+        {
+            string isViable = $"{wordOne}{split}{wordTwo}";
+
+            if (prodName.Contains(isViable))
+            {
+                return isViable;
+            }
+
+            return "";
         }
 
         public async Task<double> CheapestPrice(string ingredient, Chain filter)
