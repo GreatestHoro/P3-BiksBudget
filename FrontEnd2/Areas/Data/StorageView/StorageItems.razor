@@ -53,14 +53,11 @@
                 <Field IsHorizontal="true">
                     <FieldBody ColumnSize="ColumnSize.Is10">
                         <Buttons Role="ButtonsRole.Addons">
-                            <Button Color="Color.Info" Clicked="@(() => user.shoppinglist.SetFilter(UserShoppinglist.Filter.All))" IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.All)"><Icon Name="@(FontAwesomeIcons.Save)" /></Button>
-                            <Button Color="Color.Info" Clicked="@(() => user.shoppinglist.ClearItems())" IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed)"><Icon Name="@(FontAwesomeIcons.Trash)" /></Button>
-                            <Button Color="Color.Info" Clicked="@(() => user.shoppinglist.SetFilter(UserShoppinglist.Filter.Completed))" IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed)"> ??</Button>
+                            <Button Color="Color.Info" Clicked="@(() => user.storage.DeleteStorage())" IsDisabled="selectedProductCount == 0" IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed)"><Icon Name="@(FontAwesomeIcons.Trash)" /> Delete Products (@selectedProductCount)</Button>
+                            <Button Color="Color.Info" Clicked="@(() => user.shoppinglist.SetFilter(UserShoppinglist.Filter.Completed))" IsDisabled="selectedProductCount == 0" IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed)"><Icon Name="@(FontAwesomeIcons.IceCream)"></Icon> BiksFood (@selectedProductCount)</Button>
                         </Buttons>
-                        <Text Class="shoppinglist-Price-Text"> Total  @String.Format("{0:0.0}", user.shoppinglist.CompletePrice()) DKK</Text>
                     </FieldBody>
                     <FieldBody ColumnSize="ColumnSize.Is2">
-                        <Button Color="Color.Warning" Float="Float.Right" Visibility="@(user.shoppinglist.Products.Any(x=>x._completed) ? Visibility.Always : Visibility.Never)"><Icon Name="@(FontAwesomeIcons.Archive)" /></Button>
                     </FieldBody>
                 </Field>
             </CardFooter>
@@ -238,6 +235,7 @@
     int Timesload = 0;
     int defualtAmountLoad = 10;
     int NewAmount;
+    int selectedProductCount = 0;
 
     bool found = true;
     bool viewTitle = false;
@@ -765,6 +763,12 @@
 
     public void OnStatusChanged(bool isChecked)
     {
+        CountSelectedProducts();
         StateHasChanged();
+    }
+
+    public void CountSelectedProducts()
+    {
+        selectedProductCount = user.storage.storageList.Count(x=> x._completed);
     }
 }

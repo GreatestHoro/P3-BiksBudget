@@ -78,25 +78,7 @@ namespace Backend.Controllers
             // The list of products to add to storage
             newItem = JsonConvert.DeserializeObject<List<Product>>(buffer);
 
-            if (newItem.Count == 0)
-            {
-                // If the list of items to add is empty, storage is deleted
-                await dbConnect.Storage.Update(Email, newItem);
-            }
-            else
-            {
-                // Else the storage in the database is requested
-                Fromdb = await dbConnect.Storage.GetList(Email);
-
-                // The two lists from the database and the frontend are merged into one
-                newItem = newItem.Concat(Fromdb).ToList();
-
-                // Dublicats are handled
-                newItem = functionality.HandleDublicats(newItem);
-
-                // The updated list without dublicats are added to storage
-                await dbConnect.Storage.Update(Email, newItem);
-            }
+            await dbConnect.Storage.Update(Email, newItem);
         }
 
         /// <summary>

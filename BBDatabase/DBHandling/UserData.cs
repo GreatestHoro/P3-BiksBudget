@@ -61,7 +61,7 @@ namespace BBCollection.DBHandling
 
         public async Task<HttpResponseMessage> ShoppinglistToStrage()
         {
-            responseOne = await storage.AddList(shoppinglist.shoppinglist.Where(x => x._completed == false).ToList());
+            responseOne = await storage.AddList(shoppinglist.FindActiveList());
             responseTwo = await shoppinglist.DeleteAndSaveList();
 
             if (BothComplete())

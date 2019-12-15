@@ -15,7 +15,7 @@
         <CardBody Padding="Padding.Is0.FromBottom">
             <Fields>
                 <Column ColumnSize="ColumnSize.Is1">
-                    <CheckEdit Checked="@user.shoppinglist.Products.All(x=>x._completed)" CheckedChanged="user.shoppinglist.CheckAll">All</CheckEdit>
+                    <CheckEdit Checked="@IsAllSelected()" CheckedChanged="CheckAll">All</CheckEdit>
                 </Column>
             </Fields>
         </CardBody>
@@ -46,9 +46,9 @@
             <Field IsHorizontal="true">
                 <FieldBody ColumnSize="ColumnSize.Is10">
                     <Buttons Role="ButtonsRole.Addons">
-                        <Button Color="Color.Info" Clicked="@(()=>SaveShoppinglist())" IsActive="@(!changeHasHappen)"><Icon Name="@(FontAwesomeIcons.Save)"/></Button>
-                        <Button Color="Color.Info" Clicked="@(() => DeleteList())" IsActive="@(!productSelected)"><Icon Name="@(FontAwesomeIcons.Trash)"/></Button>
-                        <Button Color="Color.Info" Clicked="@(() => user.shoppinglist.SetFilter(UserShoppinglist.Filter.Completed))" IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed)"> ??</Button>
+                        <Button Color="Color.Info" Clicked="@(()=>SaveShoppinglist())" IsActive="@(!changeHasHappen)"><Icon Name="@(FontAwesomeIcons.Save)"/> Save Shoppinglist</Button>
+                        <Button Color="Color.Info" Clicked="@(() => DeleteList())" IsDisabled="selectedProductCount == 0" IsActive="@(!productSelected)"><Icon Name="@(FontAwesomeIcons.Trash)"/> Delete Items (@selectedProductCount)</Button>
+                        <Button Color="Color.Info" Clicked="@(() => AddListToStorage())" IsDisabled="selectedProductCount == 0" IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed)"> Add To Storage (@selectedProductCount)</Button>
                     </Buttons>
                     <Text Class="shoppinglist-Price-Text"> Total  @String.Format("{0:0.0}", user.shoppinglist.CompletePrice()) DKK</Text>
                 </FieldBody>
@@ -78,7 +78,9 @@
     bool StoreLogoFlag = false;
     bool productSelected = false;
     bool changeHasHappen = false;
+    bool allEnabled = false;
 
+    int selectedProductCount = 0;
     int value = 1;
 
     string email;
@@ -117,6 +119,30 @@
         {
             item._amountleft--;
         }
+    }
+
+    public bool IsAllSelected()
+    {
+        if (user.shoppinglist.Products.All(x => x._completed))
+        {
+            allEnabled = true;
+        }
+        else
+        {
+            allEnabled = false;
+        }
+
+        return allEnabled;
+    }
+
+    public void CheckAll()
+    {
+        allEnabled = !allEnabled;
+
+        user.shoppinglist.SelectAllProducs(allEnabled);
+        CountSelectedProducts();
+        anySelected();
+        StateHasChanged();
     }
 
     public void OnCheckedChanged() { }
@@ -169,6 +195,7 @@
 
                 // THis means he has a shoppinglist, and this will be called throuhg the api
                 await user.shoppinglist.GetWhenLoggedIn();
+                await user.storage.Get();
                 UpdateShoppinglist();
 
                 /*BilkaProducts = user.shoppinglist.shoppinglist.Where(x => x._storeName.StartsWith('B')).ToList();
@@ -254,15 +281,9 @@
     /// </summary>
     public async Task AddListToStorage()
     {
-        responseMessage = await user.ShoppinglistToStrage();
-        StateHasChanged();
-    }
-
-    public void DeleteShoppinglist()
-    {
         remindToSave = true;
-        user.shoppinglist.DeleteList();
-
+        responseMessage = await user.ShoppinglistToStrage();
+        UpdateShoppinglist();
         StateHasChanged();
     }
 
@@ -271,15 +292,6 @@
         remindToSave = true;
 
         await user.ProductSLToStrage(p);
-
-        StateHasChanged();
-    }
-
-    public async void AddOneItemToStorage(Product p)
-    {
-        remindToSave = true;
-
-        await user.ProductSLToStrage(p, 1);
 
         StateHasChanged();
     }
@@ -308,13 +320,20 @@
 
         }
         changeHasHappen = true;
+        CountSelectedProducts();
         anySelected();
         StateHasChanged();
+    }
+
+    public void CountSelectedProducts()
+    {
+        selectedProductCount = user.shoppinglist.shoppinglist.Count(x=> x._completed);
     }
 
     public void SetCheckMarks(bool isChecked)
     {
         user.shoppinglist.CheckAll(isChecked);
+        CountSelectedProducts();
     }
 
     public void anySelected()
@@ -324,9 +343,9 @@
 
     public void DeleteList()
     {
-        user.shoppinglist.DeleteList(user.shoppinglist.shoppinglist.Where(x=>x._completed == true).ToList());
+        user.shoppinglist.DeleteList();
         UpdateShoppinglist();
-        StateHasChanged();
+        this.StateHasChanged();
     }
 
     public void UpdateShoppinglist()

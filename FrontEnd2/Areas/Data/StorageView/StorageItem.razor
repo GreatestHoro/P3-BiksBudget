@@ -40,7 +40,7 @@
                             </TableRowCell>
                             <TableRowCell Style="width:110px">
                                 <Label>Expiration date</Label>
-                                <DateEdit Placeholder="Change the date" Date="selectedDate" DateChanged="OnDateChanged" />
+                                <DateEdit Placeholder="Change the date" Date="Convert.ToDateTime(Product._timeAdded)" DateChanged="OnDateChanged" />
                             </TableRowCell>
                         </TableRow>
                     </TableBody>
@@ -52,7 +52,7 @@
 @code {
     public int selectedValue = 0;
     public int scalar;
-    public int TempScalar;
+    public string TempScalar;
     static string[] Amount = { "Full", "Almost Full", "Almost Empty"  };
     IEnumerable<AmountRemaining> data = Enumerable.Range( 1, Amount.Length ).Select( x => new AmountRemaining { textField = Amount[x - 1], valueField = x } );
 
@@ -66,7 +66,7 @@
 
     void OnDateChanged( DateTime? date)
     {
-        selectedDate = date; 
+        Product._timeAdded = date.ToString(); 
     }
 
     void AmountChanged( object newValue )

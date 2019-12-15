@@ -38,6 +38,7 @@ namespace BBCollection.DBHandling
         public Dictionary<string, List<Product>> shoppinglistDict = new Dictionary<string, List<Product>>();
         Product tempProduct = new Product();
         List<Shoppinglist> shoppinglistFromAPi = new List<Shoppinglist>();
+        List<Product> ListToEdit = new List<Product>();
         ApiCalls api;
 
         public void SetFilter(Filter filter)
@@ -89,17 +90,33 @@ namespace BBCollection.DBHandling
             }
         }
 
+        public void SelectAllProducs(bool setTo)
+        {
+            shoppinglist.ForEach(x => x._completed = setTo);
+        }
+
         public async Task<HttpResponseMessage> DeleteAndSaveList()
         {
-            shoppinglist = shoppinglist.Where(x=>x._completed==false).ToList();
+            shoppinglist = FindDisabledList();
 
             return await Save();
         }
 
+        public List<Product> FindActiveList()
+        {
+            return shoppinglist.Where(x => x._completed == true).ToList();
+        }
+
+        public List<Product> FindDisabledList()
+        {
+            return shoppinglist.Where(x => x._completed == false).ToList();
+        }
+
         public void DeleteList()
         {
-            shoppinglist.Clear();
+            shoppinglist = FindDisabledList();
         }
+
         public void DeleteList(List<Product> removeList)
         {
             foreach (Product p in removeList)

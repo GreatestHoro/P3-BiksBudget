@@ -25,6 +25,8 @@ namespace BBCollection.DBHandling
 
         public List<Product> storageList = new List<Product>();
         static Product tempProduct = new Product();
+        public List<Product> ListToDelete = new List<Product>();
+        public ControllerFuncionality handle = new ControllerFuncionality();
 
         HttpResponseMessage response = new HttpResponseMessage();
         ApiCalls api;
@@ -59,11 +61,21 @@ namespace BBCollection.DBHandling
             }
         }
 
+        public List<Product> CountActiveList()
+        {
+            return storageList.Where(x => x._completed == true).ToList();
+        }
+
         public async Task<HttpResponseMessage> DeleteStorage()
         {
-            storageList.Clear();
+            ListToDelete = CountActiveList();
 
-            productString = JsonConvert.SerializeObject(new List<Product>());
+            foreach (Product p in ListToDelete)
+            {
+                storageList.Remove(p);
+            }
+
+            productString = JsonConvert.SerializeObject(storageList);
 
             return await api.Post(productString);
         }
@@ -89,7 +101,8 @@ namespace BBCollection.DBHandling
             amount = p._amountleft;
             p = HelpToAdd(p, i);
 
-            productString = JsonConvert.SerializeObject(p);
+            storageList.Add(p);
+            productString = JsonConvert.SerializeObject(storageList);
 
             p._amountleft = amount;
 
@@ -100,7 +113,11 @@ namespace BBCollection.DBHandling
         {
             listToAdd.ForEach(p => p = HelpToAdd(p));
 
-            productString = JsonConvert.SerializeObject(listToAdd);
+            storageList.AddRange(listToAdd);
+
+            storageList = handle.HandleDublicats(storageList);
+
+            productString = JsonConvert.SerializeObject(storageList);
 
             return await api.Post(productString);
         }
