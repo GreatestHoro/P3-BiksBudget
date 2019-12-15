@@ -227,6 +227,30 @@ namespace BBCollection.DBHandling
             await Task.Run(() => new SQLConnect().NonQueryMSC(msc));
         }
 
+        public async Task AddAutocompleteToDB()
+        {
+            string[] toAdd = await AddRefCol();
+
+            foreach (string s in toAdd)
+            {
+                await ReferenceToAutcompleteToDB(s);
+            }
+        }
+
+        public async Task ReferenceToAutcompleteToDB(string s)
+        {
+            string[] toAdd = await AddRefCol();
+
+            string addAutcomplete = "INSERT INTO 'autocomplete_references'('referenceName')" +
+                                    "VALUES(@ReferenceName)";
+
+            MySqlCommand msc = new MySqlCommand(addAutcomplete);
+
+            msc.Parameters.AddWithValue("@ReferenceName", s);
+
+            await Task.Run(() => new SQLConnect().NonQueryMSC(msc));
+        }
+
         public async Task<string[]>  AddRefCol()
         {
             List<Product> products = await ReferencesAsync("");

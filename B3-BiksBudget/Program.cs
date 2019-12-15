@@ -27,7 +27,7 @@ namespace BBGatherer
 
                 //recipeQuery.CheapestCRecipes("").Wait();
                 //dh.GenerateDatabase().Wait();
-                //dh.GenerateData(false, false, false,false).Wait();
+                dh.GenerateData(false, false, false,false,true).Wait();
                 dh.TestCollection().Wait();
             }
             catch (Exception e)
@@ -45,10 +45,16 @@ namespace BBGatherer
             await dbConnect.Initialize.Start();
         }
 
-        public async Task GenerateData(bool coop, bool salling, bool generatePrice, bool DeleteRefrences)
+        public async Task GenerateData(bool coop, bool salling, bool generatePrice, bool DeleteRefrences, bool autocomplete)
         {
             ProductHandling test = new ProductHandling();
             //InitializeDB _test = new InitializeDB();
+
+            if (autocomplete)
+            {
+
+            }
+
             if (coop)
             {
                 CoopDoStuff tryCoop = new CoopDoStuff("d0b9a5266a2749cda99d4468319b6d9f");
@@ -63,7 +69,7 @@ namespace BBGatherer
                 }
             }
             //_test.UpdateProductTable(new DatabaseInformation("localhost", "biksbudgetDB", "root", "BiksBudget123"));
-            if (salling == true)
+            if (salling)
             {
                 RecipeCrawl WebRunner = new RecipeCrawl();
                 _ = WebRunner.GetRecipes(1, 2884, dbConnect);
@@ -75,12 +81,12 @@ namespace BBGatherer
             //dbConnect.AddProduct(new Product("test","hey","alot",1d,"nope","walmart"));
             //test.InsertIngredientReferenceFromId("tester", "test", new DatabaseInformation("localhost", "biksbudgetDB", "root", "BiksBudget123"));
 
-            if (generatePrice == true)
+            if (generatePrice)
             {
                 await dbConnect.Recipe.GenerateTotalPriceAsync();
             }
 
-            if (DeleteRefrences == true)
+            if (DeleteRefrences)
             {
                 var yeet = test.GetList("");
                 int i = 0;
