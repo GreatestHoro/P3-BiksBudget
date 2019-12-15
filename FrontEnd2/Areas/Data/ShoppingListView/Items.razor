@@ -287,14 +287,6 @@
         StateHasChanged();
     }
 
-    public void DeleteShoppinglist()
-    {
-        remindToSave = true;
-        responseMessage = await user.ShoppinglistToStrage();
-        UpdateShoppinglist();
-        StateHasChanged();
-    }
-
     public async void AddItemToStorage(Product p)
     {
         remindToSave = true;
