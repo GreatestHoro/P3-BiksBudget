@@ -27,7 +27,7 @@ namespace BBGatherer
 
                 //recipeQuery.CheapestCRecipes("").Wait();
                 //dh.GenerateDatabase().Wait();
-                dh.GenerateData(false, false, false,false,true).Wait();
+                //dh.GenerateData(false, false, false,false,true).Wait();
                 dh.TestCollection().Wait();
             }
             catch (Exception e)
@@ -104,66 +104,9 @@ namespace BBGatherer
         {
             DatabaseConnect dc = new DatabaseConnect();
 
-            //string b = "bilka";
-            string s = "superbrugsen";
+            await dc.Product.AddAutocompleteToDB();
 
-            List<string> bs = new List<string>();
 
-            //bs.Add(b);
-            bs.Add(s);
-
-            List<ComplexRecipe> complexRecipes = await dc.Recipe.GetListAsync("kaffe", Chain.none, 10, 0);
-
-            foreach(ComplexRecipe cr in complexRecipes)
-            {
-                Console.WriteLine("NAME: "+ cr._Name +" COST: "+ cr._complexRecipeComponent.RecipeCost);
-            }
-            /*
-            List<string> strings = new List<String>();
-
-            string str1 = null;
-            string str2 = null;
-            string str3 = null;
-
-            strings.Add(str1);
-            strings.Add(str2);
-            strings.Add(str3);
-
-            List<Recipe> recipes = await dc.Recipe.GetReferencesAsync(strings);
-
-            foreach(Recipe r in recipes)
-            {
-                Console.WriteLine(r._Name);
-            }*/
-
-            /*int count = 6;
-            string check = "";
-            string[] three = new string[] { "A", "B", "C"};
-            string[] six = new string[] { "A", "B", "C", "D", "E", "F" };
-
-            for (int i = 1; i < six.Length; i++)
-            {
-                int j = 0;
-                while (j < i)
-                {
-                    check += $"{six[i]} = {six[j]}";
-                    j++;
-                    if (i != 1)
-                    {
-                        if (j != i)
-                        {
-                            check += " AND ";
-
-                        }
-                    }
-                }
-                if (i < six.Length - 1)
-                {
-                    check += " AND ";
-                }
-                
-            }
-            Console.WriteLine(check);*/
 
         }
     }

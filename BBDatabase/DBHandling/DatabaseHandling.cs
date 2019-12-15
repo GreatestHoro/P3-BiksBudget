@@ -116,7 +116,7 @@ namespace BBCollection.DBHandling
 
             string autocompleteReferences =
                 "CREATE TABLE IF NOT EXISTS `autocomplete_references`(" +
-                "`referenceName` VARCHAR(255) UNIQUE; ";
+                "`referenceName` VARCHAR(255) UNIQUE); ";
 
 
             await new SQLConnect().NonQueryString(productTable);
@@ -196,7 +196,7 @@ namespace BBCollection.DBHandling
             string newColumnQuery =
                 "ALTER TABLE `recipes` ADD `recipe_totalprice` decimal(6,2)";
             string newColumnQuery2 =
-               "ALTER TABLE `recipes` ADD `image_url` decimal(6,2)";
+               "ALTER TABLE `recipes` ADD `image_url` varchar(255)";
 
             await new SQLConnect().NonQueryString(newColumnQuery);
             await new SQLConnect().NonQueryString(newColumnQuery2);

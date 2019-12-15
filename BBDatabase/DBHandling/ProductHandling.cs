@@ -241,7 +241,7 @@ namespace BBCollection.DBHandling
         {
             string[] toAdd = await AddRefCol();
 
-            string addAutcomplete = "INSERT INTO 'autocomplete_references'('referenceName')" +
+            string addAutcomplete = "INSERT INTO `autocomplete_references`(`referenceName`)" +
                                     "VALUES(@ReferenceName)";
 
             MySqlCommand msc = new MySqlCommand(addAutcomplete);
