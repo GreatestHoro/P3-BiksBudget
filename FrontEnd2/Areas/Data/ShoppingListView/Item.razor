@@ -68,10 +68,16 @@
         StatusChanged?.Invoke(isChecked);
     }
 
+    public void OnAmountChange() 
+    {
+        StatusChanged?.Invoke(true);
+    }
+
     public void OnSelectedValueChanged(int value)
     {
         selectedValue = value;
         Product._amountleft = selectedValue;
+        OnAmountChange();
     }
 
     [Parameter] public Product Product { get; set; }
