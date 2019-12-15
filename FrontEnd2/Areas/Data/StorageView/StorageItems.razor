@@ -55,6 +55,7 @@
                         <Buttons Role="ButtonsRole.Addons">
                             <Button Color="Color.Info" Clicked="@(() => user.storage.DeleteStorage())" IsDisabled="selectedProductCount == 0" IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed)"><Icon Name="@(FontAwesomeIcons.Trash)" /> Delete Products (@selectedProductCount)</Button>
                             <Button Color="Color.Info" Clicked="@(() => user.shoppinglist.SetFilter(UserShoppinglist.Filter.Completed))" IsDisabled="selectedProductCount == 0" IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed)"><Icon Name="@(FontAwesomeIcons.IceCream)"></Icon> BiksFood (@selectedProductCount)</Button>
+                            <Button Color="Color.Info" Clicked="@(()=>showQuickaddModal(ModalSize.Default, 50, true))"><Icon Name="@(FontAwesomeIcons.Search)"></Icon> Quickadd</Button>
                         </Buttons>
                     </FieldBody>
                     <FieldBody ColumnSize="ColumnSize.Is2">
@@ -64,6 +65,61 @@
         </Column>
     </Row>
 
+    <Accordion>
+        <Modal @ref="quickaddModal">
+            <ModalBackdrop />
+            <ModalContent Size="@modalSize" IsCentered="@isCentered">
+                <ModalHeader>
+                    <ModalTitle>
+                        <Icon Name="@(FontAwesomeIcons.Search)" />
+                        Quickadd Producs
+                    </ModalTitle>
+                    <CloseButton Clicked="@hideQuickaddModal" />
+                </ModalHeader>
+                <ModalBody>
+                    <Autocomplete Data="@prodData"
+                                  TextField="@((item)=>item.textField)"
+                                  ValueField="@((item)=>item.textField)"
+                                  SelectedValue="@selectedSearchValue"
+                                  SelectedValueChanged="@searchHandler"
+                                  Placeholder="Enter a product name..."
+                                  Filter="AutocompleteFilter.Contains"
+                                  MinLength="2"
+                                  IsDisabled="FindingAutocorrectlist" />
+                </ModalBody>
+                <ModalBody MaxHeight="@maxHeight">
+                    <Row>
+                        @if (itemList.Count != 0)
+                        {
+                            @foreach (Product p in itemList.GetRange(0, produToPrint))
+                            {
+                                <Column ColumnSize="ColumnSize.Is12">
+                                    <Card Margin="Margin.Is1.FromBottom">
+                                        <CardBody>
+                                            <CardTitle Size="4">@p._productName</CardTitle>
+                                            <Field>
+                                                <FieldBody>
+                                                    <ListGroup IsFlush="true">
+                                                        <ListGroupItem><CardText>@p._amount</CardText></ListGroupItem>
+                                                        <ListGroupItem><CardText>@p._price DKK</CardText></ListGroupItem>
+                                                    </ListGroup>
+                                                </FieldBody>
+                                            </Field>
+                                            <Button Color="Color.Success" IsDisabled="disableQuickadd" Clicked="()=>ProductToStorage(p)" IsBlock="true">Add Product to Storage</Button>
+                                        </CardBody>
+                                    </Card>
+                                </Column>
+                            }
+                        }
+                    </Row>
+                </ModalBody>
+                <ModalFooter>
+                    <Button IsBlock="true" Color="Color.Secondary" IsOutline="true" Clicked="@hideQuickaddModal">Close</Button>
+                </ModalFooter>
+            </ModalContent>
+            <ModalBackdrop />
+        </Modal>
+    </Accordion>
 
     <Accordion>
         <Modal @ref="recipeRef">
@@ -209,10 +265,16 @@
             validations.ClearAll();
         }
     }
+    private Modal quickaddModal;
+    bool isCentered;
+    ModalSize modalSize;
+    int? maxHeight;
 
+    IEnumerable<AutocompleteSearch> prodData;
+    object SelectedSearchValue { get; set; }
+    bool FindingAutocorrectlist = true;
+    string[] prodName;
 
-
-    List<Product> itemList = new List<Product>();
     private Validations validations;
     ConnectionSettings connectionSettings = new ConnectionSettings();
     private Modal recipeRef;
@@ -236,6 +298,8 @@
     int defualtAmountLoad = 10;
     int NewAmount;
     int selectedProductCount = 0;
+    int produToPrint = 0;
+    int printAtOnce = 10;
 
     bool found = true;
     bool viewTitle = false;
@@ -255,13 +319,19 @@
     bool pmatch = true;
     bool OverallMatch = false;
     bool _FoodBiskEnabled = false;
+    bool disableQuickadd = false;
+    bool[] wordFilter;
+    bool[] storeFilter;
 
-    //ShoppinlistFunctionality ListFunc = new ShoppinlistFunctionality("api/Storage");
+    StoreFilterList storeFilters = new StoreFilterList();
+    WordFilterList wordFIlters = new WordFilterList();
     UserData user;
     HttpResponseMessage responseMessage = new HttpResponseMessage();
     Product tempProduct = new Product();
     Ingredient currentlySelectedIngredient;
     List<Ingredient> InshoppingList = new List<Ingredient>();
+    ProductSearchHandling search = new ProductSearchHandling();
+    List<Product> itemList = new List<Product>();
 
     List<float> recipeAmount = new List<float>();
     List<Ingredient> ingredients = new List<Ingredient>();
@@ -285,6 +355,22 @@
     public bool StorageExists()
     {
         return user.storage.storageList.Count > 0;
+    }
+
+    private void showQuickaddModal(ModalSize modalSize, int? maxHeight = null, bool isCentered = false)
+    {
+        this.isCentered = isCentered;
+        this.modalSize = modalSize;
+        this.maxHeight = maxHeight;
+
+        quickaddModal.Show();
+    }
+
+    private void hideQuickaddModal()
+    {
+        itemList.Clear();
+        searchBox = "";
+        quickaddModal.Hide();
     }
 
     /// <summary>
@@ -342,6 +428,7 @@
                 await user.storage.Get();
             }
             intailizeAllProducts(user.storage.storageList);
+            await InitializeAutocorrect();
             StateHasChanged();
         }
 
@@ -769,6 +856,57 @@
 
     public void CountSelectedProducts()
     {
-        selectedProductCount = user.storage.storageList.Count(x=> x._completed);
+        selectedProductCount = user.storage.storageList.Count(x => x._completed);
     }
+
+
+    private async Task searchHandler(object newValue)
+    {
+        try
+        {
+            selectedSearchValue = newValue;
+            searchBox = newValue.ToString();
+            itemList = await search.CallApiForProducts(searchBox, wordFilter, storeFilter);
+        }
+        catch (System.NullReferenceException)
+        {
+            Console.WriteLine("The searh was empty. Pls do not press ESC");
+        }
+
+        SetProduToPrint();
+    }
+
+    public void SetProduToPrint()
+    {
+        if (itemList.Count > printAtOnce)
+        {
+            produToPrint = printAtOnce;
+        }
+        else
+        {
+            produToPrint = itemList.Count();
+        }
+    }
+
+    public async Task InitializeAutocorrect()
+    {
+        storeFilter = search.SetBoolArray(storeFilters.GetStoreList());
+        wordFilter = search.SetBoolArray(wordFIlters.GetWordList());
+
+        prodName = await search.InitializeAutocorrect(wordFilter, storeFilter);
+        prodData = search.InitializeRecommender(prodName);
+
+        FindingAutocorrectlist = false;
+    }
+
+    public async Task ProductToStorage(Product p)
+    {
+        disableQuickadd = true;
+        await user.storage.AddProduct(p, 1);
+        await user.storage.Get();
+        StateHasChanged();
+
+        disableQuickadd = false;
+    }
+
 }

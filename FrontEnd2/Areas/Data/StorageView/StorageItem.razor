@@ -57,20 +57,24 @@
     IEnumerable<AmountRemaining> data = Enumerable.Range( 1, Amount.Length ).Select( x => new AmountRemaining { textField = Amount[x - 1], valueField = x } );
 
     object selectedAmount { get; set; } = 1;
-    
+
     [Parameter] public Product Product { get; set; }
 
     [Parameter] public Action<bool> StatusChanged { get; set; }
+
+    [Parameter] public bool shouldSave { get; set; }
 
     DateTime? selectedDate;
 
     void OnDateChanged( DateTime? date)
     {
-        Product._timeAdded = date.ToString(); 
+        shouldSave = true;
+        Product._timeAdded = date.ToString();
     }
 
     void AmountChanged( object newValue )
     {
+        shouldSave = true;
         selectedAmount = newValue;
         StateHasChanged();
     }
@@ -86,6 +90,7 @@
 
     public void OnSelectedValueChanged(int value)
     {
+        shouldSave = true;
         selectedValue = value;
         Product._amountleft = selectedValue;
     }

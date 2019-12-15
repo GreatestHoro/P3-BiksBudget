@@ -1,4 +1,4 @@
-﻿namespace FrontEnd2.Areas.Data
+﻿namespace BBCollection.BBObjects
 {
     public class AutocompleteSearch
     {

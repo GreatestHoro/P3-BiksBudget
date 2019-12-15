@@ -242,7 +242,7 @@
     WordFilterList wordFIlters = new WordFilterList();
     FindCloseStores closeStore;
     ControllerFuncionality features = new ControllerFuncionality();
-
+    
     List<FilterItem> optionsList = new List<FilterItem>();
     List<UnifiedAPIStore> allStoresUnified = new List<UnifiedAPIStore>();
     List<Product> itemList = new List<Product>();
@@ -255,6 +255,7 @@
     SortBy sort = new SortBy();
     SortNames sortBy = new SortNames();
     List<Product> tempToShowList = new List<Product>();
+    ProductSearchHandling search = new ProductSearchHandling();
 
     UserData user;
 
@@ -433,7 +434,7 @@
         if (tempFilteritem.IsSortable)
         {
             list = AssignNewBools(list, tempFilteritem.FilterName);
-            DecideOrderFilter(tempFilteritem.SortOption);
+            itemList = search.DecideOrderFilter(tempFilteritem.SortOption, itemList);
         }
         else
         {
@@ -455,34 +456,6 @@
             }
         }
         return list;
-    }
-
-    public void DecideOrderFilter(int filterName)
-    {
-        switch (filterName)
-        {
-            case (int)SortNames.Relevance:
-                itemList = sort.SortByMostRelevant(itemList);
-                break;
-            case (int)SortNames.LowestPrice:
-                itemList = sort.SortByPriceLH(itemList);
-                break;
-            case (int)SortNames.HeigestPrice:
-                itemList = sort.SortBypriceHL(itemList);
-                break;
-            case (int)SortNames.ProductAZ:
-                itemList = sort.SortByNameAZ(itemList);
-                break;
-            case (int)SortNames.ProductZA:
-                itemList = sort.SortByNameZA(itemList);
-                break;
-            case (int)SortNames.StoreAZ:
-                itemList = sort.SortByStoreAZ(itemList);
-                break;
-            case (int)SortNames.StoreZA:
-                itemList = sort.SortByStoreZA(itemList);
-                break;
-        }
     }
 
     void toggle()
@@ -639,7 +612,7 @@
     {
         tempFilterlist = FindFilterList(optionLabel);
 
-        DecideOrderFilter(FindActiveSortFilter(tempFilterlist));
+        itemList = search.DecideOrderFilter(FindActiveSortFilter(tempFilterlist), itemList);
     }
 
     public List<FilterItem> FindFilterList(string label)
@@ -712,24 +685,14 @@
     {
         if (!String.IsNullOrEmpty(searchBox) && !String.IsNullOrWhiteSpace(searchBox))
         {
-            return await CallApiForProducts(searchBox);
+            updateFilters();
+            return await search.CallApiForProducts(searchBox, EnabledKeywords, EnabledStores);
         }
         else
         {
             messageToUser = "You Need To Write A Searhcword";
             return new List<Product>();
         }
-    }
-
-    public async Task<List<Product>> CallApiForProducts(string searchTerm)
-    {
-        updateFilters();
-
-        ProductSearchLinkConstructer link = new ProductSearchLinkConstructer(searchTerm, ConvertBoolArrToStr(EnabledKeywords), ConvertBoolArrToStr(EnabledStores), _loadCount);
-
-        productString = await Http.GetStringAsync(link.GetURL());
-
-        return JsonConvert.DeserializeObject<List<Product>>(productString);
     }
 
     /// <summary>
@@ -799,12 +762,8 @@
 
     public async Task InitializeAutocorrect()
     {
-        itemList = await CallApiForProducts(tempSearchword);
-
-        prodName = await ph.AddRefCol();
-
-        prodData = Enumerable.Range(1, prodName.Length)
-        .Select(x => new AutocompleteSearch { textField = prodName[x - 1], valueField = x });
+        prodName = await search.InitializeAutocorrect(EnabledKeywords, EnabledStores);
+        prodData = search.InitializeRecommender(prodName);
 
         FindingAutocorrectlist = false;
     }
@@ -888,16 +847,6 @@
     #endregion
 
     #region Autocomplete_Search
-
-    void loadProdName()
-    {
-        prodName = itemList.Select(p => Convert.ToString(p._productName)).ToArray();
-
-        prodName = prodName.Select(s => s.ToLowerInvariant()).ToArray();
-
-        prodName = prodName.Distinct().ToArray();
-    }
-
 
     private async void searchHandler(object newValue)
     {
@@ -1058,22 +1007,6 @@
         return arr;
     }
 
-    /// <summary>
-    /// When the api is called, the url is created. The url cannot take a bool array as input
-    /// and therefore this array is converted to a string of 1 and 0.
-    /// </summary>
-    /// <param name="arr"></param>
-    /// <returns></returns>
-
-    public string ConvertBoolArrToStr(bool[] arr)
-    {
-        char[] returnChar = new char[arr.Length];
-        for (int i = 0; i < arr.Length; i++)
-        {
-            returnChar[i] = arr[i] ? '1' : '0';
-        }
-        return new string(returnChar);
-    }
     #endregion
 
     #region UserLocation
