@@ -38,6 +38,11 @@ namespace BBCollection.DBHandling
             storageList = JsonConvert.DeserializeObject<List<Product>>(productString);
         }
 
+        public void SelectAllProducs(bool setTo)
+        {
+            storageList.ForEach(x=> x._completed = setTo);
+        }
+
         public async Task<HttpResponseMessage> DeleteProduct(Product p)
         {
             p._amountleft = 0;

@@ -19,7 +19,7 @@
             <CardBody Padding="Padding.Is0.FromBottom">
                 <Fields>
                     <Column ColumnSize="ColumnSize.Is1">
-                        <CheckEdit Checked="@user.shoppinglist.Products.All(x=>x._completed)" CheckedChanged="user.shoppinglist.CheckAll">All</CheckEdit>
+                        <CheckEdit Checked="@IsAllSelected()" CheckedChanged="CheckAll">All</CheckEdit>
                     </Column>
                     <Column ColumnSize="ColumnSize.Is11">
                         <Addons>
@@ -299,7 +299,7 @@
     int NewAmount;
     int selectedProductCount = 0;
     int produToPrint = 0;
-    int printAtOnce = 10;
+    int printAtOnce = 20;
 
     bool found = true;
     bool viewTitle = false;
@@ -320,6 +320,7 @@
     bool OverallMatch = false;
     bool _FoodBiskEnabled = false;
     bool disableQuickadd = false;
+    bool allEnabled = false;
     bool[] wordFilter;
     bool[] storeFilter;
 
@@ -438,6 +439,29 @@
     {
         // The email is requested fomr localstorage
         email = await localStorage.GetItemAsync<string>("Email");
+    }
+
+    public bool IsAllSelected()
+    {
+        if (user.storage.storageList.All(x => x._completed == true))
+        {
+            allEnabled = true;
+        }
+        else
+        {
+            allEnabled = false;
+        }
+
+        return allEnabled;
+    }
+
+    public void CheckAll()
+    {
+        allEnabled = !allEnabled;
+
+        user.storage.SelectAllProducs(allEnabled);
+        CountSelectedProducts();
+        StateHasChanged();
     }
     #endregion
 
@@ -867,6 +891,7 @@
             selectedSearchValue = newValue;
             searchBox = newValue.ToString();
             itemList = await search.CallApiForProducts(searchBox, wordFilter, storeFilter);
+            itemList = search.DecideOrderFilter((int)SortNames.Relevance, itemList);
         }
         catch (System.NullReferenceException)
         {
