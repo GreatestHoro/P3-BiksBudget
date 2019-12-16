@@ -346,7 +346,6 @@
     ControllerFuncionality features = new ControllerFuncionality();
     Dictionary<Ingredient, List<string>> ingrdientDict = new Dictionary<Ingredient, List<string>>();
     Dictionary<Product, bool> SelectedProducts = new Dictionary<Product, bool>();
-    //ShoppinlistFunctionality ShopList = new ShoppinlistFunctionality("api/Shoppinglist");
 
     private delegate bool compareWR(WeightedRecipies r1, WeightedRecipies r2);
     #endregion
@@ -909,7 +908,7 @@
         storeFilter = search.SetBoolArray(storeFilters.GetStoreList());
         wordFilter = search.SetBoolArray(wordFIlters.GetWordList());
 
-        prodName = await search.InitializeAutocorrect(wordFilter, storeFilter);
+        prodName = await search.InitializeAutocorrect();
         prodData = search.InitializeRecommender(prodName);
 
         FindingAutocorrectlist = false;

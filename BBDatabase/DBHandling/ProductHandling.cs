@@ -237,6 +237,28 @@ namespace BBCollection.DBHandling
             }
         }
 
+        public async Task<string[]> GetAutocompleteWords()
+        {
+            List<string> wordList = new List<string>();
+            string table = "autocomplete_references";
+            string collumn = "referenceName";
+
+            DataSet ds = await new SQLConnect().DynamicSimpleListSQL(new SqlQuerySort().SortMSC("", table, collumn));
+
+            if (ds.Tables.Count != 0)
+            {
+                foreach (DataRow r in ds.Tables[0].Rows)
+                {
+                    wordList.Add((string)r[0]);
+                }
+            }
+
+            string[] returnArray = wordList.ToArray();
+            Array.Sort(returnArray, (x, y) => x.Length.CompareTo(y.Length));
+
+            return returnArray;
+        }
+
         public async Task ReferenceToAutcompleteToDB(string s)
         {
             string[] toAdd = await AddRefCol();
@@ -262,7 +284,7 @@ namespace BBCollection.DBHandling
             prodRefs = new string[viableWords.Count];
             prodRefs = viableWords.Select(p => Convert.ToString(p)).ToArray();
             prodRefs = prodRefs.Distinct().ToArray();
-            Array.Sort(prodRefs, (x, y) => x.Length.CompareTo(y.Length));
+            //Array.Sort(prodRefs, (x, y) => x.Length.CompareTo(y.Length));
 
             return prodRefs; 
         }

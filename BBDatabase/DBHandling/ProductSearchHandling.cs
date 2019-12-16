@@ -16,21 +16,17 @@ namespace BBCollection.DBHandling
     {
         
         ProductHandling ph = new ProductHandling();
-        List<Product> itemList = new List<Product>();
         HttpClient Http = new HttpClient();
         SortBy sort = new SortBy();
         string[] prodName;
         string productString;
-        string tempSearchword = "";
         int _loadCount = 0;
 
 
         #region Autocomplete
-        public async Task<string[]> InitializeAutocorrect(bool[] enabledKeywords, bool[] enabledStores)
+        public async Task<string[]> InitializeAutocorrect()
         {
-            itemList = await CallApiForProducts(tempSearchword, enabledKeywords, enabledStores);
-
-            prodName = await ph.AddRefCol();
+            prodName = await ph.GetAutocompleteWords();
 
             return prodName;
         }
