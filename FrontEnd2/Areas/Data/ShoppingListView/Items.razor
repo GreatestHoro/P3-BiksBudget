@@ -47,7 +47,7 @@
                 <FieldBody ColumnSize="ColumnSize.Is9">
                     <Buttons Role="ButtonsRole.Addons">
                         <Tooltip IsAlwaysActive="@(changeHasHappen)" Text="Dont forget to save">
-                            <Button Color="Color.Sucess" Clicked="@(()=>SaveShoppinglist())" IsActive="@(!changeHasHappen)"><Icon Name="@(FontAwesomeIcons.Save)" /> Save Shoppinglist</Button>
+                            <Button Color="Color.Success" Clicked="@(()=>SaveShoppinglist())" IsActive="@(!changeHasHappen)"><Icon Name="@(FontAwesomeIcons.Save)" /> Save Shoppinglist</Button>
                         </Tooltip>
                             <Button Color="Color.Danger" Clicked="@(() => DeleteList())" IsDisabled="selectedProductCount == 0" IsActive="@(!productSelected)"><Icon Name="@(FontAwesomeIcons.Trash)" /> Delete Items (@selectedProductCount)</Button>
                     </Buttons>
