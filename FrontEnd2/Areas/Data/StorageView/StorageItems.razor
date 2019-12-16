@@ -54,7 +54,7 @@
                     <FieldBody ColumnSize="ColumnSize.Is10">
                         <Buttons Role="ButtonsRole.Addons">
                             <Button Color="Color.Info" Clicked="@(() => user.storage.DeleteStorage())" IsDisabled="selectedProductCount == 0" IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed)"><Icon Name="@(FontAwesomeIcons.Trash)" /> Delete Products (@selectedProductCount)</Button>
-                            <Button Color="Color.Info" Clicked="@(() => user.shoppinglist.SetFilter(UserShoppinglist.Filter.Completed))" IsDisabled="selectedProductCount == 0" IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed)"><Icon Name="@(FontAwesomeIcons.IceCream)"></Icon> BiksFood (@selectedProductCount)</Button>
+                            <Button Color="Color.Info" Clicked="@(()=>FindRecipies())" IsDisabled="selectedProductCount == 0" IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed)"><Icon Name="@(FontAwesomeIcons.IceCream)"></Icon> BiksFood (@selectedProductCount)</Button>
                             <Button Color="Color.Info" Clicked="@(()=>showQuickaddModal(ModalSize.Default, 50, true))"><Icon Name="@(FontAwesomeIcons.Search)"></Icon> Quickadd</Button>
                         </Buttons>
                     </FieldBody>
@@ -548,7 +548,7 @@
         _viewEmptyFridgeLoadSpinner = true;
         int HasBeenLoaded = 0;
         this.StateHasChanged();
-        EmptyFridgeFuntionality emptyFridgeFuntionality = new EmptyFridgeFuntionality(CreateCurrentSelctedList());
+        EmptyFridgeFuntionality emptyFridgeFuntionality = new EmptyFridgeFuntionality(GetSelectedProducts());
         Allrecpies = await emptyFridgeFuntionality.GetWeightedRecipies();
         LoadMoreRecepies();
         loadingbar = true;
@@ -789,18 +789,9 @@
         }
     }
 
-    public List<Product> CreateCurrentSelctedList()
+    public List<Product> GetSelectedProducts()
     {
-        List<Product> returnList = new List<Product>();
-        foreach (Product key in SelectedProducts.Keys)
-        {
-            if (SelectedProducts[key])
-            {
-                returnList.Add(key);
-            }
-        }
-
-        return returnList;
+        return user.shoppinglist.shoppinglist.Where(x=>x._completed==true).ToList();
     }
 
     //public void updateSelectedProducts(Product product)
