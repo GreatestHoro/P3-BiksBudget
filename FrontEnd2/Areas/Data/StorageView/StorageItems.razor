@@ -418,6 +418,14 @@
         quickaddModal.Hide();
     }
 
+    private async Task KeyPressed(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            itemList = await search.CallApiForProducts(searchBox, wordFilter, storeFilter);
+        }
+    }
+
     /// <summary>
     /// The state of an item is changed.
     /// </summary>
@@ -952,6 +960,9 @@
 
     public async Task InitializeAutocorrect()
     {
+        storeFilter = search.SetBoolArray(storeFilters.GetStoreList());
+        wordFilter = search.SetBoolArray(wordFIlters.GetWordList());
+
         prodName = await search.InitializeAutocorrect();
         prodData = search.InitializeRecommender(prodName);
 
