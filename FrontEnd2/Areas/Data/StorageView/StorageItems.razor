@@ -7,6 +7,12 @@
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject HttpClient Http
 
+@if (isLoading)
+{
+    <div class="center_div lds-roller">
+        <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    </div>
+}
 @if (email != null)
 {
     <Row>
@@ -19,23 +25,7 @@
             <CardBody Padding="Padding.Is0.FromBottom">
                 <Fields>
                     <Column ColumnSize="ColumnSize.Is1">
-                        <CheckEdit Checked="@user.shoppinglist.Products.All(x=>x._completed)" CheckedChanged="user.shoppinglist.CheckAll">All</CheckEdit>
-                    </Column>
-                    <Column ColumnSize="ColumnSize.Is11">
-                        <Addons>
-                            <Addon AddonType="AddonType.Body">
-                                <Validations @ref="validations" Mode="ValidationMode.Manual">
-                                    <Validation Validator="@ValidationRule.IsNotEmpty">
-                                        <TextEdit @bind-Text="@name" Placeholder="Add a new product"></TextEdit>
-                                    </Validation>
-                                </Validations>
-                            </Addon>
-                            <Addon AddonType="AddonType.End">
-                                <Button Color="Color.Primary" Clicked="@addProductName">
-                                    <Icon Name="IconName.New" />Add
-                                </Button>
-                            </Addon>
-                        </Addons>
+                        <CheckEdit Checked="@IsAllSelected()" CheckedChanged="CheckAll">All</CheckEdit>
                     </Column>
                 </Fields>
             </CardBody>
@@ -53,8 +43,9 @@
                 <Field IsHorizontal="true">
                     <FieldBody ColumnSize="ColumnSize.Is10">
                         <Buttons Role="ButtonsRole.Addons">
-                            <Button Color="Color.Info" Clicked="@(() => user.storage.DeleteStorage())" IsDisabled="selectedProductCount == 0" IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed)"><Icon Name="@(FontAwesomeIcons.Trash)" /> Delete Products (@selectedProductCount)</Button>
-                            <Button Color="Color.Info" Clicked="@(() => user.shoppinglist.SetFilter(UserShoppinglist.Filter.Completed))" IsDisabled="selectedProductCount == 0" IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed)"><Icon Name="@(FontAwesomeIcons.IceCream)"></Icon> BiksFood (@selectedProductCount)</Button>
+                            <Button Color="Color.Danger" Clicked="@(() => user.storage.DeleteStorage())" IsDisabled="selectedProductCount == 0" IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed)"><Icon Name="@(FontAwesomeIcons.Trash)" /> Delete Products (@selectedProductCount)</Button>
+                            <Button Color="Color.Dark" Clicked="@(() => FindRecipies())" IsDisabled="selectedProductCount == 0" IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed)"><Icon Name="@(FontAwesomeIcons.IceCream)"></Icon> BiksFood (@selectedProductCount)</Button>
+                            <Button Color="Color.Info" Clicked="@(()=>showQuickaddModal(ModalSize.Default, 50, true))"><Icon Name="@(FontAwesomeIcons.Search)"></Icon> Quickadd</Button>
                         </Buttons>
                     </FieldBody>
                     <FieldBody ColumnSize="ColumnSize.Is2">
@@ -64,7 +55,99 @@
         </Column>
     </Row>
 
+    <Accordion>
+        <Modal @ref="quickaddModal">
+            <ModalBackdrop />
+            <ModalContent Size="@modalSize" IsCentered="@isCentered">
+                <ModalHeader>
+                    <ModalTitle>
+                        <Icon Name="@(FontAwesomeIcons.Search)" />
+                        Quickadd Producs
+                    </ModalTitle>
+                    <CloseButton Clicked="@hideQuickaddModal" />
+                </ModalHeader>
+                <ModalBody>
+                    <Autocomplete Data="@prodData"
+                                  TextField="@((item)=>item.textField)"
+                                  ValueField="@((item)=>item.textField)"
+                                  SelectedValue="@selectedSearchValue"
+                                  SelectedValueChanged="@searchHandler"
+                                  Placeholder="Enter a product name..."
+                                  Filter="AutocompleteFilter.Contains"
+                                  MinLength="2"
+                                  IsDisabled="FindingAutocorrectlist" />
+                </ModalBody>
+                <ModalBody MaxHeight="@maxHeight">
+                    <Row>
+                        @if (itemList.Count != 0)
+                        {
+                            @foreach (Product p in itemList.GetRange(0, produToPrint))
+                            {
+                                <Column ColumnSize="ColumnSize.Is12">
+                                    <Card Margin="Margin.Is1.FromBottom">
+                                        <CardBody>
+                                            <CardTitle Size="4">@p._productName</CardTitle>
+                                            <Field>
+                                                <FieldBody>
+                                                    <ListGroup IsFlush="true">
+                                                        <ListGroupItem><CardText>@p._amount</CardText></ListGroupItem>
+                                                        <ListGroupItem><CardText>@p._price DKK</CardText></ListGroupItem>
+                                                    </ListGroup>
+                                                </FieldBody>
+                                            </Field>
+                                            <Button Color="Color.Success" IsDisabled="disableQuickadd" Clicked="()=>ProductToStorage(p)" IsBlock="true">Add Product to Storage</Button>
+                                        </CardBody>
+                                    </Card>
+                                </Column>
+                            }
+                        }
+                    </Row>
+                </ModalBody>
+                <ModalFooter>
+                    <Button IsBlock="true" Color="Color.Secondary" IsOutline="true" Clicked="@hideQuickaddModal">Close</Button>
+                </ModalFooter>
+            </ModalContent>
+            <ModalBackdrop />
+        </Modal>
+    </Accordion>
 
+    @if (viewTitle == true)
+    {
+        <div class="row d-flex justify-content-center top-margin">
+            <div class="col-sm-10 col-md-8 col-lg-7 col-xl-5">
+                @foreach (WeightedRecipies rep in recpies)
+                {
+                    <div class="center_div card w-100" id="recipeCard">
+                        <a @onclick="(() => retriveInfo(rep))" class="stretched-link"></a>
+                        <div class="card-header" style="padding-bottom: 0.25rem;">
+                            <div class="card-title w-100">
+                                <h6 style="font-weight:bold;">
+                                    @rep._recipie._Name
+                                </h6>
+                            </div>
+                        </div>
+                        <div class="card-body" style="padding-bottom: 0.25rem; padding-top: 0.60rem;">
+                            <div class="justify-content-between">
+                                <button class="rounded btn-success">
+                                    @for (int i = 0; i < rep._recipie._PerPerson; i++)
+                                    {
+                                        if (i < 4)
+                                        {
+                                            <i class="oi oi-person"> </i>
+                                        }
+                                    }
+                                    @if (rep._recipie._PerPerson >= 4)
+                                    {
+                                        <i class="oi oi-plus"> </i>
+                                    }
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
     <Accordion>
         <Modal @ref="recipeRef">
             <ModalBackdrop />
@@ -209,10 +292,16 @@
             validations.ClearAll();
         }
     }
+    private Modal quickaddModal;
+    bool isCentered;
+    ModalSize modalSize;
+    int? maxHeight;
 
+    IEnumerable<AutocompleteSearch> prodData;
+    object SelectedSearchValue { get; set; }
+    bool FindingAutocorrectlist = true;
+    string[] prodName;
 
-
-    List<Product> itemList = new List<Product>();
     private Validations validations;
     ConnectionSettings connectionSettings = new ConnectionSettings();
     private Modal recipeRef;
@@ -236,6 +325,8 @@
     int defualtAmountLoad = 10;
     int NewAmount;
     int selectedProductCount = 0;
+    int produToPrint = 0;
+    int printAtOnce = 20;
 
     bool found = true;
     bool viewTitle = false;
@@ -255,13 +346,22 @@
     bool pmatch = true;
     bool OverallMatch = false;
     bool _FoodBiskEnabled = false;
+    bool disableQuickadd = false;
+    bool allEnabled = false;
+    bool isLoading = true;
 
-    //ShoppinlistFunctionality ListFunc = new ShoppinlistFunctionality("api/Storage");
+    bool[] wordFilter;
+    bool[] storeFilter;
+
+    StoreFilterList storeFilters = new StoreFilterList();
+    WordFilterList wordFIlters = new WordFilterList();
     UserData user;
     HttpResponseMessage responseMessage = new HttpResponseMessage();
     Product tempProduct = new Product();
     Ingredient currentlySelectedIngredient;
     List<Ingredient> InshoppingList = new List<Ingredient>();
+    ProductSearchHandling search = new ProductSearchHandling();
+    List<Product> itemList = new List<Product>();
 
     List<float> recipeAmount = new List<float>();
     List<Ingredient> ingredients = new List<Ingredient>();
@@ -275,7 +375,6 @@
     ControllerFuncionality features = new ControllerFuncionality();
     Dictionary<Ingredient, List<string>> ingrdientDict = new Dictionary<Ingredient, List<string>>();
     Dictionary<Product, bool> SelectedProducts = new Dictionary<Product, bool>();
-    //ShoppinlistFunctionality ShopList = new ShoppinlistFunctionality("api/Shoppinglist");
 
     private delegate bool compareWR(WeightedRecipies r1, WeightedRecipies r2);
     #endregion
@@ -285,6 +384,30 @@
     public bool StorageExists()
     {
         return user.storage.storageList.Count > 0;
+    }
+
+    private void showQuickaddModal(ModalSize modalSize, int? maxHeight = null, bool isCentered = false)
+    {
+        this.isCentered = isCentered;
+        this.modalSize = modalSize;
+        this.maxHeight = maxHeight;
+
+        quickaddModal.Show();
+    }
+
+    private void hideQuickaddModal()
+    {
+        itemList.Clear();
+        searchBox = "";
+        quickaddModal.Hide();
+    }
+
+    private async Task KeyPressed(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            itemList = await search.CallApiForProducts(searchBox, wordFilter, storeFilter);
+        }
     }
 
     /// <summary>
@@ -342,6 +465,9 @@
                 await user.storage.Get();
             }
             intailizeAllProducts(user.storage.storageList);
+            await InitializeAutocorrect();
+
+            isLoading = false;
             StateHasChanged();
         }
 
@@ -351,6 +477,29 @@
     {
         // The email is requested fomr localstorage
         email = await localStorage.GetItemAsync<string>("Email");
+    }
+
+    public bool IsAllSelected()
+    {
+        if (user.storage.storageList.All(x => x._completed == true))
+        {
+            allEnabled = true;
+        }
+        else
+        {
+            allEnabled = false;
+        }
+
+        return allEnabled;
+    }
+
+    public void CheckAll()
+    {
+        allEnabled = !allEnabled;
+
+        user.storage.SelectAllProducs(allEnabled);
+        CountSelectedProducts();
+        StateHasChanged();
     }
     #endregion
 
@@ -437,7 +586,7 @@
         _viewEmptyFridgeLoadSpinner = true;
         int HasBeenLoaded = 0;
         this.StateHasChanged();
-        EmptyFridgeFuntionality emptyFridgeFuntionality = new EmptyFridgeFuntionality(CreateCurrentSelctedList());
+        EmptyFridgeFuntionality emptyFridgeFuntionality = new EmptyFridgeFuntionality(GetSelectedProducts());
         Allrecpies = await emptyFridgeFuntionality.GetWeightedRecipies();
         LoadMoreRecepies();
         loadingbar = true;
@@ -678,18 +827,9 @@
         }
     }
 
-    public List<Product> CreateCurrentSelctedList()
+    public List<Product> GetSelectedProducts()
     {
-        List<Product> returnList = new List<Product>();
-        foreach (Product key in SelectedProducts.Keys)
-        {
-            if (SelectedProducts[key])
-            {
-                returnList.Add(key);
-            }
-        }
-
-        return returnList;
+        return user.storage.storageList.Where(x => x._completed == true).ToList();
     }
 
     //public void updateSelectedProducts(Product product)
@@ -769,6 +909,58 @@
 
     public void CountSelectedProducts()
     {
-        selectedProductCount = user.storage.storageList.Count(x=> x._completed);
+        selectedProductCount = user.storage.storageList.Count(x => x._completed);
     }
+
+
+    private async Task searchHandler(object newValue)
+    {
+        try
+        {
+            selectedSearchValue = newValue;
+            searchBox = newValue.ToString();
+            itemList = await search.CallApiForProducts(searchBox, wordFilter, storeFilter);
+            itemList = search.DecideOrderFilter((int)SortNames.Relevance, itemList);
+        }
+        catch (System.NullReferenceException)
+        {
+            Console.WriteLine("The searh was empty. Pls do not press ESC");
+        }
+
+        SetProduToPrint();
+    }
+
+    public void SetProduToPrint()
+    {
+        if (itemList.Count > printAtOnce)
+        {
+            produToPrint = printAtOnce;
+        }
+        else
+        {
+            produToPrint = itemList.Count();
+        }
+    }
+
+    public async Task InitializeAutocorrect()
+    {
+        storeFilter = search.SetBoolArray(storeFilters.GetStoreList());
+        wordFilter = search.SetBoolArray(wordFIlters.GetWordList());
+
+        prodName = await search.InitializeAutocorrect();
+        prodData = search.InitializeRecommender(prodName);
+
+        FindingAutocorrectlist = false;
+    }
+
+    public async Task ProductToStorage(Product p)
+    {
+        disableQuickadd = true;
+        await user.storage.AddProduct(p, 1);
+        await user.storage.Get();
+        StateHasChanged();
+
+        disableQuickadd = false;
+    }
+
 }

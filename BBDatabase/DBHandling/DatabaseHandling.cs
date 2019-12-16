@@ -114,14 +114,14 @@ namespace BBCollection.DBHandling
                 "foreign key(ingredient_id) references ingredients(id)," +
                 "foreign key(product_id) references products(id))";
 
-            //string autocompleteReferences =
-            //    "CREATE TABLE IF NOT EXISTS `autocomplete_references`(" +
-            //    "`referenceName` VARCHAR(255), ";
+            string autocompleteReferences =
+                "CREATE TABLE IF NOT EXISTS `autocomplete_references`(" +
+                "`referenceName` VARCHAR(255) UNIQUE); ";
 
 
             await new SQLConnect().NonQueryString(productTable);
             await new SQLConnect().NonQueryString(productInIngredientQuery);
-            //await new SQLConnect().NonQueryString(autocompleteReferences);
+            await new SQLConnect().NonQueryString(autocompleteReferences);
         }
 
         private async Task GenerateUserDatabaseTables()
@@ -196,7 +196,7 @@ namespace BBCollection.DBHandling
             string newColumnQuery =
                 "ALTER TABLE `recipes` ADD `recipe_totalprice` decimal(6,2)";
             string newColumnQuery2 =
-               "ALTER TABLE `recipes` ADD `image_url` decimal(6,2)";
+               "ALTER TABLE `recipes` ADD `image_url` varchar(255)";
 
             await new SQLConnect().NonQueryString(newColumnQuery);
             await new SQLConnect().NonQueryString(newColumnQuery2);

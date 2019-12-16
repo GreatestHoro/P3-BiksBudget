@@ -44,6 +44,8 @@ namespace BBCollection.DBHandling
             }
         }
 
+
+
         public async Task<HttpResponseMessage> ProductSLToStrage(Product p, int i)
         {
             responseOne = await storage.AddProduct(p, i);

@@ -32,7 +32,9 @@ headlineCard {
     width: 100%;
     z-index: 1030;
     bottom: 0;
-    background-color: #747d8c;
+    background-color: lightgray;
+    outline-color: black; 
+
 }
 
 .figure-img{
@@ -482,7 +484,7 @@ h1 {
 .dropdown-menu {
     display: none;
     position: absolute;
-    background: linear-gradient(90deg, #e3ffe7 0%, #d9e7ff 100%);
+    background-color: white;
     width: inherit;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1;

@@ -38,6 +38,11 @@ namespace BBCollection.DBHandling
             storageList = JsonConvert.DeserializeObject<List<Product>>(productString);
         }
 
+        public void SelectAllProducs(bool setTo)
+        {
+            storageList.ForEach(x=> x._completed = setTo);
+        }
+
         public async Task<HttpResponseMessage> DeleteProduct(Product p)
         {
             p._amountleft = 0;
@@ -102,6 +107,7 @@ namespace BBCollection.DBHandling
             p = HelpToAdd(p, i);
 
             storageList.Add(p);
+            storageList = HandleDublicats(storageList);
             productString = JsonConvert.SerializeObject(storageList);
 
             p._amountleft = amount;
@@ -115,11 +121,16 @@ namespace BBCollection.DBHandling
 
             storageList.AddRange(listToAdd);
 
-            storageList = handle.HandleDublicats(storageList);
+            storageList = HandleDublicats(storageList);
 
             productString = JsonConvert.SerializeObject(storageList);
 
             return await api.Post(productString);
+        }
+
+        public List<Product> HandleDublicats(List<Product> productList)
+        {
+            return handle.HandleDublicats(productList);
         }
 
         #region Private Methods

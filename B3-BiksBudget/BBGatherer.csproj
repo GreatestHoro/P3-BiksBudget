@@ -5,6 +5,7 @@
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <RootNamespace>B3_BiksBudget</RootNamespace>
     <AssemblyName>B3-BiksBudget</AssemblyName>
+    <StartupObject>BBGatherer.Program</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>

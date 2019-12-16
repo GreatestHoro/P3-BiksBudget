@@ -44,16 +44,17 @@
         </CardBody>
         <CardFooter Class="card-footerShoppinglist" Padding="Padding.Is3.FromBottom">
             <Field IsHorizontal="true">
-                <FieldBody ColumnSize="ColumnSize.Is10">
+                <FieldBody ColumnSize="ColumnSize.Is9">
                     <Buttons Role="ButtonsRole.Addons">
-                        <Button Color="Color.Info" Clicked="@(()=>SaveShoppinglist())" IsActive="@(!changeHasHappen)"><Icon Name="@(FontAwesomeIcons.Save)"/> Save Shoppinglist</Button>
-                        <Button Color="Color.Info" Clicked="@(() => DeleteList())" IsDisabled="selectedProductCount == 0" IsActive="@(!productSelected)"><Icon Name="@(FontAwesomeIcons.Trash)"/> Delete Items (@selectedProductCount)</Button>
-                        <Button Color="Color.Info" Clicked="@(() => AddListToStorage())" IsDisabled="selectedProductCount == 0" IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed)"> Add To Storage (@selectedProductCount)</Button>
+                        <Tooltip IsAlwaysActive="@(changeHasHappen)" Text="Dont forget to save">
+                            <Button Color="Color.Success" Clicked="@(()=>SaveShoppinglist())" IsActive="@(!changeHasHappen)"><Icon Name="@(FontAwesomeIcons.Save)" /> Save Shoppinglist</Button>
+                        </Tooltip>
+                            <Button Color="Color.Danger" Clicked="@(() => DeleteList())" IsDisabled="selectedProductCount == 0" IsActive="@(!productSelected)"><Icon Name="@(FontAwesomeIcons.Trash)" /> Delete Items (@selectedProductCount)</Button>
                     </Buttons>
                     <Text Class="shoppinglist-Price-Text"> Total  @String.Format("{0:0.0}", user.shoppinglist.CompletePrice()) DKK</Text>
                 </FieldBody>
-                <FieldBody ColumnSize="ColumnSize.Is2">
-                    <Button Color="Color.Warning" Float="Float.Right" Clicked="AddListToStorage" Visibility="@(productSelected ? Visibility.Always : Visibility.Never)"><Icon Name="@(FontAwesomeIcons.Archive)"/></Button>
+                <FieldBody ColumnSize="ColumnSize.Is3">
+                  <Button Color="Color.Warning" Clicked="@(() => AddListToStorage())" IsDisabled="selectedProductCount == 0" IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed)"><Icon Name="@(FontAwesomeIcons.Box)" /> Add To Storage (@selectedProductCount)</Button>
                 </FieldBody>
             </Field>
         </CardFooter>
