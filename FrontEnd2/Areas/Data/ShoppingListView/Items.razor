@@ -46,9 +46,11 @@
             <Field IsHorizontal="true">
                 <FieldBody ColumnSize="ColumnSize.Is10">
                     <Buttons Role="ButtonsRole.Addons">
-                        <Button Color="Color.Info" Clicked="@(()=>SaveShoppinglist())" IsActive="@(!changeHasHappen)"><Icon Name="@(FontAwesomeIcons.Save)"/> Save Shoppinglist</Button>
-                        <Button Color="Color.Info" Clicked="@(() => DeleteList())" IsDisabled="selectedProductCount == 0" IsActive="@(!productSelected)"><Icon Name="@(FontAwesomeIcons.Trash)"/> Delete Items (@selectedProductCount)</Button>
-                        <Button Color="Color.Info" Clicked="@(() => AddListToStorage())" IsDisabled="selectedProductCount == 0" IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed)"> Add To Storage (@selectedProductCount)</Button>
+                        <Tooltip IsAlwaysActive="@(changeHasHappen)" Text="Dont forget to save">
+                            <Button Color="Color.Info" Clicked="@(()=>SaveShoppinglist())" IsActive="@(!changeHasHappen)"><Icon Name="@(FontAwesomeIcons.Save)" /> Save Shoppinglist</Button>
+                        </Tooltip>
+                            <Button Color="Color.Info" Clicked="@(() => DeleteList())" IsDisabled="selectedProductCount == 0" IsActive="@(!productSelected)"><Icon Name="@(FontAwesomeIcons.Trash)" /> Delete Items (@selectedProductCount)</Button>
+                            <Button Color="Color.Info" Clicked="@(() => AddListToStorage())" IsDisabled="selectedProductCount == 0" IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed)"> Add To Storage (@selectedProductCount)</Button>
                     </Buttons>
                     <Text Class="shoppinglist-Price-Text"> Total  @String.Format("{0:0.0}", user.shoppinglist.CompletePrice()) DKK</Text>
                 </FieldBody>

@@ -54,7 +54,7 @@
                     <FieldBody ColumnSize="ColumnSize.Is10">
                         <Buttons Role="ButtonsRole.Addons">
                             <Button Color="Color.Info" Clicked="@(() => user.storage.DeleteStorage())" IsDisabled="selectedProductCount == 0" IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed)"><Icon Name="@(FontAwesomeIcons.Trash)" /> Delete Products (@selectedProductCount)</Button>
-                            <Button Color="Color.Info" Clicked="@(() => user.shoppinglist.SetFilter(UserShoppinglist.Filter.Completed))" IsDisabled="selectedProductCount == 0" IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed)"><Icon Name="@(FontAwesomeIcons.IceCream)"></Icon> BiksFood (@selectedProductCount)</Button>
+                            <Button Color="Color.Info" Clicked="@FindRecipies" IsDisabled="selectedProductCount == 0" IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed)"><Icon Name="@(FontAwesomeIcons.IceCream)"></Icon> BiksFood (@selectedProductCount)</Button>
                             <Button Color="Color.Info" Clicked="@(()=>showQuickaddModal(ModalSize.Default, 50, true))"><Icon Name="@(FontAwesomeIcons.Search)"></Icon> Quickadd</Button>
                         </Buttons>
                     </FieldBody>
@@ -346,7 +346,6 @@
     ControllerFuncionality features = new ControllerFuncionality();
     Dictionary<Ingredient, List<string>> ingrdientDict = new Dictionary<Ingredient, List<string>>();
     Dictionary<Product, bool> SelectedProducts = new Dictionary<Product, bool>();
-    //ShoppinlistFunctionality ShopList = new ShoppinlistFunctionality("api/Shoppinglist");
 
     private delegate bool compareWR(WeightedRecipies r1, WeightedRecipies r2);
     #endregion
@@ -548,7 +547,7 @@
         _viewEmptyFridgeLoadSpinner = true;
         int HasBeenLoaded = 0;
         this.StateHasChanged();
-        EmptyFridgeFuntionality emptyFridgeFuntionality = new EmptyFridgeFuntionality(CreateCurrentSelctedList());
+        EmptyFridgeFuntionality emptyFridgeFuntionality = new EmptyFridgeFuntionality(user.storage.CountActiveList());
         Allrecpies = await emptyFridgeFuntionality.GetWeightedRecipies();
         LoadMoreRecepies();
         loadingbar = true;
@@ -918,7 +917,7 @@
         storeFilter = search.SetBoolArray(storeFilters.GetStoreList());
         wordFilter = search.SetBoolArray(wordFIlters.GetWordList());
 
-        prodName = await search.InitializeAutocorrect(wordFilter, storeFilter);
+        prodName = await search.InitializeAutocorrect();
         prodData = search.InitializeRecommender(prodName);
 
         FindingAutocorrectlist = false;
