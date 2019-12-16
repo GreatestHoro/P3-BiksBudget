@@ -37,7 +37,7 @@
                                 </SelectEdit>
                             </TableRowCell>
                             <TableRowCell Style="width:110px">
-                                <Text Color="TextColor.Success"> @Product._price DKK</Text>
+                                <Text Color="TextColor.Success">@Product._price @GetTotalPrice() DKK</Text>
                             </TableRowCell>
                         </TableRow>
                     </TableBody>
@@ -68,7 +68,7 @@
         StatusChanged?.Invoke(isChecked);
     }
 
-    public void OnAmountChange() 
+    public void OnAmountChange()
     {
         StatusChanged?.Invoke(true);
     }
@@ -78,6 +78,18 @@
         selectedValue = value;
         Product._amountleft = selectedValue;
         OnAmountChange();
+    }
+
+    public string GetTotalPrice()
+    {
+        if (Product._amountleft > 1)
+        {
+            return "("+(Product._price * Product._amountleft).ToString()+")";
+        }
+        else
+        {
+            return "";
+        }
     }
 
     [Parameter] public Product Product { get; set; }
