@@ -56,10 +56,10 @@ The application is build with:
 - CSS
 - Javascript
 ## Authors
-* **Baldwin, Jamie [Jamiejbp](https://github.com/Jamiejbp)
-* **Baltzersen, Bjarke [AirealAble](https://github.com/AirealAble)
-* **Holt, Jeppe [JeppeJonHolt](https://github.com/JeppeJonHolt)
-* **Horo, Roni [GreatestHoro](https://github.com/GreatestHoro)
-* **Kusk, Mads [KuskIV](https://github.com/KuskIV)
-* **Rasmussen, Emilie [emilierasmussen](https://github.com/emilierasmussen)
-* **Samim, Milad [ms99uni](https://github.com/ms99uni)
+* **Baldwin, Jamie** [Jamiejbp](https://github.com/Jamiejbp)
+* **Baltzersen, Bjarke** [AirealAble](https://github.com/AirealAble)
+* **Holt, Jeppe** [JeppeJonHolt](https://github.com/JeppeJonHolt)
+* **Horo, Roni** [GreatestHoro](https://github.com/GreatestHoro)
+* **Kusk, Mads** [KuskIV](https://github.com/KuskIV)
+* **Rasmussen, Emilie** [emilierasmussen](https://github.com/emilierasmussen)
+* **Samim, Milad** [ms99uni](https://github.com/ms99uni)
