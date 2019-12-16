@@ -46,4 +46,20 @@ The last way is by importing the CreateSqlTable.sql file.
 3. In the toolbar click on 'Server' and select 'Data import'
 4. In 'Import Options' select 'Import from Self-Contained File' and select the 'CreateSqlTable.sql' file
 5. Click on 'Start Import' to execute the creation of the tables.
-
+## Deployment of the Project
+To run the the application you will have to start up the project uncompiled. Afterwards you will have to right click on 'Solution 'B3-BiksBudget' and select the 'Properties'. Then turn everything but 'Backend' and 'FrontEnd2' to 'None' and those two to 'Start'.
+Then you can quite the properties window and click 'F5' to run the application. 
+## Built with
+The application is build with:
+- C#
+- HTML
+- CSS
+- Javascript
+## Authors
+* **Baldwin, Jamie [Jamiejbp](https://github.com/Jamiejbp)
+* **Baltzersen, Bjarke [AirealAble](https://github.com/AirealAble)
+* **Holt, Jeppe [JeppeJonHolt](https://github.com/JeppeJonHolt)
+* **Horo, Roni [GreatestHoro](https://github.com/GreatestHoro)
+* **Kusk, Mads [KuskIV](https://github.com/KuskIV)
+* **Rasmussen, Emilie [emilierasmussen](https://github.com/emilierasmussen)
+* **Samim, Milad [ms99uni](https://github.com/ms99uni)
