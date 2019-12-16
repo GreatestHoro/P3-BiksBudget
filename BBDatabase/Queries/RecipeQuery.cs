@@ -186,7 +186,7 @@ namespace BBCollection.Queries
         /// </summary>
         /// <param name="distinctIngredients">Gets the list of the distinct ingredients</param>
         /// <returns>Return a dictionary with keys being the distinct ingreient names, and the value being a list of matching products</returns>
-        private async Task<Dictionary<string, List<Product>>> MatchingProducts(List<string> distinctIngredients)
+        public async Task<Dictionary<string, List<Product>>> MatchingProducts(List<string> distinctIngredients)
         {
             Dictionary<string, List<Product>> resDictionary = new Dictionary<string, List<Product>>();
 
@@ -197,7 +197,7 @@ namespace BBCollection.Queries
             return resDictionary;
         }
 
-        private async Task<Dictionary<string, List<Product>>> MatchingProductsChain(List<string> distinctIngredients, string chain)
+        public async Task<Dictionary<string, List<Product>>> MatchingProductsChain(List<string> distinctIngredients, string chain)
         {
             Dictionary<string, List<Product>> resDictionary = new Dictionary<string, List<Product>>();
 
@@ -293,7 +293,7 @@ namespace BBCollection.Queries
 
             //List<Recipe> recipes = await _dc.Recipe.GetRange(searchTerm, _productsPerLoad, _productsPerLoad * _loadCount);
 
-            List<Recipe> recipes = await _dc.Recipe.GetList(searchTerm);
+            List<Recipe> recipes = await _dc.Recipe.GetListAsync(searchTerm);
 
             _loadCount++;
 
@@ -306,7 +306,7 @@ namespace BBCollection.Queries
         /// </summary>
         /// <param name="recipeList">List of queried recipes matching searchTerm</param>
         /// <returns>List of the distinct ingredients in these recipes</returns>
-        private List<string> DistinctIngredients(List<Recipe> recipeList)
+        public List<string> DistinctIngredients(List<Recipe> recipeList)
         {
             List<string> resIngredients = new List<string>();
 

@@ -87,7 +87,7 @@ namespace Backend.Controllers
             string jsonRecipes = JsonConvert.SerializeObject(recipeData);
 
             DatabaseConnect dbConnect = new DatabaseConnect();
-            var data = await dbConnect.Recipe.GetList(recipeTitle);
+            var data = await dbConnect.Recipe.GetListAsync(recipeTitle);
 
             string jsonDBRecipes = JsonConvert.SerializeObject(data);
 
@@ -101,7 +101,7 @@ namespace Backend.Controllers
         {
             DatabaseConnect Database = new DatabaseConnect();
 
-            List<Recipe> recipes = await Database.Recipe.GetList(search);
+            List<Recipe> recipes = await Database.Recipe.GetListAsync(search);
 
             return JsonConvert.SerializeObject(recipes);
         }

@@ -91,7 +91,8 @@ namespace BBGatherer
 
             if (generatePrice)
             {
-                
+                await dc.Recipe.GenerateCheapestPL();
+                await dc.Recipe.PopulateIngredientLink();
             }
 
             if (DeleteRefrences)
