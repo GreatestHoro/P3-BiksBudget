@@ -13,7 +13,7 @@ namespace BBCollection.DBHandling
     public class RecipeHandling
     {
         #region Functions handling GetRecipe and GetIngredient.
-        public async Task<List<Recipe>> GetList(string recipeName)
+        public async Task<List<Recipe>> GetListAsync(string recipeName)
         {
             List<Recipe> recipeList = new List<Recipe>();
             string table = "recipes";
@@ -371,6 +371,21 @@ namespace BBCollection.DBHandling
                 "SELECT ingredientName FROM ingredients";
 
             await new SQLConnect().NonQueryString(copyColumn);
+        }
+        public async Task GenerateCheapestPL()
+        {
+            RecipeQuery rq = new RecipeQuery();
+            List<Recipe> recipeList = await GetListAsync("");
+
+            List<string> distinctIngredients = rq.DistinctIngredients(recipeList);
+
+            Dictionary<string, List<Product>> productsDictBilka = await rq.MatchingProductsChain(distinctIngredients, "Bilka");
+            Dictionary<string, List<Product>> productsDictFakta = await rq.MatchingProductsChain(distinctIngredients, "Fakta");
+            Dictionary<string, List<Product>> productsDictSuperBrugsen = await rq.MatchingProductsChain(distinctIngredients, "SuperBrugsen");
+
+            await new DatabaseConnect().Recipe.InsertIngredientLink(productsDictBilka, "bilka");
+            await new DatabaseConnect().Recipe.InsertIngredientLink(productsDictFakta, "fakta");
+            await new DatabaseConnect().Recipe.InsertIngredientLink(productsDictSuperBrugsen, "superbrugsen");
         }
 
         public async Task InsertIngredientLink(Dictionary<string, List<Product>> ingredientToProducts, string store)
