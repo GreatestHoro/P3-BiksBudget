@@ -298,6 +298,7 @@
     List<ComplexRecipe> complexRecipes = new List<ComplexRecipe>();
     List<Ingredient> ingredients = new List<Ingredient>();
     List<Product> products = new List<Product>();
+    List<Product> filteredProducts = new List<Product>();
     List<Product> ToShoppinglist = new List<Product>();
     List<Product> QuickList = new List<Product>();
     List<List<Product>> returnList = new List<List<Product>>();
@@ -638,6 +639,41 @@
                 }
             }
         }
+
+        products = FilterProducts(products);
+        QuickList = FilterProducts(QuickList);
+    }
+
+    private List<Product> FilterProducts(List<Product> products)
+    {
+        ReadChainFilters();
+        List<Product> resList = new List<Product>();
+
+        foreach (Product p in products)
+        {
+            string bilkaFilter = (_chainFilter & Chain.bilka).ToString().ToLower();
+            string superBrugsenFilter = (_chainFilter & Chain.superBrugsen).ToString().ToLower();
+            string faktaFilter = (_chainFilter & Chain.fakta).ToString().ToLower();
+
+            if (p._storeName.ToLower() == bilkaFilter)
+            {
+                resList.Add(p);
+            }
+            if (p._storeName.ToLower() == faktaFilter)
+            {
+                resList.Add(p);
+            }
+            if (p._storeName.ToLower() == superBrugsenFilter)
+            {
+                resList.Add(p);
+            }
+            if (_chainFilter == Chain.none) // Default option | if no store is chosen --> add all
+            {
+                resList.Add(p);
+            }
+        }
+
+        return resList;
     }
 
     /// <summary>
@@ -736,4 +772,4 @@
         this.StateHasChanged();
     }
     #endregion
-}
+    }

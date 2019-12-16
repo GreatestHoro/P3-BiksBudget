@@ -14,47 +14,59 @@ namespace BBGatherer
     {
         static void Main(string[] args)
         {
-            /*productImages productImages = new productImages();
-            string name = Console.ReadLine();
-
-            productImages.SaveImagesFromLink(productImages.GetImageUrls(name, "bing").Result);*/
-
             DataHandling dh = new DataHandling();
+            string settings = PromtForUserInput();
 
             try
             {
-                //RecipeQuery recipeQuery = new RecipeQuery();
-
-                //recipeQuery.CheapestCRecipes("").Wait();
                 dh.GenerateDatabase().Wait();
-                //dh.GenerateData(false, false, false,false,true).Wait();
-                dh.TestCollection().Wait();
+                dh.GenerateData(
+                    GetOptionsAt(settings,0), 
+                    GetOptionsAt(settings, 1), 
+                    GetOptionsAt(settings, 2), 
+                    GetOptionsAt(settings, 3), 
+                    GetOptionsAt(settings, 4)).Wait();
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
             }
         }
+        public static string PromtForUserInput()
+        {
+            Console.WriteLine("To Choose Gather options create a string of zeros and one, where ¨0¨ means false, and ¨1¨ means true.");
+            Console.WriteLine("The options consists of five functionalities that can be toggeled on and off independently:");
+            Console.WriteLine("Example of an option string ¨11101¨ (recommended default)");
+            Console.WriteLine("1: Getting products from the coop api.");
+            Console.WriteLine("2: Crawling Alletiderskogebog and generating recepies ingrdient, and product refs. (Will take a long time)");
+            Console.WriteLine("3: Populate links to cheapest products to ingredients");
+            Console.WriteLine("4: Deletes the generated product tags. (should not be on by default)");
+            Console.WriteLine("5: Autocorret suggestions in product search");
+            return Console.ReadLine();
+        }
+
+        public static bool GetOptionsAt(string options, int placement) 
+        {
+            char[] arr = options.ToCharArray();
+            if (options.Length > 5) 
+            {
+                throw new IndexOutOfRangeException();
+            }
+            return arr[placement].Equals('1') ? true : false;
+        }
     }
 
     public class DataHandling
     {
-        public DatabaseConnect dbConnect = new DatabaseConnect();
+        public DatabaseConnect dc = new DatabaseConnect();
         public async Task GenerateDatabase()
         {
-            await dbConnect.Initialize.Start();
+            await dc.Initialize.Start();
         }
 
-        public async Task GenerateData(bool coop, bool salling, bool generatePrice, bool DeleteRefrences, bool autocomplete)
+        public async Task GenerateData(bool coop, bool webcrawler, bool generatePrice, bool DeleteRefrences, bool autocomplete)
         {
-            ProductHandling test = new ProductHandling();
-            //InitializeDB _test = new InitializeDB();
-
-            if (autocomplete)
-            {
-
-            }
-
+            ProductHandling productHandling = new ProductHandling();
             if (coop)
             {
                 CoopDoStuff tryCoop = new CoopDoStuff("d0b9a5266a2749cda99d4468319b6d9f");
@@ -65,49 +77,37 @@ namespace BBGatherer
                 {
                     count++;
                     Console.WriteLine(count);
-                    await dbConnect.Product.Add(new Product("F" + c.Ean, c.Navn, c.Navn2, c.Pris, "", "Fakta"));
+                    await dc.Product.Add(new Product("F" + c.Ean, c.Navn, c.Navn2, c.Pris, "", "Fakta"));
                 }
             }
-            //_test.UpdateProductTable(new DatabaseInformation("localhost", "biksbudgetDB", "root", "BiksBudget123"));
-            if (salling)
+
+            if (webcrawler)
             {
                 RecipeCrawl WebRunner = new RecipeCrawl();
-                _ = WebRunner.GetRecipes(1, 2884, dbConnect);
+                _ = WebRunner.GetRecipes(1, 2884, dc);
 
                 Console.WriteLine("web runner begins... fear its power");
-                Console.ReadLine();
             }
-
-            //dbConnect.AddProduct(new Product("test","hey","alot",1d,"nope","walmart"));
-            //test.InsertIngredientReferenceFromId("tester", "test", new DatabaseInformation("localhost", "biksbudgetDB", "root", "BiksBudget123"));
 
             if (generatePrice)
             {
-                await dbConnect.Recipe.GenerateTotalPriceAsync();
+                
             }
 
             if (DeleteRefrences)
             {
-                var yeet = test.GetList("");
-                int i = 0;
+                List<Product> products = dc.Product.GetList("");
 
-                foreach (var yet in yeet)
+                foreach (Product product in products)
                 {
-                    _ = test.AddReference("", yet._id);
-                    Console.WriteLine(i++);
+                    _ = dc.Product.AddReference("", product._id);
                 }
-
             }
-        }
 
-        public async Task TestCollection()
-        {
-            DatabaseConnect dc = new DatabaseConnect();
-
-            await dc.Product.AddAutocompleteToDB();
-
-
-
+            if (autocomplete)
+            {
+                await dc.Product.AddAutocompleteToDB();
+            }
         }
     }
 }
