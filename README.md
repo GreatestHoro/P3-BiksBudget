@@ -1,1 +1,3 @@
-# P3-BiksBudget
+# BiksBudget - 3. Semester Project AAU
+
+
