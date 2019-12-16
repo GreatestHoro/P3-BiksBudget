@@ -54,7 +54,7 @@
                     <Text Class="shoppinglist-Price-Text"> Total  @String.Format("{0:0.0}", user.shoppinglist.CompletePrice()) DKK</Text>
                 </FieldBody>
                 <FieldBody ColumnSize="ColumnSize.Is3">
-                  <Button Color="Color.Warning" Clicked="@(() => AddListToStorage())" IsDisabled="selectedProductCount == 0" IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed)"><Icon Name="@(FontAwesomeIcons.Box)" /> Add To Storage (@selectedProductCount)</Button>
+                  <Button Color="Color.Warning" Clicked="@(() => AddListToStorage())" IsDisabled="selectedProductCount == 0 && String.IsNullOrEmpty(email)" IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed && !String.IsNullOrEmpty(email))"><Icon Name="@(FontAwesomeIcons.Box)" /> Add To Storage (@selectedProductCount)</Button>
                 </FieldBody>
             </Field>
         </CardFooter>
@@ -197,7 +197,7 @@
                 // THis means he has a shoppinglist, and this will be called throuhg the api
                 await user.shoppinglist.GetWhenLoggedIn();
                 await user.storage.Get();
-                UpdateShoppinglist();
+
 
                 /*BilkaProducts = user.shoppinglist.shoppinglist.Where(x => x._storeName.StartsWith('B')).ToList();
                 SuperBrugsenProducts = user.shoppinglist.shoppinglist.Where(x => x._storeName.StartsWith('S')).ToList();
@@ -214,6 +214,7 @@
                 user.shoppinglist.GetWhenNotLoggedIn(shopString);
             }
 
+            UpdateShoppinglist();
             StateHasChanged();
         }
     }
@@ -250,7 +251,7 @@
     /// </summary>
     public async void SaveShoppinglist()
     {
-        remindToSave = false;
+        changeHasHappen = false;
 
         if (String.IsNullOrEmpty(email))
         {
