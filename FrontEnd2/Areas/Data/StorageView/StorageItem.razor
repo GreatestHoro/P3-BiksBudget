@@ -7,15 +7,13 @@
         <FieldBody ColumnSize="ColumnSize.IsFull">
                 <Table IsBorderless="true" IsFullWidth="true" IsHoverable="true">
                     <TableBody>
-                        <TableRow Color="Color.Info" Class="align-items-start">
+                        <TableRow  Style="vertical-align:middle; vertical-align:middle">
                             <TableRowCell Style="width:50px">
-                                <Label>Select</Label>
                                 <FieldBody>
                                     <CheckEdit Checked="@Product._completed" CheckedChanged="@OnCheckedChanged" />
                                 </FieldBody>
                             </TableRowCell>
                             <TableRowCell Style="width:60px">
-                                <Label>Quantity</Label>
                                 <SelectEdit TValue="int" SelectedValue="selectedValue" SelectedValueChanged="OnSelectedValueChanged" Style="width:60px;">
                                     @{
                                         int numb = 0;
@@ -26,20 +24,17 @@
                                     }
                                 </SelectEdit>
                             </TableRowCell>
-                            <TableRowCell Style="width:200px">
-                                <Label >Product name</Label>
+                            <TableRowCell Style="vertical-align:middle">
                                 <Text Style="width:200px" Float="Float.Left"> @Product._productName  @Product._amount</Text>
                             </TableRowCell>
-                            <TableRowCell Style="width:200px">
-                                <Label>Amount Remaining</Label>
+                            <TableRowCell Style="width:200px; vertical-align:middle">
                                 <SelectList Data="@data"
                                             TextField="@((item)=>item.textField)"
                                             ValueField="@((item)=>item.valueField)"
                                             SelectedValue="@selectedAmount"
                                             SelectedValueChanged="@AmountChanged" />
                             </TableRowCell>
-                            <TableRowCell Style="width:110px">
-                                <Label>Expiration date</Label>
+                            <TableRowCell Style="width:110px; vertical-align:middle">
                                 <DateEdit Placeholder="Change the date" Date="Convert.ToDateTime(Product._timeAdded)" DateChanged="OnDateChanged" />
                             </TableRowCell>
                         </TableRow>

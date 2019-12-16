@@ -21,22 +21,6 @@
                     <Column ColumnSize="ColumnSize.Is1">
                         <CheckEdit Checked="@IsAllSelected()" CheckedChanged="CheckAll">All</CheckEdit>
                     </Column>
-                    <Column ColumnSize="ColumnSize.Is11">
-                        <Addons>
-                            <Addon AddonType="AddonType.Body">
-                                <Validations @ref="validations" Mode="ValidationMode.Manual">
-                                    <Validation Validator="@ValidationRule.IsNotEmpty">
-                                        <TextEdit @bind-Text="@name" Placeholder="Add a new product"></TextEdit>
-                                    </Validation>
-                                </Validations>
-                            </Addon>
-                            <Addon AddonType="AddonType.End">
-                                <Button Color="Color.Primary" Clicked="@addProductName">
-                                    <Icon Name="IconName.New" />Add
-                                </Button>
-                            </Addon>
-                        </Addons>
-                    </Column>
                 </Fields>
             </CardBody>
             <CardBody Padding="Padding.Is0.OnY">
@@ -53,8 +37,8 @@
                 <Field IsHorizontal="true">
                     <FieldBody ColumnSize="ColumnSize.Is10">
                         <Buttons Role="ButtonsRole.Addons">
-                            <Button Color="Color.Info" Clicked="@(() => user.storage.DeleteStorage())" IsDisabled="selectedProductCount == 0" IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed)"><Icon Name="@(FontAwesomeIcons.Trash)" /> Delete Products (@selectedProductCount)</Button>
-                            <Button Color="Color.Info" Clicked="@(() => user.shoppinglist.SetFilter(UserShoppinglist.Filter.Completed))" IsDisabled="selectedProductCount == 0" IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed)"><Icon Name="@(FontAwesomeIcons.IceCream)"></Icon> BiksFood (@selectedProductCount)</Button>
+                            <Button Color="Color.Danger" Clicked="@(() => user.storage.DeleteStorage())" IsDisabled="selectedProductCount == 0" IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed)"><Icon Name="@(FontAwesomeIcons.Trash)" /> Delete Products (@selectedProductCount)</Button>
+                            <Button Color="Color.Dark" Clicked="@(() => FindRecipies())" IsDisabled="selectedProductCount == 0" IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed)"><Icon Name="@(FontAwesomeIcons.IceCream)"></Icon> BiksFood (@selectedProductCount)</Button>
                             <Button Color="Color.Info" Clicked="@(()=>showQuickaddModal(ModalSize.Default, 50, true))"><Icon Name="@(FontAwesomeIcons.Search)"></Icon> Quickadd</Button>
                         </Buttons>
                     </FieldBody>
