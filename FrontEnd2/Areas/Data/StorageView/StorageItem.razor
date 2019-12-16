@@ -1,6 +1,8 @@
 ﻿@using BBCollection.BBObjects
 @using BBCollection.DBHandling
 @using FrontEnd2.Areas.Data
+@using System;
+
 <ListGroupItem>
     <Field IsHorizontal="true" Padding="Padding.IsAuto.OnAll">
 
@@ -44,7 +46,7 @@
     </Field>
 </ListGroupItem>
 
-@code {
+@code{
     public int selectedValue = 0;
     public int scalar;
     public string TempScalar;

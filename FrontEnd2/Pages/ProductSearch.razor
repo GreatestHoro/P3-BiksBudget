@@ -762,7 +762,7 @@
 
     public async Task InitializeAutocorrect()
     {
-        prodName = await search.InitializeAutocorrect(EnabledKeywords, EnabledStores);
+        prodName = await search.InitializeAutocorrect();
         prodData = search.InitializeRecommender(prodName);
 
         FindingAutocorrectlist = false;

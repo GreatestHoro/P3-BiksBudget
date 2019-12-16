@@ -7,6 +7,12 @@
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject HttpClient Http
 
+@if (isLoading)
+{
+    <div class="center_div lds-roller">
+        <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    </div>
+}
 @if (email != null)
 {
     <Row>
@@ -105,6 +111,43 @@
         </Modal>
     </Accordion>
 
+    @if (viewTitle == true)
+    {
+        <div class="row d-flex justify-content-center top-margin">
+            <div class="col-sm-10 col-md-8 col-lg-7 col-xl-5">
+                @foreach (WeightedRecipies rep in recpies)
+                {
+                    <div class="center_div card w-100" id="recipeCard">
+                        <a @onclick="(() => retriveInfo(rep))" class="stretched-link"></a>
+                        <div class="card-header" style="padding-bottom: 0.25rem;">
+                            <div class="card-title w-100">
+                                <h6 style="font-weight:bold;">
+                                    @rep._recipie._Name
+                                </h6>
+                            </div>
+                        </div>
+                        <div class="card-body" style="padding-bottom: 0.25rem; padding-top: 0.60rem;">
+                            <div class="justify-content-between">
+                                <button class="rounded btn-success">
+                                    @for (int i = 0; i < rep._recipie._PerPerson; i++)
+                                    {
+                                        if (i < 4)
+                                        {
+                                            <i class="oi oi-person"> </i>
+                                        }
+                                    }
+                                    @if (rep._recipie._PerPerson >= 4)
+                                    {
+                                        <i class="oi oi-plus"> </i>
+                                    }
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
     <Accordion>
         <Modal @ref="recipeRef">
             <ModalBackdrop />
@@ -305,6 +348,8 @@
     bool _FoodBiskEnabled = false;
     bool disableQuickadd = false;
     bool allEnabled = false;
+    bool isLoading = true;
+
     bool[] wordFilter;
     bool[] storeFilter;
 
@@ -330,7 +375,6 @@
     ControllerFuncionality features = new ControllerFuncionality();
     Dictionary<Ingredient, List<string>> ingrdientDict = new Dictionary<Ingredient, List<string>>();
     Dictionary<Product, bool> SelectedProducts = new Dictionary<Product, bool>();
-    //ShoppinlistFunctionality ShopList = new ShoppinlistFunctionality("api/Shoppinglist");
 
     private delegate bool compareWR(WeightedRecipies r1, WeightedRecipies r2);
     #endregion
@@ -356,6 +400,14 @@
         itemList.Clear();
         searchBox = "";
         quickaddModal.Hide();
+    }
+
+    private async Task KeyPressed(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            itemList = await search.CallApiForProducts(searchBox, wordFilter, storeFilter);
+        }
     }
 
     /// <summary>
@@ -414,6 +466,8 @@
             }
             intailizeAllProducts(user.storage.storageList);
             await InitializeAutocorrect();
+
+            isLoading = false;
             StateHasChanged();
         }
 
@@ -532,7 +586,7 @@
         _viewEmptyFridgeLoadSpinner = true;
         int HasBeenLoaded = 0;
         this.StateHasChanged();
-        EmptyFridgeFuntionality emptyFridgeFuntionality = new EmptyFridgeFuntionality(CreateCurrentSelctedList());
+        EmptyFridgeFuntionality emptyFridgeFuntionality = new EmptyFridgeFuntionality(GetSelectedProducts());
         Allrecpies = await emptyFridgeFuntionality.GetWeightedRecipies();
         LoadMoreRecepies();
         loadingbar = true;
@@ -773,18 +827,9 @@
         }
     }
 
-    public List<Product> CreateCurrentSelctedList()
+    public List<Product> GetSelectedProducts()
     {
-        List<Product> returnList = new List<Product>();
-        foreach (Product key in SelectedProducts.Keys)
-        {
-            if (SelectedProducts[key])
-            {
-                returnList.Add(key);
-            }
-        }
-
-        return returnList;
+        return user.storage.storageList.Where(x => x._completed == true).ToList();
     }
 
     //public void updateSelectedProducts(Product product)
@@ -902,7 +947,7 @@
         storeFilter = search.SetBoolArray(storeFilters.GetStoreList());
         wordFilter = search.SetBoolArray(wordFIlters.GetWordList());
 
-        prodName = await search.InitializeAutocorrect(wordFilter, storeFilter);
+        prodName = await search.InitializeAutocorrect();
         prodData = search.InitializeRecommender(prodName);
 
         FindingAutocorrectlist = false;
