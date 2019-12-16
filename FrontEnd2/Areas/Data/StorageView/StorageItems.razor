@@ -7,6 +7,12 @@
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject HttpClient Http
 
+@if (isLoading)
+{
+    <div class="center_div lds-roller">
+        <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    </div>
+}
 @if (email != null)
 {
     <Row>
@@ -358,6 +364,8 @@
     bool _FoodBiskEnabled = false;
     bool disableQuickadd = false;
     bool allEnabled = false;
+    bool isLoading = true;
+
     bool[] wordFilter;
     bool[] storeFilter;
 
@@ -466,6 +474,8 @@
             }
             intailizeAllProducts(user.storage.storageList);
             await InitializeAutocorrect();
+
+            isLoading = false;
             StateHasChanged();
         }
 
@@ -942,9 +952,6 @@
 
     public async Task InitializeAutocorrect()
     {
-        storeFilter = search.SetBoolArray(storeFilters.GetStoreList());
-        wordFilter = search.SetBoolArray(wordFIlters.GetWordList());
-
         prodName = await search.InitializeAutocorrect();
         prodData = search.InitializeRecommender(prodName);
 
