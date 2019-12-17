@@ -176,7 +176,7 @@
                                         runCounter++;
                                         scalar = recipePerPerson;
                                     }
-                                    <TableRowCell Style="width:50px">@(String.Format("{0:0.0}", (ing._amount / recipePerPerson) * scalar)) @ing._unit</TableRowCell>
+                                    <TableRowCell Style="width:50px">@(printIngredientAmount(ing._amount,scalar)) @ing._unit</TableRowCell>
                                     @if (InshoppingList.Contains(ing) || allAdded)
                                     {
                                         <TableRowCell Style="width:150px">
@@ -691,7 +691,7 @@
         Ingredient ing = ingredients.First(x => x._ingredientName == ID._ingredientName);
         tempIngredientName = ing._ingredientName;
         found = retriveProduct();
-        if (found) 
+        if (found)
         {
             InshoppingList.Add(ing);
         }
@@ -776,6 +776,11 @@
         _viewLoadMoreSpinner = false;
         _viewLoadMore = true;
         this.StateHasChanged();
+    }
+
+    private string printIngredientAmount(float amount,int scalar) 
+    {
+       return ((amount / recipePerPerson) * scalar) > 0.0f ? String.Format("{0:0.0}", (amount / recipePerPerson) * scalar):"";
     }
     #endregion
 }
