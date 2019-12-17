@@ -60,6 +60,11 @@
                     </SnackbarBody>
                     <SnackbarAction Clicked="@(async () => await UndoSnackbar())">UNDO</SnackbarAction>
                 </Snackbar>
+                <Snackbar @ref="Qucikadd">
+                    <SnackbarBody>
+                        @snacbarMessage
+                    </SnackbarBody>
+                </Snackbar>
             </CardFooter>
         </Column>
     </Row>
@@ -104,7 +109,7 @@
                                                     </ListGroup>
                                                 </FieldBody>
                                             </Field>
-                                            <Button Color="Color.Success" IsDisabled="disableQuickadd" Clicked="() => ProductToStorage(p)" IsBlock="true">Add Product to Storage</Button>
+                                            <Button Color="Color.Success" IsDisabled="disableQuickadd" Clicked="() => QuickaddSnackbar(p)" IsBlock="true">Add Product to Storage</Button>
                                         </CardBody>
                                     </Card>
                                 </Column>
@@ -299,7 +304,8 @@
         private string name;
         private string searchBox;
         object selectedSearchValue { get; set; }
-        
+
+        Snackbar Qucikadd;
         Snackbar UndoDelete;
         private Modal quickaddModal;
         bool isCentered;
@@ -938,12 +944,12 @@
             disableQuickadd = false;
         }
 
-
         async void DeleteProducts()
         {
             selectedProductCount = 0;
             await user.storage.DeleteStorage();
         }
+
         public async Task UndoSnackbar()
         {
             await user.storage.AddUpdateList(SnackbarTempList);
@@ -959,6 +965,22 @@
             return $"You just deleted {amout} item(s) from your storage";
         }
 
+        public string SetQuickaddSnackbarMessage(string productName)
+        {
+            return $"You just added {productName} to your storage";
+        }
+        
+        public async Task QuickaddSnackbar(Product p)
+        {
+            snacbarMessage =  SetQuickaddSnackbarMessage(p._productName);
+            await ProductToStorage(p);
+
+            CountSelectedProducts();
+            StateHasChanged();
+
+            Qucikadd.Show();
+        }
+
         public async Task DeleteSelectedStoraeg()
         {
             SnackbarTempList = user.storage.CountActiveList();
@@ -969,5 +991,4 @@
 
             UndoDelete.Show();
         }
-
     }
