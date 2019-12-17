@@ -49,7 +49,7 @@
                         <Tooltip IsAlwaysActive="@(changeHasHappen)" Text="Dont forget to save">
                             <Button Color="Color.Success" Clicked="@(()=>SaveShoppinglist())" IsActive="@(!changeHasHappen)"><Icon Name="@(FontAwesomeIcons.Save)" /> Save Shoppinglist</Button>
                         </Tooltip>
-                            <Button Color="Color.Danger" Clicked="@(() => DeleteList())" IsDisabled="selectedProductCount == 0" IsActive="@(!productSelected)"><Icon Name="@(FontAwesomeIcons.Trash)" /> Delete Items (@selectedProductCount)</Button>
+                            <Button Color="Color.Danger" Clicked="@(() => DeleteProducts())" IsDisabled="selectedProductCount == 0" IsActive="@(!productSelected)"><Icon Name="@(FontAwesomeIcons.Trash)" /> Delete Items (@selectedProductCount)</Button>
                     </Buttons>
                     <Text Class="shoppinglist-Price-Text"> Total  @String.Format("{0:0.0}", user.shoppinglist.CompletePrice()) DKK</Text>
                 </FieldBody>
@@ -284,6 +284,7 @@
     {
         remindToSave = true;
         responseMessage = await user.ShoppinglistToStrage();
+        selectedProductCount = 0;
         UpdateShoppinglist();
         StateHasChanged();
     }
@@ -291,7 +292,6 @@
     public async void AddItemToStorage(Product p)
     {
         remindToSave = true;
-
         await user.ProductSLToStrage(p);
 
         StateHasChanged();
@@ -367,5 +367,11 @@
             }
 
         }
+    }
+
+    void DeleteProducts() 
+    {
+        selectedProductCount = 0;
+        DeleteList();
     }
 }

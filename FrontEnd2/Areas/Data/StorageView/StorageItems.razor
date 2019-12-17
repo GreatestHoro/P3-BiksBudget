@@ -43,7 +43,7 @@
                 <Field IsHorizontal="true">
                     <FieldBody ColumnSize="ColumnSize.Is10">
                         <Buttons Role="ButtonsRole.Addons">
-                            <Button Color="Color.Danger" Clicked="@(() => user.storage.DeleteStorage())" IsDisabled="selectedProductCount == 0" IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed)"><Icon Name="@(FontAwesomeIcons.Trash)" /> Delete Products (@selectedProductCount)</Button>
+                            <Button Color="Color.Danger" Clicked="@(() => DeleteProducts())" IsDisabled="selectedProductCount == 0" IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed)"><Icon Name="@(FontAwesomeIcons.Trash)" /> Delete Products (@selectedProductCount)</Button>
                             <Button Color="Color.Dark" Clicked="@(() => FindRecipies())" IsDisabled="selectedProductCount == 0" IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed)"><Icon Name="@(FontAwesomeIcons.IceCream)"></Icon> BiksFood (@selectedProductCount)</Button>
                             <Button Color="Color.Info" Clicked="@(()=>showQuickaddModal(ModalSize.Default, 50, true))"><Icon Name="@(FontAwesomeIcons.Search)"></Icon> Quickadd</Button>
                         </Buttons>
@@ -961,6 +961,12 @@
         StateHasChanged();
 
         disableQuickadd = false;
+    }
+
+    async void DeleteProducts() 
+    {
+        selectedProductCount = 0;
+        await user.storage.DeleteStorage();
     }
 
 }
