@@ -42,6 +42,27 @@
                 }
             </ListGroup>
         </CardBody>
+
+        <Snackbar @ref="UndoChange">
+            <SnackbarBody>
+                @snacbarMessage
+            </SnackbarBody>
+            <SnackbarAction Clicked="@(async ()=> await UndoDelete())">UNDO</SnackbarAction>
+        </Snackbar>
+
+        <Snackbar @ref="UndoStorage">
+            <SnackbarBody>
+                @snacbarMessage
+            </SnackbarBody>
+            <SnackbarAction Clicked="@(async ()=> await UndoToStorage())">UNDO</SnackbarAction>
+        </Snackbar>
+
+        <Snackbar @ref="Save">
+            <SnackbarBody>
+                @snacbarMessage
+            </SnackbarBody>
+        </Snackbar>
+
         <CardFooter Class="card-footerShoppinglist" Padding="Padding.Is3.FromBottom">
             <Field IsHorizontal="true">
                 <FieldBody ColumnSize="ColumnSize.Is9">
@@ -49,27 +70,34 @@
                         <Tooltip IsAlwaysActive="@(changeHasHappen)" Text="Dont forget to save">
                             <Button Color="Color.Success" Clicked="@(()=>SaveShoppinglist())" IsActive="@(!changeHasHappen)"><Icon Name="@(FontAwesomeIcons.Save)" /> Save Shoppinglist</Button>
                         </Tooltip>
-                            <Button Color="Color.Danger" Clicked="@(() => DeleteProducts())" IsDisabled="selectedProductCount == 0" IsActive="@(!productSelected)"><Icon Name="@(FontAwesomeIcons.Trash)" /> Delete Items (@selectedProductCount)</Button>
+                        <Button Color="Color.Danger" Clicked="@(() => DeleteList())" IsDisabled="selectedProductCount == 0" IsActive="@(!productSelected)"><Icon Name="@(FontAwesomeIcons.Trash)" /> Delete Items (@selectedProductCount)</Button>
                     </Buttons>
                     <Text Class="shoppinglist-Price-Text"> Total  @String.Format("{0:0.0}", user.shoppinglist.CompletePrice()) DKK</Text>
                 </FieldBody>
                 <FieldBody ColumnSize="ColumnSize.Is3">
-                  <Button Color="Color.Warning" Clicked="@(() => AddListToStorage())" IsDisabled="selectedProductCount == 0" IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed)"><Icon Name="@(FontAwesomeIcons.Box)" /> Add To Storage (@selectedProductCount)</Button>
+                    <Button Color="Color.Warning" Clicked="@(() => AddListToStorage())" IsDisabled="selectedProductCount == 0 && String.IsNullOrEmpty(email)" IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed && !String.IsNullOrEmpty(email))"><Icon Name="@(FontAwesomeIcons.Box)" /> Add To Storage (@selectedProductCount)</Button>
                 </FieldBody>
             </Field>
         </CardFooter>
     </Column>
 </Row>
+
+
+
 }
 @code {
 
     #region Fields
-    //ShoppinlistFunctionality ListFunc = new ShoppinlistFunctionality("api/Shoppinglist");
     HttpResponseMessage responseMessage = new HttpResponseMessage();
     UserData user;
+    Snackbar UndoChange;
+    Snackbar UndoStorage;
+    Snackbar Save;
 
     Dictionary<string, List<Product>> ProductStoreDict = new Dictionary<string, List<Product>>();
     List<Product> ToShoppinglist = new List<Product>();
+    List<Product> SnackbarTempList = new List<Product>();
+    List<Product> StorageList = new List<Product>();
     List<Product> ToStorageList = new List<Product>();
     List<Product> TempProducts = new List<Product>();
     private Modal remindModal;
@@ -87,6 +115,7 @@
     string email;
     string shopString;
     string productString;
+    string snacbarMessage;
 
     List<string> ImagePaths = new List<string>() { "../Pictures/salling-store-logos/bilka.png", "../Pictures/coop-store-logos/fakta.png", "../Pictures/coop-store-logos/superbrugsen.png" };
     #endregion
@@ -111,6 +140,7 @@
         remindToSave = true;
         item._amountleft++;
     }
+
 
     protected void DecrementAmount(Product item)
     {
@@ -197,12 +227,6 @@
                 // THis means he has a shoppinglist, and this will be called throuhg the api
                 await user.shoppinglist.GetWhenLoggedIn();
                 await user.storage.Get();
-                UpdateShoppinglist();
-
-                /*BilkaProducts = user.shoppinglist.shoppinglist.Where(x => x._storeName.StartsWith('B')).ToList();
-                SuperBrugsenProducts = user.shoppinglist.shoppinglist.Where(x => x._storeName.StartsWith('S')).ToList();
-                FaktaProducts = user.shoppinglist.shoppinglist.Where(x => x._storeName.StartsWith('F')).ToList();*/
-
             }
             else
             {
@@ -214,6 +238,7 @@
                 user.shoppinglist.GetWhenNotLoggedIn(shopString);
             }
 
+            UpdateShoppinglist();
             StateHasChanged();
         }
     }
@@ -250,7 +275,7 @@
     /// </summary>
     public async void SaveShoppinglist()
     {
-        remindToSave = false;
+        changeHasHappen = false;
 
         if (String.IsNullOrEmpty(email))
         {
@@ -258,7 +283,9 @@
         }
         else
         {
-            await user.shoppinglist.Save();
+            responseMessage =  await user.shoppinglist.Save();
+            snacbarMessage =  SetSaveMessage(responseMessage);
+            Save.Show();
         }
     }
 
@@ -283,9 +310,18 @@
     public async Task AddListToStorage()
     {
         remindToSave = true;
+
+        StorageList = await GetCurrentStorage();
+        SnackbarTempList = user.shoppinglist.FindActiveList();
+        snacbarMessage =  SetEditSnackbarMessage(SnackbarTempList.Count());
+
         responseMessage = await user.ShoppinglistToStrage();
         selectedProductCount = 0;
         UpdateShoppinglist();
+        CountSelectedProducts();
+
+        UndoStorage.Show();
+
         StateHasChanged();
     }
 
@@ -295,6 +331,13 @@
         await user.ProductSLToStrage(p);
 
         StateHasChanged();
+    }
+
+    public async Task<List<Product>> GetCurrentStorage()
+    {
+        await user.storage.Get();
+
+        return user.storage.storageList;
     }
 
     #endregion
@@ -344,9 +387,15 @@
 
     public void DeleteList()
     {
+        SnackbarTempList = user.shoppinglist.FindActiveList();
+
+        snacbarMessage = SetDeleteSnackbarMessage(SnackbarTempList.Count());
+        UndoChange.Show();
+
         user.shoppinglist.DeleteList();
         remindToSave = true;
         UpdateShoppinglist();
+        CountSelectedProducts();
         this.StateHasChanged();
     }
 
@@ -369,9 +418,52 @@
         }
     }
 
-    void DeleteProducts() 
+    void DeleteProducts()
     {
         selectedProductCount = 0;
         DeleteList();
     }
+    #region Snackbar
+
+    public async Task UndoDelete()
+    {
+        changeHasHappen = false;
+        await user.shoppinglist.AddListLocal(SnackbarTempList);
+        UpdateShoppinglist();
+
+        UndoChange.Hide();
+
+        CountSelectedProducts();
+        StateHasChanged();
+    }
+
+    public async Task UndoToStorage()
+    {
+        changeHasHappen = false;
+        await user.shoppinglist.AddListLocal(SnackbarTempList);
+        //await user.storage.ReplaceStorage(StorageList);
+        UpdateShoppinglist();
+
+        UndoStorage.Hide();
+
+        CountSelectedProducts();
+        StateHasChanged();
+    }
+
+    public string SetDeleteSnackbarMessage(int amout)
+    {
+        return $"You just deleted {amout} item(s) from your shopping list";
+    }
+
+    public string SetEditSnackbarMessage(int amount)
+    {
+        return $"You just added {amount} item(s) to storage";
+    }
+
+    public string SetSaveMessage(HttpResponseMessage response)
+    {
+        return response.IsSuccessStatusCode ? "Save successfull" : "Save failed, try againg";
+    }
+
+    #endregion
 }

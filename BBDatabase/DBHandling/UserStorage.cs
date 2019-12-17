@@ -115,10 +115,22 @@ namespace BBCollection.DBHandling
             return await api.Post(productString);
         }
 
+        public async Task<HttpResponseMessage> ReplaceStorage(List<Product> listToReplaceWith)
+        {
+            // stuff
+
+            return new HttpResponseMessage(System.Net.HttpStatusCode.OK);
+        }
+
         public async Task<HttpResponseMessage> AddList(List<Product> listToAdd)
         {
             listToAdd.ForEach(p => p = HelpToAdd(p));
 
+            return await AddUpdateList(listToAdd);
+        }
+
+        public async Task<HttpResponseMessage> AddUpdateList(List<Product> listToAdd)
+        {
             storageList.AddRange(listToAdd);
 
             storageList = HandleDublicats(storageList);
