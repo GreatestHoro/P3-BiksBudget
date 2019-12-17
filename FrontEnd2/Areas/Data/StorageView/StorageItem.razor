@@ -2,16 +2,14 @@
 @using BBCollection.DBHandling
 @using FrontEnd2.Areas.Data
 @using System;
-
 <ListGroupItem>
     <Field IsHorizontal="true" Padding="Padding.IsAuto.OnAll">
-
         <FieldBody ColumnSize="ColumnSize.IsFull">
                 <Table IsBorderless="true" IsFullWidth="true" IsHoverable="true">
                     <TableBody>
-                        <TableRow  Style="vertical-align:middle; vertical-align:middle">
+                        <TableRow  Style="vertical-align:middle;">
                             <TableRowCell Style="width:50px">
-                                <FieldBody>
+                                <FieldBody> 
                                     <CheckEdit Checked="@Product._completed" CheckedChanged="@OnCheckedChanged" />
                                 </FieldBody>
                             </TableRowCell>

@@ -2,13 +2,15 @@
 @using BBCollection.DBHandling
 <ListGroupItem>
     <Field IsHorizontal="true" Padding="Padding.IsAuto.OnAll">
-        <FieldBody ColumnSize="ColumnSize.Is1">
-            <CheckEdit Checked="@Product._completed" CheckedChanged="@OnCheckedChanged"/>
-        </FieldBody>
         <FieldBody ColumnSize="ColumnSize.IsFull">
                 <Table IsBorderless="true" IsFullWidth="true" IsHoverable="true">
                     <TableBody>
-                        <TableRow Color="Color.Light" Class="align-middle">
+                        <TableRow Style="vertical-align:middle;">
+                            <TableRowCell Style="width:50px">
+                                <FieldBody>
+                                    <CheckEdit Checked="@Product._completed" CheckedChanged="@OnCheckedChanged" />
+                                </FieldBody>
+                            </TableRowCell>
                             <TableRowCell Background="Background.White" Style="width:110px">
                                 @if (Product._image.Length == 0)
                                 {
@@ -20,11 +22,9 @@
                                 }
                             </TableRowCell>
                             <TableRowCell>
-                                <Text Float="Float.Left" Style="width:100px"> @Product._productName  @Product._amount</Text>
+                                <Text Float="Float.Left" Style="width:100px; vertical-align:middle;"> @Product._productName</Text>
+                                <Text Color="TextColor.Muted" Float="Float.Left" Style="width:100px; vertical-align:sub;"> @Product._amount</Text>
                             </TableRowCell>
-                            @*<TableRowCell>
-                                <Text Float="Float.Left"> @Product._amount</Text>
-                            </TableRowCell>*@
                             <TableRowCell Style="width:110px">
                                 <SelectEdit TValue="int" SelectedValue="selectedValue" SelectedValueChanged="OnSelectedValueChanged" Style="max-width:100px;">
                                     @{
@@ -37,7 +37,8 @@
                                 </SelectEdit>
                             </TableRowCell>
                             <TableRowCell Style="width:110px">
-                                <Text Color="TextColor.Success">@Product._price @GetTotalPrice() DKK</Text>
+                                <Text Style="vertical-align:middle;" Color="TextColor.Success">@Product._price DKK</Text>
+                                <Text Style="vertical-align:sub" Color="TextColor.Muted">@GetTotalPrice()</Text>
                             </TableRowCell>
                         </TableRow>
                     </TableBody>
@@ -84,7 +85,7 @@
     {
         if (Product._amountleft > 1)
         {
-            return "("+(Product._price * Product._amountleft).ToString()+")";
+            return "subtotal " + String.Format("{0:0.00}", Product._price * Product._amountleft) + " DKK";
         }
         else
         {

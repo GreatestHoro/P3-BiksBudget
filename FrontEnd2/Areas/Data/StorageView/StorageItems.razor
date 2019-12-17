@@ -15,11 +15,6 @@
 }
 @if (email != null)
 {
-    <Column ColumnSize="ColumnSize.Is6.Is3.WithOffset">
-        <Progress Margin="Margin.Is3.FromBottom" Size="Size.Small">
-            <ProgressBar Background="Background.Success" Value="@emptyFridgeFuntionality.percentageDone" />
-        </Progress>
-    </Column>
     <Row>
         <Column>
             <Card Margin="Margin.Is4.FromTop">
@@ -368,7 +363,7 @@
     bool[] wordFilter;
     bool[] storeFilter;
 
-    EmptyFridgeFuntionality emptyFridgeFuntionality = new EmptyFridgeFuntionality();
+    EmptyFridgeFuntionality emptyFridgeFuntionality;
 
     StoreFilterList storeFilters = new StoreFilterList();
     WordFilterList wordFIlters = new WordFilterList();
@@ -603,7 +598,7 @@
         _viewEmptyFridgeLoadSpinner = true;
         int HasBeenLoaded = 0;
         this.StateHasChanged();
-        emptyFridgeFuntionality.setStorage(GetSelectedProducts()); 
+        //emptyFridgeFuntionality.setStorage(GetSelectedProducts());
         Allrecpies = await emptyFridgeFuntionality.GetWeightedRecipies();
         LoadMoreRecepies();
         loadingbar = true;
@@ -985,6 +980,7 @@
     {
         selectedProductCount = 0;
         await user.storage.DeleteStorage();
+    }
 
 
     public async Task UndoSnackbar()
