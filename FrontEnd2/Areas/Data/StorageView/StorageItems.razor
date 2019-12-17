@@ -34,7 +34,7 @@
                 <ListGroup IsFlush="true" Class="text-center">
                     @foreach (Product p in user.storage.storageList)
                     {
-                        <StorageItem Product="@p" StatusChanged="@OnStatusChanged"></StorageItem>
+                        <StorageItem Product="@p" StatusChanged="@(OnStatusChanged)"></StorageItem>
                     }
 
                 </ListGroup>
@@ -45,7 +45,7 @@
                         <Buttons Role="ButtonsRole.Addons">
                             <Button Color="Color.Danger" Clicked="@(() => DeleteSelectedStoraeg())" IsDisabled="selectedProductCount == 0" IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed)"><Icon Name="@(FontAwesomeIcons.Trash)" /> Delete Products (@selectedProductCount)</Button>
                             <Button Color="Color.Dark" Clicked="@(() => FindRecipies())" IsDisabled="selectedProductCount == 0" IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed)"><Icon Name="@(FontAwesomeIcons.IceCream)"></Icon> BiksFood (@selectedProductCount)</Button>
-                            <Button Color="Color.Info" Clicked="@(()=>showQuickaddModal(ModalSize.Default, 50, true))"><Icon Name="@(FontAwesomeIcons.Search)"></Icon> Quickadd</Button>
+                            <Button Color="Color.Info" Clicked="@(() => showQuickaddModal(ModalSize.Default, 50, true))"><Icon Name="@(FontAwesomeIcons.Search)"></Icon> Quickadd</Button>
                         </Buttons>
                     </FieldBody>
                     <FieldBody ColumnSize="ColumnSize.Is2">
@@ -59,7 +59,7 @@
         <SnackbarBody>
             @snacbarMessage
         </SnackbarBody>
-        <SnackbarAction Clicked="@(async ()=> await UndoSnackbar())">UNDO</SnackbarAction>
+        <SnackbarAction Clicked="@(async () => await UndoSnackbar())">UNDO</SnackbarAction>
     </Snackbar>
 
     <Accordion>
@@ -75,8 +75,8 @@
                 </ModalHeader>
                 <ModalBody>
                     <Autocomplete Data="@prodData"
-                                  TextField="@((item)=>item.textField)"
-                                  ValueField="@((item)=>item.textField)"
+                                  TextField="@((item) => item.textField)"
+                                  ValueField="@((item) => item.textField)"
                                   SelectedValue="@selectedSearchValue"
                                   SelectedValueChanged="@searchHandler"
                                   Placeholder="Enter a product name..."
@@ -102,7 +102,7 @@
                                                     </ListGroup>
                                                 </FieldBody>
                                             </Field>
-                                            <Button Color="Color.Success" IsDisabled="disableQuickadd" Clicked="()=>ProductToStorage(p)" IsBlock="true">Add Product to Storage</Button>
+                                            <Button Color="Color.Success" IsDisabled="disableQuickadd" Clicked="() => ProductToStorage(p)" IsBlock="true">Add Product to Storage</Button>
                                         </CardBody>
                                     </Card>
                                 </Column>
@@ -166,7 +166,7 @@
                 <Card>
                     <CardHeader>
                         <Heading Size="HeadingSize.Is5" Class="text-center">
-                            <Button Clicked="@(()=>isOpen1 = !isOpen1)">Description</Button>
+                            <Button Clicked="@(() => isOpen1 = !isOpen1)">Description</Button>
                         </Heading>
                     </CardHeader>
                     <Collapse IsOpen="@isOpen1">
@@ -178,7 +178,7 @@
                 <Card>
                     <CardHeader>
                         <Heading Size="HeadingSize.Is5" Class="text-center">
-                            <Button Clicked="@(()=>isOpen2 = !isOpen2)" Style="font-weight:bold">Ingrediens</Button>
+                            <Button Clicked="@(() => isOpen2 = !isOpen2)" Style="font-weight:bold">Ingrediens</Button>
                         </Heading>
                     </CardHeader>
                     <Collapse IsOpen="@isOpen2">
@@ -245,7 +245,7 @@
                 <Card>
                     <CardHeader>
                         <Heading Size="HeadingSize.Is5" Class="text-center">
-                            <Button Clicked="@(()=>isOpen3 = !isOpen3)" Style="font-weight:bold">Products</Button>
+                            <Button Clicked="@(() => isOpen3 = !isOpen3)" Style="font-weight:bold">Products</Button>
                         </Heading>
                     </CardHeader>
                     <Collapse IsOpen="@isOpen3">
@@ -260,7 +260,7 @@
                                 {
                                     <Table Theme="Theme.Light" IsBordered="true">
                                         <TableBody>
-                                            <TableRowHeader Style="width:5%"><Button Class="btn btn-block btn-outline-success" Clicked="()=>AddProductToSL(p)"> <Icon Name="@(FontAwesomeIcons.ShoppingCart)"></Icon></Button> </TableRowHeader>
+                                            <TableRowHeader Style="width:5%"><Button Class="btn btn-block btn-outline-success" Clicked="() => AddProductToSL(p)"> <Icon Name="@(FontAwesomeIcons.ShoppingCart)"></Icon></Button> </TableRowHeader>
                                             <TableRowCell Style="width:25%">@p._price Kr.</TableRowCell>
                                             <TableRowCell Style="width:70%">@p._productName</TableRowCell>
                                         </TableBody>
@@ -277,7 +277,7 @@
     @if (_viewLoadMore)
     {
         <div class="row mt-4 d-flex justify-content-center">
-            <button class="btn btn-warning mb-5 mx-auto" @onclick="()=>LoadMoreRecepies()">Load More</button>
+            <button class="btn btn-warning mb-5 mx-auto" @onclick="() => LoadMoreRecepies()">Load More</button>
         </div>
     }
 }
@@ -385,6 +385,7 @@
     ControllerFuncionality features = new ControllerFuncionality();
     Dictionary<Ingredient, List<string>> ingrdientDict = new Dictionary<Ingredient, List<string>>();
     Dictionary<Product, bool> SelectedProducts = new Dictionary<Product, bool>();
+    Dictionary<string, Product> productCompare = new Dictionary<string, Product>();
 
     private delegate bool compareWR(WeightedRecipies r1, WeightedRecipies r2);
     #endregion
@@ -473,6 +474,8 @@
             {
                 user = new UserData(email);
                 await user.storage.Get();
+                UpdateProducts();
+
             }
             intailizeAllProducts(user.storage.storageList);
             await InitializeAutocorrect();
@@ -481,6 +484,13 @@
             StateHasChanged();
         }
 
+    }
+    public void UpdateProducts()
+    {
+        foreach (Product p in user.storage.storageList)
+        {
+            productCompare.Add(p._id,new Product(p));
+        }
     }
 
     async Task GetLocalSession()
@@ -842,79 +852,13 @@
         return user.storage.storageList.Where(x => x._completed == true).ToList();
     }
 
-    //public void updateSelectedProducts(Product product)
-    //{
-    //    SelectedProducts[product] = Toggelbool(SelectedProducts[product]);
-    //    CheckIfAnySelected();
-    //}
-
-    //public bool Toggelbool(bool _bool)
-    //{
-    //    return !_bool;
-    //}
-
-    //public void SortPmatch()
-    //{
-    //    recpies = Allrecpies.OrderByDescending(x => x.pMatch).ToList().GetRange(0, NewAmount);
-    //    StateHasChanged();
-    //}
-
-    //public void SortOverallMatch()
-    //{
-    //    recpies = Allrecpies.OrderByDescending(x => x.matchingIngrdientsNum).ToList().GetRange(0, NewAmount);
-    //    StateHasChanged();
-    //}
-    //public void CheckIfAnySelected()
-    //{
-    //    List<Product> returnList = new List<Product>();
-    //    foreach (Product key in SelectedProducts.Keys)
-    //    {
-    //        if (SelectedProducts[key])
-    //        {
-    //            returnList.Add(key);
-    //        }
-    //    }
-
-    //    _FoodBiskEnabled = returnList.Count != 0 ? true : false;
-    //}
-
-    //public void intailizeAllProducts(List<Product> products)
-    //{
-    //    foreach (Product product in products)
-    //    {
-    //        SelectedProducts.Add(product, false);
-    //    }
-    //}
-
-    //public List<Product> CreateCurrentSelctedList()
-    //{
-    //    List<Product> returnList = new List<Product>();
-    //    foreach (Product key in SelectedProducts.Keys)
-    //    {
-    //        if (SelectedProducts[key])
-    //        {
-    //            returnList.Add(key);
-    //        }
-    //    }
-
-    //    return returnList;
-    //}
-
-    //public void updateSelectedProducts(Product product)
-    //{
-    //    SelectedProducts[product] = Toggelbool(SelectedProducts[product]);
-    //    CheckIfAnySelected();
-    //}
-
-    //public bool Toggelbool(bool _bool)
-    //{
-    //    return !_bool;
-    //}
-
     public void OnStatusChanged(bool isChecked)
     {
         CountSelectedProducts();
+
         StateHasChanged();
+        _=UpdateStorageProduct();
+
     }
 
     public void CountSelectedProducts()
@@ -922,6 +866,15 @@
         selectedProductCount = user.storage.storageList.Count(x => x._completed);
     }
 
+    public async Task UpdateStorageProduct()
+    {
+        Product temp = user.storage.storageList.Find(x => x._saveProduct == true);
+        if (temp != null)
+        {
+            await user.storage.EditProduct(temp);
+            temp._saveProduct = false;
+        }
+    }
 
     private async Task searchHandler(object newValue)
     {
@@ -979,7 +932,7 @@
         selectedProductCount = 0;
         await user.storage.DeleteStorage();
 
-
+    }
     public async Task UndoSnackbar()
     {
         await user.storage.AddUpdateList(SnackbarTempList);
