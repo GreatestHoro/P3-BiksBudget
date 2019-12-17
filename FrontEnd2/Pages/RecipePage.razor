@@ -708,6 +708,7 @@
         ComplexRecipe cr = complexRecipes.First(x => x._recipeID == ID);
         cr._complexRecipeComponent._products = await recipeQuery.GetProductsForRecipe(cr._recipeID, complexRecipes);
         //Set properties
+        scalar = (int)cr._PerPerson;
         recipeDescription = cr._description;
         recipeName = cr._Name;
         recipePerPerson = (int)cr._PerPerson;
