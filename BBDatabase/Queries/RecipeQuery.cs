@@ -270,7 +270,7 @@ namespace BBCollection.Queries
             }
             foreach (Product p in ProductList)
             {
-                p._CustomReferenceField = "*";
+                p._CustomReferenceField += ",*";
             }
             return ProductList;
         }

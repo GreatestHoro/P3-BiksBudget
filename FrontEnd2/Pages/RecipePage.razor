@@ -503,8 +503,14 @@
             returnList.Add(new List<Product>(QuickList));
             QuickList.Clear();
         }
+        CheckFoundProducts(ingredients);
     }
-
+    private void CheckFoundProducts(List<Ingredient> ingredients)
+    {
+        List<string> productRefs = new List<string>();
+        returnList.ForEach(x => x.ForEach(y => productRefs.AddRange(y._CustomReferenceField.Split(",").ToList())));
+        InshoppingList.AddRange(ingredients.FindAll(ind => productRefs.Any(y => ind._ingredientName.Contains(y))));
+    }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -612,7 +618,7 @@
     /// Step 4 - 5: if condition holds go through all values and match ingredient with products
     /// Step 6: add to products list
     /// </summary>
-    private bool retriveProduct()
+    private void retriveProduct()
     {
         if (products != null)
         {
@@ -643,7 +649,6 @@
 
         products = FilterProducts(products);
         QuickList = FilterProducts(QuickList);
-        return (products.Count > 0 || QuickList.Count > 0);
     }
 
     private List<Product> FilterProducts(List<Product> products)
@@ -690,11 +695,8 @@
         currentlySelectedIngredient = ID;
         Ingredient ing = ingredients.First(x => x._ingredientName == ID._ingredientName);
         tempIngredientName = ing._ingredientName;
-        found = retriveProduct();
-        if (found)
-        {
-            InshoppingList.Add(ing);
-        }
+        retriveProduct();
+
     }
 
     /// <summary>
@@ -779,9 +781,9 @@
         this.StateHasChanged();
     }
 
-    private string printIngredientAmount(float amount,int scalar) 
+    private string printIngredientAmount(float amount,int scalar)
     {
-       return ((amount / recipePerPerson) * scalar) > 0.0f ? String.Format("{0:0.0}", (amount / recipePerPerson) * scalar):"";
+        return ((amount / recipePerPerson) * scalar) > 0.0f ? String.Format("{0:0.0}", (amount / recipePerPerson) * scalar):"";
     }
     #endregion
 }
