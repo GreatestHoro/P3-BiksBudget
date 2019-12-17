@@ -83,7 +83,7 @@
                     <Field>
                         <FieldBody>
                             <FieldLabel> Finde stores near you</FieldLabel>
-                            <Button Clicked="@(()=>showStoreModal( ModalSize.Default, 30, true ))" Color="Color.Info"> <Icon Name="@(FontAwesomeIcons.LocationArrow)" /> Use my location</Button>
+                            <Button Clicked="@OpenStoreModal" Color="Color.Info"> <Icon Name="@(FontAwesomeIcons.LocationArrow)" /> Use my location</Button>
                             <FieldHelp>When applied, you only get results from theese stores </FieldHelp>
                         </FieldBody>
                     </Field>
@@ -132,6 +132,13 @@
             </ModalBody>
             <ModalBody MaxHeight="@maxHeight">
                 <ListGroup IsFlush="true">
+                    <Column ColumnSize="ColumnSize.Is12">
+                        <Container>
+                            <Alert Color="Color.Success" IsShow="allStoresUnified.Count == 0" Class="overflow-hidden">
+                                @storeError error 
+                            </Alert>
+                        </Container>
+                    </Column>
                     @foreach (UnifiedAPIStore s in allStoresUnified)
                     {
                         <ListGroupItem>
@@ -330,6 +337,7 @@
     string optionLabel = "option";
     string imageUrl;
     string oldSearchterm;
+    string storeError = "No stores were found with current radius";
     string replacementUlr = "https://cdn.discordapp.com/attachments/519096261408718908/649685312083197973/coopdicoop.jpg";
 
     double tempMaxprice
@@ -758,6 +766,15 @@
 
     }
 
+    public void OpenStoreModal()
+    {
+        FindStoreFunc();
+        showStoreModal(ModalSize.Default, 30, true);
+    }
+
+    /// <summary>
+    /// Find close stores based on location and radius
+    /// </summary>
     public void FindStoreFunc()
     {
         closeStore = new FindCloseStores(userGeoLocation, radius);
