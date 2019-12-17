@@ -51,27 +51,32 @@
     static string[] Amount = { "Full", "Almost Full", "Almost Empty"  };
     IEnumerable<AmountRemaining> data = Enumerable.Range( 1, Amount.Length ).Select( x => new AmountRemaining { textField = Amount[x - 1], valueField = x } );
 
-    object selectedAmount { get; set; } = 1;
+    object selectedAmount { get; set;} = 1;
 
     [Parameter] public Product Product { get; set; }
 
     [Parameter] public Action<bool> StatusChanged { get; set; }
 
-    [Parameter] public bool shouldSave { get; set; }
+    //[Parameter] public Action<bool> ShouldSave { get; set; }
 
     DateTime? selectedDate;
 
     void OnDateChanged( DateTime? date)
     {
-        shouldSave = true;
+
         Product._timeAdded = date.ToString();
+        Product._saveProduct = true;
+        shouldSave(true);
     }
 
     void AmountChanged( object newValue )
     {
-        shouldSave = true;
+
         selectedAmount = newValue;
+        Product._state = Amount[int.Parse(newValue.ToString()) - 1];
         StateHasChanged();
+        Product._saveProduct = true;
+        shouldSave(true);
     }
 
     List<string> ItemState = new List<string>() { "Full", "Almost Full", "Half Full", "Almost Empty" };
@@ -83,11 +88,18 @@
         StatusChanged?.Invoke(isChecked);
     }
 
+    public void shouldSave(bool isChecked)
+    {
+        StatusChanged?.Invoke(isChecked);
+    }
+
     public void OnSelectedValueChanged(int value)
     {
-        shouldSave = true;
+
         selectedValue = value;
         Product._amountleft = selectedValue;
+        Product._saveProduct = true;
+        shouldSave(true);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -95,9 +107,9 @@
         //if (firstRender)
         {
             selectedValue = Product._amountleft;
+            selectedAmount = Array.FindIndex(Amount,row => row.Equals(Product._state))+1;
             StateHasChanged();
         }
 
     }
-
 }

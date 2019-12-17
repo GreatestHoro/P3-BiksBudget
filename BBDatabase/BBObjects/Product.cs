@@ -9,7 +9,8 @@
         public string _image;
         public string _storeName;
         public string _CustomReferenceField;
-        public bool _completed; 
+        public bool _completed;
+        public bool _saveProduct;
 
         public string _customname;
         public int _amountleft; //Kan navngives anderledes
@@ -123,6 +124,9 @@
             _storeName = p._storeName;
             _amountleft = p._amountleft;
             _CustomReferenceField = p._CustomReferenceField;
+            _timeAdded = p._timeAdded;
+            _state = p._state;
+            _saveProduct = false;
         }
 
         public Product(string id, string productName, string amount, double price, string customReferenceField)
