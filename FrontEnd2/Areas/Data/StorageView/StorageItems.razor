@@ -16,10 +16,10 @@
 @if (email != null)
 {
     @*<Column ColumnSize="ColumnSize.Is6.Is3.WithOffset">
-        <Progress Margin="Margin.Is3.FromBottom" Size="Size.Small">
-            <ProgressBar Background="Background.Success" Value="@emptyFridgeFuntionality.percentageDone" />
-        </Progress>
-    </Column>*@
+            <Progress Margin="Margin.Is3.FromBottom" Size="Size.Small">
+                <ProgressBar Background="Background.Success" Value="@emptyFridgeFuntionality.percentageDone" />
+            </Progress>
+        </Column>*@
     <Row>
         <Column>
             <Card Margin="Margin.Is4.FromTop">
@@ -35,13 +35,11 @@
                 </Fields>
             </CardBody>
             <CardBody Padding="Padding.Is0.OnY">
-
                 <ListGroup IsFlush="true" Class="text-center">
                     @foreach (Product p in user.storage.storageList)
                     {
                         <StorageItem Product="@p" StatusChanged="@(OnStatusChanged)"></StorageItem>
                     }
-
                 </ListGroup>
             </CardBody>
             <CardFooter Class="card-footerShoppinglist" Padding="Padding.Is3.FromBottom">
@@ -56,16 +54,15 @@
                     <FieldBody ColumnSize="ColumnSize.Is2">
                     </FieldBody>
                 </Field>
+                <Snackbar @ref="UndoDelete">
+                    <SnackbarBody>
+                        @snacbarMessage
+                    </SnackbarBody>
+                    <SnackbarAction Clicked="@(async () => await UndoSnackbar())">UNDO</SnackbarAction>
+                </Snackbar>
             </CardFooter>
         </Column>
     </Row>
-
-    <Snackbar @ref="UndoDelete">
-        <SnackbarBody>
-            @snacbarMessage
-        </SnackbarBody>
-        <SnackbarAction Clicked="@(async () => await UndoSnackbar())">UNDO</SnackbarAction>
-    </Snackbar>
 
     <Accordion>
         <Modal @ref="quickaddModal">
@@ -125,845 +122,852 @@
 
     @if (viewTitle == true)
     {
-        <div class="row d-flex justify-content-center top-margin">
-            <div class="col-sm-10 col-md-8 col-lg-7 col-xl-5">
-                @foreach (WeightedRecipies rep in recpies)
-                {
-                    <div class="center_div card w-100" id="recipeCard">
-                        <a @onclick="(() => retriveInfo(rep))" class="stretched-link"></a>
-                        <div class="card-header" style="padding-bottom: 0.25rem;">
-                            <div class="card-title w-100">
-                                <h6 style="font-weight:bold;">
-                                    @rep._recipie._Name
-                                </h6>
-                            </div>
-                        </div>
-                        <div class="card-body" style="padding-bottom: 0.25rem; padding-top: 0.60rem;">
-                            <div class="justify-content-between">
-                                <button class="rounded btn-success">
-                                    @for (int i = 0; i < rep._recipie._PerPerson; i++)
-                                    {
-                                        if (i < 4)
-                                        {
-                                            <i class="oi oi-person"> </i>
-                                        }
-                                    }
-                                    @if (rep._recipie._PerPerson >= 4)
-                                    {
-                                        <i class="oi oi-plus"> </i>
-                                    }
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                }
-            </div>
-        </div>
-    }
-    <Accordion>
-        <Modal @ref="recipeRef">
-            <ModalBackdrop />
-            <ModalContent IsCentered="true" Size="ModalSize.Large">
-                <ModalHeader>
-                    <ModalTitle Size="1"> @recipeName </ModalTitle>
-                    <CloseButton Clicked="hideModal" />
-                </ModalHeader>
-                <Card>
-                    <CardHeader>
-                        <Heading Size="HeadingSize.Is5" Class="text-center">
-                            <Button Clicked="@(() => isOpen1 = !isOpen1)">Description</Button>
-                        </Heading>
-                    </CardHeader>
-                    <Collapse IsOpen="@isOpen1">
-                        <CardBody>
-                            <p style="text-align:center; padding: 4px 7px 2px 4px;"> @recipeDescription </p>
-                        </CardBody>
-                    </Collapse>
-                </Card>
-                <Card>
-                    <CardHeader>
-                        <Heading Size="HeadingSize.Is5" Class="text-center">
-                            <Button Clicked="@(() => isOpen2 = !isOpen2)" Style="font-weight:bold">Ingrediens</Button>
-                        </Heading>
-                    </CardHeader>
-                    <Collapse IsOpen="@isOpen2">
-                        <CardBody>
-                            <div class="input-group mb-3">
-                                <div class="input-group-prepend">
-                                    <label class="input-group-text" for="inputGroupSelect01"> For:</label>
+        @if (BiksFoodRecepiesFound)
+        {
+            <div class="row d-flex justify-content-center top-margin">
+                <div class="col-sm-10 col-md-8 col-lg-7 col-xl-5">
+                    @foreach (WeightedRecipies rep in recpies)
+                    {
+                        <div class="center_div card w-100" id="recipeCard">
+                            <a @onclick="(() => retriveInfo(rep))" class="stretched-link"></a>
+                            <div class="card-header" style="padding-bottom: 0.25rem;">
+                                <div class="card-title w-100">
+                                    <h6 style="font-weight:bold;">
+                                        @rep._recipie._Name
+                                    </h6>
                                 </div>
-                                <SelectEdit TValue="int" SelectedValue="selectedValue" SelectedValueChanged="@OnSelectedValueChanged" Style="max-width:100px;">
-                                    @{
-                                        int numb = 0;
-                                        @for (int i = 0; i < 99; i++)
-                                        {
-                                            <SelectItem Value="TempScalar">@(++numb)</SelectItem>
-                                        }
-                                    }
-                                </SelectEdit>
                             </div>
-                            <Table Theme="Theme.Light" IsStriped="false" IsHoverable="true" IsFullWidth="true" IsBorderless="true">
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHeaderCell></TableHeaderCell>
-                                        <Tooltip IsAlwaysActive="true" Text="Click on an ingredient to find a product">
-                                            <TableHeaderCell></TableHeaderCell>
-                                        </Tooltip>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    @foreach (Ingredient ing in ingredients)
-                                    {
-                                        <TableRow>
-                                            @if (runCounter <= ingredients.Count) //comback and fix
+                            <div class="card-body" style="padding-bottom: 0.25rem; padding-top: 0.60rem;">
+                                <div class="justify-content-between">
+                                    <button class="rounded btn-success">
+                                        @for (int i = 0; i < rep._recipie._PerPerson; i++)
+                                        {
+                                            if (i < 4)
                                             {
-                                                runCounter++;
-                                                scalar = recipePerPerson;
+                                                <i class="oi oi-person"> </i>
                                             }
-                                            <TableRowCell Style="width:50px">@(String.Format("{0:0.0}", (ing._amount / recipePerPerson) * scalar)) @ing._unit</TableRowCell>
-                                            @if (ingrdientDict.ContainsKey(ing))
-                                            {
-                                                <TableRowCell Style="width:150px">
-                                                    <Button Class="btn btn-block btn-success" @onclick="(() => retriveIngredient(ing))"><Icon Padding="Padding.Is1.FromTop" Float="Float.Left" Name="@(FontAwesomeIcons.CheckCircle)"></Icon> @ing._ingredientName</Button>
-                                                </TableRowCell>
-                                            }
-                                            else if (InshoppingList.Contains(ing))
-                                            {
-                                                <TableRowCell Style="width:150px">
-                                                    <Button Color="Color.Success" IsOutline="true" Class="btn btn-block btn-light" @onclick="(() => retriveIngredient(ing))"><Icon Padding="Padding.Is1.FromTop" Float="Float.Left" Name="@(FontAwesomeIcons.ShoppingCart)"></Icon>@ing._ingredientName</Button>
-                                                </TableRowCell>
-                                            }
-                                            else
-                                            {
-                                                <TableRowCell Style="width:150px">
-                                                    <Button Class="btn btn-block btn-light" @onclick="(() => retriveIngredient(ing))"><Icon Padding="Padding.Is1.FromTop" Float="Float.Left" Name="@(FontAwesomeIcons.CartPlus)"></Icon>@ing._ingredientName</Button>
-                                                </TableRowCell>
-                                            }
-
-                                        </TableRow>
-                                    }
-                                </TableBody>
-                            </Table>
-                        </CardBody>
-                    </Collapse>
-                </Card>
-                <Card>
-                    <CardHeader>
-                        <Heading Size="HeadingSize.Is5" Class="text-center">
-                            <Button Clicked="@(() => isOpen3 = !isOpen3)" Style="font-weight:bold">Products</Button>
-                        </Heading>
-                    </CardHeader>
-                    <Collapse IsOpen="@isOpen3">
-                        <CardBody>
-                            @if (products.Count == 0)
-                            {
-                                <p> Choose an ingredient</p>
-                            }
-                            else
-                            {
-                                @foreach (Product p in products)
-                                {
-                                    <Table Theme="Theme.Light" IsBordered="true">
-                                        <TableBody>
-                                            <TableRowHeader Style="width:5%"><Button Class="btn btn-block btn-outline-success" Clicked="() => AddProductToSL(p)"> <Icon Name="@(FontAwesomeIcons.ShoppingCart)"></Icon></Button> </TableRowHeader>
-                                            <TableRowCell Style="width:25%">@p._price Kr.</TableRowCell>
-                                            <TableRowCell Style="width:70%">@p._productName</TableRowCell>
-                                        </TableBody>
-                                    </Table>
-                                }
-                            }
-                        </CardBody>
-                    </Collapse>
-                </Card>
-            </ModalContent>
-        </Modal>
-    </Accordion>
-
-    @if (_viewLoadMore)
-    {
-        <div class="row mt-4 d-flex justify-content-center">
-            <button class="btn btn-warning mb-5 mx-auto" @onclick="() => LoadMoreRecepies()">Load More</button>
-        </div>
-    }
-}
-
-
-@code {
-    #region Fields
-    private string name;
-    private string searchBox;
-    object selectedSearchValue { get; set; }
-
-    private void addProductName()
-    {
-        if (validations.ValidateAll())
-        {
-            products.Add(new Product { _productName = name });
-            name = null;
-
-            validations.ClearAll();
-        }
-    }
-    Snackbar UndoDelete;
-    private Modal quickaddModal;
-    bool isCentered;
-    ModalSize modalSize;
-    int? maxHeight;
-
-    IEnumerable<AutocompleteSearch> prodData;
-    object SelectedSearchValue { get; set; }
-    bool FindingAutocorrectlist = true;
-    string[] prodName;
-    string snacbarMessage;
-    List<Product> SnackbarTempList = new List<Product>();
-
-    private Validations validations;
-    ConnectionSettings connectionSettings = new ConnectionSettings();
-    private Modal recipeRef;
-    string email, userId, recipeDescription, recipeName;
-    string tempState;
-    string TempScalar;
-    string tempIngredientName;
-    string shopString;
-    string replacementUlr = "https://cdn.discordapp.com/attachments/519096261408718908/649685312083197973/coopdicoop.jpg";
-    List<List<string>> AllProductRefs;
-    int ID;
-
-    int recipePerPerson;
-    int LoadingBarProggres;
-    int selectedValue;
-    int value;
-    int x;
-    int scalar;
-    int runCounter = 0;
-    int Timesload = 0;
-    int defualtAmountLoad = 10;
-    int NewAmount;
-    int selectedProductCount = 0;
-    int produToPrint = 0;
-    int printAtOnce = 20;
-
-    bool found = true;
-    bool viewTitle = false;
-    bool viewIngredients = false;
-    bool viewProducts = false;
-    bool FlagYeet = true;
-    bool isOpen1 = true;
-    bool isOpen2 = true;
-    bool isOpen3 = true;
-    bool disableButton = false;
-    bool changeState = false;
-    bool _viewLoadMore = false;
-    bool IngrdientIsCurrentlySelected = false;
-    bool _viewEmptyFridgeLoadSpinner = false;
-    bool loadingbar = false;
-    bool _showFilters = false;
-    bool pmatch = true;
-    bool OverallMatch = false;
-    bool _FoodBiskEnabled = false;
-    bool disableQuickadd = false;
-    bool allEnabled = false;
-    bool isLoading = true;
-
-    bool[] wordFilter;
-    bool[] storeFilter;
-
-    EmptyFridgeFuntionality emptyFridgeFuntionality;
-
-    StoreFilterList storeFilters = new StoreFilterList();
-    WordFilterList wordFIlters = new WordFilterList();
-    UserData user;
-    HttpResponseMessage responseMessage = new HttpResponseMessage();
-    Product tempProduct = new Product();
-    Ingredient currentlySelectedIngredient;
-    List<Ingredient> InshoppingList = new List<Ingredient>();
-    ProductSearchHandling search = new ProductSearchHandling();
-    List<Product> itemList = new List<Product>();
-
-    List<float> recipeAmount = new List<float>();
-    List<Ingredient> ingredients = new List<Ingredient>();
-    List<WeightedRecipies> recpies = new List<WeightedRecipies>();
-    List<WeightedRecipies> Allrecpies = new List<WeightedRecipies>();
-    List<Recipe> _recpies = new List<Recipe>();
-    List<Product> products = new List<Product>();
-    List<Product> ToShoppinglist = new List<Product>();
-    Recipe selectedRecepie = new Recipe();
-    List<string> ItemState = new List<string>() { "Full", "Almost Full", "Half Full", "Almost Empty" };
-    ControllerFuncionality features = new ControllerFuncionality();
-    Dictionary<Ingredient, List<string>> ingrdientDict = new Dictionary<Ingredient, List<string>>();
-    Dictionary<Product, bool> SelectedProducts = new Dictionary<Product, bool>();
-    Dictionary<string, Product> productCompare = new Dictionary<string, Product>();
-
-    private delegate bool compareWR(WeightedRecipies r1, WeightedRecipies r2);
-    #endregion
-
-    #region StorageMethods
-
-    public bool StorageExists()
-    {
-        return user.storage.storageList.Count > 0;
-    }
-
-    private void showQuickaddModal(ModalSize modalSize, int? maxHeight = null, bool isCentered = false)
-    {
-        this.isCentered = isCentered;
-        this.modalSize = modalSize;
-        this.maxHeight = maxHeight;
-
-        quickaddModal.Show();
-    }
-
-    private void hideQuickaddModal()
-    {
-        itemList.Clear();
-        searchBox = "";
-        quickaddModal.Hide();
-    }
-
-    private async Task KeyPressed(KeyboardEventArgs e)
-    {
-        if (e.Key == "Enter")
-        {
-            itemList = await search.CallApiForProducts(searchBox, wordFilter, storeFilter);
-        }
-    }
-
-    /// <summary>
-    /// The state of an item is changed.
-    /// </summary>
-    /// <param name="item">The item of which the state shouold be changes</param>
-    /// <param name="state">The state to chaneg to</param>
-    public async Task ChangeProductState(Product p, string state)
-    {
-        // Finds the index of the input item
-        p._state = state;
-
-        // Change the state in the storage list
-        //await ListFunc.ChangeItemInStorage(ListFunc.CombinedList[index]);
-        await user.storage.EditProduct(p);
-    }
-
-    public async Task DeleteProduct(Product p)
-    {
-        await user.storage.DeleteProduct(p);
-        StateHasChanged();
-    }
-
-
-    /// <summary>
-    /// This method changes the amount of an item.
-    /// If there is only one left, it is deleted.
-    /// Else the amount left is decremented.
-    /// </summary>
-    /// <param name="item"></param>
-    public async Task ChangeItemAmout(Product p)
-    {
-        await user.storage.DeleteProduct(p, 1);
-        StateHasChanged();
-    }
-    #endregion
-
-    #region OnInit_async_Method
-
-    /// <summary>
-    /// If it is the first render, the email is requested form the local storage.
-    /// From this email, the storage from the user will be requested from the api.
-    /// </summary>
-    /// <param name="firstRender"></param>
-    /// <returns></returns>
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await GetLocalSession();
-
-            if (email != null)
-            {
-                user = new UserData(email);
-                await user.storage.Get();
-                UpdateProducts();
-
-            }
-            intailizeAllProducts(user.storage.storageList);
-            await InitializeAutocorrect();
-
-            isLoading = false;
-            StateHasChanged();
-        }
-
-    }
-    public void UpdateProducts()
-    {
-        foreach (Product p in user.storage.storageList)
-        {
-            productCompare.Add(p._id,new Product(p));
-        }
-    }
-
-    async Task GetLocalSession()
-    {
-        // The email is requested fomr localstorage
-        email = await localStorage.GetItemAsync<string>("Email");
-    }
-
-    public bool IsAllSelected()
-    {
-        if (user.storage.storageList.All(x => x._completed == true))
-        {
-            allEnabled = true;
+                                        }
+                                        @if (rep._recipie._PerPerson >= 4)
+                                        {
+                                            <i class="oi oi-plus"> </i>
+                                        }
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
         }
         else
         {
-            allEnabled = false;
+            <div>
+                <span>Could not find Any Recipes with the given products</span>
+            </div>
+        }
+        }
+        <Accordion>
+            <Modal @ref="recipeRef">
+                <ModalBackdrop />
+                <ModalContent IsCentered="true" Size="ModalSize.Large">
+                    <ModalHeader>
+                        <ModalTitle Size="1"> @recipeName </ModalTitle>
+                        <CloseButton Clicked="hideModal" />
+                    </ModalHeader>
+                    <Card>
+                        <CardHeader>
+                            <Heading Size="HeadingSize.Is5" Class="text-center">
+                                <Button Clicked="@(() => isOpen1 = !isOpen1)">Description</Button>
+                            </Heading>
+                        </CardHeader>
+                        <Collapse IsOpen="@isOpen1">
+                            <CardBody>
+                                <p style="text-align:center; padding: 4px 7px 2px 4px;"> @recipeDescription </p>
+                            </CardBody>
+                        </Collapse>
+                    </Card>
+                    <Card>
+                        <CardHeader>
+                            <Heading Size="HeadingSize.Is5" Class="text-center">
+                                <Button Clicked="@(() => isOpen2 = !isOpen2)" Style="font-weight:bold">Ingrediens</Button>
+                            </Heading>
+                        </CardHeader>
+                        <Collapse IsOpen="@isOpen2">
+                            <CardBody>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <label class="input-group-text" for="inputGroupSelect01"> For:</label>
+                                    </div>
+                                    <SelectEdit TValue="int" SelectedValue="selectedValue" SelectedValueChanged="@OnSelectedValueChanged" Style="max-width:100px;">
+                                        @{
+                                            int numb = 0;
+                                            @for (int i = 0; i < 99; i++)
+                                            {
+                                                <SelectItem Value="TempScalar">@(++numb)</SelectItem>
+                                            }
+                                        }
+                                    </SelectEdit>
+                                </div>
+                                <Table Theme="Theme.Light" IsStriped="false" IsHoverable="true" IsFullWidth="true" IsBorderless="true">
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHeaderCell></TableHeaderCell>
+                                            <Tooltip IsAlwaysActive="true" Text="Click on an ingredient to find a product">
+                                                <TableHeaderCell></TableHeaderCell>
+                                            </Tooltip>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        @foreach (Ingredient ing in ingredients)
+                                        {
+                                            <TableRow>
+                                                @if (runCounter <= ingredients.Count) //comback and fix
+                                                {
+                                                    runCounter++;
+                                                    scalar = recipePerPerson;
+                                                }
+                                                <TableRowCell Style="width:50px">@(String.Format("{0:0.0}", (ing._amount / recipePerPerson) * scalar)) @ing._unit</TableRowCell>
+                                                @if (ingrdientDict.ContainsKey(ing))
+                                                {
+                                                    <TableRowCell Style="width:150px">
+                                                        <Button Class="btn btn-block btn-success" @onclick="(() => retriveIngredient(ing))"><Icon Padding="Padding.Is1.FromTop" Float="Float.Left" Name="@(FontAwesomeIcons.CheckCircle)"></Icon> @ing._ingredientName</Button>
+                                                    </TableRowCell>
+                                                }
+                                                else if (InshoppingList.Contains(ing))
+                                                {
+                                                    <TableRowCell Style="width:150px">
+                                                        <Button Color="Color.Success" IsOutline="true" Class="btn btn-block btn-light" @onclick="(() => retriveIngredient(ing))"><Icon Padding="Padding.Is1.FromTop" Float="Float.Left" Name="@(FontAwesomeIcons.ShoppingCart)"></Icon>@ing._ingredientName</Button>
+                                                    </TableRowCell>
+                                                }
+                                                else
+                                                {
+                                                    <TableRowCell Style="width:150px">
+                                                        <Button Class="btn btn-block btn-light" @onclick="(() => retriveIngredient(ing))"><Icon Padding="Padding.Is1.FromTop" Float="Float.Left" Name="@(FontAwesomeIcons.CartPlus)"></Icon>@ing._ingredientName</Button>
+                                                    </TableRowCell>
+                                                }
+
+                                            </TableRow>
+                                        }
+                                    </TableBody>
+                                </Table>
+                            </CardBody>
+                        </Collapse>
+                    </Card>
+                    <Card>
+                        <CardHeader>
+                            <Heading Size="HeadingSize.Is5" Class="text-center">
+                                <Button Clicked="@(() => isOpen3 = !isOpen3)" Style="font-weight:bold">Products</Button>
+                            </Heading>
+                        </CardHeader>
+                        <Collapse IsOpen="@isOpen3">
+                            <CardBody>
+                                @if (products.Count == 0)
+                                {
+                                    <p> Choose an ingredient</p>
+                                }
+                                else
+                                {
+                                    @foreach (Product p in products)
+                                    {
+                                        <Table Theme="Theme.Light" IsBordered="true">
+                                            <TableBody>
+                                                <TableRowHeader Style="width:5%"><Button Class="btn btn-block btn-outline-success" Clicked="() => AddProductToSL(p)"> <Icon Name="@(FontAwesomeIcons.ShoppingCart)"></Icon></Button> </TableRowHeader>
+                                                <TableRowCell Style="width:25%">@p._price Kr.</TableRowCell>
+                                                <TableRowCell Style="width:70%">@p._productName</TableRowCell>
+                                            </TableBody>
+                                        </Table>
+                                    }
+                                }
+                            </CardBody>
+                        </Collapse>
+                    </Card>
+                </ModalContent>
+            </Modal>
+        </Accordion>
+
+        @if (_viewLoadMore && BiksFoodRecepiesFound)
+        {
+            <div class="row mt-4 d-flex justify-content-center">
+                <button class="btn btn-warning mb-5 mx-auto" @onclick="() => LoadMoreRecepies()">Load More</button>
+            </div>
+        }
+    }
+
+
+    @code {
+        #region Fields
+        private string name;
+        private string searchBox;
+        object selectedSearchValue { get; set; }
+        
+        Snackbar UndoDelete;
+        private Modal quickaddModal;
+        bool isCentered;
+        ModalSize modalSize;
+        int? maxHeight;
+
+        IEnumerable<AutocompleteSearch> prodData;
+        object SelectedSearchValue { get; set; }
+        bool FindingAutocorrectlist = true;
+        string[] prodName;
+        string snacbarMessage;
+        List<Product> SnackbarTempList = new List<Product>();
+
+        private Validations validations;
+        ConnectionSettings connectionSettings = new ConnectionSettings();
+        private Modal recipeRef;
+        string email, userId, recipeDescription, recipeName;
+        string tempState;
+        string TempScalar;
+        string tempIngredientName;
+        string shopString;
+        string replacementUlr = "https://cdn.discordapp.com/attachments/519096261408718908/649685312083197973/coopdicoop.jpg";
+        List<List<string>> AllProductRefs;
+        int ID;
+
+        int recipePerPerson;
+        int LoadingBarProggres;
+        int selectedValue;
+        int value;
+        int x;
+        int scalar;
+        int runCounter = 0;
+        int Timesload = 0;
+        int defualtAmountLoad = 10;
+        int NewAmount;
+        int selectedProductCount = 0;
+        int produToPrint = 0;
+        int printAtOnce = 20;
+
+        bool found = true;
+        bool viewTitle = false;
+        bool viewIngredients = false;
+        bool viewProducts = false;
+        bool FlagYeet = true;
+        bool isOpen1 = true;
+        bool isOpen2 = true;
+        bool isOpen3 = true;
+        bool disableButton = false;
+        bool changeState = false;
+        bool _viewLoadMore = false;
+        bool IngrdientIsCurrentlySelected = false;
+        bool _viewEmptyFridgeLoadSpinner = false;
+        bool loadingbar = false;
+        bool _showFilters = false;
+        bool pmatch = true;
+        bool OverallMatch = false;
+        bool _FoodBiskEnabled = false;
+        bool disableQuickadd = false;
+        bool allEnabled = false;
+        bool isLoading = true;
+        bool BiksFoodRecepiesFound = false;
+
+        bool[] wordFilter;
+        bool[] storeFilter;
+
+        EmptyFridgeFuntionality emptyFridgeFuntionality;
+
+        StoreFilterList storeFilters = new StoreFilterList();
+        WordFilterList wordFIlters = new WordFilterList();
+        UserData user;
+        HttpResponseMessage responseMessage = new HttpResponseMessage();
+        Product tempProduct = new Product();
+        Ingredient currentlySelectedIngredient;
+        List<Ingredient> InshoppingList = new List<Ingredient>();
+        ProductSearchHandling search = new ProductSearchHandling();
+        List<Product> itemList = new List<Product>();
+
+        List<float> recipeAmount = new List<float>();
+        List<Ingredient> ingredients = new List<Ingredient>();
+        List<WeightedRecipies> recpies = new List<WeightedRecipies>();
+        List<WeightedRecipies> Allrecpies = new List<WeightedRecipies>();
+        List<Recipe> _recpies = new List<Recipe>();
+        List<Product> products = new List<Product>();
+        List<Product> ToShoppinglist = new List<Product>();
+        Recipe selectedRecepie = new Recipe();
+        List<string> ItemState = new List<string>() { "Full", "Almost Full", "Half Full", "Almost Empty" };
+        ControllerFuncionality features = new ControllerFuncionality();
+        Dictionary<Ingredient, List<string>> ingrdientDict = new Dictionary<Ingredient, List<string>>();
+        Dictionary<Product, bool> SelectedProducts = new Dictionary<Product, bool>();
+        Dictionary<string, Product> productCompare = new Dictionary<string, Product>();
+
+        private delegate bool compareWR(WeightedRecipies r1, WeightedRecipies r2);
+        #endregion
+
+        #region StorageMethods
+
+        public bool StorageExists()
+        {
+            return user.storage.storageList.Count > 0;
         }
 
-        return allEnabled;
-    }
-
-    public void CheckAll()
-    {
-        allEnabled = !allEnabled;
-
-        user.storage.SelectAllProducs(allEnabled);
-        CountSelectedProducts();
-        StateHasChanged();
-    }
-    #endregion
-
-    #region Recipe_Display_Methods
-    void matchNotFound()
-    {
-        found = true;
-    }
-
-    void matchFound()
-    {
-        found = false;
-    }
-    void Found()
-    {
-        found = true;
-    }
-
-    void clear()
-    {
-        ingredients.Clear();
-        recipeAmount.Clear();
-    }
-
-    void closeRecipies()
-    {
-        _viewLoadMore = false;
-        viewTitle = !viewTitle;
-    }
-
-    void retriveInfo(WeightedRecipies rep)
-    {
-        //Recipe show = _recpies.First(x => x._recipeID == ID);
-        ingrdientDict = rep.ingrdients;
-        selectedRecepie = rep._recipie;
-        recipeName = rep._recipie._Name;
-        recipeDescription = rep._recipie._description;
-        ingredients = rep._recipie._ingredientList;
-        recipePerPerson = (int)rep._recipie._PerPerson;
-        selectedValue = recipePerPerson;
-        found = true;
-        showModal();
-        viewIngredients = true;
-        //viewAddToshoppinglist = true;
-    }
-
-    void incrementRecipeAmount()
-    {
-        for (int i = 0; i < recipeAmount.Count; i++)
+        private void showQuickaddModal(ModalSize modalSize, int? maxHeight = null, bool isCentered = false)
         {
-            found = true;
-            if (recipeAmount[i] != 0)
+            this.isCentered = isCentered;
+            this.modalSize = modalSize;
+            this.maxHeight = maxHeight;
+
+            quickaddModal.Show();
+        }
+
+        private void hideQuickaddModal()
+        {
+            itemList.Clear();
+            searchBox = "";
+            quickaddModal.Hide();
+        }
+
+        private async Task KeyPressed(KeyboardEventArgs e)
+        {
+            if (e.Key == "Enter")
             {
-                recipeAmount[i] = (recipeAmount[i] / recipePerPerson) * (recipePerPerson + 1F);
-                value++;
+                itemList = await search.CallApiForProducts(searchBox, wordFilter, storeFilter);
             }
         }
-        recipePerPerson += 1;
-    }
+
+        /// <summary>
+        /// The state of an item is changed.
+        /// </summary>
+        /// <param name="item">The item of which the state shouold be changes</param>
+        /// <param name="state">The state to chaneg to</param>
+        public async Task ChangeProductState(Product p, string state)
+        {
+            // Finds the index of the input item
+            p._state = state;
+
+            // Change the state in the storage list
+            //await ListFunc.ChangeItemInStorage(ListFunc.CombinedList[index]);
+            await user.storage.EditProduct(p);
+        }
+
+        public async Task DeleteProduct(Product p)
+        {
+            await user.storage.DeleteProduct(p);
+            StateHasChanged();
+        }
 
 
-    void decrementRecipeAmount()
-    {
-        if (recipePerPerson >= 2)
+        /// <summary>
+        /// This method changes the amount of an item.
+        /// If there is only one left, it is deleted.
+        /// Else the amount left is decremented.
+        /// </summary>
+        /// <param name="item"></param>
+        public async Task ChangeItemAmout(Product p)
+        {
+            await user.storage.DeleteProduct(p, 1);
+            StateHasChanged();
+        }
+        #endregion
+
+        #region OnInit_async_Method
+
+        /// <summary>
+        /// If it is the first render, the email is requested form the local storage.
+        /// From this email, the storage from the user will be requested from the api.
+        /// </summary>
+        /// <param name="firstRender"></param>
+        /// <returns></returns>
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (firstRender)
+            {
+                await GetLocalSession();
+
+                if (email != null)
+                {
+                    user = new UserData(email);
+                    await user.storage.Get();
+                    UpdateProducts();
+
+                }
+                intailizeAllProducts(user.storage.storageList);
+                await InitializeAutocorrect();
+
+                isLoading = false;
+                StateHasChanged();
+            }
+
+        }
+        public void UpdateProducts()
+        {
+            foreach (Product p in user.storage.storageList)
+            {
+                productCompare.Add(p._id, new Product(p));
+            }
+        }
+
+        async Task GetLocalSession()
+        {
+            // The email is requested fomr localstorage
+            email = await localStorage.GetItemAsync<string>("Email");
+        }
+
+        public bool IsAllSelected()
+        {
+            if (user.storage.storageList.All(x => x._completed == true))
+            {
+                allEnabled = true;
+            }
+            else
+            {
+                allEnabled = false;
+            }
+
+            return allEnabled;
+        }
+
+        public void CheckAll()
+        {
+            allEnabled = !allEnabled;
+
+            user.storage.SelectAllProducs(allEnabled);
+            CountSelectedProducts();
+            StateHasChanged();
+        }
+        #endregion
+
+        #region Recipe_Display_Methods
+        void matchNotFound()
+        {
+            found = true;
+        }
+
+        void matchFound()
+        {
+            found = false;
+        }
+        void Found()
+        {
+            found = true;
+        }
+
+        void clear()
+        {
+            ingredients.Clear();
+            recipeAmount.Clear();
+        }
+
+        void closeRecipies()
+        {
+            _viewLoadMore = false;
+            viewTitle = !viewTitle;
+        }
+
+        void retriveInfo(WeightedRecipies rep)
+        {
+            //Recipe show = _recpies.First(x => x._recipeID == ID);
+            ingrdientDict = rep.ingrdients;
+            selectedRecepie = rep._recipie;
+            recipeName = rep._recipie._Name;
+            recipeDescription = rep._recipie._description;
+            ingredients = rep._recipie._ingredientList;
+            recipePerPerson = (int)rep._recipie._PerPerson;
+            selectedValue = recipePerPerson;
+            found = true;
+            showModal();
+            viewIngredients = true;
+            //viewAddToshoppinglist = true;
+        }
+
+        void incrementRecipeAmount()
         {
             for (int i = 0; i < recipeAmount.Count; i++)
             {
                 found = true;
                 if (recipeAmount[i] != 0)
                 {
-                    recipeAmount[i] = (recipeAmount[i] / recipePerPerson) * (recipePerPerson - 1F);
-                    value--;
+                    recipeAmount[i] = (recipeAmount[i] / recipePerPerson) * (recipePerPerson + 1F);
+                    value++;
                 }
             }
-            recipePerPerson -= 1;
+            recipePerPerson += 1;
         }
-    }
-    #endregion
 
-    #region empty fridge
 
-    private async Task FindRecipies()
-    {
-        _viewEmptyFridgeLoadSpinner = true;
-        int HasBeenLoaded = 0;
-        this.StateHasChanged();
-        emptyFridgeFuntionality = new EmptyFridgeFuntionality(GetSelectedProducts());
-        Allrecpies = await emptyFridgeFuntionality.GetWeightedRecipies();
-        LoadMoreRecepies();
-        loadingbar = true;
-        LoadingManager(++HasBeenLoaded, user.storage.storageList.Count);
-        this.StateHasChanged();
-
-        viewTitle = true;
-        _viewEmptyFridgeLoadSpinner = false;
-        _viewLoadMore = true;
-        await disableLoad();
-    }
-    private void LoadingManager(int currentLoad, int TotalToLoad)
-    {
-        LoadingBarProggres = currentLoad == TotalToLoad ? 100 : ((int)(100 * ((float)currentLoad / (float)TotalToLoad)));
-    }
-    private async Task disableLoad()
-    {
-        await Task.Delay(3000);
-        loadingbar = false;
-    }
-
-    private async Task<List<Recipe>> getRecepies()
-    {
-        _recpies = JsonConvert.DeserializeObject<List<Recipe>>(await Http.GetStringAsync("https://localhost:44325/api/recipe?recipeTitle=" + " "));
-        List<Recipe> recepies = _recpies;
-        return recepies;
-    }
-
-    #endregion
-
-    private async Task AssignScalar(ChangeEventArgs e, Product p)
-    {
-        await ChangeProductState(p, e.Value.ToString());
-    }
-
-    private void showModal()
-    {
-        recipeRef.Show();
-    }
-
-    private void hideModal()
-    {
-        recipeRef.Hide();
-    }
-
-    private void OnSelectedValueChanged(int value)
-    {
-        selectedValue = value;
-        scalar = selectedValue;
-    }
-
-    private void retriveIngredient(Ingredient ID)
-    {
-        currentlySelectedIngredient = ID;
-        viewProducts = true;
-        Ingredient ing = ingredients.First(x => x._ingredientName == ID._ingredientName);
-        tempIngredientName = ing._ingredientName;
-        retriveProduct();
-    }
-
-    private async void retriveProduct()
-    {
-        if (products != null)
+        void decrementRecipeAmount()
         {
-            products.Clear();
-        }
-        products.AddRange(await Products(tempIngredientName));
-        this.StateHasChanged();
-    }
-
-    private async Task<List<Product>> Products(string ingredient)
-    {
-        List<Product> resProducts = new List<Product>();
-        ProductHandling productHandling = new ProductHandling();
-        resProducts = await productHandling.GetListAsync(ingredient);
-        if (resProducts.Count == 0)
-        {
-            resProducts = await SlowExsperimentalSearch(ingredient);
-        }
-        resProducts.Sort((a, b) => a._price.CompareTo(b._price));
-
-        return resProducts;
-    }
-
-    private async Task<List<Product>> SlowExsperimentalSearch(string searchterm)
-    {
-        string[] InduviduelTerms = searchterm.Split(" ");
-        ProductHandling pTest = new ProductHandling();
-        List<List<Product>> TempListList = new List<List<Product>>();
-        List<Product> ProductList = new List<Product>();
-
-        foreach (string s in InduviduelTerms)
-        {
-            TempListList.Add(await pTest.ReferencesAsync(s));
-        }
-        TempListList = TempListList.OrderByDescending(x => -x.Count).ToList();
-        if (ProductList.Count == 0)
-        {
-            foreach (List<Product> Plist in TempListList)
+            if (recipePerPerson >= 2)
             {
-                if (Plist.Count != 0)
+                for (int i = 0; i < recipeAmount.Count; i++)
                 {
-                    ProductList = Plist;
-                    break;
+                    found = true;
+                    if (recipeAmount[i] != 0)
+                    {
+                        recipeAmount[i] = (recipeAmount[i] / recipePerPerson) * (recipePerPerson - 1F);
+                        value--;
+                    }
+                }
+                recipePerPerson -= 1;
+            }
+        }
+        #endregion
+
+        #region empty fridge
+
+        private async Task FindRecipies()
+        {
+            _viewEmptyFridgeLoadSpinner = true;
+            int HasBeenLoaded = 0;
+            this.StateHasChanged();
+            emptyFridgeFuntionality = new EmptyFridgeFuntionality(GetSelectedProducts());
+            Allrecpies = await emptyFridgeFuntionality.GetWeightedRecipies();
+            CheckIfFoundRecepies(Allrecpies);
+            LoadMoreRecepies();
+            loadingbar = true;
+            LoadingManager(++HasBeenLoaded, user.storage.storageList.Count);
+            this.StateHasChanged();
+
+            viewTitle = true;
+            _viewEmptyFridgeLoadSpinner = false;
+            _viewLoadMore = true;
+            await disableLoad();
+        }
+        private void LoadingManager(int currentLoad, int TotalToLoad)
+        {
+            LoadingBarProggres = currentLoad == TotalToLoad ? 100 : ((int)(100 * ((float)currentLoad / (float)TotalToLoad)));
+        }
+        private async Task disableLoad()
+        {
+            await Task.Delay(3000);
+            loadingbar = false;
+        }
+        private void CheckIfFoundRecepies(List<WeightedRecipies> wr)
+        {
+            if (wr.Count > 0 ? true : false)
+            {
+                BiksFoodRecepiesFound = true;
+            }
+        }
+
+        private async Task<List<Recipe>> getRecepies()
+        {
+            _recpies = JsonConvert.DeserializeObject<List<Recipe>>(await Http.GetStringAsync("https://localhost:44325/api/recipe?recipeTitle=" + " "));
+            List<Recipe> recepies = _recpies;
+            return recepies;
+        }
+
+        #endregion
+
+        private async Task AssignScalar(ChangeEventArgs e, Product p)
+        {
+            await ChangeProductState(p, e.Value.ToString());
+        }
+
+        private void showModal()
+        {
+            recipeRef.Show();
+        }
+
+        private void hideModal()
+        {
+            recipeRef.Hide();
+        }
+
+        private void OnSelectedValueChanged(int value)
+        {
+            selectedValue = value;
+            scalar = selectedValue;
+        }
+
+        private void retriveIngredient(Ingredient ID)
+        {
+            currentlySelectedIngredient = ID;
+            viewProducts = true;
+            Ingredient ing = ingredients.First(x => x._ingredientName == ID._ingredientName);
+            tempIngredientName = ing._ingredientName;
+            retriveProduct();
+        }
+
+        private async void retriveProduct()
+        {
+            if (products != null)
+            {
+                products.Clear();
+            }
+            products.AddRange(await Products(tempIngredientName));
+            this.StateHasChanged();
+        }
+
+        private async Task<List<Product>> Products(string ingredient)
+        {
+            List<Product> resProducts = new List<Product>();
+            ProductHandling productHandling = new ProductHandling();
+            resProducts = await productHandling.GetListAsync(ingredient);
+            if (resProducts.Count == 0)
+            {
+                resProducts = await SlowExsperimentalSearch(ingredient);
+            }
+            resProducts.Sort((a, b) => a._price.CompareTo(b._price));
+
+            return resProducts;
+        }
+
+        private async Task<List<Product>> SlowExsperimentalSearch(string searchterm)
+        {
+            string[] InduviduelTerms = searchterm.Split(" ");
+            ProductHandling pTest = new ProductHandling();
+            List<List<Product>> TempListList = new List<List<Product>>();
+            List<Product> ProductList = new List<Product>();
+
+            foreach (string s in InduviduelTerms)
+            {
+                TempListList.Add(await pTest.ReferencesAsync(s));
+            }
+            TempListList = TempListList.OrderByDescending(x => -x.Count).ToList();
+            if (ProductList.Count == 0)
+            {
+                foreach (List<Product> Plist in TempListList)
+                {
+                    if (Plist.Count != 0)
+                    {
+                        ProductList = Plist;
+                        break;
+                    }
                 }
             }
-        }
-        foreach (Product p in ProductList)
-        {
-            p._CustomReferenceField = "*";
-        }
-        return ProductList;
-    }
-
-    public async void AddProductToSL(Product AddedItem)
-    {
-        disableButton = true;
-        StateHasChanged();
-        InshoppingList.Add(currentlySelectedIngredient);
-        AddedItem._amountleft++;
-
-        int actualAmout = AddedItem._amountleft;
-
-        AddedItem._amountleft = 1;
-
-        AddedItem._image = features.SetOnePicture(AddedItem._image);
-
-        if (String.IsNullOrEmpty(email))
-        {
-            await GetAndSetLocalStorage(AddedItem);
-        }
-        else
-        {
-            await user.shoppinglist.AddProduct(AddedItem);
-        }
-
-        AddedItem._amountleft = actualAmout;
-
-        disableButton = await AwaitButton();
-        StateHasChanged();
-    }
-
-    public async Task GetAndSetLocalStorage(Product product)
-    {
-        ToShoppinglist = await GetLocalStorage();
-
-        ToShoppinglist.Add(product);
-
-        ToShoppinglist = features.HandleDublicats(ToShoppinglist);
-
-        await localStorage.RemoveItemAsync("ProductString");
-
-        shopString = JsonConvert.SerializeObject(ToShoppinglist);
-
-        await localStorage.SetItemAsync("ProductString", shopString);
-    }
-
-    public async Task<bool> AwaitButton()
-    {
-        await Task.Delay(40);
-        return false;
-    }
-
-    public async Task<List<Product>> GetLocalStorage()
-    {
-        shopString = await localStorage.GetItemAsync<string>("ProductString");
-
-        if (!String.IsNullOrEmpty(shopString))
-        {
-            return JsonConvert.DeserializeObject<List<Product>>(shopString);
-        }
-
-        return new List<Product>();
-    }
-
-    public void LoadMoreRecepies()
-    {
-        Timesload++;
-        NewAmount = defualtAmountLoad * Timesload;
-        if (!(Allrecpies.Count >= NewAmount))
-        {
-            NewAmount = Allrecpies.Count % NewAmount;
-            _viewLoadMore = false;
-        }
-
-        recpies = Allrecpies.GetRange(0, NewAmount);
-    }
-
-    public void toggelFilters()
-    {
-        _showFilters = !_showFilters;
-    }
-
-    //public void SortRecepies()
-    //{
-    //    if (pmatch)
-    //    {
-    //        recpies = Allrecpies.OrderByDescending(x => -x.pMatch).ToList().GetRange(0,defualtAmountLoad * Timesload);
-
-    //    }
-    //    else if (OverallMatch)
-    //    {
-    //        recpies = Allrecpies.OrderByDescending(x => -x.matchingIngrdientsNum).ToList().GetRange(0,defualtAmountLoad * Timesload);
-    //    }
-    //    StateHasChanged();
-    //}
-
-    public void SortPmatch()
-    {
-        recpies = Allrecpies.OrderByDescending(x => x.pMatch).ToList().GetRange(0, NewAmount);
-        StateHasChanged();
-    }
-
-    public void SortOverallMatch()
-    {
-        recpies = Allrecpies.OrderByDescending(x => x.matchingIngrdientsNum).ToList().GetRange(0, NewAmount);
-        StateHasChanged();
-    }
-    public void CheckIfAnySelected()
-    {
-        List<Product> returnList = new List<Product>();
-        foreach (Product key in SelectedProducts.Keys)
-        {
-            if (SelectedProducts[key])
+            foreach (Product p in ProductList)
             {
-                returnList.Add(key);
+                p._CustomReferenceField = "*";
+            }
+            return ProductList;
+        }
+
+        public async void AddProductToSL(Product AddedItem)
+        {
+            disableButton = true;
+            StateHasChanged();
+            InshoppingList.Add(currentlySelectedIngredient);
+            AddedItem._amountleft++;
+
+            int actualAmout = AddedItem._amountleft;
+
+            AddedItem._amountleft = 1;
+
+            AddedItem._image = features.SetOnePicture(AddedItem._image);
+
+            if (String.IsNullOrEmpty(email))
+            {
+                await GetAndSetLocalStorage(AddedItem);
+            }
+            else
+            {
+                await user.shoppinglist.AddProduct(AddedItem);
+            }
+
+            AddedItem._amountleft = actualAmout;
+
+            disableButton = await AwaitButton();
+            StateHasChanged();
+        }
+
+        public async Task GetAndSetLocalStorage(Product product)
+        {
+            ToShoppinglist = await GetLocalStorage();
+
+            ToShoppinglist.Add(product);
+
+            ToShoppinglist = features.HandleDublicats(ToShoppinglist);
+
+            await localStorage.RemoveItemAsync("ProductString");
+
+            shopString = JsonConvert.SerializeObject(ToShoppinglist);
+
+            await localStorage.SetItemAsync("ProductString", shopString);
+        }
+
+        public async Task<bool> AwaitButton()
+        {
+            await Task.Delay(40);
+            return false;
+        }
+
+        public async Task<List<Product>> GetLocalStorage()
+        {
+            shopString = await localStorage.GetItemAsync<string>("ProductString");
+
+            if (!String.IsNullOrEmpty(shopString))
+            {
+                return JsonConvert.DeserializeObject<List<Product>>(shopString);
+            }
+
+            return new List<Product>();
+        }
+
+        public void LoadMoreRecepies()
+        {
+            Timesload++;
+            NewAmount = defualtAmountLoad * Timesload;
+            if (!(Allrecpies.Count >= NewAmount))
+            {
+                NewAmount = Allrecpies.Count % NewAmount;
+                _viewLoadMore = false;
+            }
+
+            recpies = Allrecpies.GetRange(0, NewAmount);
+        }
+
+        public void toggelFilters()
+        {
+            _showFilters = !_showFilters;
+        }
+
+        //public void SortRecepies()
+        //{
+        //    if (pmatch)
+        //    {
+        //        recpies = Allrecpies.OrderByDescending(x => -x.pMatch).ToList().GetRange(0,defualtAmountLoad * Timesload);
+
+        //    }
+        //    else if (OverallMatch)
+        //    {
+        //        recpies = Allrecpies.OrderByDescending(x => -x.matchingIngrdientsNum).ToList().GetRange(0,defualtAmountLoad * Timesload);
+        //    }
+        //    StateHasChanged();
+        //}
+
+        public void SortPmatch()
+        {
+            recpies = Allrecpies.OrderByDescending(x => x.pMatch).ToList().GetRange(0, NewAmount);
+            StateHasChanged();
+        }
+
+        public void SortOverallMatch()
+        {
+            recpies = Allrecpies.OrderByDescending(x => x.matchingIngrdientsNum).ToList().GetRange(0, NewAmount);
+            StateHasChanged();
+        }
+        public void CheckIfAnySelected()
+        {
+            List<Product> returnList = new List<Product>();
+            foreach (Product key in SelectedProducts.Keys)
+            {
+                if (SelectedProducts[key])
+                {
+                    returnList.Add(key);
+                }
+            }
+
+            _FoodBiskEnabled = returnList.Count != 0 ? true : false;
+        }
+
+        public void intailizeAllProducts(List<Product> products)
+        {
+            foreach (Product product in products)
+            {
+                SelectedProducts.Add(product, false);
             }
         }
 
-        _FoodBiskEnabled = returnList.Count != 0 ? true : false;
-    }
-
-    public void intailizeAllProducts(List<Product> products)
-    {
-        foreach (Product product in products)
+        public List<Product> GetSelectedProducts()
         {
-            SelectedProducts.Add(product, false);
-        }
-    }
-
-    public List<Product> GetSelectedProducts()
-    {
-        return user.storage.storageList.Where(x => x._completed == true).ToList();
-    }
-
-    public void OnStatusChanged(bool isChecked)
-    {
-        CountSelectedProducts();
-
-        StateHasChanged();
-        _=UpdateStorageProduct();
-
-    }
-
-    public void CountSelectedProducts()
-    {
-        selectedProductCount = user.storage.storageList.Count(x => x._completed);
-    }
-
-    public async Task UpdateStorageProduct()
-    {
-        Product temp = user.storage.storageList.Find(x => x._saveProduct == true);
-        if (temp != null)
-        {
-            await user.storage.EditProduct(temp);
-            temp._saveProduct = false;
-        }
-    }
-
-    private async Task searchHandler(object newValue)
-    {
-        try
-        {
-            selectedSearchValue = newValue;
-            searchBox = newValue.ToString();
-            itemList = await search.CallApiForProducts(searchBox, wordFilter, storeFilter);
-            itemList = search.DecideOrderFilter((int)SortNames.Relevance, itemList);
-        }
-        catch (System.NullReferenceException)
-        {
-            Console.WriteLine("The searh was empty. Pls do not press ESC");
+            return user.storage.storageList.Where(x => x._completed == true).ToList();
         }
 
-        SetProduToPrint();
-    }
-
-    public void SetProduToPrint()
-    {
-        if (itemList.Count > printAtOnce)
+        public void OnStatusChanged(bool isChecked)
         {
-            produToPrint = printAtOnce;
+            CountSelectedProducts();
+
+            StateHasChanged();
+            _ = UpdateStorageProduct();
+
         }
-        else
+
+        public void CountSelectedProducts()
         {
-            produToPrint = itemList.Count();
+            selectedProductCount = user.storage.storageList.Count(x => x._completed);
         }
+
+        public async Task UpdateStorageProduct()
+        {
+            Product temp = user.storage.storageList.Find(x => x._saveProduct == true);
+            if (temp != null)
+            {
+                await user.storage.EditProduct(temp);
+                temp._saveProduct = false;
+            }
+        }
+
+        private async Task searchHandler(object newValue)
+        {
+            try
+            {
+                selectedSearchValue = newValue;
+                searchBox = newValue.ToString();
+                itemList = await search.CallApiForProducts(searchBox, wordFilter, storeFilter);
+                itemList = search.DecideOrderFilter((int)SortNames.Relevance, itemList);
+            }
+            catch (System.NullReferenceException)
+            {
+                Console.WriteLine("The searh was empty. Pls do not press ESC");
+            }
+
+            SetProduToPrint();
+        }
+
+        public void SetProduToPrint()
+        {
+            if (itemList.Count > printAtOnce)
+            {
+                produToPrint = printAtOnce;
+            }
+            else
+            {
+                produToPrint = itemList.Count();
+            }
+        }
+
+        public async Task InitializeAutocorrect()
+        {
+            storeFilter = search.SetBoolArray(storeFilters.GetStoreList());
+            wordFilter = search.SetBoolArray(wordFIlters.GetWordList());
+
+            prodName = await search.InitializeAutocorrect();
+            prodData = search.InitializeRecommender(prodName);
+
+            FindingAutocorrectlist = false;
+        }
+
+        public async Task ProductToStorage(Product p)
+        {
+            disableQuickadd = true;
+            await user.storage.AddProduct(p, 1);
+            await user.storage.Get();
+            StateHasChanged();
+
+            disableQuickadd = false;
+        }
+
+
+        async void DeleteProducts()
+        {
+            selectedProductCount = 0;
+            await user.storage.DeleteStorage();
+        }
+        public async Task UndoSnackbar()
+        {
+            await user.storage.AddUpdateList(SnackbarTempList);
+
+            UndoDelete.Hide();
+
+            CountSelectedProducts();
+            StateHasChanged();
+        }
+
+        public string SetDeleteSnackbarMessage(int amout)
+        {
+            return $"You just deleted {amout} item(s) from your storage";
+        }
+
+        public async Task DeleteSelectedStoraeg()
+        {
+            SnackbarTempList = user.storage.CountActiveList();
+
+            snacbarMessage = SetDeleteSnackbarMessage(SnackbarTempList.Count());
+
+            await user.storage.DeleteStorage();
+
+            UndoDelete.Show();
+        }
+
     }
-
-    public async Task InitializeAutocorrect()
-    {
-        storeFilter = search.SetBoolArray(storeFilters.GetStoreList());
-        wordFilter = search.SetBoolArray(wordFIlters.GetWordList());
-
-        prodName = await search.InitializeAutocorrect();
-        prodData = search.InitializeRecommender(prodName);
-
-        FindingAutocorrectlist = false;
-    }
-
-    public async Task ProductToStorage(Product p)
-    {
-        disableQuickadd = true;
-        await user.storage.AddProduct(p, 1);
-        await user.storage.Get();
-        StateHasChanged();
-
-        disableQuickadd = false;
-    }
-
-
-    async void DeleteProducts()
-    {
-        selectedProductCount = 0;
-        await user.storage.DeleteStorage();
-
-    }
-    public async Task UndoSnackbar()
-    {
-        await user.storage.AddUpdateList(SnackbarTempList);
-
-        UndoDelete.Hide();
-
-        CountSelectedProducts();
-        StateHasChanged();
-    }
-
-    public string SetDeleteSnackbarMessage(int amout)
-    {
-        return $"You just deleted {amout} item(s) from your storage";
-    }
-
-    public async Task DeleteSelectedStoraeg()
-    {
-        SnackbarTempList = user.storage.CountActiveList();
-
-        snacbarMessage = SetDeleteSnackbarMessage(SnackbarTempList.Count());
-
-        await user.storage.DeleteStorage();
-
-        UndoDelete.Show();
-    }
-
-}
