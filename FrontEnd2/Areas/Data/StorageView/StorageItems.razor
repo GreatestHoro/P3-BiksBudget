@@ -236,7 +236,7 @@
                                                     runCounter++;
                                                     scalar = recipePerPerson;
                                                 }
-                                                <TableRowCell Style="width:50px">@(String.Format("{0:0.0}", (ing._amount / recipePerPerson) * scalar)) @ing._unit</TableRowCell>
+                                                <TableRowCell Style="width:50px">@(printIngredientAmount(ing._amount,scalar)) @ing._unit</TableRowCell>
                                                 @if (ingrdientDict.ContainsKey(ing))
                                                 {
                                                     <TableRowCell Style="width:150px">
@@ -1006,5 +1006,10 @@
             await user.storage.DeleteStorage();
 
             sUndoDelete.Show();
+        }
+
+        private string printIngredientAmount(float amount,int scalar) 
+        {
+            return ((amount / recipePerPerson) * scalar) > 0.0f ? String.Format("{0:0.0}", (amount / recipePerPerson) * scalar):"";
         }
     }

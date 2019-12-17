@@ -178,7 +178,15 @@
                         </Field>
                     </CardBody>
                     <CardFooter Class="card-footerProduct text-center">
-                        <Button IsDisabled="disableButton" Margin="Margin.IsAuto.FromLeft" Color="Color.Success" @onclick="(async () => await AddProductToSL(p))"><Icon Name="@(FontAwesomeIcons.ShoppingCart)" /> Add to shopping list (@p._amountleft)</Button>
+                        <Button IsDisabled="disableButton" Margin="Margin.IsAuto.FromLeft" Color="Color.Success" @onclick="(async() => await AddProductToSL(p))"><Icon Name="@(FontAwesomeIcons.ShoppingCart)" /> Add to shopping list</Button>
+                        @if (p._amountleft != 0)
+                        {
+                            <FieldBody Class="text-center">
+                                <Text Alignment="TextAlignment.Center" Color="TextColor.Muted" Style="vertical-align:sub; text-align:center; width:300px;">
+                                        @p._amountleft Added in <Icon Name="@(FontAwesomeIcons.ShoppingCart)"></Icon>
+                                </Text>
+                            </FieldBody>
+                        }
                     </CardFooter>
                 </Card>
             </Column>

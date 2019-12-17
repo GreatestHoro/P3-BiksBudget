@@ -44,17 +44,18 @@
         </CardBody>
         <CardFooter Class="card-footerShoppinglist" Padding="Padding.Is3.FromBottom">
             <Field IsHorizontal="true">
-                <FieldBody ColumnSize="ColumnSize.Is9">
+                <FieldBody ColumnSize="ColumnSize.IsFull">
                     <Buttons Role="ButtonsRole.Addons">
                         <Tooltip IsAlwaysActive="@(changeHasHappen)" Text="Dont forget to save">
                             <Button Color="Color.Success" Clicked="@(()=>SaveShoppinglist())" IsActive="@(!changeHasHappen)"><Icon Name="@(FontAwesomeIcons.Save)" /> Save Shoppinglist</Button>
                         </Tooltip>
+                        <Button Color="Color.Success" Clicked="@(() => AddListToStorage())" IsDisabled="selectedProductCount == 0 && String.IsNullOrEmpty(email)"
+                                IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed && !String.IsNullOrEmpty(email))">
+                            <Icon Name="@(FontAwesomeIcons.Archive)" /> Add To Storage (@selectedProductCount)
+                        </Button>
                         <Button Color="Color.Danger" Clicked="@(() => DeleteList())" IsDisabled="selectedProductCount == 0" IsActive="@(!productSelected)"><Icon Name="@(FontAwesomeIcons.Trash)" /> Delete Items (@selectedProductCount)</Button>
                     </Buttons>
                     <Text Class="shoppinglist-Price-Text"> Total  @String.Format("{0:0.0}", user.shoppinglist.CompletePrice()) DKK</Text>
-                </FieldBody>
-                <FieldBody ColumnSize="ColumnSize.Is3">
-                    <Button Color="Color.Warning" Clicked="@(() => AddListToStorage())" IsDisabled="selectedProductCount == 0 && String.IsNullOrEmpty(email)" IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed && !String.IsNullOrEmpty(email))"><Icon Name="@(FontAwesomeIcons.Box)" /> Add To Storage (@selectedProductCount)</Button>
                 </FieldBody>
             </Field>
             <Snackbar @ref="UndoChange">
