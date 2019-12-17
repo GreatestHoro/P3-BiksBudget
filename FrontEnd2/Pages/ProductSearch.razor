@@ -69,7 +69,7 @@
                             {
                                 if (fi.IsSortable)
                                 {
-                                    <CheckEdit ColumnSize="ColumnSize.IsAuto" IsInline="false" RadioGroup="Yeet1" @onchange="(() => AssignFilter(fi.FilterName, af.optionsList, af.label))" Checked="@fi.IsEnabled"> @fi.FilterName</CheckEdit>
+                                    <CheckEdit ColumnSize="ColumnSize.IsAuto" IsInline="false" RadioGroup="StoreRadioGroup" @onchange="(() => AssignFilter(fi.FilterName, af.optionsList, af.label))" Checked="@fi.IsEnabled"> @fi.FilterName</CheckEdit>
                                 }
                                 else
                                 {
@@ -125,7 +125,7 @@
                 <Field>
                     <FieldBody>
                         <FieldLabel> Maximum radius: @(radius / 1000) km </FieldLabel>
-                        <input type="range" min="0" max="3000" @bind="radius" step="1000" />
+                        <input type="range" min="0" max="10000" @bind="radius" step="1000" />
                         <Button IsBlock="true" IsOutline="true" IsDisabled="@FindStoreButton" Color="Color.Success" @onclick="async ()=>await FindStroresInModal()">Apply new radius</Button>
                     </FieldBody>
                 </Field>
@@ -185,7 +185,7 @@
         }
     }
     <!--Scroll to top button   -->
-    <button id="myBtn" class="btn btn-rounded btn-success"><a href="search" style="color: white; font-size:12px;">Top</a></button>
+    <Button id="myBtn" Class="btn btn-rounded btn-success"><a href="search" style="color: white; font-size:12px;">Top</a></Button>
 </Row>
 
 <Row Class="text-align: center">
@@ -244,7 +244,7 @@
     WordFilterList wordFIlters = new WordFilterList();
     FindCloseStores closeStore;
     ControllerFuncionality features = new ControllerFuncionality();
-    
+
     List<FilterItem> optionsList = new List<FilterItem>();
     List<UnifiedAPIStore> allStoresUnified = new List<UnifiedAPIStore>();
     List<Product> itemList = new List<Product>();
@@ -258,6 +258,7 @@
     SortNames sortBy = new SortNames();
     List<Product> tempToShowList = new List<Product>();
     ProductSearchHandling search = new ProductSearchHandling();
+    Product tempProduct = new Product();
 
     UserData user;
 
@@ -484,22 +485,22 @@
     /// in the local storage.
     /// </summary>
     /// <param name="AddedItem"></param>
-    public async Task AddProductToSL(Product AddedItem)
+    public async Task AddProductToSL(Product p)
     {
         disableButton = true;
         StateHasChanged();
 
-        AddedItem._amountleft++;
-        tempProductName = AddedItem._productName;
-        tempTotalCost += AddedItem._price;
+        p._amountleft++;
+        tempProductName = p._productName;
+        tempTotalCost += p._price;
 
         if (String.IsNullOrEmpty(email))
         {
-            await GetAndSetLocalStorage(AddedItem);
+            await GetAndSetLocalStorage(p);
         }
         else
         {
-            await user.shoppinglist.AddProduct(AddedItem);
+            await user.shoppinglist.AddProduct(p);
         }
 
         disableButton = await AwaitButton();
@@ -532,6 +533,16 @@
 
     #region SearchMethods
 
+    public int AssignAmout(Product p)
+    {
+        if (user.shoppinglist.shoppinglist.Any(x=> x._id == p._id))
+        {
+            return user.shoppinglist.shoppinglist.First(x=> x._id == p._id)._amountleft++;
+        }
+
+        return p._amountleft;
+    }
+
     public async Task ApplyChanges()
     {
         hideFilterModal();
@@ -549,6 +560,36 @@
         await SetFiltersToSearch();
     }
 
+    public async Task SetAmoutOnProducts()
+    {
+        if (!String.IsNullOrEmpty(email))
+        {
+            await user.shoppinglist.GetWhenLoggedIn();
+        }
+        else
+        {
+            await GetLocalStorageString();
+            user.shoppinglist.GetWhenNotLoggedIn(shopString);
+        }
+
+        if (itemList.Count != 0 && user.shoppinglist.shoppinglist.Count != 0)
+        {
+            user.shoppinglist.shoppinglist.ForEach(x=> SetItemlistAmount(x));
+        }
+    }
+
+    public void SetItemlistAmount(Product p)
+    {
+        tempProduct = itemList.FirstOrDefault(x=> x._id == p._id);
+
+        if (tempProduct != null)
+        {
+            tempProduct._amountleft = p._amountleft;
+            tempProduct = null;
+
+        }
+    }
+
     private async Task SetFiltersToSearch()
     {
         productsToPrint.Clear();
@@ -563,7 +604,7 @@
         itemList = await SearchForProducts();
         itemList = features.SetAllPicture(itemList);
         itemList = FindViableProducts();
-
+        await SetAmoutOnProducts();
 
         if (itemList.Count == 0)
         {
@@ -793,17 +834,26 @@
         if (!String.IsNullOrEmpty(email))
         {
             user = new UserData(email);
+            await user.shoppinglist.GetWhenLoggedIn();
         }
         else
         {
             ToShoppinglist = await GetLocalStorage();
             user = new UserData();
+
+            user.shoppinglist.GetWhenNotLoggedIn(shopString);
+
         }
+    }
+
+    public async Task GetLocalStorageString()
+    {
+        shopString = await localStorage.GetItemAsync<string>("ProductString");
     }
 
     public async Task<List<Product>> GetLocalStorage()
     {
-        shopString = await localStorage.GetItemAsync<string>("ProductString");
+        await GetLocalStorageString();
 
         if (!String.IsNullOrEmpty(shopString))
         {

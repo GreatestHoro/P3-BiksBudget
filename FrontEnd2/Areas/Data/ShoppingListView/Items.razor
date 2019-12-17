@@ -42,27 +42,6 @@
                 }
             </ListGroup>
         </CardBody>
-
-        <Snackbar @ref="UndoChange">
-            <SnackbarBody>
-                @snacbarMessage
-            </SnackbarBody>
-            <SnackbarAction Clicked="@(async ()=> await UndoDelete())">UNDO</SnackbarAction>
-        </Snackbar>
-
-        <Snackbar @ref="UndoStorage">
-            <SnackbarBody>
-                @snacbarMessage
-            </SnackbarBody>
-            <SnackbarAction Clicked="@(async ()=> await UndoToStorage())">UNDO</SnackbarAction>
-        </Snackbar>
-
-        <Snackbar @ref="Save">
-            <SnackbarBody>
-                @snacbarMessage
-            </SnackbarBody>
-        </Snackbar>
-
         <CardFooter Class="card-footerShoppinglist" Padding="Padding.Is3.FromBottom">
             <Field IsHorizontal="true">
                 <FieldBody ColumnSize="ColumnSize.Is9">
@@ -78,6 +57,25 @@
                     <Button Color="Color.Warning" Clicked="@(() => AddListToStorage())" IsDisabled="selectedProductCount == 0 && String.IsNullOrEmpty(email)" IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed && !String.IsNullOrEmpty(email))"><Icon Name="@(FontAwesomeIcons.Box)" /> Add To Storage (@selectedProductCount)</Button>
                 </FieldBody>
             </Field>
+            <Snackbar @ref="UndoChange">
+                <SnackbarBody>
+                    @snacbarMessage
+                </SnackbarBody>
+                <SnackbarAction Clicked="@(async ()=> await UndoDelete())">UNDO</SnackbarAction>
+            </Snackbar>
+
+            <Snackbar @ref="UndoStorage">
+                <SnackbarBody>
+                    @snacbarMessage
+                </SnackbarBody>
+                <SnackbarAction Clicked="@(async ()=> await UndoToStorage())">UNDO</SnackbarAction>
+            </Snackbar>
+
+            <Snackbar @ref="Save">
+                <SnackbarBody>
+                    @snacbarMessage
+                </SnackbarBody>
+            </Snackbar>
         </CardFooter>
     </Column>
 </Row>

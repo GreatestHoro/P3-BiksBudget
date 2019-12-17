@@ -2,16 +2,14 @@
 @using BBCollection.DBHandling
 @using FrontEnd2.Areas.Data
 @using System;
-
 <ListGroupItem>
     <Field IsHorizontal="true" Padding="Padding.IsAuto.OnAll">
-
         <FieldBody ColumnSize="ColumnSize.IsFull">
                 <Table IsBorderless="true" IsFullWidth="true" IsHoverable="true">
                     <TableBody>
-                        <TableRow  Style="vertical-align:middle; vertical-align:middle">
+                        <TableRow  Style="vertical-align:middle;">
                             <TableRowCell Style="width:50px">
-                                <FieldBody>
+                                <FieldBody> 
                                     <CheckEdit Checked="@Product._completed" CheckedChanged="@OnCheckedChanged" />
                                 </FieldBody>
                             </TableRowCell>
@@ -25,9 +23,11 @@
                                         }
                                     }
                                 </SelectEdit>
+                                <Label Style="vertical-align:sub"> Quantity: </Label>
                             </TableRowCell>
                             <TableRowCell Style="vertical-align:middle">
-                                <Text Style="width:200px" Float="Float.Left"> @Product._productName  @Product._amount</Text>
+                                <Text Style="width:200px" Float="Float.Left"> @Product._productName</Text>
+                                <Text Style="width:200px; vertical-align:sub" Color="TextColor.Muted" Float="Float.Left"> @Product._amount</Text>
                             </TableRowCell>
                             <TableRowCell Style="width:200px; vertical-align:middle">
                                 <SelectList Data="@data"
@@ -36,8 +36,10 @@
                                             SelectedValue="@selectedAmount"
                                             SelectedValueChanged="@AmountChanged" />
                             </TableRowCell>
-                            <TableRowCell Style="width:110px; vertical-align:middle">
-                                <DateEdit Placeholder="Change the date" Date="Convert.ToDateTime(Product._timeAdded)" DateChanged="OnDateChanged" />
+                            <TableRowCell Style="width:200px; vertical-align:middle">
+                                <Text Color="TextColor.Info"> @Convert.ToDateTime(Product._timeAdded)</Text>
+                                <Text Style="vertical-align:sub" Color="TextColor.Muted"> Added date</Text>
+                                @*<DateEdit Placeholder="Change the date" Date="Convert.ToDateTime(Product._timeAdded)" DateChanged="OnDateChanged" />*@
                             </TableRowCell>
                         </TableRow>
                     </TableBody>

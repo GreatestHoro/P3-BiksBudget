@@ -35,13 +35,11 @@
                 </Fields>
             </CardBody>
             <CardBody Padding="Padding.Is0.OnY">
-
                 <ListGroup IsFlush="true" Class="text-center">
                     @foreach (Product p in user.storage.storageList)
                     {
                         <StorageItem Product="@p" StatusChanged="@(OnStatusChanged)"></StorageItem>
                     }
-
                 </ListGroup>
             </CardBody>
             <CardFooter Class="card-footerShoppinglist" Padding="Padding.Is3.FromBottom">
@@ -56,16 +54,20 @@
                     <FieldBody ColumnSize="ColumnSize.Is2">
                     </FieldBody>
                 </Field>
+                <Snackbar @ref="UndoDelete">
+                    <SnackbarBody>
+                        @snacbarMessage
+                    </SnackbarBody>
+                    <SnackbarAction Clicked="@(async () => await UndoSnackbar())">UNDO</SnackbarAction>
+                </Snackbar>
+                <Snackbar @ref="Qucikadd">
+                    <SnackbarBody>
+                        @snacbarMessage
+                    </SnackbarBody>
+                </Snackbar>
             </CardFooter>
         </Column>
     </Row>
-
-    <Snackbar @ref="UndoDelete">
-        <SnackbarBody>
-            @snacbarMessage
-        </SnackbarBody>
-        <SnackbarAction Clicked="@(async () => await UndoSnackbar())">UNDO</SnackbarAction>
-    </Snackbar>
 
     <Accordion>
         <Modal @ref="quickaddModal">
@@ -107,7 +109,7 @@
                                                     </ListGroup>
                                                 </FieldBody>
                                             </Field>
-                                            <Button Color="Color.Success" IsDisabled="disableQuickadd" Clicked="() => ProductToStorage(p)" IsBlock="true">Add Product to Storage</Button>
+                                            <Button Color="Color.Success" IsDisabled="disableQuickadd" Clicked="() => QuickaddSnackbar(p)" IsBlock="true">Add Product to Storage</Button>
                                         </CardBody>
                                     </Card>
                                 </Column>
@@ -162,7 +164,7 @@
                 </div>
             </div>
         }
-        else 
+        else
         {
             <div>
                 <span>Could not find Any Recipes with the given products</span>
@@ -303,16 +305,7 @@
         private string searchBox;
         object selectedSearchValue { get; set; }
 
-        private void addProductName()
-        {
-            if (validations.ValidateAll())
-            {
-                products.Add(new Product { _productName = name });
-                name = null;
-
-                validations.ClearAll();
-            }
-        }
+        Snackbar Qucikadd;
         Snackbar UndoDelete;
         private Modal quickaddModal;
         bool isCentered;
@@ -951,13 +944,12 @@
             disableQuickadd = false;
         }
 
-
         async void DeleteProducts()
         {
             selectedProductCount = 0;
             await user.storage.DeleteStorage();
-
         }
+
         public async Task UndoSnackbar()
         {
             await user.storage.AddUpdateList(SnackbarTempList);
@@ -973,6 +965,22 @@
             return $"You just deleted {amout} item(s) from your storage";
         }
 
+        public string SetQuickaddSnackbarMessage(string productName)
+        {
+            return $"You just added {productName} to your storage";
+        }
+        
+        public async Task QuickaddSnackbar(Product p)
+        {
+            snacbarMessage =  SetQuickaddSnackbarMessage(p._productName);
+            await ProductToStorage(p);
+
+            CountSelectedProducts();
+            StateHasChanged();
+
+            Qucikadd.Show();
+        }
+
         public async Task DeleteSelectedStoraeg()
         {
             SnackbarTempList = user.storage.CountActiveList();
@@ -983,5 +991,4 @@
 
             UndoDelete.Show();
         }
-
     }
