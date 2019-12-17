@@ -177,7 +177,7 @@
                                         scalar = recipePerPerson;
                                     }
                                     <TableRowCell Style="width:50px">@(String.Format("{0:0.0}", (ing._amount / recipePerPerson) * scalar)) @ing._unit</TableRowCell>
-                                    @if (InshoppingList.Contains(ing))
+                                    @if (InshoppingList.Contains(ing) || allAdded)
                                     {
                                         <TableRowCell Style="width:150px">
                                             <Button Color="Color.Success" IsOutline="true" Class="btn btn-block btn-light" @onclick="(() => retriveIngredient(ing))"><Icon Padding="Padding.Is1.FromTop" Float="Float.Left" Name="@(FontAwesomeIcons.ShoppingCart)"></Icon>@ing._ingredientName</Button>
@@ -293,6 +293,7 @@
     bool _bilkaSelected = false;
     bool _superBrugsenSelected = false;
     bool _faktaSelected = false;
+    bool allAdded = false;
     Chain _chainFilter = Chain.none;
 
     List<ComplexRecipe> complexRecipes = new List<ComplexRecipe>();
@@ -307,6 +308,7 @@
     UserData user;
     Ingredient currentlySelectedIngredient;
     RecipeQuery recipeQuery = new RecipeQuery();
+    Dictionary<Product, Ingredient> QickAddDict = new Dictionary<Product, Ingredient>();
 
     HttpResponseMessage responseMessage = new HttpResponseMessage();
     ControllerFuncionality features = new ControllerFuncionality();
@@ -440,6 +442,7 @@
         returnList.Clear();
         snackbar2.Show();
         disableButton = await AwaitButton();
+        StateHasChanged();
     }
 
     public async Task QuickAddListToSL(List<Product> ingredientList)
@@ -497,11 +500,9 @@
         foreach (Ingredient ind in ingredients)
         {
             retriveIngredient(ind);
-
             returnList.Add(new List<Product>(QuickList));
             QuickList.Clear();
         }
-
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -611,7 +612,7 @@
     /// Step 4 - 5: if condition holds go through all values and match ingredient with products
     /// Step 6: add to products list
     /// </summary>
-    private void retriveProduct()
+    private bool retriveProduct()
     {
         if (products != null)
         {
@@ -642,6 +643,7 @@
 
         products = FilterProducts(products);
         QuickList = FilterProducts(QuickList);
+        return (products.Count > 0 || QuickList.Count > 0);
     }
 
     private List<Product> FilterProducts(List<Product> products)
@@ -687,7 +689,10 @@
         currentlySelectedIngredient = ID;
         Ingredient ing = ingredients.First(x => x._ingredientName == ID._ingredientName);
         tempIngredientName = ing._ingredientName;
-        retriveProduct();
+        if (retriveProduct()) 
+        {
+            InshoppingList.Add(ing);
+        }
     }
 
     /// <summary>
@@ -697,7 +702,6 @@
     /// <param name="ID"></param>
     private async void retriveRecipe(int ID)
     {
-
         // get the first element that satisfies the condition
         ComplexRecipe cr = complexRecipes.First(x => x._recipeID == ID);
         cr._complexRecipeComponent._products = await recipeQuery.GetProductsForRecipe(cr._recipeID, complexRecipes);
@@ -772,4 +776,4 @@
         this.StateHasChanged();
     }
     #endregion
-    }
+}
