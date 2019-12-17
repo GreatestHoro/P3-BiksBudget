@@ -125,7 +125,7 @@
                 <Field>
                     <FieldBody>
                         <FieldLabel> Maximum radius: @(radius / 1000) km </FieldLabel>
-                        <input type="range" min="0" max="3000" @bind="radius" step="1000" />
+                        <input type="range" min="0" max="10000" @bind="radius" step="1000" />
                         <Button IsBlock="true" IsOutline="true" IsDisabled="@FindStoreButton" Color="Color.Success" @onclick="async ()=>await FindStroresInModal()">Apply new radius</Button>
                     </FieldBody>
                 </Field>
