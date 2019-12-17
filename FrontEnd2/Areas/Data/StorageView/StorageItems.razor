@@ -35,13 +35,11 @@
                 </Fields>
             </CardBody>
             <CardBody Padding="Padding.Is0.OnY">
-
                 <ListGroup IsFlush="true" Class="text-center">
                     @foreach (Product p in user.storage.storageList)
                     {
                         <StorageItem Product="@p" StatusChanged="@(OnStatusChanged)"></StorageItem>
                     }
-
                 </ListGroup>
             </CardBody>
             <CardFooter Class="card-footerShoppinglist" Padding="Padding.Is3.FromBottom">
