@@ -54,13 +54,18 @@
                     <FieldBody ColumnSize="ColumnSize.Is2">
                     </FieldBody>
                 </Field>
-                <Snackbar @ref="UndoDelete">
+                <Snackbar @ref="sUndoDelete">
                     <SnackbarBody>
                         @snacbarMessage
                     </SnackbarBody>
                     <SnackbarAction Clicked="@(async () => await UndoSnackbar())">UNDO</SnackbarAction>
                 </Snackbar>
-                <Snackbar @ref="Qucikadd">
+                <Snackbar @ref="sRegretChange">
+                    <SnackbarBody>
+                        @snacbarMessage
+                    </SnackbarBody>
+                </Snackbar>
+                <Snackbar @ref="sQucikadd">
                     <SnackbarBody>
                         @snacbarMessage
                     </SnackbarBody>
@@ -305,8 +310,9 @@
         private string searchBox;
         object selectedSearchValue { get; set; }
 
-        Snackbar Qucikadd;
-        Snackbar UndoDelete;
+        Snackbar sQucikadd;
+        Snackbar sRegretChange;
+        Snackbar sUndoDelete;
         private Modal quickaddModal;
         bool isCentered;
         ModalSize modalSize;
@@ -944,17 +950,13 @@
             disableQuickadd = false;
         }
 
-        async void DeleteProducts()
-        {
-            selectedProductCount = 0;
-            await user.storage.DeleteStorage();
-        }
-
         public async Task UndoSnackbar()
         {
             await user.storage.AddUpdateList(SnackbarTempList);
 
-            UndoDelete.Hide();
+            sUndoDelete.Hide();
+            snacbarMessage = SetUndoChangeMessage(SnackbarTempList);
+            sRegretChange.Show();
 
             CountSelectedProducts();
             StateHasChanged();
@@ -969,6 +971,20 @@
         {
             return $"You just added {productName} to your storage";
         }
+
+        public string SetUndoChangeMessage(List<Product> productList)
+        {
+            if (productList.Count == 1)
+            {
+                Product p = productList[0];
+
+                return $"Undo successfull! {p._amountleft} {p._productName} are back!";
+            }
+            else
+            {
+                return $"Undo successfull! All {productList.Count} products are back!";
+            }
+        }
         
         public async Task QuickaddSnackbar(Product p)
         {
@@ -978,7 +994,7 @@
             CountSelectedProducts();
             StateHasChanged();
 
-            Qucikadd.Show();
+            sQucikadd.Show();
         }
 
         public async Task DeleteSelectedStoraeg()
@@ -989,6 +1005,6 @@
 
             await user.storage.DeleteStorage();
 
-            UndoDelete.Show();
+            sUndoDelete.Show();
         }
     }
