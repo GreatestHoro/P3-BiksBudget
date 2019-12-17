@@ -24,25 +24,35 @@
                         <FieldLabel ColumnSize="ColumnSize.Is12" Class="text-left">Username</FieldLabel>
                         <FieldBody ColumnSize="ColumnSize.Is12">
                             <Validation Validator="@ValidateUsername">
-                                <TextEdit Placeholder="Username" @bind-Text="@username" @onkeyup="OnKeyPress">
-                                    <Feedback>
-                                        <ValidationError>@checkUsername.Item2</ValidationError>
-                                    </Feedback>
-                                </TextEdit>
+                                <Tooltip IsMultiline="true" Text="Please use 6 or more characters.
+                                                                  Please refrain from using a 'space'.
+                                                                  Please refrain from using symbols."
+                                         Placement="Placement.Top">
+                                    <TextEdit Placeholder="Username" @bind-Text="@username" @onkeyup="OnKeyPress">
+                                        <Feedback>
+                                            <ValidationError>@checkUsername.Item2</ValidationError>
+                                        </Feedback>
+                                    </TextEdit>
+                                </Tooltip>
                             </Validation>
                         </FieldBody>
                     </Field>
                     <Field IsHorizontal="true">
-                        <FieldLabel ColumnSize="ColumnSize.Is12" Class="text-left">Password</FieldLabel>
-                        <FieldBody ColumnSize="ColumnSize.Is12">
-                            <Validation Validator="@ValidatePassword">
-                                <TextEdit Role="TextRole.Password" Placeholder="Enter Password" @bind-Text="@password" @onkeyup="OnKeyPress">
-                                    <Feedback>
-                                        <ValidationError>@checkPassword.Item2</ValidationError>
-                                    </Feedback>
-                                </TextEdit>
-                            </Validation>
-                        </FieldBody>
+                            <FieldLabel ColumnSize="ColumnSize.Is12" Class="text-left">Password</FieldLabel>
+                            <FieldBody ColumnSize="ColumnSize.Is12">
+                                <Validation Validator="@ValidatePassword">
+                                    <Tooltip IsMultiline="true" Text="Please use 6 or more characters.
+                                                                      Please refrain from using a 'space'.
+                                                                      Please refrain from using symbols (æ,ø,å is also considered a symbol)"
+                                             Placement="Placement.Top   ">
+                                        <TextEdit Role="TextRole.Password" Placeholder="Enter Password" @bind-Text="@password" @onkeyup="OnKeyPress">
+                                            <Feedback>
+                                                <ValidationError>@checkPassword.Item2</ValidationError>
+                                            </Feedback>
+                                        </TextEdit>
+                                    </Tooltip>
+                                </Validation>
+                            </FieldBody>
                     </Field>
                     <Field IsHorizontal="true">
                         <FieldLabel ColumnSize="ColumnSize.Is12" Class="text-left">Re Password</FieldLabel>
