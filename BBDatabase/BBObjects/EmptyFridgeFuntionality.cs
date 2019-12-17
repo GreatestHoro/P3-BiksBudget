@@ -20,6 +20,7 @@ namespace BBCollection.BBObjects
             {
                 foreach (List<string> prodRefs in allRefs)
                 {
+
                     WeightedRecipies.AddRange(await GetRelevantRecepiesFromProd(prodRefs));
                 }
                 SortByPmatch(WeightedRecipies);

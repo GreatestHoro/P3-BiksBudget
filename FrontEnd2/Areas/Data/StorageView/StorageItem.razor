@@ -53,7 +53,7 @@
     static string[] Amount = { "Full", "Almost Full", "Almost Empty"  };
     IEnumerable<AmountRemaining> data = Enumerable.Range( 1, Amount.Length ).Select( x => new AmountRemaining { textField = Amount[x - 1], valueField = x } );
 
-    object selectedAmount { get; set;} = 2;
+    object selectedAmount { get; set;} = 1;
 
     [Parameter] public Product Product { get; set; }
 
