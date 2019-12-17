@@ -685,11 +685,13 @@
     /// <param name="ID"></param>
     private void retriveIngredient(Ingredient ID)
     {
+        bool found = false;
         viewProducts = true;
         currentlySelectedIngredient = ID;
         Ingredient ing = ingredients.First(x => x._ingredientName == ID._ingredientName);
         tempIngredientName = ing._ingredientName;
-        if (retriveProduct()) 
+        found = retriveProduct();
+        if (found) 
         {
             InshoppingList.Add(ing);
         }
