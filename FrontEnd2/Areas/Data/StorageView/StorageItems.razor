@@ -56,16 +56,15 @@
                     <FieldBody ColumnSize="ColumnSize.Is2">
                     </FieldBody>
                 </Field>
+                <Snackbar @ref="UndoDelete">
+                    <SnackbarBody>
+                        @snacbarMessage
+                    </SnackbarBody>
+                    <SnackbarAction Clicked="@(async () => await UndoSnackbar())">UNDO</SnackbarAction>
+                </Snackbar>
             </CardFooter>
         </Column>
     </Row>
-
-    <Snackbar @ref="UndoDelete">
-        <SnackbarBody>
-            @snacbarMessage
-        </SnackbarBody>
-        <SnackbarAction Clicked="@(async () => await UndoSnackbar())">UNDO</SnackbarAction>
-    </Snackbar>
 
     <Accordion>
         <Modal @ref="quickaddModal">
