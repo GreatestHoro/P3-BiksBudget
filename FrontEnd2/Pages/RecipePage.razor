@@ -151,9 +151,9 @@
                             <SelectEdit TValue="int" SelectedValue="selectedValue" SelectedValueChanged="@OnSelectedValueChanged" Style="max-width:100px;">
                                 @{
                                     int numb = 0;
-                                    @for (int i = 0; i < 100; i++)
+                                    @for (int i = 0; i < 99; i++)
                                     {
-                                        <SelectItem Value="TempScalar">@(numb++)</SelectItem>
+                                        <SelectItem Value="TempScalar">@(++numb)</SelectItem>
                                     }
                                 }
                             </SelectEdit>
