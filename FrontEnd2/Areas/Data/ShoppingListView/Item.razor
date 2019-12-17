@@ -11,7 +11,7 @@
                                     <CheckEdit Checked="@Product._completed" CheckedChanged="@OnCheckedChanged" />
                                 </FieldBody>
                             </TableRowCell>
-                            <TableRowCell Background="Background.White" Style="width:110px">
+                            <TableRowCell Background="Background.White" Style="vertical-align:middle; width: 110px">
                                 @if (Product._image.Length == 0)
                                 {
                                     <FigureImage Source="https://cdn.discordapp.com/attachments/519096261408718908/649685312083197973/coopdicoop.jpg" />
@@ -21,12 +21,12 @@
                                     <FigureImage Source="@Product._image" />
                                 }
                             </TableRowCell>
-                            <TableRowCell>
-                                <Text Float="Float.Left" Style="width:100px; vertical-align:middle;"> @Product._productName</Text>
-                                <Text Color="TextColor.Muted" Float="Float.Left" Style="width:100px; vertical-align:sub;"> @Product._amount</Text>
+                            <TableRowCell Style="vertical-align:middle; width: 200px">
+                                <Text Float="Float.Left"> @Product._productName</Text>
+                                <Text Color="TextColor.Muted" Float="Float.Left" Style="vertical-align:sub;"> @Product._amount</Text>
                             </TableRowCell>
-                            <TableRowCell Style="width:110px">
-                                <SelectEdit TValue="int" SelectedValue="selectedValue" SelectedValueChanged="OnSelectedValueChanged" Style="max-width:100px;">
+                            <TableRowCell Style="width:110px; vertical-align:middle">
+                                <SelectEdit TValue="int" SelectedValue="selectedValue" SelectedValueChanged="OnSelectedValueChanged" Style="width:100px;">
                                     @{
                                         int numb = 0;
                                         @for (int i = 0; i < 99; i++)
@@ -36,9 +36,9 @@
                                     }
                                 </SelectEdit>
                             </TableRowCell>
-                            <TableRowCell Style="width:110px">
+                            <TableRowCell Style="width:200px; vertical-align:middle">
                                 <Text Style="vertical-align:middle;" Color="TextColor.Success">@Product._price DKK</Text>
-                                <Text Style="vertical-align:sub" Color="TextColor.Muted">@GetTotalPrice()</Text>
+                                <Text Style="vertical-align:sub; width:200px" Color="TextColor.Muted">@GetTotalPrice()</Text>
                             </TableRowCell>
                         </TableRow>
                     </TableBody>
