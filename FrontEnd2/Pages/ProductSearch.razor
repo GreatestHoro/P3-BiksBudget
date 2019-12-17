@@ -26,7 +26,7 @@
                                   Filter="AutocompleteFilter.Contains"
                                   MinLength="2"
                                   IsDisabled="FindingAutocorrectlist" />
-                    <button class="btn btn-success acSearchButton" @onclick="(() => SearchBar())">
+                    <button class="btn btn-success acSearchButton" @onclick="(async () => await SearchBar())">
                         <i class="fa fa-search"></i>
                     </button>
                 </div>
@@ -126,7 +126,7 @@
                     <FieldBody>
                         <FieldLabel> Maximum radius: @(radius / 1000) km </FieldLabel>
                         <input type="range" min="0" max="10000" @bind="radius" step="1000" />
-                        <Button IsBlock="true" IsOutline="true" IsDisabled="@FindStoreButton" Color="Color.Success" @onclick="async ()=>await FindStroresInModal()">Apply new radius</Button>
+                        <Button IsBlock="true" IsOutline="true" IsDisabled="@FindStoreButton" Color="Color.Success" @onclick="async ()=> await FindStroresInModal()">Apply new radius</Button>
                     </FieldBody>
                 </Field>
             </ModalBody>
@@ -178,9 +178,9 @@
                         </Field>
                     </CardBody>
                     <CardFooter Class="card-footerProduct text-center">
-                        <Button IsDisabled="disableButton" Margin="Margin.IsAuto.FromLeft" Color="Color.Success" @onclick="(() => AddProductToSL(p))"><Icon Name="@(FontAwesomeIcons.ShoppingCart)" /> Add to shopping list</Button>
+                        <Button IsDisabled="disableButton" Margin="Margin.IsAuto.FromLeft" Color="Color.Success" @onclick="(async() => await AddProductToSL(p))"><Icon Name="@(FontAwesomeIcons.ShoppingCart)" /> Add to shopping list</Button>
                         @if (p._amountleft != 0)
-                        { 
+                        {
                             <FieldBody Class="text-center">
                                 <Text Alignment="TextAlignment.Center" Color="TextColor.Muted" Style="vertical-align:sub; text-align:center; width:300px;">
                                         @p._amountleft Added in <Icon Name="@(FontAwesomeIcons.ShoppingCart)"></Icon>
