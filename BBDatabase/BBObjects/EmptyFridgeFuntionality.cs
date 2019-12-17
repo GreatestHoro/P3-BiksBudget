@@ -10,16 +10,34 @@ namespace BBCollection.BBObjects
         public List<List<string>> allRefs = new List<List<string>>();
         public List<WeightedRecipies> WeightedRecipies = new List<WeightedRecipies>();
 
-        public EmptyFridgeFuntionality(List<Product> products)
+        double allRecipies = 0;
+        double checkedRecipies = 0;
+        public int percentDone = 0;
+
+        public void calculatePercentDone()
+        {
+            checkedRecipies++;
+            percentDone = (int)(checkedRecipies / allRecipies * 100);
+        }
+
+        public void ResetPercent()
+        {
+            allRecipies = 0;
+            checkedRecipies = 0;
+            percentDone = 0;
+        }
+
+        public async Task<List<WeightedRecipies>> GetWeightedRecipies(List<Product> products) 
         {
             allRefs = GetAllProductRefs(products);
-        }
-        public async Task<List<WeightedRecipies>> GetWeightedRecipies() 
-        {
+            ResetPercent();
+
             if (WeightedRecipies.Count == 0) 
             {
+                allRecipies = allRefs.Count();
                 foreach (List<string> prodRefs in allRefs)
                 {
+                    calculatePercentDone();
                     WeightedRecipies.AddRange(await GetRelevantRecepiesFromProd(prodRefs));
                 }
                 SortByPmatch(WeightedRecipies);
