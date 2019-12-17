@@ -28,6 +28,7 @@ namespace BBCollection.DBHandling
 
         HttpResponseMessage responseOne = new HttpResponseMessage();
         HttpResponseMessage responseTwo = new HttpResponseMessage();
+        List<Product> tempList = new List<Product>();
 
         public async Task<HttpResponseMessage> ProductSLToStrage(Product p)
         {
@@ -100,5 +101,7 @@ namespace BBCollection.DBHandling
         {
             return response.IsSuccessStatusCode;
         }
+
+
     }
 }

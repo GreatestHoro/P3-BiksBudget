@@ -17,27 +17,27 @@
         <div class="col-sm-10 col-md-8 col-lg-7 col-xl-5">
             <div class="form-check-inline center_div" id="acSearchBar">
                 <div class="center_div" id="adSearchBBox">
-                        <Autocomplete Data="@prodData"
-                                      TextField="@((item)=>item.textField)"
-                                      ValueField="@((item)=>item.textField)"
-                                      SelectedValue="@selectedSearchValue"
-                                      SelectedValueChanged="@searchHandler"
-                                      Placeholder="Enter a product name..."
-                                      Filter="AutocompleteFilter.Contains"
-                                      MinLength="2"
-                                      IsDisabled="FindingAutocorrectlist"/>
+                    <Autocomplete Data="@prodData"
+                                  TextField="@((item)=>item.textField)"
+                                  ValueField="@((item)=>item.textField)"
+                                  SelectedValue="@selectedSearchValue"
+                                  SelectedValueChanged="@searchHandler"
+                                  Placeholder="Enter a product name..."
+                                  Filter="AutocompleteFilter.Contains"
+                                  MinLength="2"
+                                  IsDisabled="FindingAutocorrectlist" />
                     <button class="btn btn-success acSearchButton" @onclick="(() => SearchBar())">
                         <i class="fa fa-search"></i>
                     </button>
                 </div>
             </div>
             <div class="center_div" id="filterBox">
-            <Field IsHorizontal="true" JustifyContent="JustifyContent.Start">
+                <Field IsHorizontal="true" JustifyContent="JustifyContent.Start">
                     <FieldBody ColumnSize="ColumnSize.Is1.OnDesktop.Is1.OnMobile">
                         <Button Clicked="showFilterModal" Color="Color.Success"> <Icon Name="@(FontAwesomeIcons.Filter)"> </Icon></Button>
                     </FieldBody>
                     <FieldLabel ColumnSize="ColumnSize.Is3.OnDesktop.Is3.OnMobile">Advanced</FieldLabel>
-            </Field>
+                </Field>
             </div>
         </div>
     </div>
@@ -184,6 +184,8 @@
             </Column>
         }
     }
+    <!--Scroll to top button   -->
+    <button id="myBtn" class="btn btn-rounded btn-success"><a href="search" style="color: white; font-size:12px;">Top</a></button>
 </Row>
 
 <Row Class="text-align: center">

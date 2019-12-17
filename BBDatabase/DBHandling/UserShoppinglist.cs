@@ -170,6 +170,13 @@ namespace BBCollection.DBHandling
             return await api.Put(shoppinglistString);
         }
 
+        public async Task AddListLocal(List<Product> productList)
+        {
+            shoppinglist.AddRange(productList);
+
+            await Save();
+        }
+
         public async Task<HttpResponseMessage> AddList(List<Product> inputList)
         {
             shoppinglistString = JsonConvert.SerializeObject(inputList);
