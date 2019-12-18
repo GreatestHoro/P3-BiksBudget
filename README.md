@@ -1,5 +1,5 @@
 # BiksBudget - 3. Semester Project AAU
-An application with the focus on saving money and minimizing food waste.  The website is hosted on: https://biksbudget.azurewebsites.net/
+An application with the focus on saving money and minimizing food waste.\ The website is hosted on: https://biksbudget.azurewebsites.net/
 ## Prerequisites
 ### MySql Setup
 To run the web application, it is required to install MySql 8.0, which can be found on:
