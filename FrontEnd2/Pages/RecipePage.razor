@@ -78,17 +78,19 @@
                             <h6 style="font-weight:bold;">
                                 @complexRecipe._Name
                             </h6>
-                            @foreach (var ls in RecipeStoreDict[complexRecipe])
-                            {
-                                @foreach (string s in storeNames)
+                            @if (RecipeStoreDict.ContainsKey(complexRecipe)) { 
+                                foreach (var ls in RecipeStoreDict[complexRecipe])
                                 {
-                                    if (ls.Contains(s))
+                                    @foreach (string s in storeNames)
                                     {
-                                        <FigureImage Source="@getProductImg(ls)" />
+                                        if (ls.Contains(s))
+                                        {
+                                            <FigureImage Source="@getProductImg(ls)" />
+                                        }
+
                                     }
 
                                 }
-
                             }
                        </div> 
                     </div>
@@ -681,20 +683,36 @@
         List<ComplexRecipe> tempCompRes = GetRangePlus();
         List<List<string>> tempList = new List<List<string>>();
 
-        foreach (ComplexRecipe cr in tempCompRes)
+        if (tempCompRes.Any())
         {
-            foreach (Ingredient ing in cr._ingredientList)
+            foreach (ComplexRecipe cr in tempCompRes)
             {
-                if (ProductStoreDict.ContainsKey(ing))
+                if (cr._ingredientList.Any())
                 {
-                    tempList.Add(ProductStoreDict[ing]);
+                    foreach (Ingredient ing in cr._ingredientList)
+                    {
+                        if (ProductStoreDict.ContainsKey(ing))
+                        {
+                            tempList.Add(ProductStoreDict[ing]);
+                        }
+                        if (!RecipeStoreDict.ContainsKey(cr))
+                        {
+                            if (tempList.Any())
+                            {
+                                List<string> intersectionList = tempList.Aggregate((prev, next) => prev.Intersect(next).ToList());
+                                if (intersectionList.Any())
+                                {
+                                    RecipeStoreDict.Add(cr, intersectionList);
+                                }
+                            }
+                        }
+                        tempList.Clear();
+                    }
                 }
-
             }
-            RecipeStoreDict.Add(cr, tempList.Aggregate((prev, next) => prev.Intersect(next).ToList()));
-            tempList.Clear();
         }
     }
+
 
 
     private async Task retriveProductStores()
@@ -882,9 +900,17 @@
         recipeQuery._loadCount = 0;
         ReadChainFilters();
         complexRecipes = await recipeQuery.CheapestRecipeDB(searchTerm, _chainFilter);
-        await retriveProductStores();
-        await retriveRecipeStores();
-        viewRecipeList = true;
+        if (complexRecipes.Any())
+        {
+            await retriveProductStores();
+            await retriveRecipeStores();
+            viewRecipeList = true;
+        }
+        else
+        {
+            _viewLoadMore = false;
+            _viewLoadMoreSpinner = false;
+        }
         isSearching = false;
 
         StateHasChanged();
