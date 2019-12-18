@@ -707,6 +707,7 @@
     private async void retriveRecipe(int ID)
     {
         // get the first element that satisfies the condition
+        products.Clear();
         ComplexRecipe cr = complexRecipes.First(x => x._recipeID == ID);
         cr._complexRecipeComponent._products = await recipeQuery.GetProductsForRecipe(cr._recipeID, complexRecipes);
         //Set properties
