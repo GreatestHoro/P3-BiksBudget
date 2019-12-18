@@ -17,7 +17,7 @@ namespace BBCollection.BBObjects
         public void calculatePercentDone()
         {
             checkedRecipies++;
-            percentDone = (int)(checkedRecipies / allRecipies * 100);
+            percentDone = (int)(((checkedRecipies / allRecipies) * 100));
         }
 
         public void ResetPercent()
@@ -30,8 +30,6 @@ namespace BBCollection.BBObjects
         public async Task<List<WeightedRecipies>> GetWeightedRecipies(List<Product> products) 
         {
             allRefs = GetAllProductRefs(products);
-            ResetPercent();
-
             if (WeightedRecipies.Count == 0) 
             {
                 allRecipies = allRefs.Count();
@@ -43,7 +41,6 @@ namespace BBCollection.BBObjects
                 SortByPmatch(WeightedRecipies);
             }
 
-            
             return WeightedRecipies;
         }
         private async Task<List<WeightedRecipies>> GetRelevantRecepiesFromProd(List<string> prodRefs)
@@ -62,10 +59,14 @@ namespace BBCollection.BBObjects
             RecipeHandling recipeHandling = new RecipeHandling();
             Dictionary<Recipe, Dictionary<Ingredient, List<string>>> dict = new Dictionary<Recipe, Dictionary<Ingredient, List<string>>>();
             List<Recipe> recipes = new List<Recipe>();
+
             foreach (string refs in ProductRefrence)
             {
                 recipes.AddRange(await recipeHandling.GetReferencesAsync(new List<string>() { refs }));
             }
+
+
+            
             foreach (Recipe r in recipes)
             {
                 foreach (Ingredient I in r._ingredientList)
