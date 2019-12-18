@@ -474,7 +474,7 @@ namespace BBCollection.DBHandling
         private string SingleRecipeQuery(string store)
         {
             string singleQuery =
-                "SELECT t1.id, t1.recipeName, t1.recipeDesc, t1.amountPerson, sum(price) as min_price FROM recipes t1 " +
+                "SELECT t1.id, t1.recipeName, t1.recipeDesc, t1.amountPerson, sum(price) as min_price, count(*) FROM recipes t1 " +
                 "inner join ingredientsinrecipe t2 on t1.id = t2.recipeID " +
                 "inner join ingredients t3 on t2.ingredientID = t3.id " +
                 "inner join(select isl.ingredientName as ingredientName, p1.price as price " +
@@ -490,7 +490,7 @@ namespace BBCollection.DBHandling
         private string MultipleRecipeQuery(List<string> stores)
         {
             string mrQuery =
-                "SELECT t1.id, t1.recipeName, t1.recipeDesc, t1.amountPerson, sum(price) as min_price FROM recipes t1 " +
+                "SELECT t1.id, t1.recipeName, t1.recipeDesc, t1.amountPerson, sum(price) as min_price, count(*) FROM recipes t1 " +
                 "inner join ingredientsinrecipe t2 on t1.id = t2.recipeID " +
                 "inner join ingredients t3 on t2.ingredientID = t3.id " +
                 "inner join( " +
@@ -570,16 +570,60 @@ namespace BBCollection.DBHandling
             return chainList;
         }
 
-        public async Task<int> Count(string recipeName)
+        public async Task<int> Count(string recipeName, Chain chain)
         {
-            string countQuery =
-                "SELECT Count(*) FROM recipes WHERE recipename like @RecipeName";
+            List<string> stores = ConverteChain(chain);
+            MySqlCommand msc;
+            
 
-            MySqlCommand msc = new MySqlCommand(countQuery);
+            if (stores.Count == 0)
+            {
+                msc = new MySqlCommand(MultipleRecipeQuery(stores));
+            }
+            else if (stores.Count == 1)
+            {
+                msc = new MySqlCommand(SingleRecipeQuery(stores[0]));
+            }
+            else
+            {
+                msc = new MySqlCommand(MultipleRecipeQuery(stores));
+            }
 
             msc.Parameters.AddWithValue("@RecipeName", recipeName);
 
             return await new SQLConnect().ElementCount(msc);
+        }
+
+        public string returnSingleQuery(string store)
+        {
+            string singleQuery =
+                "SELECT count(*) FROM recipes t1 " +
+                "inner join ingredientsinrecipe t2 on t1.id = t2.recipeID " +
+                "inner join ingredients t3 on t2.ingredientID = t3.id " +
+                "inner join(select isl.ingredientName as ingredientName, p1.price as price " +
+                "from ingredient_store_link isl " +
+                "left join products p1 on p1.id = isl." + store + ") as t4 on t3.ingredientName = t4.ingredientName " +
+                "WHERE t1.recipeName like @RecipeName AND price IS NOT NULL ";
+
+            return singleQuery;
+        }
+
+        public string multiString(List<string> stores)
+        {
+            string mrQuery =
+                "SELECT t1.id, t1.recipeName, t1.recipeDesc, t1.amountPerson, sum(price) as min_price, count(*) FROM recipes t1 " +
+                "inner join ingredientsinrecipe t2 on t1.id = t2.recipeID " +
+                "inner join ingredients t3 on t2.ingredientID = t3.id " +
+                "inner join( " +
+                "select " +
+                "isl.ingredientName as ingredientName, least(" + GetCoalesce(stores.Count()) + ") as price " +
+                "from ingredient_store_link isl "
+                + GetJoins(stores) +
+                ") as t4 on t3.ingredientName = t4.ingredientName " +
+                "WHERE t1.recipeName like @RecipeName AND price IS NOT NULL " +
+                "group by t1.id order by min_price LIMIT @Limit OFFSET @Offset";
+
+            return mrQuery;
         }
     }
 }
