@@ -1,6 +1,6 @@
 # BiksBudget - 3. Semester Project AAU
 An application with the focus on saving money and minimizing food waste.
-The website is hosted on: (https://biksbudget.azurewebsites.net/)
+The website is hosted on: https://biksbudget.azurewebsites.net/
 ## Prerequisites
 ### MySql Setup
 To run the web application, it is required to install MySql 8.0, which can be found on:
@@ -29,6 +29,7 @@ There are 3 ways to make the web application's database work:
 2. Pre-Process the database by running the B3-BiksBudget.Exe file.
 3. Import the Database with the attached CreateSqlTables.sql file.
 
+If everything fails, the project can be accessed with the link in the beginning of the Readme file.
 ### Pre-Processing
 The front end requires a database to run correctly, one of the ways to do so, is running the b3-biksbudget.exe file in the project folder, this will start the gathering of products and recipes.
 The default option will run all the gathering tools in the code that will make create and populate the database.
