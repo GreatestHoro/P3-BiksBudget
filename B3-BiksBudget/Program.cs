@@ -84,9 +84,10 @@ namespace BBGatherer
             if (webcrawler)
             {
                 RecipeCrawl WebRunner = new RecipeCrawl();
-                _ = WebRunner.GetRecipes(1, 2884, dc);
+                _ = WebRunner.GetRecipes(100, 2884, dc);
 
                 Console.WriteLine("web runner begins... fear its power");
+                Console.ReadKey();
             }
 
             if (generatePrice)

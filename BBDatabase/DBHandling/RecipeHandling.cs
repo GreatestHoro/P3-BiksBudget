@@ -76,8 +76,7 @@ namespace BBCollection.DBHandling
 
             MySqlCommand msc = new MySqlCommand(ingredientsToRecipeQuery);
             msc.Parameters.AddWithValue("@RecipeID", recipeID);
-            return await Task.Run(async () =>
-            {
+            
                 DataSet ds = await new SQLConnect().DynamicSimpleListSQL(msc);
                 foreach (DataRow r in ds.Tables[0].Rows)
                 {
@@ -88,7 +87,6 @@ namespace BBCollection.DBHandling
                 IEnumerable<Ingredient> distinctIngredients = ingredients.GroupBy(o => o._ingredientName).Select(g => g.First());
 
                 return distinctIngredients.ToList();
-            });
         }
         #endregion
 
@@ -155,10 +153,10 @@ namespace BBCollection.DBHandling
 
         private async Task CombineRecipeAndIngredient(Recipe recipe)
         {
-            await Task.Run(async () =>
-            {
+            
                 foreach (Ingredient ingredient in recipe._ingredientList)
                 {
+                ingredient._id = await getIngredientFromName(ingredient._ingredientName);
                     string addIngredientReferance = "INSERT INTO `IngredientsInRecipe` (`recipeID`,`ingredientID`,`amount`,`unit`)" +
                                                     "VALUES(@RecipeID," +
                                                     "@IngredientID" +
@@ -167,13 +165,12 @@ namespace BBCollection.DBHandling
                     MySqlCommand msc = new MySqlCommand(addIngredientReferance);
 
                     msc.Parameters.AddWithValue("@RecipeID", recipe._recipeID);
-                    msc.Parameters.AddWithValue("@IngredientID", getIngredientFromName(ingredient._ingredientName));
+                    msc.Parameters.AddWithValue("@IngredientID", ingredient._id);
                     msc.Parameters.AddWithValue("@Amount", ingredient._amount);
                     msc.Parameters.AddWithValue("@Unit", ingredient._unit);
 
                     await new SQLConnect().NonQueryMSC(msc);
                 }
-            });
         }
 
         private async Task<int> getIngredientFromName(string ingredientName)
