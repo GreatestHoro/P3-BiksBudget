@@ -60,6 +60,7 @@
                     </div>
                 </div>
             </div>
+        }
         </div>
     }
     <!-- #endregion -->
@@ -109,25 +110,30 @@
                                 </div>
                             </div>
                         </div>
-                    }
-                    @if (_viewLoadMoreSpinner == true)
-                    {
-                        <div class="center_div lds-roller">
-                            <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-                        </div>
-                    }
-                    @if (complexRecipes.Count() % recipeQuery._productsPerLoad == 0 && complexRecipes.Count() != 0 && _viewLoadMore == true)
-                    {
-                        <div class="row mt-4 d-flex justify-content-center">
-                            <button class="btn btn-warning mb-4" @onclick="LoadMore" id="LoadMore">Load More</button>
-                        </div>
-                    }
-                </div>
+                    
+                            @if (_viewLoadMoreSpinner == true)
+                            {
+                                <div class="center_div lds-roller">
+                                    <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+                                </div>
+                            }
+                            @if (complexRecipes.Count() % recipeQuery._productsPerLoad == 0 && complexRecipes.Count() != 0 && _viewLoadMore == true)
+                            {
+                                <div class="row mt-4 d-flex justify-content-center">
+                                    <button class="btn btn-warning mb-4" @onclick="LoadMore" id="LoadMore">Load More</button>
+                                </div>
+                            }
+                    
+                    </div>
+                 }
             </div>
-        }
+        </div>
+    }
+
         <Button id="myBtn" Class="btn btn-rounded btn-success"><a href="recipe" style="color: white; font-size:12px;">To top</a></Button>
         <!-- #endregion -->
-    </div>
+
+
 <!-- #region Recipe view -->
 <Accordion>
     <Modal @ref="recipeRef" Class="recipeModal">
