@@ -569,6 +569,18 @@ namespace BBCollection.DBHandling
             }
             return chainList;
         }
+
+        public async Task<int> Count(string recipeName)
+        {
+            string countQuery =
+                "SELECT Count(*) FROM recipes WHERE recipename like @RecipeName";
+
+            MySqlCommand msc = new MySqlCommand(countQuery);
+
+            msc.Parameters.AddWithValue("@RecipeName", recipeName);
+
+            return await new SQLConnect().ElementCount(msc);
+        }
     }
 }
 
