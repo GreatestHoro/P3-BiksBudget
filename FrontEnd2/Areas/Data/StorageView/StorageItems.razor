@@ -452,13 +452,13 @@
         quickaddModal.Show();
     }
 
-    private void showBiksfoodModal(ModalSize modalSize, int? maxHeight = null, bool isCentered = false)
+    private async void showBiksfoodModal(ModalSize modalSize, int? maxHeight = null, bool isCentered = false)
     {
         this.isCentered = isCentered;
         this.modalSize = modalSize;
         this.maxHeight = maxHeight;
 
-        BiksFood.Show();
+        await InvokeAsync(() => BiksFood.Show());
     }
 
     private void hideQuickaddModal()
@@ -536,7 +536,7 @@
                 await user.storage.Get();
                 intailizeAllProducts(user.storage.storageList);
             }
-            
+
             await InitializeAutocorrect();
 
             isLoading = false;
@@ -654,12 +654,22 @@
 
     #region empty fridge
 
+    private async Task ModalFix() 
+    { 
+      await Task.Run(() => showBiksfoodModal(ModalSize.Default, 60, true));
+    }
+
     private async Task FindRecipies()
     {
+        await ModalFix();
+
+        this.StateHasChanged();
+
+
         BiksfoodsearchDone = false;
         Allrecpies.Clear();
 
-        showBiksfoodModal(ModalSize.Default, 60, true);
+
         _viewEmptyFridgeLoadSpinner = true;
         int HasBeenLoaded = 0;
         this.StateHasChanged();
