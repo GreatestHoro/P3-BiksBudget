@@ -120,7 +120,7 @@
             <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
         </div>
     }
-    @if (complexRecipes.Count() % recipeQuery._productsPerLoad == 0 && complexRecipes.Count() != 0 && _viewLoadMore == true)
+    @if (_viewLoadMore)
     {
         <div class="row mt-4 d-flex justify-content-center">
             <button class="btn btn-warning mb-4" @onclick="LoadMore" id="LoadMore">Load More</button>
@@ -286,6 +286,7 @@
     int runCounter = 0;
     int value;
     int selectedValue;
+    int prevLength = -1;
 
     double tempTotalCostQuickList = 0;
     double tempTotalCost = 0;
@@ -677,7 +678,7 @@
 
     private async Task retriveRecipeStores()
     {
-        List<ComplexRecipe> tempCompRes = complexRecipes.GetRange(complexRecipes.Count - 10, complexRecipes.Count);
+        List<ComplexRecipe> tempCompRes = GetRangePlus();
         List<List<string>> tempList = new List<List<string>>();
 
         foreach (ComplexRecipe cr in tempCompRes)
@@ -699,7 +700,7 @@
     private async Task retriveProductStores()
     {
         bool storeListFound = false;
-        List<ComplexRecipe> tempCompRes = complexRecipes.GetRange(complexRecipes.Count - 10, complexRecipes.Count);
+        List<ComplexRecipe> tempCompRes = GetRangePlus();
         foreach (ComplexRecipe com in tempCompRes)
         {
             com._complexRecipeComponent._products = await recipeQuery.GetProductsForRecipe(com._recipeID, complexRecipes);
@@ -713,15 +714,18 @@
                         {
                             if (storeListFound)
                             {
-                                if (!ProductStoreDict[ing].Any(x => x.Contains(p._storeName)))
+                                if (!ProductStoreDict[ing].Any(x => x.Contains(p._storeName)) )
                                 {
                                     ProductStoreDict[ing].Add(p._storeName);
                                 }
                             }
                             else
                             {
+                                if (!ProductStoreDict.ContainsKey(ing)) 
+                                {
                                 storeListFound = true;
                                 ProductStoreDict.Add(ing, new List<string>() { p._storeName });
+                                }
 
                             }
                         }
@@ -732,6 +736,32 @@
             }
         }
 
+    }
+    private List<ComplexRecipe> GetRangePlus()
+    {
+        if (prevLength != complexRecipes.Count())
+        {
+            List<ComplexRecipe> ComplecList = new List<ComplexRecipe>();
+            for (int i = complexRecipes.Count - 1; i >= complexRecipes.Count - SetIndex(complexRecipes.Count); i--)
+            {
+                ComplecList.Add(complexRecipes[i]);
+            }
+            return ComplecList;
+        }
+
+        _viewLoadMore = false;
+        return new List<ComplexRecipe>();
+    }
+
+    public int SetIndex(int ListCount)
+    {
+        if (ListCount % 10 == 0)
+        {
+            _viewLoadMore = true;
+            return 10;
+        }
+        _viewLoadMore = false;
+        return ListCount % 10;
     }
 
     private List<Product> FilterProducts(List<Product> products)
@@ -865,7 +895,7 @@
         await retriveProductStores();
         await retriveRecipeStores();
         _viewLoadMoreSpinner = false;
-        _viewLoadMore = true;
+        prevLength = complexRecipes.Count();
         this.StateHasChanged();
     }
 
