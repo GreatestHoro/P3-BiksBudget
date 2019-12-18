@@ -76,6 +76,18 @@
                                 <h6 style="font-weight:bold;">
                                     @complexRecipe._Name
                                 </h6>
+                                @foreach (var ls in RecipeStoreDict[complexRecipe])
+                                {
+                                    @foreach (string s in storeNames)
+                                    {
+                                        if (ls.Contains(s))
+                                        {
+                                            <FigureImage Source="@getProductImg(ls)" />
+                                        }
+
+                                    }
+
+                                }
                             </div>
                         </div>
                         <div class="card-body" style="padding-bottom: 0.25rem; padding-top: 0.60rem;">
@@ -310,9 +322,12 @@
     Ingredient currentlySelectedIngredient;
     RecipeQuery recipeQuery = new RecipeQuery();
     Dictionary<Product, Ingredient> QickAddDict = new Dictionary<Product, Ingredient>();
+    Dictionary<Ingredient, List<string>> ProductStoreDict = new Dictionary<Ingredient, List<string>>();
+    Dictionary<ComplexRecipe, List<string>> RecipeStoreDict = new Dictionary<ComplexRecipe, List<string>>();
 
     HttpResponseMessage responseMessage = new HttpResponseMessage();
     ControllerFuncionality features = new ControllerFuncionality();
+    List<string> storeNames = new List<string>() {"Bilka", "Fakta", "SuperBrugsen" };
 
     #endregion
 
@@ -657,6 +672,65 @@
         QuickList = FilterProducts(QuickList);
     }
 
+    private async Task retriveRecipeStores()
+    {
+        List<ComplexRecipe> tempCompRes = complexRecipes.GetRange(complexRecipes.Count -10, complexRecipes.Count);
+        List<List<string>> tempList = new List<List<string>>();
+
+        foreach (ComplexRecipe cr in tempCompRes)
+        {
+            foreach (Ingredient ing in cr._ingredientList)
+            {
+                if (ProductStoreDict.ContainsKey(ing))
+                {
+                    tempList.Add(ProductStoreDict[ing]);
+                }
+
+            }
+            RecipeStoreDict.Add(cr, tempList.Aggregate((prev, next) => prev.Intersect(next).ToList()));
+            tempList.Clear();
+        }
+    }
+
+
+    private async Task retriveProductStores()
+    {
+        bool storeListFound = false;
+        List<ComplexRecipe> tempCompRes = complexRecipes.GetRange(complexRecipes.Count - 10, complexRecipes.Count);
+        foreach (ComplexRecipe com in tempCompRes)
+        {
+            com._complexRecipeComponent._products = await recipeQuery.GetProductsForRecipe(com._recipeID, complexRecipes);
+            foreach (string s in com._complexRecipeComponent._products.Keys)
+            {
+                foreach (Ingredient ing in com._ingredientList)
+                {
+                    foreach (Product p in com._complexRecipeComponent._products[s])
+                    {
+                        if (s.Contains(ing._ingredientName))
+                        {
+                            if (storeListFound)
+                            {
+                                if (!ProductStoreDict[ing].Any(x => x.Contains(p._storeName)))
+                                {
+                                    ProductStoreDict[ing].Add(p._storeName);
+                                }
+                            }
+                            else
+                            {
+                                storeListFound = true;
+                                ProductStoreDict.Add(ing, new List<string>() { p._storeName });
+
+                            }
+                        }
+                    }
+                    storeListFound = false;
+                    //ProductStoreDict[ing] = ProductStoreDict[ing].Distinct().ToList();
+                }
+            }
+        }
+
+    }
+
     private List<Product> FilterProducts(List<Product> products)
     {
         ReadChainFilters();
@@ -769,9 +843,11 @@
         recipeQuery._loadCount = 0;
         ReadChainFilters();
         complexRecipes = await recipeQuery.CheapestRecipeDB(searchTerm, _chainFilter);
-
+        await retriveProductStores();
+        await retriveRecipeStores();
         viewRecipeList = true;
         isSearching = false;
+
         StateHasChanged();
     }
 
@@ -782,6 +858,8 @@
         this.StateHasChanged();
         ReadChainFilters();
         complexRecipes.AddRange(await recipeQuery.CheapestRecipeDB(searchTerm,_chainFilter));
+        await retriveProductStores();
+        await retriveRecipeStores();
         _viewLoadMoreSpinner = false;
         _viewLoadMore = true;
         this.StateHasChanged();
