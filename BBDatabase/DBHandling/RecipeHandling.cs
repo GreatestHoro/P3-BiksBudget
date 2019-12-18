@@ -589,7 +589,7 @@ namespace BBCollection.DBHandling
                 msc = new MySqlCommand(MultipleRecipeQuery(stores));
             }
 
-            msc.Parameters.AddWithValue("@RecipeName", recipeName);
+            msc.Parameters.AddWithValue("@RecipeName", "%" + recipeName + "%");
 
             return await new SQLConnect().ElementCount(msc);
         }

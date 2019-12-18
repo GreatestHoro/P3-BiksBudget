@@ -2,6 +2,7 @@
 @using BBCollection.Queries;
 @using BBCollection.BBObjects;
 @using BBCollection.DBHandling;
+@using BBCollection;
 @using FiftyOne.Foundation.Mobile.Detection.Factories
 @using Newtonsoft.Json;
 @using FrontEnd2.Data;
@@ -65,7 +66,7 @@
 
 <!-- #endregion -->
 <!-- #region Recipe card lists -->
-@if (viewRecipeList == true)
+@if (viewRecipeList)
 {
     <div class="row d-flex justify-content-center top-margin">
         <div class="col-sm-10 col-md-8 col-lg-7 col-xl-5">
@@ -119,10 +120,10 @@
     </div>
 
     <Row Margin="Margin.Is2.FromTop">
-        @if (_viewProducts)
+        @if (viewRecipeList && !isSearching)
         {
             <Column ColumnSize="ColumnSize.Is6.Is3.WithOffset">
-                <Text Class="text-center">You have seen products</Text>
+                <Text Class="text-center">You have seen @complexRecipes.Count() recipies out of @recipeMaxAmont</Text>
                 <Progress Margin="Margin.Is3.FromBottom" Size="Size.Small">
                     <ProgressBar Background="Background.Success" Value="@LoadMoreProgressbar" />
                 </Progress>
@@ -136,7 +137,7 @@
             <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
         </div>
     }
-    @if (_viewLoadMore)
+    @if (_viewLoadMore && !isSearching)
     {
         <div class="row mt-4 d-flex justify-content-center">
             <button class="btn btn-warning mb-4" @onclick="LoadMore" id="LoadMore">Load More</button>
@@ -304,6 +305,7 @@
     int selectedValue;
     int prevLength = -1;
     int LoadMoreProgressbar = 0;
+    int recipeMaxAmont = 0;
 
     double tempTotalCostQuickList = 0;
     double tempTotalCost = 0;
@@ -346,10 +348,10 @@
     Dictionary<Product, Ingredient> QickAddDict = new Dictionary<Product, Ingredient>();
     Dictionary<Ingredient, List<string>> ProductStoreDict = new Dictionary<Ingredient, List<string>>();
     Dictionary<ComplexRecipe, List<string>> RecipeStoreDict = new Dictionary<ComplexRecipe, List<string>>();
-
     HttpResponseMessage responseMessage = new HttpResponseMessage();
     ControllerFuncionality features = new ControllerFuncionality();
     List<string> storeNames = new List<string>() { "Bilka", "Fakta", "SuperBrugsen" };
+    DatabaseConnect _dc = new DatabaseConnect();
 
     #endregion
 
@@ -915,6 +917,7 @@
         StateHasChanged();
         recipeQuery._loadCount = 0;
         ReadChainFilters();
+        recipeMaxAmont = await _dc.Recipe.Count(searchTerm);
         complexRecipes = await recipeQuery.CheapestRecipeDB(searchTerm, _chainFilter);
         if (complexRecipes.Any())
         {
@@ -929,6 +932,7 @@
         }
         isSearching = false;
 
+        CalculaterSeenPercen();
         StateHasChanged();
     }
 
@@ -943,7 +947,14 @@
         await retriveRecipeStores();
         _viewLoadMoreSpinner = false;
         prevLength = complexRecipes.Count();
+        CalculaterSeenPercen();
         this.StateHasChanged();
+    }
+
+    public void CalculaterSeenPercen()
+    {
+        double temp = ((double)complexRecipes.Count() / (double)recipeMaxAmont) * 100;
+        LoadMoreProgressbar = (int)temp;
     }
 
     private string printIngredientAmount(float amount, int scalar)
