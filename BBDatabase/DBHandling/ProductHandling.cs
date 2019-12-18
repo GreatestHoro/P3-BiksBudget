@@ -31,7 +31,58 @@ namespace BBCollection.DBHandling
             msc.Parameters.AddWithValue("@Image", product._image);
             msc.Parameters.AddWithValue("@Store", product._storeName);
 
-            await Task.Run(() => new SQLConnect().NonQueryMSC(msc));
+            await Task.Run(() => new SQLConnect().NonQueryMSCAsync(msc));
+        }
+
+        public void AddLink(int id, string link)
+        {
+            string insertQuery =
+                "INSERT INTO `bilkatogo_links`(`id`,`link`)values(@id,@link)";
+
+            MySqlCommand msc = new MySqlCommand(insertQuery);
+
+            msc.Parameters.AddWithValue("@id", id);
+            msc.Parameters.AddWithValue("@link", link);
+
+            new SQLConnect().NonQueryMSC(msc);
+        }
+
+        public async Task<Dictionary<int, string>> GetRelevantLinksAsync(string ingredient)
+        {
+            Dictionary<int, string> relevantLinks = new Dictionary<int, string>();
+            string getLinksQuery =
+                "SELECT * FROM BilkaToGo_Links WHERE link like @Ingredient";
+
+            MySqlCommand msc = new MySqlCommand(getLinksQuery);
+
+            msc.Parameters.AddWithValue("@Ingredient", "%" + ingredient + "%");
+
+            DataSet ds = await new SQLConnect().DynamicSimpleListSQL(msc);
+
+            try
+            {
+                foreach (DataRow r in ds.Tables[0].Rows)
+                {
+                    relevantLinks.Add((int)r[0], r[1].ToString());
+                }
+            }
+            catch (NullReferenceException e)
+            {
+                Console.WriteLine(e);
+            }
+            return relevantLinks;
+        }
+
+        public async Task<bool> Exist(string productName)
+        {
+            string checkProduct =
+                "SELECT Count(*) FROM Products WHERE productname = @ProductName";
+
+            MySqlCommand msc = new MySqlCommand(checkProduct);
+
+            msc.Parameters.AddWithValue("@ProductName", productName);
+
+            return await new SQLConnect().CheckRecordExist(msc);
         }
 
         /// <summary>
@@ -50,7 +101,7 @@ namespace BBCollection.DBHandling
             msc.Parameters.AddWithValue("@Reference", reference);
             msc.Parameters.AddWithValue("@Prodid", prodid);
 
-            await Task.Run(() => new SQLConnect().NonQueryMSC(msc));
+            await Task.Run(() => new SQLConnect().NonQueryMSCAsync(msc));
         }
 
         public async Task<List<Product>> GetListAsync(string productName)
@@ -224,7 +275,7 @@ namespace BBCollection.DBHandling
             msc.Parameters.AddWithValue("@Image", image);
             msc.Parameters.AddWithValue("@Prodid", prodid);
 
-            await Task.Run(() => new SQLConnect().NonQueryMSC(msc));
+            await Task.Run(() => new SQLConnect().NonQueryMSCAsync(msc));
         }
 
         public async Task AddAutocompleteToDB()
@@ -270,7 +321,7 @@ namespace BBCollection.DBHandling
 
             msc.Parameters.AddWithValue("@ReferenceName", s);
 
-            await Task.Run(() => new SQLConnect().NonQueryMSC(msc));
+            await Task.Run(() => new SQLConnect().NonQueryMSCAsync(msc));
         }
 
         public async Task<string[]>  AddRefCol()
@@ -411,7 +462,7 @@ namespace BBCollection.DBHandling
 
             msc.Parameters.AddWithValue("@ProdID", prodID);
 
-            await new SQLConnect().NonQueryMSC(msc);
+            await new SQLConnect().NonQueryMSCAsync(msc);
         }
     }
 }

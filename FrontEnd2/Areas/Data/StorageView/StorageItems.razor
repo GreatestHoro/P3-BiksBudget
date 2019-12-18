@@ -534,23 +534,15 @@
             {
                 user = new UserData(email);
                 await user.storage.Get();
-                UpdateProducts();
-
+                intailizeAllProducts(user.storage.storageList);
             }
-            intailizeAllProducts(user.storage.storageList);
+            
             await InitializeAutocorrect();
 
             isLoading = false;
             StateHasChanged();
         }
 
-    }
-    public void UpdateProducts()
-    {
-        foreach (Product p in user.storage.storageList)
-        {
-            productCompare.Add(p._id, new Product(p));
-        }
     }
 
     async Task GetLocalSession()
