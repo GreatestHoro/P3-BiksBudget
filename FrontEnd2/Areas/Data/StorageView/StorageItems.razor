@@ -65,6 +65,11 @@
                         @snacbarMessage
                     </SnackbarBody>
                 </Snackbar>
+                <Snackbar @ref="BiksfoodAdd">
+                    <SnackbarBody>
+                        @snacbarMessage
+                    </SnackbarBody>
+                </Snackbar>
             </CardFooter>
         </Column>
     </Row>
@@ -316,13 +321,6 @@
             </ModalContent>
         </Modal>
     </Accordion>
-
-    @if (_viewLoadMore && BiksFoodRecepiesFound)
-    {
-        <div class="row mt-4 d-flex justify-content-center">
-            <button class="btn btn-warning mb-5 mx-auto" @onclick="() => LoadMoreRecepies()">Load More</button>
-        </div>
-    }
 }
 
 
@@ -351,6 +349,7 @@
     ConnectionSettings connectionSettings = new ConnectionSettings();
     private Modal recipeRef;
     Modal BiksFood;
+    Snackbar BiksfoodAdd;
     string email, userId, recipeDescription, recipeName;
     string tempState;
     string TempScalar;
@@ -821,6 +820,8 @@
 
         AddedItem._amountleft = actualAmout;
 
+        snacbarMessage = SetBiksfoodAddMessage(AddedItem);
+        BiksfoodAdd.Show();
         disableButton = await AwaitButton();
         StateHasChanged();
     }
@@ -1036,6 +1037,11 @@
         {
             return $"Undo successfull! All {productList.Count} products are back!";
         }
+    }
+
+    public string SetBiksfoodAddMessage(Product p)
+    {
+        return $"You just added one {p._productName} to your shopping list";
     }
 
     public async Task QuickaddSnackbar(Product p)
