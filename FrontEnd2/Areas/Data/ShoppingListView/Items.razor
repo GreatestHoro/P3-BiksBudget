@@ -15,7 +15,16 @@
         <CardBody Padding="Padding.Is0.FromBottom">
             <Fields>
                 <Column ColumnSize="ColumnSize.Is1">
-                    <CheckEdit Checked="@IsAllSelected()" CheckedChanged="CheckAll">All</CheckEdit>
+                    @if (ProductStoreDict.Keys.Count != 0)
+                    {
+                        <CheckEdit Checked="@IsAllSelected()" CheckedChanged="CheckAll">All</CheckEdit>
+                    }
+                    else
+                    {
+                        <FieldBody>
+                            <Text> Nothing is currently in your shoppinglist</Text>
+                        </FieldBody>  
+                    }
                 </Column>
             </Fields>
         </CardBody>
@@ -251,7 +260,7 @@
 
     public string StorePathFinder(string storeName)
     {
-        return $"../Pictures/salling-store-logos/{storeName.ToLower()}.png";
+        return $"../Pictures/Store_logos/{storeName.ToLower()}.png";
     }
 
     /// <summary>

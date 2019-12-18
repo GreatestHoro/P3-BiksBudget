@@ -46,8 +46,4 @@
     </Content>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="wwwroot\Pictures\coop-store-logos\" />
-  </ItemGroup>
-
 </Project>
