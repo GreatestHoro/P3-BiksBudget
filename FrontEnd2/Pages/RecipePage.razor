@@ -701,6 +701,7 @@
     {
         bool storeListFound = false;
         List<ComplexRecipe> tempCompRes = GetRangePlus();
+        List<Product> filteredProductList;
         foreach (ComplexRecipe com in tempCompRes)
         {
             com._complexRecipeComponent._products = await recipeQuery.GetProductsForRecipe(com._recipeID, complexRecipes);
@@ -708,30 +709,34 @@
             {
                 foreach (Ingredient ing in com._ingredientList)
                 {
-                    foreach (Product p in com._complexRecipeComponent._products[s])
+                    filteredProductList = FilterProducts(com._complexRecipeComponent._products[s]);
+                    if (filteredProductList.Any())
                     {
-                        if (s.Contains(ing._ingredientName))
+                        foreach (Product p in filteredProductList)
                         {
-                            if (storeListFound)
+                            if (s.Contains(ing._ingredientName))
                             {
-                                if (!ProductStoreDict[ing].Any(x => x.Contains(p._storeName)) )
+                                if (storeListFound)
                                 {
-                                    ProductStoreDict[ing].Add(p._storeName);
+                                    if (!ProductStoreDict[ing].Any(x => x.Contains(p._storeName)) )
+                                    {
+                                        ProductStoreDict[ing].Add(p._storeName);
+                                    }
                                 }
-                            }
-                            else
-                            {
-                                if (!ProductStoreDict.ContainsKey(ing)) 
+                                else
                                 {
-                                storeListFound = true;
-                                ProductStoreDict.Add(ing, new List<string>() { p._storeName });
-                                }
+                                    if (!ProductStoreDict.ContainsKey(ing))
+                                    {
+                                        storeListFound = true;
+                                        ProductStoreDict.Add(ing, new List<string>() { p._storeName });
+                                    }
 
+                                }
                             }
                         }
+                        storeListFound = false;
+                        //ProductStoreDict[ing] = ProductStoreDict[ing].Distinct().ToList();
                     }
-                    storeListFound = false;
-                    //ProductStoreDict[ing] = ProductStoreDict[ing].Distinct().ToList();
                 }
             }
         }
