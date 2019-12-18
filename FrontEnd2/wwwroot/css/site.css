@@ -6,10 +6,27 @@
     overflow-y:scroll
 }
 
+.recipeModal{
+    overflow:hidden;
+}
+.modal-lgRecipe{
+    max-height: calc(100vh - 200px);
+    overflow: auto;
+}
+
+.modal-headerRecipe {
+    position: fixed;
+    z-index: 13;
+    background: white;
+}
 
 .fas.spinning {
     animation: spin 1s infinite linear;
     -webkit-animation: spin2 1s infinite linear;
+}
+
+.snackbar {
+    transition: opacity 0s 1s, transform 1s cubic-bezier(0.4, 0, 1, 1), -webkit-transform 1s cubic-bezier(0.46, 0.03, 0.52, 0.96);
 }
 
 headlineCard {
@@ -1046,6 +1063,18 @@ logo-header-wrapper {
     .main .top-row {
         display: none;
     }
+
+    .modal-lgRecipe{
+        max-height: 500px;
+        overflow-y: scroll;
+    }
+
+    .modal-headerRecipe{
+        background:inherit; 
+        position:fixed;
+        z-index:3;
+    }
+
 
     .dropdown-menu {
         max-height: 300px;

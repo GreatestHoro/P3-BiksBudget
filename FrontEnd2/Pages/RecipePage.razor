@@ -117,14 +117,14 @@
 </div>
 <!-- #region Recipe view -->
 <Accordion>
-    <Modal @ref="recipeRef">
+    <Modal @ref="recipeRef" Class="recipeModal">
         <ModalBackdrop />
-        <ModalContent IsCentered="true" Size="ModalSize.Large">
+        <ModalContent IsCentered="true" Size="ModalSize.Large" Class="modal-lgRecipe">
             <ModalHeader>
                 <ModalTitle Size="1" Style="font-weight:bolder"> @recipeName </ModalTitle>
                 <CloseButton Clicked="hideModal" />
             </ModalHeader>
-            <Card>
+            <Card Style="position:absolute">
                 <CardHeader>
                     <Heading Size="HeadingSize.Is5" Class="text-center">
                         <Button Clicked="@(()=>isOpen1 = !isOpen1)" style="font-weight:bold">Description</Button>
@@ -213,11 +213,12 @@
                         {
                             @foreach (Product p in products)
                             {
-                                <Table Theme="Theme.Light" IsBordered="true">
+                                <Table Theme="Theme.Light" IsBorderless="true" Class="text-center border-bottom">
                                     <TableBody>
-                                        <TableRowHeader Style="width:5%"><Button Class="btn btn-block btn-outline-success" IsDisabled="@disableButton" Clicked="()=>AddProductToSL(p)"> <Icon Name="@(FontAwesomeIcons.ShoppingCart)"></Icon></Button> </TableRowHeader>
-                                        <TableRowCell Style="width:25%">@p._price Kr.</TableRowCell>
-                                        <TableRowCell Style="width:70%">@p._productName</TableRowCell>
+                                        <TableRowHeader><Button Class="btn btn-block btn-outline-success" IsDisabled="@disableButton" Clicked="()=>AddProductToSL(p)"> <Icon Name="@(FontAwesomeIcons.ShoppingCart)"></Icon></Button> </TableRowHeader>
+                                        <TableRowCell Style="width:15%">@p._price Kr.</TableRowCell>
+                                        <TableRowCell Style="width:100%; ">@p._productName</TableRowCell>
+                                        <TableRowCell><FigureImage Source="@getProductImg(p._storeName)" /></TableRowCell>
                                     </TableBody>
                                 </Table>
                             }
@@ -347,6 +348,11 @@
     }
 
     #region Get products and sent products
+
+    public string getProductImg(string storeName)
+    {
+        return $"../Pictures/salling-store-logos/{storeName.ToLower()}.png";
+    }
 
     public async void AddProductToSL(Product AddedItem)
     {
