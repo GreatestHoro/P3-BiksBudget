@@ -36,7 +36,7 @@ namespace BBCollection.DBConncetion
             });
 
         }
-        public async Task NonQueryMSC(MySqlCommand msc)
+        public async Task NonQueryMSCAsync(MySqlCommand msc)
         {
             MySqlConnection connection = null;
 
@@ -63,6 +63,32 @@ namespace BBCollection.DBConncetion
                     }
                 }
             });
+        }
+
+        public void NonQueryMSC(MySqlCommand msc)
+        {
+            MySqlConnection connection = null;
+
+                try
+                {
+                    connection = new MySqlConnection(databaseInformation.ConnectionString(true));
+                    connection.Open();
+
+                    msc.Connection = connection;
+
+                    msc.ExecuteNonQuery();
+                }
+                catch (MySqlException e)
+                {
+                    Console.Write(e);
+                }
+                finally
+                {
+                    if (connection != null)
+                    {
+                        connection.Close();
+                    }
+                }
         }
 
         public async Task<DataSet> DynamicSimpleListSQL(MySqlCommand mscom)

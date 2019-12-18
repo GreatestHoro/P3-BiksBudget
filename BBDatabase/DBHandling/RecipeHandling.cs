@@ -108,7 +108,7 @@ namespace BBCollection.DBHandling
             msc.Parameters.AddWithValue("@RecipePersons", recipe._PerPerson);
             msc.Parameters.AddWithValue("@RecipeDescription", recipe._description);
 
-            await new SQLConnect().NonQueryMSC(msc);
+            await new SQLConnect().NonQueryMSCAsync(msc);
         }
 
         private async Task AddIngredientsToDatabase(List<Ingredient> ingredients)
@@ -134,7 +134,7 @@ namespace BBCollection.DBHandling
 
             await Task.Run(async () =>
             {
-                await new SQLConnect().NonQueryMSC(msc);
+                await new SQLConnect().NonQueryMSCAsync(msc);
             });
         }
 
@@ -169,7 +169,7 @@ namespace BBCollection.DBHandling
                     msc.Parameters.AddWithValue("@Amount", ingredient._amount);
                     msc.Parameters.AddWithValue("@Unit", ingredient._unit);
 
-                    await new SQLConnect().NonQueryMSC(msc);
+                    await new SQLConnect().NonQueryMSCAsync(msc);
                 }
         }
 
@@ -325,6 +325,30 @@ namespace BBCollection.DBHandling
             return complexRecipes;
         }
 
+        public async Task<List<string>> GetAllIngredientNames()
+        {
+            List<string> ingredientNames = new List<string>();
+            string getNamesQuery =
+                "SELECT ingredientName FROM ingredients";
+
+            MySqlCommand msc = new MySqlCommand(getNamesQuery);
+
+            DataSet ds = await new SQLConnect().DynamicSimpleListSQL(msc);
+
+            try
+            {
+                foreach (DataRow r in ds.Tables[0].Rows)
+                {
+                    ingredientNames.Add(r[0].ToString());
+                }
+            }
+            catch (NullReferenceException e)
+            {
+                Console.WriteLine(e);
+            }
+            return ingredientNames;
+        }
+
         public async Task GenerateTotalPriceAsync()
         {
             List<ComplexRecipe> CRC = await new RecipeQuery().CheapestCRecipes("");
@@ -345,7 +369,7 @@ namespace BBCollection.DBHandling
             msc.Parameters.AddWithValue("@Price", price);
             msc.Parameters.AddWithValue("@RecipeId", recipeID);
 
-            await new SQLConnect().NonQueryMSC(msc);
+            await new SQLConnect().NonQueryMSCAsync(msc);
         }
 
         public async Task AddImage(string image, string prodid)
@@ -358,7 +382,7 @@ namespace BBCollection.DBHandling
             msc.Parameters.AddWithValue("@Image", image);
             msc.Parameters.AddWithValue("@Prodid", prodid);
 
-            await Task.Run(() => new SQLConnect().NonQueryMSC(msc));
+            await Task.Run(() => new SQLConnect().NonQueryMSCAsync(msc));
         }
 
         public async Task PopulateIngredientLink()
@@ -398,7 +422,7 @@ namespace BBCollection.DBHandling
                     msc.Parameters.AddWithValue("@ProductID", pair.Value.First()._id);
                     msc.Parameters.AddWithValue("@IngredientName", pair.Key);
 
-                    await new SQLConnect().NonQueryMSC(msc);
+                    await new SQLConnect().NonQueryMSCAsync(msc);
                 }
             }
         }

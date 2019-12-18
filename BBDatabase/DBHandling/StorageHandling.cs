@@ -150,7 +150,7 @@ namespace BBCollection.DBHandling
                     msc.Parameters.AddWithValue("@CustomName", p._customname);
                     msc.Parameters.AddWithValue("@AmountStored", p._amountleft);
                     msc.Parameters.AddWithValue("@State", p._state);
-                    await new SQLConnect().NonQueryMSC(msc);
+                    await new SQLConnect().NonQueryMSCAsync(msc);
                 }
             });
         }
@@ -170,7 +170,7 @@ namespace BBCollection.DBHandling
 
             await Task.Run(async () =>
             {
-                await new SQLConnect().NonQueryMSC(msc);
+                await new SQLConnect().NonQueryMSCAsync(msc);
             });
         }
     }
