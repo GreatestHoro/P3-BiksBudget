@@ -24,9 +24,16 @@
             </Card>
             <CardBody Padding="Padding.Is0.FromBottom">
                 <Fields>
-                    <Column ColumnSize="ColumnSize.Is1">
+                    @if (user.storage.storageList.Count != 0)
+                    {
                         <CheckEdit Checked="@IsAllSelected()" CheckedChanged="CheckAll">All</CheckEdit>
-                    </Column>
+                    }
+                    else
+                    {
+                        <FieldBody>
+                            <Text> Nothing is currently in your storage</Text>
+                        </FieldBody>
+                    }
                 </Fields>
             </CardBody>
             <CardBody Padding="Padding.Is0.OnY">
