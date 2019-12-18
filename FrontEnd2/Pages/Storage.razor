@@ -645,8 +645,8 @@ else
         _viewEmptyFridgeLoadSpinner = true;
         int HasBeenLoaded = 0;
         this.StateHasChanged();
-        EmptyFridgeFuntionality emptyFridgeFuntionality = new EmptyFridgeFuntionality(CreateCurrentSelctedList());
-        Allrecpies = await emptyFridgeFuntionality.GetWeightedRecipies();
+        //EmptyFridgeFuntionality emptyFridgeFuntionality = new EmptyFridgeFuntionality(CreateCurrentSelctedList());
+        //Allrecpies = await emptyFridgeFuntionality.GetWeightedRecipies();
         LoadMoreRecepies();
         loadingbar = true;
         LoadingManager(++HasBeenLoaded, user.storage.storageList.Count);

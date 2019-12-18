@@ -77,6 +77,12 @@
                     @snacbarMessage
                 </SnackbarBody>
             </Snackbar>
+
+            <Snackbar @ref="UndoChangeInShoppinglist">
+                <SnackbarBody>
+                    @snacbarMessage;
+                </SnackbarBody>
+            </Snackbar>
         </CardFooter>
     </Column>
 </Row>
@@ -92,6 +98,7 @@
     Snackbar UndoChange;
     Snackbar UndoStorage;
     Snackbar Save;
+    Snackbar UndoChangeInShoppinglist;
 
     Dictionary<string, List<Product>> ProductStoreDict = new Dictionary<string, List<Product>>();
     List<Product> ToShoppinglist = new List<Product>();
@@ -422,6 +429,7 @@
         selectedProductCount = 0;
         DeleteList();
     }
+
     #region Snackbar
 
     public async Task UndoDelete()
@@ -431,6 +439,8 @@
         UpdateShoppinglist();
 
         UndoChange.Hide();
+        snacbarMessage = SetUndoChangeMessage(SnackbarTempList);
+        UndoChangeInShoppinglist.Show();
 
         CountSelectedProducts();
         StateHasChanged();
@@ -444,6 +454,8 @@
         UpdateShoppinglist();
 
         UndoStorage.Hide();
+        snacbarMessage = SetUndoChangeMessage(SnackbarTempList);
+        UndoChangeInShoppinglist.Show();
 
         CountSelectedProducts();
         StateHasChanged();
@@ -452,6 +464,20 @@
     public string SetDeleteSnackbarMessage(int amout)
     {
         return $"You just deleted {amout} item(s) from your shopping list";
+    }
+
+    public string SetUndoChangeMessage(List<Product> productList)
+    {
+        if (productList.Count == 1)
+        {
+            Product p = productList[0];
+
+            return $"Undo successfull! {p._amountleft} {p._productName} are back!";
+        }
+        else
+        {
+            return $"Undo successfull! All {productList.Count} products are back!";
+        }
     }
 
     public string SetEditSnackbarMessage(int amount)

@@ -117,7 +117,12 @@ namespace BBCollection.DBHandling
 
         public async Task<HttpResponseMessage> ReplaceStorage(List<Product> listToReplaceWith)
         {
-            // stuff
+            response = await DeleteStorage();
+
+            if (response.IsSuccessStatusCode)
+            {
+                return await AddUpdateList(listToReplaceWith);
+            }
 
             return new HttpResponseMessage(System.Net.HttpStatusCode.OK);
         }

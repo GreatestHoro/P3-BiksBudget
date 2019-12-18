@@ -15,11 +15,11 @@
 }
 @if (email != null)
 {
-    @*<Column ColumnSize="ColumnSize.Is6.Is3.WithOffset">
+    <Column ColumnSize="ColumnSize.Is6.Is3.WithOffset">
             <Progress Margin="Margin.Is3.FromBottom" Size="Size.Small">
-                <ProgressBar Background="Background.Success" Value="@emptyFridgeFuntionality.percentageDone" />
+                <ProgressBar Background="Background.Success" Value="@emptyFridgeFuntionality.percentDone" />
             </Progress>
-        </Column>*@
+        </Column>
     <Row>
         <Column>
             <Card Margin="Margin.Is4.FromTop">
@@ -54,13 +54,18 @@
                     <FieldBody ColumnSize="ColumnSize.Is2">
                     </FieldBody>
                 </Field>
-                <Snackbar @ref="UndoDelete">
+                <Snackbar @ref="sUndoDelete">
                     <SnackbarBody>
                         @snacbarMessage
                     </SnackbarBody>
                     <SnackbarAction Clicked="@(async () => await UndoSnackbar())">UNDO</SnackbarAction>
                 </Snackbar>
-                <Snackbar @ref="Qucikadd">
+                <Snackbar @ref="sRegretChange">
+                    <SnackbarBody>
+                        @snacbarMessage
+                    </SnackbarBody>
+                </Snackbar>
+                <Snackbar @ref="sQucikadd">
                     <SnackbarBody>
                         @snacbarMessage
                     </SnackbarBody>
@@ -231,7 +236,7 @@
                                                     runCounter++;
                                                     scalar = recipePerPerson;
                                                 }
-                                                <TableRowCell Style="width:50px">@(String.Format("{0:0.0}", (ing._amount / recipePerPerson) * scalar)) @ing._unit</TableRowCell>
+                                                <TableRowCell Style="width:50px">@(printIngredientAmount(ing._amount,scalar)) @ing._unit</TableRowCell>
                                                 @if (ingrdientDict.ContainsKey(ing))
                                                 {
                                                     <TableRowCell Style="width:150px">
@@ -305,8 +310,9 @@
         private string searchBox;
         object selectedSearchValue { get; set; }
 
-        Snackbar Qucikadd;
-        Snackbar UndoDelete;
+        Snackbar sQucikadd;
+        Snackbar sRegretChange;
+        Snackbar sUndoDelete;
         private Modal quickaddModal;
         bool isCentered;
         ModalSize modalSize;
@@ -371,7 +377,7 @@
         bool[] wordFilter;
         bool[] storeFilter;
 
-        EmptyFridgeFuntionality emptyFridgeFuntionality;
+        EmptyFridgeFuntionality emptyFridgeFuntionality = new EmptyFridgeFuntionality();
 
         StoreFilterList storeFilters = new StoreFilterList();
         WordFilterList wordFIlters = new WordFilterList();
@@ -564,6 +570,7 @@
         {
             //Recipe show = _recpies.First(x => x._recipeID == ID);
             ingrdientDict = rep.ingrdients;
+            scalar = (int)rep._recipie._PerPerson;
             selectedRecepie = rep._recipie;
             recipeName = rep._recipie._Name;
             recipeDescription = rep._recipie._description;
@@ -616,8 +623,8 @@
             _viewEmptyFridgeLoadSpinner = true;
             int HasBeenLoaded = 0;
             this.StateHasChanged();
-            emptyFridgeFuntionality = new EmptyFridgeFuntionality(GetSelectedProducts());
-            Allrecpies = await emptyFridgeFuntionality.GetWeightedRecipies();
+            emptyFridgeFuntionality = new EmptyFridgeFuntionality();
+            Allrecpies = await emptyFridgeFuntionality.GetWeightedRecipies(GetSelectedProducts());
             CheckIfFoundRecepies(Allrecpies);
             LoadMoreRecepies();
             loadingbar = true;
@@ -944,17 +951,13 @@
             disableQuickadd = false;
         }
 
-        async void DeleteProducts()
-        {
-            selectedProductCount = 0;
-            await user.storage.DeleteStorage();
-        }
-
         public async Task UndoSnackbar()
         {
             await user.storage.AddUpdateList(SnackbarTempList);
 
-            UndoDelete.Hide();
+            sUndoDelete.Hide();
+            snacbarMessage = SetUndoChangeMessage(SnackbarTempList);
+            sRegretChange.Show();
 
             CountSelectedProducts();
             StateHasChanged();
@@ -969,6 +972,20 @@
         {
             return $"You just added {productName} to your storage";
         }
+
+        public string SetUndoChangeMessage(List<Product> productList)
+        {
+            if (productList.Count == 1)
+            {
+                Product p = productList[0];
+
+                return $"Undo successfull! {p._amountleft} {p._productName} are back!";
+            }
+            else
+            {
+                return $"Undo successfull! All {productList.Count} products are back!";
+            }
+        }
         
         public async Task QuickaddSnackbar(Product p)
         {
@@ -978,7 +995,7 @@
             CountSelectedProducts();
             StateHasChanged();
 
-            Qucikadd.Show();
+            sQucikadd.Show();
         }
 
         public async Task DeleteSelectedStoraeg()
@@ -989,6 +1006,11 @@
 
             await user.storage.DeleteStorage();
 
-            UndoDelete.Show();
+            sUndoDelete.Show();
+        }
+
+        private string printIngredientAmount(float amount,int scalar) 
+        {
+            return ((amount / recipePerPerson) * scalar) > 0.0f ? String.Format("{0:0.0}", (amount / recipePerPerson) * scalar):"";
         }
     }

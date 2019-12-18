@@ -121,10 +121,10 @@ namespace BBCollection.DBHandling
                 foreach (DataRow r in ds.Tables[0].Rows)
                 {
                     string? id = r[0].ToString(); string? name = r[1].ToString(); string? amount = r[2].ToString();
-                    string? image = r[4].ToString(); string? store = r[5].ToString();
+                    string? image = r[4].ToString(); string? store = r[5].ToString(); string? costumRef = r[6].ToString();
                     double? price = Convert.ToDouble(r[3]);
 
-                    Product product = new Product(id ??= "Null", name ??= "Null", amount ??= "", price ??= 0, image ??= "", store ??= "");
+                    Product product = new Product(id ??= "Null", name ??= "Null", amount ??= "", price ??= 0, image ??= "", store ??= "",costumRef  ??= "");
                     productList.Add(product);
                 }
             }

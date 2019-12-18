@@ -51,35 +51,42 @@ namespace FrontEnd2
             HttpWebRequest httpWebRequest = APIHttpWebReqeust();
 
             HttpWebResponse response = httpWebRequest.GetResponse() as HttpWebResponse;
-            // create a streamreader to read from the response
-            StreamReader streamReader = new StreamReader(response.GetResponseStream());
-            // create a json reader from the streamreader
-            JsonTextReader reader = new JsonTextReader(streamReader);
 
-            reader.SupportMultipleContent = true;
-            List<T> resList = new List<T>();
-
-            var serializer = new JsonSerializer();
-            try
+            if (response.StatusCode == HttpStatusCode.OK)
             {
-                while (reader.Read())
+                // create a streamreader to read from the response
+                StreamReader streamReader = new StreamReader(response.GetResponseStream());
+
+                // create a json reader from the streamreader
+                JsonTextReader reader = new JsonTextReader(streamReader);
+
+                reader.SupportMultipleContent = true;
+                List<T> resList = new List<T>();
+
+                var serializer = new JsonSerializer();
+                try
                 {
-                    if (reader.TokenType == JsonToken.StartObject)
+                    while (reader.Read())
                     {
-                        resList.Add(serializer.Deserialize<T>(reader));
+                        if (reader.TokenType == JsonToken.StartObject)
+                        {
+                            resList.Add(serializer.Deserialize<T>(reader));
+                        }
                     }
                 }
-            }
-            catch (Newtonsoft.Json.JsonReaderException e)
-            {
-                throw new ArgumentNullException(e.Message);
-            }
-            catch (Exception e)
-            {
-                throw new Exception(e.Message);
+                catch (Newtonsoft.Json.JsonReaderException e)
+                {
+                    throw new ArgumentNullException(e.Message);
+                }
+                catch (Exception e)
+                {
+                    throw new Exception(e.Message);
+                }
+
+                return resList;
             }
 
-            return resList;
+            return new List<T>();
         }
 
         /// <summary>
