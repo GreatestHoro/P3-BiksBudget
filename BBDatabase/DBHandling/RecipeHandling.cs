@@ -577,7 +577,7 @@ namespace BBCollection.DBHandling
 
             MySqlCommand msc = new MySqlCommand(countQuery);
 
-            msc.Parameters.AddWithValue("@RecipeName", recipeName);
+            msc.Parameters.AddWithValue("@RecipeName", "%" + recipeName + "%");
 
             return await new SQLConnect().ElementCount(msc);
         }
