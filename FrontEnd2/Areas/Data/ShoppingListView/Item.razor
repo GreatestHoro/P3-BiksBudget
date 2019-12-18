@@ -64,6 +64,7 @@
 
     public void OnCheckedChanged(bool isChecked)
     {
+        Product._saveProduct = true;
         Product._completed = isChecked;
 
         StatusChanged?.Invoke(isChecked);

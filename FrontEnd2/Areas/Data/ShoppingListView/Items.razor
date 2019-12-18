@@ -365,14 +365,26 @@
 
     public void OnStatusChanged(bool isChecked)
     {
-        foreach (Product p in user.shoppinglist.Products)
-        {
-
-        }
-        changeHasHappen = true;
+        SetChageHasHappend();
         CountSelectedProducts();
         anySelected();
         StateHasChanged();
+    }
+
+    public void SetChageHasHappend()
+    {
+        if (user.shoppinglist.shoppinglist.Any(x => x._saveProduct == true && changeHasHappen == false))
+        {
+            Product temp = user.shoppinglist.shoppinglist.FirstOrDefault(x=> x._saveProduct == true);
+            temp._saveProduct = false;
+
+            changeHasHappen = false;
+        }
+        else
+        {
+            changeHasHappen = true;
+
+        }
     }
 
     public void CountSelectedProducts()
