@@ -471,8 +471,9 @@
     {
         changeHasHappen = false;
         await user.shoppinglist.AddListLocal(SnackbarTempList);
-        //await user.storage.ReplaceStorage(StorageList);
         UpdateShoppinglist();
+
+        await user.storage.ReplaceStorage(SnackbarTempList);
 
         UndoStorage.Hide();
         snacbarMessage = SetUndoChangeMessage(SnackbarTempList);

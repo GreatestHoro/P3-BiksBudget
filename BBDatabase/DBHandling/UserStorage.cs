@@ -117,14 +117,27 @@ namespace BBCollection.DBHandling
 
         public async Task<HttpResponseMessage> ReplaceStorage(List<Product> listToReplaceWith)
         {
-            response = await DeleteStorage();
+            storageList.ForEach(x=> Recount(x, listToReplaceWith));
 
-            if (response.IsSuccessStatusCode)
+            productString = JsonConvert.SerializeObject(storageList);
+
+            return await api.Post(productString);
+        }
+
+        public void Recount(Product p, List<Product> list)
+        {
+            if (list.Any(x=> x._id == p._id))
             {
-                return await AddUpdateList(listToReplaceWith);
+                int toDeduct = list.FirstOrDefault(x => x._id == p._id)._amountleft;
+                p._amountleft = p._amountleft - toDeduct;
             }
+        }
 
-            return new HttpResponseMessage(System.Net.HttpStatusCode.OK);
+        public List<Product> ReverseList(List<Product> listProduct)
+        {
+            listProduct.ForEach(x=> x._amountleft *= -1);
+
+            return listProduct;
         }
 
         public async Task<HttpResponseMessage> AddList(List<Product> listToAdd)
