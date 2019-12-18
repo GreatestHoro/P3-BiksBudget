@@ -886,20 +886,6 @@
         _showFilters = !_showFilters;
     }
 
-    //public void SortRecepies()
-    //{
-    //    if (pmatch)
-    //    {
-    //        recpies = Allrecpies.OrderByDescending(x => -x.pMatch).ToList().GetRange(0,defualtAmountLoad * Timesload);
-
-    //    }
-    //    else if (OverallMatch)
-    //    {
-    //        recpies = Allrecpies.OrderByDescending(x => -x.matchingIngrdientsNum).ToList().GetRange(0,defualtAmountLoad * Timesload);
-    //    }
-    //    StateHasChanged();
-    //}
-
     public void SortPmatch()
     {
         recpies = Allrecpies.OrderByDescending(x => x.pMatch).ToList().GetRange(0, NewAmount);
@@ -1012,6 +998,8 @@
         disableQuickadd = false;
     }
 
+    #region Snackbar
+
     public async Task UndoSnackbar()
     {
         await user.storage.AddUpdateList(SnackbarTempList);
@@ -1076,6 +1064,7 @@
 
         sUndoDelete.Show();
     }
+#endregion
 
     private string printIngredientAmount(float amount, int scalar)
     {

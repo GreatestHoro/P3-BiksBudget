@@ -62,7 +62,7 @@
         </div>
     }
 </div>
-  
+
 <!-- #endregion -->
 <!-- #region Recipe card lists -->
 @if (viewRecipeList == true)
@@ -78,7 +78,8 @@
                             <h6 style="font-weight:bold;">
                                 @complexRecipe._Name
                             </h6>
-                            @if (RecipeStoreDict.ContainsKey(complexRecipe)) { 
+                            @if (RecipeStoreDict.ContainsKey(complexRecipe))
+                            {
                                 foreach (var ls in RecipeStoreDict[complexRecipe])
                                 {
                                     @foreach (string s in storeNames)
@@ -92,30 +93,43 @@
 
                                 }
                             }
-                       </div> 
-                    </div>
-                        <div class="card-body" style="padding-bottom: 0.25rem; padding-top: 0.60rem;">
-                            <div class="justify-content-between">
-                                <button class="rounded btn-success">
-                                    @for (int i = 0; i < complexRecipe._PerPerson; i++)
-                                    {
-                                        if (i < 4)
-                                        {
-                                            <i class="oi oi-person"> </i>
-                                        }
-                                    }
-                                    @if (complexRecipe._PerPerson >= 4)
-                                    {
-                                        <i class="oi oi-plus"> </i>
-                                    }
-                                </button>
-                                <p class="d-inline-block float-right"> @complexRecipe._complexRecipeComponent.RecipeCost kr.</p>
-                            </div>
                         </div>
+                    </div>
+                    <div class="card-body" style="padding-bottom: 0.25rem; padding-top: 0.60rem;">
+                        <div class="justify-content-between">
+                            <button class="rounded btn-success">
+                                @for (int i = 0; i < complexRecipe._PerPerson; i++)
+                                {
+                                    if (i < 4)
+                                    {
+                                        <i class="oi oi-person"> </i>
+                                    }
+                                }
+                                @if (complexRecipe._PerPerson >= 4)
+                                {
+                                    <i class="oi oi-plus"> </i>
+                                }
+                            </button>
+                            <p class="d-inline-block float-right"> @complexRecipe._complexRecipeComponent.RecipeCost kr.</p>
+                        </div>
+                    </div>
                 </div>
             }
         </div>
     </div>
+
+    <Row Margin="Margin.Is2.FromTop">
+        @if (_viewProducts)
+        {
+            <Column ColumnSize="ColumnSize.Is6.Is3.WithOffset">
+                <Text Class="text-center">You have seen products</Text>
+                <Progress Margin="Margin.Is3.FromBottom" Size="Size.Small">
+                    <ProgressBar Background="Background.Success" Value="@LoadMoreProgressbar" />
+                </Progress>
+            </Column>
+        }
+    </Row>
+
     @if (_viewLoadMoreSpinner == true)
     {
         <div class="center_div lds-roller">
@@ -289,6 +303,7 @@
     int value;
     int selectedValue;
     int prevLength = -1;
+    int LoadMoreProgressbar = 0;
 
     double tempTotalCostQuickList = 0;
     double tempTotalCost = 0;
@@ -313,6 +328,7 @@
     bool _superBrugsenSelected = false;
     bool _faktaSelected = false;
     bool allAdded = false;
+    bool _viewProducts = false;
     Chain _chainFilter = Chain.none;
 
     List<ComplexRecipe> complexRecipes = new List<ComplexRecipe>();
@@ -736,7 +752,7 @@
                             {
                                 if (storeListFound)
                                 {
-                                    if (!ProductStoreDict[ing].Any(x => x.Contains(p._storeName)) )
+                                    if (!ProductStoreDict[ing].Any(x => x.Contains(p._storeName)))
                                     {
                                         ProductStoreDict[ing].Add(p._storeName);
                                     }
