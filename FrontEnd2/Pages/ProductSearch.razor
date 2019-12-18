@@ -92,8 +92,8 @@
                     <Field>
                         <FieldBody>
                             <FieldLabel> Maximum price: @tempMaxprice kr</FieldLabel>
-                            <input type="range" min="0" max="3000" @bind="tempMaxprice" step="10" />
-                            <FieldHelp> Slide to change</FieldHelp>
+                            <NumericEdit TValue="int" Value="tempMaxprice" @onchange="@((e)=>CheckMaxPrice(e))"/>
+                            <FieldHelp> Set a maximum price</FieldHelp>
                         </FieldBody>
                     </Field>
                 </Column>
@@ -200,7 +200,7 @@
         }
     }
     <!--Scroll to top button   -->
-    <Button id="myBtn" Class="btn btn-rounded btn-success"><a href="search" style="color: white; font-size:12px;">Top</a></Button>
+    <Button id="myBtn" Class="btn btn-rounded btn-success"><a href="search" style="color: white; font-size:12px;">To top</a></Button>
 </Row>
 
 <Row Class="text-align: center">
@@ -323,9 +323,9 @@
 
     double tempTotalCost;
     double tempCompleteCost;
-    double _minPrice = 0;
-    double _maxPrice = 5000;
-    double priceLimit = 10000;
+
+    int _maxPrice = 500;
+    int priceLimit = 10000;
 
     string searchBox;
     string email;
@@ -340,7 +340,7 @@
     string storeError = "No stores were found with current radius";
     string replacementUlr = "https://cdn.discordapp.com/attachments/519096261408718908/649685312083197973/coopdicoop.jpg";
 
-    double tempMaxprice
+    int tempMaxprice
     {
         get => _maxPrice;
         set
@@ -360,7 +360,7 @@
         }
     }
 
-    public double maxPrice
+    int maxPrice
     {
         get => _maxPrice;
         set
@@ -1159,4 +1159,27 @@
         return i;
     }
     #endregion
+
+    public void CheckMaxPrice(ChangeEventArgs e)
+    {
+        try
+        {
+            tempMaxprice = Convert.ToInt32(e.Value.ToString());
+        }
+        catch (System.OverflowException)
+        {
+            Console.WriteLine("Too big max price");
+        }
+        catch (System.FormatException)
+        {
+            Console.WriteLine("Wrong format");
+        }
+        finally
+        {
+            tempMaxprice = maxPrice;
+        }
+
+        StateHasChanged();
+    }
+
 }
