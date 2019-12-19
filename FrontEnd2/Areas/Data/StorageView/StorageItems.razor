@@ -48,11 +48,14 @@
                 <Field IsHorizontal="true">
                     <FieldBody ColumnSize="ColumnSize.Is10">
                         <Buttons Role="ButtonsRole.Addons">
-                            <Button Color="Color.Danger" Clicked="@(() => DeleteSelectedStoraeg())" IsDisabled="selectedProductCount == 0" IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed)"><Icon Name="@(FontAwesomeIcons.Trash)" /> Delete Products (@selectedProductCount)</Button>
-                            <Button Color="Color.Dark" Clicked="@(() => FindRecipies())" IsDisabled="selectedProductCount == 0" IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed)"><Icon Name="@(FontAwesomeIcons.Utensils)"></Icon> BiksFood (@selectedProductCount)</Button>
+                            <Button Color="Color.Danger" Clicked="@(() => DeleteSelectedStoraeg())" IsDisabled="selectedProductCount == 0" 
+                                    IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed)"><Icon Name="@(FontAwesomeIcons.Trash)" /> @setMessageDeleteBtn()</Button>                          
+                                <Button Color="Color.Dark" Clicked="@(() => FindRecipies())" IsDisabled="selectedProductCount == 0" 
+                                    IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed)"><Icon Name="@(FontAwesomeIcons.Utensils)"></Icon> @setMessageBiksFood()</Button>                           
                             <Button Color="Color.Success" Clicked="@(() => showQuickaddModal(ModalSize.Default, 50, true))"><Icon Name="@(FontAwesomeIcons.Search)"></Icon> Quickadd</Button>
                         </Buttons>
                     </FieldBody>
+                    <FieldHelp Style="font-size:70%"> Use <strong>BiksFood</strong> to find recipes that utilizes your allready owned products</FieldHelp>
                     <FieldBody ColumnSize="ColumnSize.Is2">
                     </FieldBody>
                 </Field>
@@ -145,12 +148,37 @@
         <Modal @ref="BiksFood">
             <ModalBackdrop />
             <ModalContent Size="@modalSize" IsCentered="@isCentered">
-                <ModalHeader>
-                    <ModalTitle>
-                        <Icon Name="@(FontAwesomeIcons.Utensils)" />
-                        BiksFood
-                    </ModalTitle>
-                    <CloseButton Clicked="@hideBiksfoodModal" />
+                <ModalHeader Class="text-center">
+                    <Field ColumnSize="ColumnSize.IsFull" JustifyContent="JustifyContent.Center">
+                        <CloseButton Float="Float.Right" Clicked="@hideBiksfoodModal" />
+                        <ModalTitle>
+                            <Icon Name="@(FontAwesomeIcons.Utensils)" />
+                            BiksFood
+                        </ModalTitle>
+                        <FieldBody ColumnSize="ColumnSize.IsFull">
+                            <Row>
+                                <Column>
+                                    <Label>You can sort results by</Label>
+                                </Column>
+                           </Row>
+                            <Row Class="text-center">
+                                <Column ColumnSize="ColumnSize.IsHalf">
+                                    <Field Float="Float.Right" JustifyContent="JustifyContent.Center">
+                                        <FieldLabel>Best matches </FieldLabel>
+                                        @*<CheckEdit IsInline="true"  CheckedChanged="(() => SortPmatch())" RadioGroup="BiksFoodFilter" Checked="pmatch" />*@
+                                    <Button Clicked="(() => SortPmatch())">Best matches</Button>
+                                    </Field>
+                                </Column>
+                                <Column ColumnSize="ColumnSize.IsHalf">
+                                    <Field Float="Float.Left" JustifyContent="JustifyContent.Center">
+                                        <FieldLabel>Best utilization</FieldLabel>
+                                        @*<CheckEdit IsInline="true" CheckedChanged="(() => SortOverallMatch())" RadioGroup="BiksFoodFilter" Checked="OverallMatch" />*@
+                                    <Button Clicked="(() => SortOverallMatch())">Best utilization</Button>
+                                    </Field>
+                                </Column>
+                            </Row>
+                        </FieldBody>
+                    </Field>
                 </ModalHeader>
                 <ModalBody MaxHeight="@maxHeight" Margin="Margin.Is1.FromTop.FromBottom">
                     <Row>
@@ -171,7 +199,7 @@
                                         <CardBody>
                                             <CardTitle Size="4">@rep._recipie._Name</CardTitle>
                                             <Field>
-                                                <FieldBody>
+                                                <FieldBody ColumnSize="ColumnSize.Is3">
                                                     @for (int i = 0; i < rep._recipie._PerPerson; i++)
                                                     {
                                                         if (i < 4)
@@ -184,6 +212,22 @@
                                                         <Icon Name="@(FontAwesomeIcons.UserPlus)" />
                                                     }
                                                 </FieldBody>
+                                            </Field>
+                                            <Field Float="Float.Right">
+                                                @if (recipieWithStores.ContainsKey(rep))
+                                                {
+                                                    foreach (var ls in recipieWithStores[rep])
+                                                    {
+                                                        @foreach (string s in storeNames)
+                                                        {
+                                                            if (ls.Contains(s))
+                                                            {
+                                                                <FigureImage Class="store-loge-figures" Source="@getProductImg(ls)" />
+                                                            }
+
+                                                        }
+                                                    }
+                                                }
                                             </Field>
                                             <Button Color="Color.Success" IsDisabled="disableQuickadd" @onclick="(() => retriveInfo(rep))" IsBlock="true">Look at recipe</Button>
                                         </CardBody>
@@ -319,9 +363,10 @@
                                 {
                                     <Table Theme="Theme.Light" IsBordered="true">
                                         <TableBody>
-                                            <TableRowHeader Style="width:5%"><Button Class="btn btn-block btn-outline-success" Clicked="() => AddProductToSL(p)"> <Icon Name="@(FontAwesomeIcons.ShoppingCart)"></Icon></Button> </TableRowHeader>
+                                            <TableRowHeader><Button Class="btn btn-block btn-outline-success" Clicked="() => AddProductToSL(p)"> <Icon Name="@(FontAwesomeIcons.ShoppingCart)"></Icon></Button> </TableRowHeader>
                                             <TableRowCell Style="width:25%">@p._price Kr.</TableRowCell>
-                                            <TableRowCell Style="width:70%">@p._productName</TableRowCell>
+                                            <TableRowCell Style="width:100%">@p._productName</TableRowCell>
+                                            <TableRowCell><FigureImage Class="store-loge-figures" Source="@getProductImg(p._storeName)" /></TableRowCell>
                                         </TableBody>
                                     </Table>
                                 }
@@ -450,6 +495,7 @@ else
     List<Recipe> _recpies = new List<Recipe>();
     List<Product> products = new List<Product>();
     List<Product> ToShoppinglist = new List<Product>();
+    List<string> storeNames = new List<string>() { "Bilka", "Fakta", "SuperBrugsen" };
     Recipe selectedRecepie = new Recipe();
     List<Product> LastEmptyFridge = new List<Product>();
     List<string> ItemState = new List<string>() { "Full", "Almost Full", "Half Full", "Almost Empty" };
@@ -457,6 +503,9 @@ else
     Dictionary<Ingredient, List<string>> ingrdientDict = new Dictionary<Ingredient, List<string>>();
     Dictionary<Product, bool> SelectedProducts = new Dictionary<Product, bool>();
     Dictionary<string, Product> productCompare = new Dictionary<string, Product>();
+    
+    Dictionary<WeightedRecipies, List<string>> recipieWithStores = new Dictionary<WeightedRecipies, List<string>>();
+    Dictionary<Ingredient, List<string>> IngredientWithStores = new Dictionary<Ingredient, List<string>>();
 
     private delegate bool compareWR(WeightedRecipies r1, WeightedRecipies r2);
     #endregion
@@ -502,9 +551,29 @@ else
     #endregion
 
     #region StorageMethods
+    public string getProductImg(string storeName)
+    {
+        return $"../Pictures/Store_logos/{storeName.ToLower()}.png";
+    }
+
+    private bool isAllSelected()
+    {
+        return user.storage.CountActiveList().Count() == user.storage.storageList.Count();
+    }
+
     private string searchResultAmountMsg()
     {
         return itemList.Count == 0 ? " " : itemList.Count == 1 ? $"{itemList.Count} Product found" : $"{itemList.Count} Products found";
+    }
+
+    private string setMessageDeleteBtn()
+    {
+        return selectedProductCount == 0 ? "Delete" : selectedProductCount == 1 ?  $"Delete {selectedProductCount} item" : isAllSelected()  ? $"Delete all items" :  $"Delete {selectedProductCount} items";
+    }
+
+    private string setMessageBiksFood()
+    {
+        return selectedProductCount == 0 ? "BiksFood" : selectedProductCount == 1 ?  $"Utilize {selectedProductCount} item to BiksFood" : isAllSelected()  ? $"Utilize all items to BiksFood" :  $"Utilize {selectedProductCount} items to BiksFood";
     }
 
     public bool StorageExists()
@@ -946,8 +1015,9 @@ else
         return new List<Product>();
     }
 
-    public void LoadMoreRecepies()
+    public async Task LoadMoreRecepies()
     {
+        List<WeightedRecipies> wp = new List<WeightedRecipies>();
         Timesload++;
         NewAmount = defualtAmountLoad * Timesload;
         if (!(Allrecpies.Count >= NewAmount))
@@ -955,29 +1025,105 @@ else
             NewAmount = Allrecpies.Count % NewAmount;
             _viewLoadMore = false;
         }
-
-        recpies = Allrecpies.GetRange(0, NewAmount);
+        wp = Allrecpies.GetRange(NewAmount - defualtAmountLoad, defualtAmountLoad);
+        await RecepiesToStores(wp);
+        recpies.AddRange(wp);
     }
+
+    public async Task RecepiesToStores(List<WeightedRecipies> wp)
+    {
+        List<List<string>> tempList = new List<List<string>>();
+        foreach (WeightedRecipies weighted in wp)
+        {
+            await IngredientStore(weighted._recipie);
+        }
+        //wp.ForEach(x=>x._recipie._ingredientList.Where(y=> AddToRecipieStoreDict(x,IngredientWithStores[y])));
+        foreach (WeightedRecipies weighted in wp)
+        {
+            foreach (Ingredient ing in weighted._recipie._ingredientList)
+            {
+                tempList.Add(IngredientWithStores[ing]);
+            }
+            AddToRecipieStoreDict(weighted,tempList);
+            tempList.Clear();
+        }
+        //recipieWithStores
+    }
+
+    public async Task IngredientStore(Recipe rep)
+    {
+        List<Product> products = new List<Product>();
+        foreach (Ingredient ing in rep._ingredientList)
+        {
+            products = await Products(ing._ingredientName);
+            foreach (Product p in products)
+            {
+                AddToingredientStoreDict(ing,p);
+            }
+        }
+        //.ForEach(y => AddToingredientStoreDict(x,y))
+    }
+
+    public void AddToingredientStoreDict(Ingredient x, Product y)
+    {
+        if (!IngredientWithStores.ContainsKey(x))
+        {
+            IngredientWithStores.Add(x, new List<string>() { y._storeName });
+        }
+        else
+        {
+            IngredientWithStores[x].Add(y._storeName);
+        }
+    }
+
+    public void AddToRecipieStoreDict(WeightedRecipies x, List<List<string>> y)
+    {
+        List<List<string>> TempList = new List<List<string>>();
+        foreach (List<string> item in y)
+        {
+            TempList.Add(item.Distinct().ToList());
+        }
+        List<string> storeName = TempList.Aggregate((prev, next) => prev.Intersect(next).ToList());
+        if (!recipieWithStores.ContainsKey(x))
+        {
+            recipieWithStores.Add(x, storeName);
+        }
+    }
+
 
     public void toggelFilters()
     {
         _showFilters = !_showFilters;
     }
 
-    public void SortPmatch()
+    public async Task SortPmatch()
     {
         recpies = Allrecpies.OrderByDescending(x => x.pMatch).ToList().GetRange(0, NewAmount);
+        List<WeightedRecipies> temp = recpies.Where(x=>!recipieWithStores.ContainsKey(x)).ToList();
+        if (temp.Any()) 
+        {
+            await RecepiesToStores(temp);
+        }
+
         StateHasChanged();
     }
 
-    public void SortOverallMatch()
+    public async Task SortOverallMatch()
     {
         recpies = Allrecpies.OrderByDescending(x => x.matchingIngrdientsNum).ToList().GetRange(0, NewAmount);
+        List<WeightedRecipies> temp = recpies.Where(x=>!recipieWithStores.ContainsKey(x)).ToList();
+        if (temp.Any()) 
+        {
+            await RecepiesToStores(temp);
+        }
+
         StateHasChanged();
     }
     public void CheckIfAnySelected()
     {
-        List<Product> returnList = new List<Product>();
+        List<Product>
+            returnList = new List<Product>
+                ();
         foreach (Product key in SelectedProducts.Keys)
         {
             if (SelectedProducts[key])
@@ -989,7 +1135,8 @@ else
         _FoodBiskEnabled = returnList.Count != 0 ? true : false;
     }
 
-    public void intailizeAllProducts(List<Product> products)
+    public void intailizeAllProducts(List<Product>
+        products)
     {
         foreach (Product product in products)
         {
@@ -997,7 +1144,8 @@ else
         }
     }
 
-    public List<Product> GetSelectedProducts()
+    public List<Product>
+        GetSelectedProducts()
     {
         return user.storage.storageList.Where(x => x._completed == true).ToList();
     }
@@ -1100,7 +1248,8 @@ else
         return $"You just added {productName} to your storage";
     }
 
-    public string SetUndoChangeMessage(List<Product> productList)
+    public string SetUndoChangeMessage(List<Product>
+        productList)
     {
         if (productList.Count == 1)
         {
@@ -1148,4 +1297,4 @@ else
     {
         return ((amount / recipePerPerson) * scalar) > 0.0f ? String.Format("{0:0.0}", (amount / recipePerPerson) * scalar) : "";
     }
-}
+                        }
