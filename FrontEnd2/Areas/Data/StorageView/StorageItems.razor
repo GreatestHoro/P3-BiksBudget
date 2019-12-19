@@ -310,22 +310,22 @@
                                                 runCounter++;
                                                 scalar = recipePerPerson;
                                             }
-                                            <TableRowCell Style="width:50px">@(printIngredientAmount(ing._amount, scalar)) @ing._unit</TableRowCell>
+                                            <TableRowCell Float="Float.Left">@(printIngredientAmount(ing._amount, scalar)) @ing._unit</TableRowCell>
                                             @if (ingrdientDict.ContainsKey(ing))
                                             {
-                                                <TableRowCell Style="width:150px">
+                                                <TableRowCell Float="Float.Left" Style="width:100%">
                                                     <Button Class="btn btn-block btn-success" @onclick="(() => retriveIngredient(ing))"><Icon Padding="Padding.Is1.FromTop" Float="Float.Left" Name="@(FontAwesomeIcons.CheckCircle)"></Icon> @ing._ingredientName</Button>
                                                 </TableRowCell>
                                             }
                                             else if (InshoppingList.Contains(ing))
                                             {
-                                                <TableRowCell Style="width:150px">
+                                                <TableRowCell Style="width:100%">
                                                     <Button Color="Color.Success" IsOutline="true" Class="btn btn-block btn-light" @onclick="(() => retriveIngredient(ing))"><Icon Padding="Padding.Is1.FromTop" Float="Float.Left" Name="@(FontAwesomeIcons.ShoppingCart)"></Icon>@ing._ingredientName</Button>
                                                 </TableRowCell>
                                             }
                                             else
                                             {
-                                                <TableRowCell Style="width:150px">
+                                                <TableRowCell Style="width:100%">
                                                     <Button Class="btn btn-block btn-light" @onclick="(() => retriveIngredient(ing))"><Icon Padding="Padding.Is1.FromTop" Float="Float.Left" Name="@(FontAwesomeIcons.CartPlus)"></Icon>@ing._ingredientName</Button>
                                                 </TableRowCell>
                                             }
@@ -353,7 +353,7 @@
                             {
                                 @foreach (Product p in products)
                                 {
-                                    <Table Theme="Theme.Light" IsBordered="true">
+                                    <Table Theme="Theme.Light" IsBordered="false">
                                         <TableBody>
                                             <TableRowHeader><Button Class="btn btn-block btn-outline-success" Clicked="() => AddProductToSL(p)"> <Icon Name="@(FontAwesomeIcons.ShoppingCart)"></Icon></Button> </TableRowHeader>
                                             <TableRowCell Style="width:25%">@p._price Kr.</TableRowCell>
