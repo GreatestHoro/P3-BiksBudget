@@ -75,10 +75,12 @@
                 <div class="center_div card w-100" id="recipeCard">
                     <a @onclick="(() => retriveRecipe(complexRecipe._recipeID))" class="stretched-link"></a>
                     <div class="card-header" style="padding-bottom: 0.25rem;">
-                        <div class="card-title w-100">
+                        <div class="card-title w-100 text-center">
                             <h6 style="font-weight:bold;">
                                 @complexRecipe._Name
                             </h6>
+                        </div>
+                        <Field Float="Float.Right">
                             @if (RecipeStoreDict.ContainsKey(complexRecipe))
                             {
                                 foreach (var ls in RecipeStoreDict[complexRecipe])
@@ -87,14 +89,13 @@
                                     {
                                         if (ls.Contains(s))
                                         {
-                                            <FigureImage Source="@getProductImg(ls)" />
+                                            <FigureImage Class="store-loge-figures" Source="@getProductImg(ls)" />
                                         }
 
                                     }
-
                                 }
                             }
-                        </div>
+                        </Field>
                     </div>
                         <div class="card-body" style="padding-bottom: 0.25rem; padding-top: 0.60rem;">
                             <div class="justify-content-between">
@@ -108,11 +109,11 @@
                                     }
                                     @if (complexRecipe._PerPerson >= 4)
                                     {
-                                             <Icon Name="@(FontAwesomeIcons.UserPlus)" />
+                                        <Icon Name="@(FontAwesomeIcons.UserPlus)" />
                                     }
                                 </button>
-                            <p class="d-inline-block float-right"> @complexRecipe._complexRecipeComponent.RecipeCost kr.</p>
-                        </div>
+                                <p class="d-inline-block float-right"> @complexRecipe._complexRecipeComponent.RecipeCost kr.</p>
+                            </div>
                     </div>
                 </div>
             }
@@ -250,7 +251,7 @@
                                         <TableRowHeader><Button Class="btn btn-block btn-outline-success" IsDisabled="@disableButton" Clicked="()=>AddProductToSL(p)"> <Icon Name="@(FontAwesomeIcons.ShoppingCart)"></Icon></Button> </TableRowHeader>
                                         <TableRowCell Style="width:15%">@p._price Kr.</TableRowCell>
                                         <TableRowCell Style="width:100%; ">@p._productName</TableRowCell>
-                                        <TableRowCell><FigureImage Source="@getProductImg(p._storeName)" /></TableRowCell>
+                                        <TableRowCell><FigureImage Class="store-loge-figures" Source="@getProductImg(p._storeName)" /></TableRowCell>
                                     </TableBody>
                                 </Table>
                             }
