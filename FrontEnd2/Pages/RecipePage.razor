@@ -917,7 +917,7 @@
         StateHasChanged();
         recipeQuery._loadCount = 0;
         ReadChainFilters();
-        recipeMaxAmont = await _dc.Recipe.Count(searchTerm);
+        recipeMaxAmont = await _dc.Recipe.Count(searchTerm, _chainFilter);
         complexRecipes = await recipeQuery.CheapestRecipeDB(searchTerm, _chainFilter);
         if (complexRecipes.Any())
         {
