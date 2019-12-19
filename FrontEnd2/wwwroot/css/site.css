@@ -1,5 +1,9 @@
 @import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
 
+.store-loge-figures{
+    width:50px; 
+    height:auto;
+}
 
 .Dropdown{
     overflow:auto;
@@ -54,7 +58,14 @@ headlineCard {
 
 }
 
-.figure-img{
+.figure-img-product{
+    width: auto;
+    height: auto;
+    max-height: 100px;
+    max-width: 100px;
+}
+
+.figure-img-shoppinglist {
     width: auto;
     height: auto;
     max-height: 100px;
