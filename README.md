@@ -5,6 +5,7 @@ An application with the focus on saving money and minimizing food waste.
 ### MySql Setup
 To run the web application, it is required to install MySql 8.0, which can be found on:
 https://dev.mysql.com/downloads/installer/
+If you already have MySQL and start on the developer tools, then proceed down to that section. 
 - Select the MSI installer of your choice and click download.
 - Select 'No thanks, just start my download' to start the download without an account.
 - Run the installer when downloaded.
