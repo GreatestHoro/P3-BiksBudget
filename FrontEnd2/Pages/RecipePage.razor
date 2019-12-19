@@ -282,11 +282,12 @@
 
 @code {
     #region fields
-
+    #region Blazorise
     private Snackbar snackbar;
     private Snackbar snackbar2;
     private Modal recipeRef;
-
+    #endregion
+    #region Strings
     string searchTerm;
     string recipeDescription = " ";
     string recipeName = " ";
@@ -294,23 +295,26 @@
     string email;
     string shopString;
     string tempProductName = " ";
-
+    string TempScalar;
+    #endregion
+    #region Integer
     int amountOfProducts;
     int recipePerPerson;
     int scalar = 1;
     private int numb = 0;
-    string TempScalar;
     int runCounter = 0;
     int value;
     int selectedValue;
     int prevLength = -1;
     int LoadMoreProgressbar = 0;
     int recipeMaxAmont = 0;
-
+    #endregion
+    #region Doubles
     double tempTotalCostQuickList = 0;
     double tempTotalCost = 0;
     double ronisDouble;
-
+    #endregion
+    #region Bools
     bool quickaddEnabled = false;
     bool isOpen1 = true;
     bool isOpen2 = true;
@@ -332,7 +336,8 @@
     bool allAdded = false;
     bool _viewProducts = false;
     Chain _chainFilter = Chain.none;
-
+    #endregion
+    #region Lists
     List<ComplexRecipe> complexRecipes = new List<ComplexRecipe>();
     List<Ingredient> ingredients = new List<Ingredient>();
     List<Product> products = new List<Product>();
@@ -342,19 +347,25 @@
     List<List<Product>> returnList = new List<List<Product>>();
     List<int> perpersonvalues = new List<int>();
     List<Ingredient> InshoppingList = new List<Ingredient>();
-    UserData user;
-    Ingredient currentlySelectedIngredient;
-    RecipeQuery recipeQuery = new RecipeQuery();
+    List<string> storeNames = new List<string>() { "Bilka", "Fakta", "SuperBrugsen" };
+    #endregion
+    #region Dictionarys
     Dictionary<Product, Ingredient> QickAddDict = new Dictionary<Product, Ingredient>();
     Dictionary<Ingredient, List<string>> ProductStoreDict = new Dictionary<Ingredient, List<string>>();
     Dictionary<ComplexRecipe, List<string>> RecipeStoreDict = new Dictionary<ComplexRecipe, List<string>>();
+    #endregion
+    #region Misc
+    UserData user;
+    Ingredient currentlySelectedIngredient;
+    RecipeQuery recipeQuery = new RecipeQuery();
+
     HttpResponseMessage responseMessage = new HttpResponseMessage();
     ControllerFuncionality features = new ControllerFuncionality();
-    List<string> storeNames = new List<string>() { "Bilka", "Fakta", "SuperBrugsen" };
     DatabaseConnect _dc = new DatabaseConnect();
-
+    #endregion
     #endregion
 
+    #region Toggle Methods
     private void ToggleFilters()
     {
         _showFilters = !_showFilters;
@@ -379,12 +390,16 @@
         _superBrugsenSelected = !_superBrugsenSelected;
     }
 
-    private void ReadChainFilters()
+    /// <summary>
+    /// toggles different bools, this is used to show/hide
+    /// elements without using JS
+    /// </summary>
+    private void toggle()
     {
-        _chainFilter = _bilkaSelected ? _chainFilter | Chain.bilka : _chainFilter & ~Chain.bilka;
-        _chainFilter = _faktaSelected ? _chainFilter | Chain.fakta : _chainFilter & ~Chain.fakta;
-        _chainFilter = _superBrugsenSelected ? _chainFilter | Chain.superBrugsen : _chainFilter & ~Chain.superBrugsen;
+        viewRecipes = !viewRecipes;
+        viewRecipeList = !viewRecipeList;
     }
+    #endregion
 
     #region Get products and sent products
 
@@ -636,15 +651,7 @@
         }
     }
 
-    /// <summary>
-    /// toggles different bools, this is used to show/hide
-    /// elements without using JS
-    /// </summary>
-    private void toggle()
-    {
-        viewRecipes = !viewRecipes;
-        viewRecipeList = !viewRecipeList;
-    }
+
 
     /// <summary>
     /// Clears lists
@@ -954,6 +961,15 @@
     private string printIngredientAmount(float amount, int scalar)
     {
         return ((amount / recipePerPerson) * scalar) > 0.0f ? String.Format("{0:0.0}", (amount / recipePerPerson) * scalar) : "";
+    }
+    #endregion
+
+    #region Misc methods
+    private void ReadChainFilters()
+    {
+        _chainFilter = _bilkaSelected ? _chainFilter | Chain.bilka : _chainFilter & ~Chain.bilka;
+        _chainFilter = _faktaSelected ? _chainFilter | Chain.fakta : _chainFilter & ~Chain.fakta;
+        _chainFilter = _superBrugsenSelected ? _chainFilter | Chain.superBrugsen : _chainFilter & ~Chain.superBrugsen;
     }
     #endregion
 }
