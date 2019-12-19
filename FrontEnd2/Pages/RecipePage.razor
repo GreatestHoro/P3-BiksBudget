@@ -96,21 +96,21 @@
                             }
                         </div>
                     </div>
-                    <div class="card-body" style="padding-bottom: 0.25rem; padding-top: 0.60rem;">
-                        <div class="justify-content-between">
-                            <button class="rounded btn-success">
-                                @for (int i = 0; i < complexRecipe._PerPerson; i++)
-                                {
-                                    if (i < 4)
+                        <div class="card-body" style="padding-bottom: 0.25rem; padding-top: 0.60rem;">
+                            <div class="justify-content-between">
+                                <button class="rounded btn-success">
+                                    @for (int i = 0; i < complexRecipe._PerPerson; i++)
                                     {
-                                        <i class="oi oi-person"> </i>
+                                        if (i < 4)
+                                        {
+                                            <Icon Name="@(FontAwesomeIcons.UserAlt)" />
+                                        }
                                     }
-                                }
-                                @if (complexRecipe._PerPerson >= 4)
-                                {
-                                    <i class="oi oi-plus"> </i>
-                                }
-                            </button>
+                                    @if (complexRecipe._PerPerson >= 4)
+                                    {
+                                             <Icon Name="@(FontAwesomeIcons.UserPlus)" />
+                                    }
+                                </button>
                             <p class="d-inline-block float-right"> @complexRecipe._complexRecipeComponent.RecipeCost kr.</p>
                         </div>
                     </div>
@@ -541,7 +541,6 @@
 
     public void GetProductLists(List<Ingredient> ingredients)
     {
-        //List<Product> test = new List<Product>();
         foreach (Ingredient ind in ingredients)
         {
             retriveIngredient(ind);
@@ -696,7 +695,7 @@
         QuickList = FilterProducts(QuickList);
     }
 
-    private async Task retriveRecipeStores()
+    private void retriveRecipeStores()
     {
         List<ComplexRecipe> tempCompRes = GetRangePlus();
         List<List<string>> tempList = new List<List<string>>();
@@ -771,7 +770,6 @@
                             }
                         }
                         storeListFound = false;
-                        //ProductStoreDict[ing] = ProductStoreDict[ing].Distinct().ToList();
                     }
                 }
             }
@@ -876,7 +874,6 @@
             foreach (var item in cr._ingredientList)
             {
                 ingredients.Add(item);
-                //recipeAmount.Add(item._amount);
             }
         }
         else
@@ -885,12 +882,10 @@
             foreach (var item in cr._ingredientList)
             {
                 ingredients.Add(item);
-                //recipeAmount.Add(item._amount);
             }
         }
         showModal();
         viewRecipes = true;
-        //viewRecipeList = false;
     }
     #endregion
 
@@ -905,7 +900,6 @@
     {
         if (args.Key == "Enter")
         {
-            //await RemoveElementFocus("recipeSearchInput");
             complexRecipes.Clear();
             await Search();
         }
@@ -922,7 +916,7 @@
         if (complexRecipes.Any())
         {
             await retriveProductStores();
-            await retriveRecipeStores();
+            retriveRecipeStores();
             viewRecipeList = true;
         }
         else
@@ -944,7 +938,7 @@
         ReadChainFilters();
         complexRecipes.AddRange(await recipeQuery.CheapestRecipeDB(searchTerm, _chainFilter));
         await retriveProductStores();
-        await retriveRecipeStores();
+        retriveRecipeStores();
         _viewLoadMoreSpinner = false;
         prevLength = complexRecipes.Count();
         CalculaterSeenPercen();

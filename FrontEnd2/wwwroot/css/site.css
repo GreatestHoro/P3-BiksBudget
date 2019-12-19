@@ -1075,10 +1075,15 @@ logo-header-wrapper {
         z-index:3;
     }
 
+    .card-footerShoppinglist{
+        position:fixed; 
+        left: 0; 
+    }
+
 
     .dropdown-menu {
         max-height: 300px;
-        text-size-adjust:50%; 
+        text-size-adjust: 50%;
     }
 
     .top-nav {

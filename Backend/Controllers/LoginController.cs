@@ -13,18 +13,6 @@ namespace Backend.Controllers
     [ApiController]
     public class LoginController : ControllerBase
     {
-        // GET: api/Login
-        [HttpGet]
-        public void Get()
-        {
-        }
-
-        // GET: api/Login/5
-        [HttpGet("{id}")]
-        public void Get(string id)
-        {
-        }
-
         // POST: api/Login
         [HttpPost]
         public async Task<IActionResult> Post(string value)
@@ -56,19 +44,6 @@ namespace Backend.Controllers
             {
                 return BadRequest(ModelState);
             }
-        }
-
-        // PUT: api/Login/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-
-        }
-
-        // DELETE: api/ApiWithActions/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
         }
     }
 }

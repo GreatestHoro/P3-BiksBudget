@@ -331,16 +331,36 @@ namespace BBCollection.DBHandling
             string[] prodRefs;
             products.ForEach(x => x._CustomReferenceField.ToLower());
             products.ForEach(x => viableWords.AddRange(FindViableWords(x._CustomReferenceField, x._productName)));
+            products.ForEach(x => viableWords.Add(x._CustomReferenceField.Split(",").First()));
 
             prodRefs = new string[viableWords.Count];
             prodRefs = viableWords.Select(p => Convert.ToString(p)).ToArray();
             prodRefs = prodRefs.Distinct().ToArray();
-            //Array.Sort(prodRefs, (x, y) => x.Length.CompareTo(y.Length));
+            Array.Sort(prodRefs, (x, y) => x.Length.CompareTo(y.Length));
 
             return prodRefs; 
         }
 
         public List<string> FindViableWords(string ReferenceField, string ProductName)
+        {
+            List<string> returnList = new List<string>();
+            string[] refArray = verifyWords(ReferenceField.Split(","), ProductName);
+
+            foreach (string sOne in refArray)
+            {
+                foreach (string sTwo in refArray)
+                {
+                    if (WordsVerified(sOne, sTwo))
+                    {
+                        returnList.AddRange(CheckAll(sOne, sTwo, ProductName.ToLower()));
+                    }
+                }
+            }
+
+            return returnList;
+        }
+
+        public List<string> FindViableWordsOld(string ReferenceField, string ProductName)
         {
             List<string> returnList = new List<string>();
             string[] refArray = ReferenceField.Split(",");
@@ -359,6 +379,101 @@ namespace BBCollection.DBHandling
             }
 
             return returnList;
+        }
+
+        public string[] verifyWords(string[] wordsToTest, string pName)
+        {
+            pName = pName.ToLower();
+            int wLength;
+            int maxIndex = wordsToTest.Count();
+            string[] returnArr = new string[maxIndex];
+            string s;
+            int j = 0;
+
+
+            for (int i = 0; i < maxIndex; i++)
+            {
+                if (!String.IsNullOrEmpty(wordsToTest[i]) && !String.IsNullOrWhiteSpace(wordsToTest[i]))
+                {
+                    wLength = wordsToTest[i].Length;
+                    s = wordsToTest[i];
+
+                    if (bChar(pName, s) || aChar(pName, s, wLength))
+                    {
+                        returnArr[i] = s;
+                        j++;
+                    }
+                }
+            }
+
+
+            returnArr = returnArr.Where(x=> !String.IsNullOrEmpty(x)).ToArray();
+            return returnArr;
+        }
+
+        public string verifyWord(string wordToTest, string pName)
+        {
+            int wLength;
+            string s;
+            string returnS = "";
+
+            wLength = wordToTest.Length;
+            s = wordToTest;
+
+            if (bChar(pName, s) || aChar(pName, s, wLength))
+            {
+                returnS = s;
+            }
+
+            return returnS;
+        }
+
+        public bool bChar(string s, string sub)
+        {
+            int i = s.IndexOf(sub) - 1;
+
+            if (s.Contains("kaffebønne"))
+            {
+                Console.WriteLine("a");
+            }
+
+            if (i > 0)
+            {
+                if (s[i] == ' ')
+                {
+                    char a = s[i];
+                    return true;
+                }
+            }
+            else
+            {
+                int p = i;
+                return true;
+            }
+
+            char c = s[i];
+            return false;
+        }
+
+        public bool aChar(string s, string sub, int l)
+        {
+            int t = s.IndexOf(sub);
+            int i = s.IndexOf(sub) + sub.Length;
+            int max = s.Count();
+
+            if (i >= max)
+            {
+                int b = i;
+                return true;
+            }
+            else if(s[i] == ' ')
+            {
+                char a = s[i];
+                return true;
+            }
+
+            char c = s[i];
+            return false;
         }
 
         public bool WordsVerified(string sOne, string sTwo)

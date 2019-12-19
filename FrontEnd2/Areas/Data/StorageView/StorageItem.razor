@@ -5,10 +5,10 @@
 <ListGroupItem>
     <Field IsHorizontal="true" Padding="Padding.IsAuto.OnAll">
         <FieldBody ColumnSize="ColumnSize.IsFull">
-                <Table IsBorderless="true" IsFullWidth="true" IsHoverable="true">
+                <Table IsBorderless="true" IsFullWidth="true" IsHoverable="false" Class="border-bottom">
                     <TableBody>
                         <TableRow  Style="vertical-align:middle;">
-                            <TableRowCell Style="width:50px">
+                            <TableRowCell Style="width:50px; vertical-align:middle">
                                 <FieldBody> 
                                     <CheckEdit Checked="@Product._completed" CheckedChanged="@OnCheckedChanged" />
                                 </FieldBody>
@@ -23,9 +23,8 @@
                                         }
                                     }
                                 </SelectEdit>
-                                <Label Style="vertical-align:sub"> Quantity: </Label>
                             </TableRowCell>
-                            <TableRowCell Style="vertical-align:middle">
+                            <TableRowCell Style="vertical-align:middle; ">
                                 <Text Style="width:200px" Float="Float.Left"> @Product._productName</Text>
                                 <Text Style="width:200px; vertical-align:sub" Color="TextColor.Muted" Float="Float.Left"> @Product._amount</Text>
                             </TableRowCell>

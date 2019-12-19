@@ -27,7 +27,6 @@ namespace BBCollection.DBHandling
         public async Task<string[]> InitializeAutocorrect()
         {
             prodName = await ph.GetAutocompleteWords();
-
             return prodName;
         }
 

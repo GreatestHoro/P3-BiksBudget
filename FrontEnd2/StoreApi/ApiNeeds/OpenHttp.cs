@@ -113,7 +113,7 @@ namespace FrontEnd2
             {
                 while (await reader.ReadAsync())
                 {
-                    if (reader.TokenType == JsonToken.StartObject /*&& reader.DateFormatString.Contains(searchword)*/)
+                    if (reader.TokenType == JsonToken.StartObject)
                     {
 
                         resList.Add(serializer.Deserialize<T>(reader));
