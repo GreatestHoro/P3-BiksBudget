@@ -25,13 +25,6 @@ namespace Backend.Controllers
         string buffer;
         string Email;
 
-        // GET: api/Shoppinglist
-        [HttpGet]
-        public void Get()
-        {
-        }
-
-
         /// <summary>
         /// Requests the shoppinglist from a user
         /// Returns it to the frontend as a string.

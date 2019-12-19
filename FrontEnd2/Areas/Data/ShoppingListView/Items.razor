@@ -1,100 +1,101 @@
 ﻿@using BBCollection.BBObjects
 @using BBCollection.DBHandling
 @using Newtonsoft.Json
+@inject NavigationManager NavigationManager
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 
 @if (user != null)
 {
-<Row>
-    <Column>
-        <Card Margin="Margin.Is4.FromTop">
-            <CardHeader Padding="Padding.Is1.FromBottom" Style="position:fixed">
-                <Heading Size="HeadingSize.Is4">My Shoppinglist</Heading>
-            </CardHeader>
-        </Card>
-        <CardBody Padding="Padding.Is0.FromBottom">
-            <Fields>
-                <Column >
-                    @if (ProductStoreDict.Keys.Count != 0)
-                    {
-                        <CheckEdit ColumnSize="ColumnSize.Is1" Checked="@IsAllSelected()" CheckedChanged="CheckAll">All</CheckEdit>
-                    }
-                    else
-                    {
-                        <FieldBody ColumnSize="ColumnSize.IsFull">
-                            <Alert IsShow="true" Color="Color.Danger"> Your shoppinglist is currently empty!</Alert>
-                        </FieldBody>  
-                    }
-                </Column>
-            </Fields>
-        </CardBody>
-        <CardBody Padding="Padding.Is0.OnY">
-
-            <ListGroup IsFlush="true" Class="text-center">
-                @foreach (string storename in ProductStoreDict.Keys)
-                {
-                    foreach (Product p in ProductStoreDict[storename])
-                    {
-                        if (ProductStoreDict.Count != 0)
+    <Row>
+        <Column>
+            <Card Margin="Margin.Is4.FromTop">
+                <CardHeader Padding="Padding.Is1.FromBottom" Style="position:fixed">
+                    <Heading Size="HeadingSize.Is4">My Shoppinglist</Heading>
+                </CardHeader>
+            </Card>
+            <CardBody Padding="Padding.Is0.FromBottom">
+                <Fields>
+                    <Column>
+                        @if (ProductStoreDict.Keys.Count != 0)
                         {
-                            if (!StoreLogoFlag)
+                            <CheckEdit ColumnSize="ColumnSize.Is1" Checked="@IsAllSelected()" CheckedChanged="CheckAll">All</CheckEdit>
+                        }
+                        else
+                        {
+                            <FieldBody ColumnSize="ColumnSize.IsFull">
+                                <Alert IsShow="true" Color="Color.Danger"> Your shoppinglist is currently empty! <Button IsOutline="false" @onclick="GoToSearch">Click here to go to Product search!</Button></Alert>
+                            </FieldBody>
+                        }
+                    </Column>
+                </Fields>
+            </CardBody>
+            <CardBody Padding="Padding.Is0.OnY">
+
+                <ListGroup IsFlush="true" Class="text-center">
+                    @foreach (string storename in ProductStoreDict.Keys)
+                    {
+                        foreach (Product p in ProductStoreDict[storename])
+                        {
+                            if (ProductStoreDict.Count != 0)
                             {
-                                <FigureImage Source="@StorePathFinder(storename)" />
-                                StoreLogoFlag = true;
+                                if (!StoreLogoFlag)
+                                {
+                                    <FigureImage Source="@StorePathFinder(storename)" />
+                                    StoreLogoFlag = true;
+                                }
+
+                                <Item Product="@p" StatusChanged="@OnStatusChanged"></Item>
                             }
 
-                            <Item Product="@p" StatusChanged="@OnStatusChanged"></Item>
                         }
-
+                        StoreLogoFlag = false;
                     }
-                    StoreLogoFlag = false;
-                }
-            </ListGroup>
-        </CardBody>
-        <CardFooter Class="card-footerShoppinglist" Padding="Padding.Is3.FromBottom">
-            <Field IsHorizontal="true">
-                <FieldBody ColumnSize="ColumnSize.IsFull">
-                    <Buttons Role="ButtonsRole.Addons">
-                        <Tooltip IsAlwaysActive="@(changeHasHappen)" Text="Dont forget to save">
-                            <Button Color="Color.Success" Clicked="@(()=>SaveShoppinglist())" IsActive="@(!changeHasHappen)"><Icon Name="@(FontAwesomeIcons.Save)" /> Save </Button>
-                        </Tooltip>
-                        <Button Color="Color.Success" Clicked="@(() => AddListToStorage())" IsDisabled="selectedProductCount == 0 && String.IsNullOrEmpty(email)"
-                                IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed && !String.IsNullOrEmpty(email))">
-                            <Icon Name="@(FontAwesomeIcons.Archive)" /> @setMessageAddtoStorageBtn()
-                        </Button>
-                        <Button Color="Color.Danger" Clicked="@(() => DeleteList())" IsDisabled="selectedProductCount == 0" IsActive="@(!productSelected)"><Icon Name="@(FontAwesomeIcons.Trash)" /> @setMessageDeleteBtn()</Button>
-                    </Buttons>
-                    <Text Class="shoppinglist-Price-Text"> Total  @String.Format("{0:0.0}", user.shoppinglist.CompletePrice()) DKK</Text>
-                </FieldBody>
-            </Field>
-            <Snackbar @ref="UndoChange">
-                <SnackbarBody>
-                    @snacbarMessage
-                </SnackbarBody>
-                <SnackbarAction Clicked="@(async ()=> await UndoDelete())">UNDO</SnackbarAction>
-            </Snackbar>
+                </ListGroup>
+            </CardBody>
+            <CardFooter Class="card-footerShoppinglist" Padding="Padding.Is3.FromBottom">
+                <Field IsHorizontal="true">
+                    <FieldBody ColumnSize="ColumnSize.IsFull">
+                        <Buttons Role="ButtonsRole.Addons">
+                            <Tooltip IsAlwaysActive="@(changeHasHappen)" Text="Dont forget to save">
+                                <Button Color="Color.Success" Clicked="@(()=>SaveShoppinglist())" IsActive="@(!changeHasHappen)"><Icon Name="@(FontAwesomeIcons.Save)" /> Save </Button>
+                            </Tooltip>
+                            <Button Color="Color.Success" Clicked="@(() => AddListToStorage())" IsDisabled="SetStoraegBtn()"
+                                    IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed)">
+                                <Icon Name="@(FontAwesomeIcons.Archive)" /> @setMessageAddtoStorageBtn()
+                            </Button>
+                            <Button Color="Color.Danger" Clicked="@(() => DeleteList())" IsDisabled="selectedProductCount == 0" IsActive="@(!productSelected)"><Icon Name="@(FontAwesomeIcons.Trash)" /> @setMessageDeleteBtn()</Button>
+                        </Buttons>
+                        <Text Class="shoppinglist-Price-Text"> Total  @String.Format("{0:0.0}", user.shoppinglist.CompletePrice()) DKK</Text>
+                    </FieldBody>
+                </Field>
+                <Snackbar @ref="UndoChange">
+                    <SnackbarBody>
+                        @snacbarMessage
+                    </SnackbarBody>
+                    <SnackbarAction Clicked="@(async ()=> await UndoDelete())">UNDO</SnackbarAction>
+                </Snackbar>
 
-            <Snackbar @ref="UndoStorage">
-                <SnackbarBody>
-                    @snacbarMessage
-                </SnackbarBody>
-                <SnackbarAction Clicked="@(async ()=> await UndoToStorage())">UNDO</SnackbarAction>
-            </Snackbar>
+                <Snackbar @ref="UndoStorage">
+                    <SnackbarBody>
+                        @snacbarMessage
+                    </SnackbarBody>
+                    <SnackbarAction Clicked="@(async ()=> await UndoToStorage())">UNDO</SnackbarAction>
+                </Snackbar>
 
-            <Snackbar @ref="Save">
-                <SnackbarBody>
-                    @snacbarMessage
-                </SnackbarBody>
-            </Snackbar>
+                <Snackbar @ref="Save">
+                    <SnackbarBody>
+                        @snacbarMessage
+                    </SnackbarBody>
+                </Snackbar>
 
-            <Snackbar @ref="UndoChangeInShoppinglist">
-                <SnackbarBody>
-                    @snacbarMessage;
-                </SnackbarBody>
-            </Snackbar>
-        </CardFooter>
-    </Column>
-</Row>
+                <Snackbar @ref="UndoChangeInShoppinglist">
+                    <SnackbarBody>
+                        @snacbarMessage;
+                    </SnackbarBody>
+                </Snackbar>
+            </CardFooter>
+        </Column>
+    </Row>
 
 
 
@@ -108,7 +109,6 @@
     Snackbar UndoStorage;
     Snackbar Save;
     Snackbar UndoChangeInShoppinglist;
-
     Dictionary<string, List<Product>> ProductStoreDict = new Dictionary<string, List<Product>>();
     List<Product> ToShoppinglist = new List<Product>();
     List<Product> SnackbarTempList = new List<Product>();
@@ -139,17 +139,17 @@
 
     private bool isAllSelected()
     {
-        return user.shoppinglist.FindActiveList().Count() == user.shoppinglist.shoppinglist.Count(); 
+        return user.shoppinglist.FindActiveList().Count() == user.shoppinglist.shoppinglist.Count();
     }
 
     private string setMessageDeleteBtn()
     {
-        return selectedProductCount == 0 ? "Delete" : selectedProductCount == 1 ?  $"Delete {selectedProductCount} item" : isAllSelected()  ? $"Delete all items" :  $"Delete {selectedProductCount} items";
+        return selectedProductCount == 0 ? "Delete" : selectedProductCount == 1 ? $"Delete {selectedProductCount} item" : isAllSelected() ? $"Delete all items" : $"Delete {selectedProductCount} items";
     }
 
     private string setMessageAddtoStorageBtn()
     {
-        return selectedProductCount == 0 ? "Add to storage" : selectedProductCount == 1 ?  $"Add {selectedProductCount} item to storage" : isAllSelected()  ? $"Add all items to storage" :  $"Add {selectedProductCount} items to storage";
+        return selectedProductCount == 0 ? "Add to storage" : selectedProductCount == 1 ? $"Add {selectedProductCount} item to storage" : isAllSelected() ? $"Add all items to storage" : $"Add {selectedProductCount} items to storage";
     }
 
     private void ShowModal()
@@ -169,6 +169,25 @@
     {
         remindToSave = true;
         item._amountleft++;
+    }
+
+    public bool SetStoraegBtn()
+    {
+        if (String.IsNullOrEmpty(email))
+        {
+            return true;
+        }
+        else if (selectedProductCount == 0)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    public void GoToSearch()
+    {
+        NavigationManager.NavigateTo("search");
     }
 
 
@@ -313,8 +332,8 @@
         }
         else
         {
-            responseMessage =  await user.shoppinglist.Save();
-            snacbarMessage =  SetSaveMessage(responseMessage);
+            responseMessage = await user.shoppinglist.Save();
+            snacbarMessage = SetSaveMessage(responseMessage);
             Save.Show();
         }
     }
@@ -343,7 +362,7 @@
 
         StorageList = await GetCurrentStorage();
         SnackbarTempList = user.shoppinglist.FindActiveList();
-        snacbarMessage =  SetEditSnackbarMessage(SnackbarTempList.Count());
+        snacbarMessage = SetEditSnackbarMessage(SnackbarTempList.Count());
 
         responseMessage = await user.ShoppinglistToStrage();
         selectedProductCount = 0;
@@ -399,7 +418,7 @@
     {
         if (user.shoppinglist.shoppinglist.Any(x => x._saveProduct == true && changeHasHappen == false))
         {
-            Product temp = user.shoppinglist.shoppinglist.FirstOrDefault(x=> x._saveProduct == true);
+            Product temp = user.shoppinglist.shoppinglist.FirstOrDefault(x => x._saveProduct == true);
             temp._saveProduct = false;
 
             changeHasHappen = false;
@@ -413,7 +432,7 @@
 
     public void CountSelectedProducts()
     {
-        selectedProductCount = user.shoppinglist.shoppinglist.Count(x=> x._completed);
+        selectedProductCount = user.shoppinglist.shoppinglist.Count(x => x._completed);
     }
 
     public void SetCheckMarks(bool isChecked)
@@ -429,6 +448,7 @@
 
     public void DeleteList()
     {
+        changeHasHappen = true;
         SnackbarTempList = user.shoppinglist.FindActiveList();
 
         snacbarMessage = SetDeleteSnackbarMessage(SnackbarTempList.Count());
@@ -453,7 +473,7 @@
             }
             else
             {
-                ProductStoreDict.Add((p._storeName.ToLower()),new List<Product>());
+                ProductStoreDict.Add((p._storeName.ToLower()), new List<Product>());
                 ProductStoreDict[p._storeName.ToLower()].Add(p);
             }
 

@@ -32,8 +32,8 @@
                     }
                     else
                     {
-                        <FieldBody>
-                            <Text> Nothing is currently in your storage</Text>
+                        <FieldBody ColumnSize="ColumnSize.IsFull">
+                            <Alert IsShow="true" Color="Color.Danger"> Your storage is currently empty! <Button IsOutline="false" @onclick="GoToShoppinglist">Click here to go to your shopping list!</Button></Alert>
                         </FieldBody>
                     }
                 </Fields>
@@ -92,12 +92,12 @@
             <ModalContent Size="@modalSize" IsCentered="@isCentered">
                 <ModalHeader Class="text-center">
                     <Field ColumnSize="ColumnSize.IsFull" JustifyContent="JustifyContent.Center">
-                    <CloseButton Float="Float.Right" Clicked="@hideQuickaddModal" />
-                    <ModalTitle>
-                        <Icon Name="@(FontAwesomeIcons.Search)" />
-                        Quickadd Producs
-                    </ModalTitle>
-                    <Text Color="TextColor.Muted" Alignment="TextAlignment.Center">@searchResultAmountMsg()</Text>
+                        <CloseButton Float="Float.Right" Clicked="@hideQuickaddModal" />
+                        <ModalTitle>
+                            <Icon Name="@(FontAwesomeIcons.Search)" />
+                            Quickadd Producs
+                        </ModalTitle>
+                        <Text Color="TextColor.Muted" Alignment="TextAlignment.Center">@searchResultAmountMsg()</Text>
                     </Field>
                 </ModalHeader>
                 <ModalBody Margin="Margin.Is1.FromBottom.FromTop">
@@ -235,7 +235,7 @@
                     </Row>
                 </ModalBody>
                 <ModalFooter>
-                    <Button IsBlock="true" Color="Color.Secondary" IsOutline="true" Clicked="@hideBiksfoodModal">Close</Button>
+                    <Button IsBlock="true" Color="Color.Secondary" IsLoading="!BiksfoodsearchDone" IsOutline="true" Clicked="@hideBiksfoodModal">Close</Button>
                 </ModalFooter>
             </ModalContent>
             <ModalBackdrop />
@@ -364,9 +364,9 @@
 else
 {
     <Modal @ref="emailNullModal" Closing="OnModalClosing" Class="text-center">
-        <ModalBackdrop IsOpen="true"/>
+        <ModalBackdrop IsOpen="true" />
         <ModalContent Style="background-color:transparent" IsCentered="true" IsForm="true" Size="ModalSize.ExtraLarge">
-            <ModalHeader >
+            <ModalHeader>
                 <Alert Color="Color.Success" IsShow="true">
                     <strong> oops! you need to be logged in to have a storage </strong>
                 </Alert>
@@ -485,6 +485,9 @@ else
     Dictionary<Product, bool> SelectedProducts = new Dictionary<Product, bool>();
     Dictionary<string, Product> productCompare = new Dictionary<string, Product>();
 
+    Dictionary<WeightedRecipies, List<string>> recipieWithStores = new Dictionary<WeightedRecipies, List<string>>();
+    Dictionary<Ingredient, List<string>> IngredientWithStores = new Dictionary<Ingredient, List<string>>();
+
     private delegate bool compareWR(WeightedRecipies r1, WeightedRecipies r2);
     #endregion
 
@@ -515,7 +518,7 @@ else
     /// prevent modal from closing
     /// </summary>
     /// <param name="e"></param>
-    private void OnModalClosing( CancelEventArgs e )
+    private void OnModalClosing(CancelEventArgs e)
     {
         // just set Cancel to true to prevent modal from closing
         e.Cancel = true;
@@ -536,7 +539,7 @@ else
 
     private string searchResultAmountMsg()
     {
-        return itemList.Count == 0 ? " " : itemList.Count == 1? $"{itemList.Count} Product found" : $"{itemList.Count} Products found" ;
+        return itemList.Count == 0 ? " " : itemList.Count == 1 ? $"{itemList.Count} Product found" : $"{itemList.Count} Products found";
     }
 
     private string setMessageDeleteBtn()
@@ -552,6 +555,11 @@ else
     public bool StorageExists()
     {
         return user.storage.storageList.Count > 0;
+    }
+
+    public void GoToShoppinglist()
+    {
+        nm.NavigateTo("shoppinglist");
     }
 
     private void showQuickaddModal(ModalSize modalSize, int? maxHeight = null, bool isCentered = false)
@@ -771,7 +779,7 @@ else
 
     private async Task ModalFix()
     {
-      await Task.Run(() => showBiksfoodModal(ModalSize.Default, 60, true));
+        await Task.Run(() => showBiksfoodModal(ModalSize.Default, 60, true));
     }
 
     private async Task FindRecipies()
@@ -983,8 +991,9 @@ else
         return new List<Product>();
     }
 
-    public void LoadMoreRecepies()
+    public async Task LoadMoreRecepies()
     {
+        List<WeightedRecipies> wp = new List<WeightedRecipies>();
         Timesload++;
         NewAmount = defualtAmountLoad * Timesload;
         if (!(Allrecpies.Count >= NewAmount))
@@ -992,9 +1001,71 @@ else
             NewAmount = Allrecpies.Count % NewAmount;
             _viewLoadMore = false;
         }
-
-        recpies = Allrecpies.GetRange(0, NewAmount);
+        wp = Allrecpies.GetRange(NewAmount - defualtAmountLoad, defualtAmountLoad);
+        await RecepiesToStores(wp);
+        recpies.AddRange(wp);
     }
+
+    public async Task RecepiesToStores(List<WeightedRecipies> wp)
+    {
+        List<List<string>> tempList = new List<List<string>>();
+        foreach (WeightedRecipies weighted in wp)
+        {
+            await IngredientStore(weighted._recipie);
+        }
+        //wp.ForEach(x=>x._recipie._ingredientList.Where(y=> AddToRecipieStoreDict(x,IngredientWithStores[y])));
+        foreach (WeightedRecipies weighted in wp)
+        {
+            foreach (Ingredient ing in weighted._recipie._ingredientList)
+            {
+                tempList.Add(IngredientWithStores[ing]);
+            }
+            AddToRecipieStoreDict(weighted,tempList);
+            tempList.Clear();
+        }
+        //recipieWithStores
+    }
+
+    public async Task IngredientStore(Recipe rep)
+    {
+        List<Product> products = new List<Product>();
+        foreach (Ingredient ing in rep._ingredientList)
+        {
+            products = await Products(ing._ingredientName);
+            foreach (Product p in products)
+            {
+                AddToingredientStoreDict(ing,p);
+            }
+        }
+        //.ForEach(y => AddToingredientStoreDict(x,y))
+    }
+
+    public void AddToingredientStoreDict(Ingredient x, Product y)
+    {
+        if (!IngredientWithStores.ContainsKey(x))
+        {
+            IngredientWithStores.Add(x, new List<string>() { y._storeName });
+        }
+        else
+        {
+            IngredientWithStores[x].Add(y._storeName);
+        }
+    }
+
+    public void AddToRecipieStoreDict(WeightedRecipies x, List<List<string>> y)
+    {
+        List<List<string>> TempList = new List<List<string>>();
+        foreach (List<string> item in y)
+        {
+            TempList.Add(item.Distinct().ToList());
+        }
+        List<string> storeName = TempList.Aggregate((prev, next) => prev.Intersect(next).ToList());
+        if (!recipieWithStores.ContainsKey(x))
+        {
+            recipieWithStores.Add(x, storeName);
+        }
+    }
+
 
     public void toggelFilters()
     {
@@ -1014,7 +1085,9 @@ else
     }
     public void CheckIfAnySelected()
     {
-        List<Product> returnList = new List<Product>();
+        List<Product>
+            returnList = new List<Product>
+                ();
         foreach (Product key in SelectedProducts.Keys)
         {
             if (SelectedProducts[key])
@@ -1026,7 +1099,8 @@ else
         _FoodBiskEnabled = returnList.Count != 0 ? true : false;
     }
 
-    public void intailizeAllProducts(List<Product> products)
+    public void intailizeAllProducts(List<Product>
+        products)
     {
         foreach (Product product in products)
         {
@@ -1034,7 +1108,8 @@ else
         }
     }
 
-    public List<Product> GetSelectedProducts()
+    public List<Product>
+        GetSelectedProducts()
     {
         return user.storage.storageList.Where(x => x._completed == true).ToList();
     }
@@ -1137,7 +1212,8 @@ else
         return $"You just added {productName} to your storage";
     }
 
-    public string SetUndoChangeMessage(List<Product> productList)
+    public string SetUndoChangeMessage(List<Product>
+        productList)
     {
         if (productList.Count == 1)
         {
@@ -1179,10 +1255,10 @@ else
 
         sUndoDelete.Show();
     }
-#endregion
+    #endregion
 
     private string printIngredientAmount(float amount, int scalar)
     {
         return ((amount / recipePerPerson) * scalar) > 0.0f ? String.Format("{0:0.0}", (amount / recipePerPerson) * scalar) : "";
     }
-}
+                        }

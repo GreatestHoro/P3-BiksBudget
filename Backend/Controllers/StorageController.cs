@@ -20,12 +20,6 @@ namespace Backend.Controllers
         ControllerFuncionality functionality = new ControllerFuncionality();
         string Email;
 
-        // GET: api/Storage
-        [HttpGet]
-        public void Get()
-        {
-        }
-
         /// <summary>
         /// This method returns the storage for a specific user
         /// </summary>

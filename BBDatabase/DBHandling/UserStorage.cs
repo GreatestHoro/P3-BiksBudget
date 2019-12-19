@@ -133,13 +133,6 @@ namespace BBCollection.DBHandling
             }
         }
 
-        public List<Product> ReverseList(List<Product> listProduct)
-        {
-            listProduct.ForEach(x=> x._amountleft *= -1);
-
-            return listProduct;
-        }
-
         public async Task<HttpResponseMessage> AddList(List<Product> listToAdd)
         {
             listToAdd.ForEach(p => p = HelpToAdd(p));

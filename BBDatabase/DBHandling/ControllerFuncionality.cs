@@ -7,7 +7,6 @@ namespace BBCollection.DBHandling
     public class ControllerFuncionality
     {
         string replacementUlr = "https://cdn.discordapp.com/attachments/519096261408718908/649685312083197973/coopdicoop.jpg";
-        string shopString;
 
         /// <summary>
         /// The inputlist is split up in two lists.
