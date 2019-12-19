@@ -374,27 +374,6 @@ namespace BBCollection.DBHandling
             return returnList;
         }
 
-        public List<string> FindViableWordsOld(string ReferenceField, string ProductName)
-        {
-            List<string> returnList = new List<string>();
-            string[] refArray = ReferenceField.Split(",");
-
-            returnList.Add(ReferenceField.Split(",").First());
-
-            foreach (string sOne in refArray)
-            {
-                foreach (string sTwo in refArray)
-                {
-                    if (WordsVerified(sOne, sTwo))
-                    {
-                        returnList.AddRange(CheckAll(sOne, sTwo, ProductName.ToLower()));
-                    }
-                }
-            }
-
-            return returnList;
-        }
-
         public string[] verifyWords(string[] wordsToTest, string pName)
         {
             pName = pName.ToLower();
@@ -423,23 +402,6 @@ namespace BBCollection.DBHandling
 
             returnArr = returnArr.Where(x => !String.IsNullOrEmpty(x)).ToArray();
             return returnArr;
-        }
-
-        public string verifyWord(string wordToTest, string pName)
-        {
-            int wLength;
-            string s;
-            string returnS = "";
-
-            wLength = wordToTest.Length;
-            s = wordToTest;
-
-            if (bChar(pName, s) || aChar(pName, s, wLength))
-            {
-                returnS = s;
-            }
-
-            return returnS;
         }
 
         public bool bChar(string s, string sub)
