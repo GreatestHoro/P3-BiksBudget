@@ -433,6 +433,9 @@
     Dictionary<Product, bool> SelectedProducts = new Dictionary<Product, bool>();
     Dictionary<string, Product> productCompare = new Dictionary<string, Product>();
 
+    Dictionary<WeightedRecipies, List<string>> recipieWithStores = new Dictionary<WeightedRecipies, List<string>>();
+    Dictionary<Ingredient, List<string>> IngredientWithStores = new Dictionary<Ingredient, List<string>>();
+
     private delegate bool compareWR(WeightedRecipies r1, WeightedRecipies r2);
     #endregion
 
@@ -654,9 +657,9 @@
 
     #region empty fridge
 
-    private async Task ModalFix() 
-    { 
-      await Task.Run(() => showBiksfoodModal(ModalSize.Default, 60, true));
+    private async Task ModalFix()
+    {
+        await Task.Run(() => showBiksfoodModal(ModalSize.Default, 60, true));
     }
 
     private async Task FindRecipies()
@@ -868,8 +871,9 @@
         return new List<Product>();
     }
 
-    public void LoadMoreRecepies()
+    public async Task LoadMoreRecepies()
     {
+        List<WeightedRecipies> wp = new List<WeightedRecipies>();
         Timesload++;
         NewAmount = defualtAmountLoad * Timesload;
         if (!(Allrecpies.Count >= NewAmount))
@@ -877,9 +881,71 @@
             NewAmount = Allrecpies.Count % NewAmount;
             _viewLoadMore = false;
         }
-
-        recpies = Allrecpies.GetRange(0, NewAmount);
+        wp = Allrecpies.GetRange(NewAmount - defualtAmountLoad, defualtAmountLoad);
+        await RecepiesToStores(wp);
+        recpies.AddRange(wp);
     }
+
+    public async Task RecepiesToStores(List<WeightedRecipies> wp)
+    {
+        List<List<string>> tempList = new List<List<string>>();
+        foreach (WeightedRecipies weighted in wp)
+        {
+            await IngredientStore(weighted._recipie);
+        }
+        //wp.ForEach(x=>x._recipie._ingredientList.Where(y=> AddToRecipieStoreDict(x,IngredientWithStores[y])));
+        foreach (WeightedRecipies weighted in wp)
+        {
+            foreach (Ingredient ing in weighted._recipie._ingredientList)
+            {
+                tempList.Add(IngredientWithStores[ing]);
+            }
+            AddToRecipieStoreDict(weighted,tempList);
+            tempList.Clear();
+        }
+        //recipieWithStores
+    }
+
+    public async Task IngredientStore(Recipe rep)
+    {
+        List<Product> products = new List<Product>();
+        foreach (Ingredient ing in rep._ingredientList)
+        {
+            products = await Products(ing._ingredientName);
+            foreach (Product p in products)
+            {
+                AddToingredientStoreDict(ing,p);
+            }
+        }
+        //.ForEach(y => AddToingredientStoreDict(x,y))
+    }
+
+    public void AddToingredientStoreDict(Ingredient x, Product y)
+    {
+        if (!IngredientWithStores.ContainsKey(x))
+        {
+            IngredientWithStores.Add(x, new List<string>() { y._storeName });
+        }
+        else
+        {
+            IngredientWithStores[x].Add(y._storeName);
+        }
+    }
+
+    public void AddToRecipieStoreDict(WeightedRecipies x, List<List<string>> y)
+    {
+        List<List<string>> TempList = new List<List<string>>();
+        foreach (List<string> item in y)
+        {
+            TempList.Add(item.Distinct().ToList());
+        }
+        List<string> storeName = TempList.Aggregate((prev, next) => prev.Intersect(next).ToList());
+        if (!recipieWithStores.ContainsKey(x))
+        {
+            recipieWithStores.Add(x, storeName);
+        }
+    }
+
 
     public void toggelFilters()
     {
@@ -899,7 +965,9 @@
     }
     public void CheckIfAnySelected()
     {
-        List<Product> returnList = new List<Product>();
+        List<Product>
+            returnList = new List<Product>
+                ();
         foreach (Product key in SelectedProducts.Keys)
         {
             if (SelectedProducts[key])
@@ -911,7 +979,8 @@
         _FoodBiskEnabled = returnList.Count != 0 ? true : false;
     }
 
-    public void intailizeAllProducts(List<Product> products)
+    public void intailizeAllProducts(List<Product>
+        products)
     {
         foreach (Product product in products)
         {
@@ -919,7 +988,8 @@
         }
     }
 
-    public List<Product> GetSelectedProducts()
+    public List<Product>
+        GetSelectedProducts()
     {
         return user.storage.storageList.Where(x => x._completed == true).ToList();
     }
@@ -1022,7 +1092,8 @@
         return $"You just added {productName} to your storage";
     }
 
-    public string SetUndoChangeMessage(List<Product> productList)
+    public string SetUndoChangeMessage(List<Product>
+        productList)
     {
         if (productList.Count == 1)
         {
@@ -1064,10 +1135,10 @@
 
         sUndoDelete.Show();
     }
-#endregion
+    #endregion
 
     private string printIngredientAmount(float amount, int scalar)
     {
         return ((amount / recipePerPerson) * scalar) > 0.0f ? String.Format("{0:0.0}", (amount / recipePerPerson) * scalar) : "";
     }
-}
+                        }
