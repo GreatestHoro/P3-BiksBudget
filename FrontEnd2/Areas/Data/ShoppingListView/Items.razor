@@ -14,15 +14,15 @@
         </Card>
         <CardBody Padding="Padding.Is0.FromBottom">
             <Fields>
-                <Column ColumnSize="ColumnSize.Is1">
+                <Column >
                     @if (ProductStoreDict.Keys.Count != 0)
                     {
-                        <CheckEdit Checked="@IsAllSelected()" CheckedChanged="CheckAll">All</CheckEdit>
+                        <CheckEdit ColumnSize="ColumnSize.Is1" Checked="@IsAllSelected()" CheckedChanged="CheckAll">All</CheckEdit>
                     }
                     else
                     {
-                        <FieldBody>
-                            <Text> Nothing is currently in your shoppinglist</Text>
+                        <FieldBody ColumnSize="ColumnSize.IsFull">
+                            <Alert IsShow="true" Color="Color.Danger"> Your shoppinglist is currently empty!</Alert>
                         </FieldBody>  
                     }
                 </Column>
@@ -56,13 +56,13 @@
                 <FieldBody ColumnSize="ColumnSize.IsFull">
                     <Buttons Role="ButtonsRole.Addons">
                         <Tooltip IsAlwaysActive="@(changeHasHappen)" Text="Dont forget to save">
-                            <Button Color="Color.Success" Clicked="@(()=>SaveShoppinglist())" IsActive="@(!changeHasHappen)"><Icon Name="@(FontAwesomeIcons.Save)" /> Save Shoppinglist</Button>
+                            <Button Color="Color.Success" Clicked="@(()=>SaveShoppinglist())" IsActive="@(!changeHasHappen)"><Icon Name="@(FontAwesomeIcons.Save)" /> Save </Button>
                         </Tooltip>
                         <Button Color="Color.Success" Clicked="@(() => AddListToStorage())" IsDisabled="selectedProductCount == 0 && String.IsNullOrEmpty(email)"
                                 IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed && !String.IsNullOrEmpty(email))">
-                            <Icon Name="@(FontAwesomeIcons.Archive)" /> Add To Storage (@selectedProductCount)
+                            <Icon Name="@(FontAwesomeIcons.Archive)" /> @setMessageAddtoStorageBtn()
                         </Button>
-                        <Button Color="Color.Danger" Clicked="@(() => DeleteList())" IsDisabled="selectedProductCount == 0" IsActive="@(!productSelected)"><Icon Name="@(FontAwesomeIcons.Trash)" /> Delete Items (@selectedProductCount)</Button>
+                        <Button Color="Color.Danger" Clicked="@(() => DeleteList())" IsDisabled="selectedProductCount == 0" IsActive="@(!productSelected)"><Icon Name="@(FontAwesomeIcons.Trash)" /> @setMessageDeleteBtn()</Button>
                     </Buttons>
                     <Text Class="shoppinglist-Price-Text"> Total  @String.Format("{0:0.0}", user.shoppinglist.CompletePrice()) DKK</Text>
                 </FieldBody>
@@ -124,7 +124,7 @@
     bool changeHasHappen = false;
     bool allEnabled = false;
 
-    int selectedProductCount = 0;
+    int selectedProductCount;
     int value = 1;
 
     string email;
@@ -136,6 +136,21 @@
     #endregion
 
     #region Modal
+
+    private bool isAllSelected()
+    {
+        return user.shoppinglist.FindActiveList().Count() == user.shoppinglist.shoppinglist.Count(); 
+    }
+
+    private string setMessageDeleteBtn()
+    {
+        return selectedProductCount == 0 ? "Delete" : selectedProductCount == 1 ?  $"Delete {selectedProductCount} item" : isAllSelected()  ? $"Delete all items" :  $"Delete {selectedProductCount} items";
+    }
+
+        private string setMessageAddtoStorageBtn()
+    {
+        return selectedProductCount == 0 ? "Add to storage" : selectedProductCount == 1 ?  $"Add {selectedProductCount} item to storage" : isAllSelected()  ? $"Add all items to storage" :  $"Add {selectedProductCount} items to storage";
+    }
 
     private void ShowModal()
     {

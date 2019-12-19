@@ -96,21 +96,21 @@
                             }
                         </div>
                     </div>
-                    <div class="card-body" style="padding-bottom: 0.25rem; padding-top: 0.60rem;">
-                        <div class="justify-content-between">
-                            <button class="rounded btn-success">
-                                @for (int i = 0; i < complexRecipe._PerPerson; i++)
-                                {
-                                    if (i < 4)
+                        <div class="card-body" style="padding-bottom: 0.25rem; padding-top: 0.60rem;">
+                            <div class="justify-content-between">
+                                <button class="rounded btn-success">
+                                    @for (int i = 0; i < complexRecipe._PerPerson; i++)
                                     {
-                                        <i class="oi oi-person"> </i>
+                                        if (i < 4)
+                                        {
+                                            <Icon Name="@(FontAwesomeIcons.UserAlt)" />
+                                        }
                                     }
-                                }
-                                @if (complexRecipe._PerPerson >= 4)
-                                {
-                                    <i class="oi oi-plus"> </i>
-                                }
-                            </button>
+                                    @if (complexRecipe._PerPerson >= 4)
+                                    {
+                                             <Icon Name="@(FontAwesomeIcons.UserPlus)" />
+                                    }
+                                </button>
                             <p class="d-inline-block float-right"> @complexRecipe._complexRecipeComponent.RecipeCost kr.</p>
                         </div>
                     </div>
