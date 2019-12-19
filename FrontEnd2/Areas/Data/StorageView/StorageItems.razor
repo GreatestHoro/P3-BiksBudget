@@ -749,6 +749,7 @@ else
     void retriveInfo(WeightedRecipies rep)
     {
         //Recipe show = _recpies.First(x => x._recipeID == ID);
+        products.Clear();
         ingrdientDict = rep.ingrdients;
         scalar = (int)rep._recipie._PerPerson;
         selectedRecepie = rep._recipie;
