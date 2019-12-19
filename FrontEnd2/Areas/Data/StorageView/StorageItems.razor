@@ -343,7 +343,7 @@ else
             <ModalHeader >
                 <Alert Color="Color.Success" IsShow="true">
                     <strong> oops! you need to be logged in to have a storage </strong>
-                </Alert> 
+                </Alert>
             </ModalHeader>
             <ModalBody>
                 <Buttons Orientation="Orientation.Horizontal">
@@ -465,7 +465,7 @@ else
 
     #region navigate modal
     /// <summary>
-    /// If not logged in, navigate to login 
+    /// If not logged in, navigate to login
     /// </summary>
     private void navigateToLogin()
     {
@@ -473,7 +473,7 @@ else
     }
 
     /// <summary>
-    /// If not logged in, navigate to register 
+    /// If not logged in, navigate to register
     /// </summary>
     private void navigateToRegister()
     {
@@ -522,13 +522,13 @@ else
         quickaddModal.Show();
     }
 
-    private void showBiksfoodModal(ModalSize modalSize, int? maxHeight = null, bool isCentered = false)
+    private async void showBiksfoodModal(ModalSize modalSize, int? maxHeight = null, bool isCentered = false)
     {
         this.isCentered = isCentered;
         this.modalSize = modalSize;
         this.maxHeight = maxHeight;
 
-        BiksFood.Show();
+        await InvokeAsync(() => BiksFood.Show());
     }
 
     private void hideQuickaddModal()
@@ -728,12 +728,22 @@ else
 
     #region empty fridge
 
+    private async Task ModalFix()
+    {
+      await Task.Run(() => showBiksfoodModal(ModalSize.Default, 60, true));
+    }
+
     private async Task FindRecipies()
     {
+        await ModalFix();
+
+        this.StateHasChanged();
+
+
         BiksfoodsearchDone = false;
         Allrecpies.Clear();
 
-        showBiksfoodModal(ModalSize.Default, 60, true);
+
         _viewEmptyFridgeLoadSpinner = true;
         int HasBeenLoaded = 0;
         this.StateHasChanged();
@@ -950,20 +960,6 @@ else
         _showFilters = !_showFilters;
     }
 
-    //public void SortRecepies()
-    //{
-    //    if (pmatch)
-    //    {
-    //        recpies = Allrecpies.OrderByDescending(x => -x.pMatch).ToList().GetRange(0,defualtAmountLoad * Timesload);
-
-    //    }
-    //    else if (OverallMatch)
-    //    {
-    //        recpies = Allrecpies.OrderByDescending(x => -x.matchingIngrdientsNum).ToList().GetRange(0,defualtAmountLoad * Timesload);
-    //    }
-    //    StateHasChanged();
-    //}
-
     public void SortPmatch()
     {
         recpies = Allrecpies.OrderByDescending(x => x.pMatch).ToList().GetRange(0, NewAmount);
@@ -1076,6 +1072,8 @@ else
         disableQuickadd = false;
     }
 
+    #region Snackbar
+
     public async Task UndoSnackbar()
     {
         await user.storage.AddUpdateList(SnackbarTempList);
@@ -1140,6 +1138,7 @@ else
 
         sUndoDelete.Show();
     }
+#endregion
 
     private string printIngredientAmount(float amount, int scalar)
     {

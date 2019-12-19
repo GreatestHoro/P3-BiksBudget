@@ -53,7 +53,7 @@ namespace BBCollection.DBHandling
             msc.Parameters.AddWithValue("@Username", username);
             msc.Parameters.AddWithValue("@Password", await ConvertPasswordToHash(password));
 
-            await new SQLConnect().NonQueryMSC(msc);
+            await new SQLConnect().NonQueryMSCAsync(msc);
         }
 
         /// <summary>

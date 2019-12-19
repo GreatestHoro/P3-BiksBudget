@@ -29,7 +29,7 @@ namespace BBCollection.DBHandling
                         msc.Parameters.AddWithValue("@ProductID", p._id);
                         msc.Parameters.AddWithValue("@Amount", p._amountleft);
 
-                        await new SQLConnect().NonQueryMSC(msc);
+                        await new SQLConnect().NonQueryMSCAsync(msc);
                     }
                 }
             });
@@ -117,7 +117,7 @@ namespace BBCollection.DBHandling
 
             await Task.Run(async () =>
             {
-                await new SQLConnect().NonQueryMSC(msc);
+                await new SQLConnect().NonQueryMSCAsync(msc);
             });
         }
     }
