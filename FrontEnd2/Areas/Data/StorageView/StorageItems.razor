@@ -199,7 +199,7 @@
                                         <CardBody>
                                             <CardTitle Size="4">@rep._recipie._Name</CardTitle>
                                             <Field>
-                                                <FieldBody>
+                                                <FieldBody ColumnSize="ColumnSize.Is3">
                                                     @for (int i = 0; i < rep._recipie._PerPerson; i++)
                                                     {
                                                         if (i < 4)
@@ -212,6 +212,22 @@
                                                         <Icon Name="@(FontAwesomeIcons.UserPlus)" />
                                                     }
                                                 </FieldBody>
+                                            </Field>
+                                            <Field Float="Float.Right">
+                                                @if (recipieWithStores.ContainsKey(rep))
+                                                {
+                                                    foreach (var ls in recipieWithStores[rep])
+                                                    {
+                                                        @foreach (string s in storeNames)
+                                                        {
+                                                            if (ls.Contains(s))
+                                                            {
+                                                                <FigureImage Class="store-loge-figures" Source="@getProductImg(ls)" />
+                                                            }
+
+                                                        }
+                                                    }
+                                                }
                                             </Field>
                                             <Button Color="Color.Success" IsDisabled="disableQuickadd" @onclick="(() => retriveInfo(rep))" IsBlock="true">Look at recipe</Button>
                                         </CardBody>
@@ -347,9 +363,10 @@
                                 {
                                     <Table Theme="Theme.Light" IsBordered="true">
                                         <TableBody>
-                                            <TableRowHeader Style="width:5%"><Button Class="btn btn-block btn-outline-success" Clicked="() => AddProductToSL(p)"> <Icon Name="@(FontAwesomeIcons.ShoppingCart)"></Icon></Button> </TableRowHeader>
+                                            <TableRowHeader><Button Class="btn btn-block btn-outline-success" Clicked="() => AddProductToSL(p)"> <Icon Name="@(FontAwesomeIcons.ShoppingCart)"></Icon></Button> </TableRowHeader>
                                             <TableRowCell Style="width:25%">@p._price Kr.</TableRowCell>
-                                            <TableRowCell Style="width:70%">@p._productName</TableRowCell>
+                                            <TableRowCell Style="width:100%">@p._productName</TableRowCell>
+                                            <TableRowCell><FigureImage Class="store-loge-figures" Source="@getProductImg(p._storeName)" /></TableRowCell>
                                         </TableBody>
                                     </Table>
                                 }
@@ -478,13 +495,14 @@ else
     List<Recipe> _recpies = new List<Recipe>();
     List<Product> products = new List<Product>();
     List<Product> ToShoppinglist = new List<Product>();
+    List<string> storeNames = new List<string>() { "Bilka", "Fakta", "SuperBrugsen" };
     Recipe selectedRecepie = new Recipe();
     List<string> ItemState = new List<string>() { "Full", "Almost Full", "Half Full", "Almost Empty" };
     ControllerFuncionality features = new ControllerFuncionality();
     Dictionary<Ingredient, List<string>> ingrdientDict = new Dictionary<Ingredient, List<string>>();
     Dictionary<Product, bool> SelectedProducts = new Dictionary<Product, bool>();
     Dictionary<string, Product> productCompare = new Dictionary<string, Product>();
-
+    
     Dictionary<WeightedRecipies, List<string>> recipieWithStores = new Dictionary<WeightedRecipies, List<string>>();
     Dictionary<Ingredient, List<string>> IngredientWithStores = new Dictionary<Ingredient, List<string>>();
 
@@ -532,6 +550,11 @@ else
     #endregion
 
     #region StorageMethods
+    public string getProductImg(string storeName)
+    {
+        return $"../Pictures/Store_logos/{storeName.ToLower()}.png";
+    }
+
     private bool isAllSelected()
     {
         return user.storage.CountActiveList().Count() == user.storage.storageList.Count(); 
