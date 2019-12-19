@@ -1,12 +1,10 @@
-﻿using System;
+﻿using BBCollection.BBObjects;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
-using System.Text;
-using BBCollection.BBObjects;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using System.Linq;
-using Microsoft.AspNetCore.Components;
 
 namespace BBCollection.DBHandling
 {
@@ -43,7 +41,7 @@ namespace BBCollection.DBHandling
 
         public void SetFilter(Filter filter)
         {
-            this.filter = filter; 
+            this.filter = filter;
         }
 
         public IEnumerable<Product> Products

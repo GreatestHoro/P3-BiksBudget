@@ -69,26 +69,26 @@ namespace BBCollection.DBConncetion
         {
             MySqlConnection connection = null;
 
-                try
-                {
-                    connection = new MySqlConnection(databaseInformation.ConnectionString(true));
-                    connection.Open();
+            try
+            {
+                connection = new MySqlConnection(databaseInformation.ConnectionString(true));
+                connection.Open();
 
-                    msc.Connection = connection;
+                msc.Connection = connection;
 
-                    msc.ExecuteNonQuery();
-                }
-                catch (MySqlException e)
+                msc.ExecuteNonQuery();
+            }
+            catch (MySqlException e)
+            {
+                Console.Write(e);
+            }
+            finally
+            {
+                if (connection != null)
                 {
-                    Console.Write(e);
+                    connection.Close();
                 }
-                finally
-                {
-                    if (connection != null)
-                    {
-                        connection.Close();
-                    }
-                }
+            }
         }
 
         public async Task<DataSet> DynamicSimpleListSQL(MySqlCommand mscom)

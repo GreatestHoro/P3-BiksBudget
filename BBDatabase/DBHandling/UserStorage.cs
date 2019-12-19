@@ -1,11 +1,10 @@
-﻿using System;
+﻿using BBCollection.BBObjects;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
-using System.Text;
-using BBCollection.BBObjects;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using System.Linq;
 
 namespace BBCollection.DBHandling
 {
@@ -40,7 +39,7 @@ namespace BBCollection.DBHandling
 
         public void SelectAllProducs(bool setTo)
         {
-            storageList.ForEach(x=> x._completed = setTo);
+            storageList.ForEach(x => x._completed = setTo);
         }
 
         public async Task<HttpResponseMessage> DeleteProduct(Product p)
@@ -117,7 +116,7 @@ namespace BBCollection.DBHandling
 
         public async Task<HttpResponseMessage> ReplaceStorage(List<Product> listToReplaceWith)
         {
-            storageList.ForEach(x=> Recount(x, listToReplaceWith));
+            storageList.ForEach(x => Recount(x, listToReplaceWith));
 
             productString = JsonConvert.SerializeObject(storageList);
 
@@ -126,7 +125,7 @@ namespace BBCollection.DBHandling
 
         public void Recount(Product p, List<Product> list)
         {
-            if (list.Any(x=> x._id == p._id))
+            if (list.Any(x => x._id == p._id))
             {
                 int toDeduct = list.FirstOrDefault(x => x._id == p._id)._amountleft;
                 p._amountleft = p._amountleft - toDeduct;

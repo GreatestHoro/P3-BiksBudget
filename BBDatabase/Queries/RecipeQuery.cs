@@ -52,7 +52,7 @@ namespace BBCollection.Queries
 
 
             //Turns the dictionary into a hashtable
-                        Hashtable productsHashtable = new Hashtable(productsDict);
+            Hashtable productsHashtable = new Hashtable(productsDict);
 
 
             List<ComplexRecipe> resultComplexRecipes = new List<ComplexRecipe>();
@@ -62,7 +62,7 @@ namespace BBCollection.Queries
                                     select new ComplexRecipe(recipe._recipeID, recipe._Name,
           recipe._description, recipe._ingredientList, recipe._PerPerson, RecipeCost(productsHashtable, recipe))).ToList();
             //sort the list of ComplexRecipes by price
-                        resultComplexRecipes.Sort((a, b) => a._complexRecipeComponent.RecipeCost.CompareTo(b._complexRecipeComponent.RecipeCost));
+            resultComplexRecipes.Sort((a, b) => a._complexRecipeComponent.RecipeCost.CompareTo(b._complexRecipeComponent.RecipeCost));
             return resultComplexRecipes;
             //return new List<ComplexRecipe>();
 
@@ -104,7 +104,7 @@ namespace BBCollection.Queries
             List<ComplexRecipe> complexList = new List<ComplexRecipe>();
 
             //calculate the price of each recipe by calling RecipeCost for each recipe, and create a list of ComplexRecipe objects
-            foreach(Recipe recipe in recipeList)
+            foreach (Recipe recipe in recipeList)
             {
                 complexList.Add(new ComplexRecipe(recipe._recipeID, recipe._Name, recipe._description, recipe._ingredientList, recipe._PerPerson, await RecipeCostDB(recipe, chainFilter)));
             }
@@ -113,7 +113,7 @@ namespace BBCollection.Queries
 
             //sort the list of ComplexRecipes by price
             complexList.Sort((a, b) => a._complexRecipeComponent.RecipeCost.CompareTo(b._complexRecipeComponent.RecipeCost));
-            
+
             return complexList;
         }
 
@@ -122,7 +122,7 @@ namespace BBCollection.Queries
             double recipeCost = 0;
             ComplexRecipeComponent cRP = new ComplexRecipeComponent();
 
-            
+
             foreach (var ing in recipe._ingredientList)
             {
                 double cost = await _dc.Product.CheapestPrice(ing._ingredientName, chainFilter);
@@ -208,12 +208,13 @@ namespace BBCollection.Queries
             {
                 count++;
                 double percent = (count / distinctIngredients.Count) * 100;
-                if (prevPercent != Math.Round(percent,0))
+                if (prevPercent != Math.Round(percent, 0))
                 {
                     prevPercent = Math.Round(percent, 0);
                     Console.WriteLine($"Computing {prevPercent}%...");
 
-                } else
+                }
+                else
                 {
                     Console.WriteLine($"Computing {prevPercent}%.. ");
                 }

@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using BBCollection.BBObjects;
+﻿using BBCollection.DBConncetion;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
-using BBCollection.DBConncetion;
-using Newtonsoft.Json;
 
 namespace BBCollection.DBHandling
 {

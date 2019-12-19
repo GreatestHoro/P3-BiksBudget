@@ -83,17 +83,17 @@ namespace BBCollection.DBHandling
                     {
                         foreach (DataRow r in ds.Tables[0].Rows)
                         {
-                            
-                            Product product = new Product(r[0].ToString(), r[1].ToString(), r[2].ToString(), Convert.ToDouble(r[3]), 
+
+                            Product product = new Product(r[0].ToString(), r[1].ToString(), r[2].ToString(), Convert.ToDouble(r[3]),
                                          r[4].ToString(), r[5].ToString(), Convert.ToInt32(r[6]), Convert.ToString(r[7]), r[8].ToString(), r[9].ToString());
                             productList.Add(product);
                         }
                     }
-                    catch(Exception e)
+                    catch (Exception e)
                     {
                         Debug.WriteLine(e);
                     }
-                    
+
                 }
             }
             if (await new SQLConnect().CheckRecordExist(custmsc))

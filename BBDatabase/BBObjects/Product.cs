@@ -40,7 +40,7 @@
             _storeName = storeName;
             _amountleft = amountleft;
             _CustomReferenceField = customField;
-            _completed = completed; 
+            _completed = completed;
         }
 
         public Product(string id, string productName, string amount, double price, string image, string storeName, int amountleft)

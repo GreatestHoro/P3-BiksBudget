@@ -175,7 +175,7 @@ namespace BBCollection.DBHandling
                     string? image = r[4].ToString(); string? store = r[5].ToString(); string? costumRef = r[6].ToString();
                     double? price = Convert.ToDouble(r[3]);
 
-                    Product product = new Product(id ??= "Null", name ??= "Null", amount ??= "", price ??= 0, image ??= "", store ??= "",costumRef  ??= "");
+                    Product product = new Product(id ??= "Null", name ??= "Null", amount ??= "", price ??= 0, image ??= "", store ??= "", costumRef ??= "");
                     productList.Add(product);
                 }
             }
@@ -290,7 +290,7 @@ namespace BBCollection.DBHandling
             foreach (string s in toAdd)
             {
                 done++;
-                percent = ( done / all ) * 100;
+                percent = (done / all) * 100;
 
                 if (percent > ToPrint)
                 {
@@ -338,7 +338,7 @@ namespace BBCollection.DBHandling
             await Task.Run(() => new SQLConnect().NonQueryMSCAsync(msc));
         }
 
-        public async Task<string[]>  AddRefCol()
+        public async Task<string[]> AddRefCol()
         {
             List<Product> products = await ReferencesAsync("");
             List<string> viableWords = new List<string>();
@@ -352,7 +352,7 @@ namespace BBCollection.DBHandling
             prodRefs = prodRefs.Distinct().ToArray();
             Array.Sort(prodRefs, (x, y) => x.Length.CompareTo(y.Length));
 
-            return prodRefs; 
+            return prodRefs;
         }
 
         public List<string> FindViableWords(string ReferenceField, string ProductName)
@@ -421,7 +421,7 @@ namespace BBCollection.DBHandling
             }
 
 
-            returnArr = returnArr.Where(x=> !String.IsNullOrEmpty(x)).ToArray();
+            returnArr = returnArr.Where(x => !String.IsNullOrEmpty(x)).ToArray();
             return returnArr;
         }
 
@@ -475,7 +475,7 @@ namespace BBCollection.DBHandling
                 int b = i;
                 return true;
             }
-            else if(s[i] == ' ')
+            else if (s[i] == ' ')
             {
                 char a = s[i];
                 return true;
@@ -567,12 +567,13 @@ namespace BBCollection.DBHandling
 
             DataSet ds = await new SQLConnect().DynamicSimpleListSQL(msc);
 
-            if(ds.Tables.Count != 0) {
-                DataTable dt = ds.Tables[0];
-            if (dt.Rows.Count != 0)
+            if (ds.Tables.Count != 0)
             {
-                return Convert.ToDouble(ds.Tables[0].Rows[0][0]);
-            }
+                DataTable dt = ds.Tables[0];
+                if (dt.Rows.Count != 0)
+                {
+                    return Convert.ToDouble(ds.Tables[0].Rows[0][0]);
+                }
             }
             return 0;
         }

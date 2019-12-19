@@ -1,20 +1,15 @@
 ﻿using BBCollection.BBObjects;
-using BBCollection.DBHandling;
-using BBCollection.Queries;
 using Newtonsoft.Json;
-using Blazorise.Components;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Linq;
-using System;
 using System.Net.Http;
-using Microsoft.AspNetCore.Components;
+using System.Threading.Tasks;
 
 namespace BBCollection.DBHandling
 {
     public class ProductSearchHandling
     {
-        
+
         ProductHandling ph = new ProductHandling();
         HttpClient Http = new HttpClient();
         SortBy sort = new SortBy();
@@ -52,7 +47,7 @@ namespace BBCollection.DBHandling
             return JsonConvert.DeserializeObject<List<Product>>(productString);
         }
 
-         
+
         #region Filters
 
         /// <summary>

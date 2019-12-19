@@ -27,10 +27,10 @@ namespace BBCollection.BBObjects
             percentDone = 0;
         }
 
-        public async Task<List<WeightedRecipies>> GetWeightedRecipies(List<Product> products) 
+        public async Task<List<WeightedRecipies>> GetWeightedRecipies(List<Product> products)
         {
             allRefs = GetAllProductRefs(products);
-            if (WeightedRecipies.Count == 0) 
+            if (WeightedRecipies.Count == 0)
             {
                 allRecipies = allRefs.Count();
                 foreach (List<string> prodRefs in allRefs)
@@ -66,7 +66,7 @@ namespace BBCollection.BBObjects
             }
 
 
-            
+
             foreach (Recipe r in recipes)
             {
                 foreach (Ingredient I in r._ingredientList)

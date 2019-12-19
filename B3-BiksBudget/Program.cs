@@ -1,7 +1,6 @@
 using BBCollection;
 using BBCollection.BBObjects;
 using BBCollection.DBHandling;
-using BBCollection.Queries;
 using BBCollection.StoreApi.CoopApi;
 using BBGatherer.Webcrawler;
 using System;
@@ -21,10 +20,10 @@ namespace BBGatherer
             {
                 dh.GenerateDatabase().Wait();
                 dh.GenerateData(
-                    GetOptionsAt(settings,0), 
-                    GetOptionsAt(settings, 1), 
-                    GetOptionsAt(settings, 2), 
-                    GetOptionsAt(settings, 3), 
+                    GetOptionsAt(settings, 0),
+                    GetOptionsAt(settings, 1),
+                    GetOptionsAt(settings, 2),
+                    GetOptionsAt(settings, 3),
                     GetOptionsAt(settings, 4)).Wait();
             }
             catch (Exception e)
@@ -45,10 +44,10 @@ namespace BBGatherer
             return Console.ReadLine();
         }
 
-        public static bool GetOptionsAt(string options, int placement) 
+        public static bool GetOptionsAt(string options, int placement)
         {
             char[] arr = options.ToCharArray();
-            if (options.Length > 5) 
+            if (options.Length > 5)
             {
                 throw new IndexOutOfRangeException();
             }

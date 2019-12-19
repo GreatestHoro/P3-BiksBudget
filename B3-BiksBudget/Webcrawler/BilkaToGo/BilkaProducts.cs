@@ -48,10 +48,10 @@ namespace BBGatherer.Webcrawler.BilkaToGo
 
         private void InitiateCrawl()
         {
-                /*IWebDriver driver = new WebDriver(true).Driver();
-                driver.Navigate().GoToUrl(@"https://www.bilkatogo.dk/produkt/NOCCO-BCAA-_-MELON-CRUSH-33CL/64711/");
-                CrawlProduct(driver);
-                driver.Close();*/
+            /*IWebDriver driver = new WebDriver(true).Driver();
+            driver.Navigate().GoToUrl(@"https://www.bilkatogo.dk/produkt/NOCCO-BCAA-_-MELON-CRUSH-33CL/64711/");
+            CrawlProduct(driver);
+            driver.Close();*/
 
 
             Parallel.ForEach(_relevantProducts, new ParallelOptions { MaxDegreeOfParallelism = 4 }, (c) =>
@@ -63,7 +63,7 @@ namespace BBGatherer.Webcrawler.BilkaToGo
                     CrawlProduct(driver);
                     driver.Close();
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
 
                 }
@@ -94,7 +94,7 @@ namespace BBGatherer.Webcrawler.BilkaToGo
                 double price = Convert.ToDouble(productInfo[productInfo.Length - 2].Replace(" ", "."));
                 _dc.Product.Add(new Product(id, name, amount, price, url, "Bilka"));
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Console.WriteLine(e);
             }

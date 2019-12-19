@@ -1,7 +1,5 @@
 ﻿using BBCollection;
-using BBGatherer.Webcrawler.BilkaToGo;
 using OpenQA.Selenium;
-using OpenQA.Selenium.Firefox;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -11,7 +9,7 @@ namespace BBGatherer.Webcrawler.BilkaToGo
     public class LinkCreation
     {
         readonly DatabaseConnect _dc = new DatabaseConnect();
-        
+
         public void IterateOverStringParallel(String alphabet)
         {
             Parallel.ForEach(alphabet, new ParallelOptions { MaxDegreeOfParallelism = 4 }, (c) =>
@@ -63,7 +61,7 @@ namespace BBGatherer.Webcrawler.BilkaToGo
                 int productID = Convert.ToInt32(element.GetAttribute("data-productid"));
 
                 string[] name = element.Text.Split("\n");
-                
+
                 productLinks.Add(productID, name[0]);
             }
             return productLinks;

@@ -76,17 +76,17 @@ namespace BBCollection.DBHandling
 
             MySqlCommand msc = new MySqlCommand(ingredientsToRecipeQuery);
             msc.Parameters.AddWithValue("@RecipeID", recipeID);
-            
-                DataSet ds = await new SQLConnect().DynamicSimpleListSQL(msc);
-                foreach (DataRow r in ds.Tables[0].Rows)
-                {
-                    Ingredient ingredient = new Ingredient((string)r[0], (string)r[1], (int)r[2]);
-                    ingredients.Add(ingredient);
-                }
 
-                IEnumerable<Ingredient> distinctIngredients = ingredients.GroupBy(o => o._ingredientName).Select(g => g.First());
+            DataSet ds = await new SQLConnect().DynamicSimpleListSQL(msc);
+            foreach (DataRow r in ds.Tables[0].Rows)
+            {
+                Ingredient ingredient = new Ingredient((string)r[0], (string)r[1], (int)r[2]);
+                ingredients.Add(ingredient);
+            }
 
-                return distinctIngredients.ToList();
+            IEnumerable<Ingredient> distinctIngredients = ingredients.GroupBy(o => o._ingredientName).Select(g => g.First());
+
+            return distinctIngredients.ToList();
         }
         #endregion
 
@@ -153,24 +153,24 @@ namespace BBCollection.DBHandling
 
         private async Task CombineRecipeAndIngredient(Recipe recipe)
         {
-            
-                foreach (Ingredient ingredient in recipe._ingredientList)
-                {
+
+            foreach (Ingredient ingredient in recipe._ingredientList)
+            {
                 ingredient._id = await getIngredientFromName(ingredient._ingredientName);
-                    string addIngredientReferance = "INSERT INTO `IngredientsInRecipe` (`recipeID`,`ingredientID`,`amount`,`unit`)" +
-                                                    "VALUES(@RecipeID," +
-                                                    "@IngredientID" +
-                                                    ",@Amount,@Unit)";
+                string addIngredientReferance = "INSERT INTO `IngredientsInRecipe` (`recipeID`,`ingredientID`,`amount`,`unit`)" +
+                                                "VALUES(@RecipeID," +
+                                                "@IngredientID" +
+                                                ",@Amount,@Unit)";
 
-                    MySqlCommand msc = new MySqlCommand(addIngredientReferance);
+                MySqlCommand msc = new MySqlCommand(addIngredientReferance);
 
-                    msc.Parameters.AddWithValue("@RecipeID", recipe._recipeID);
-                    msc.Parameters.AddWithValue("@IngredientID", ingredient._id);
-                    msc.Parameters.AddWithValue("@Amount", ingredient._amount);
-                    msc.Parameters.AddWithValue("@Unit", ingredient._unit);
+                msc.Parameters.AddWithValue("@RecipeID", recipe._recipeID);
+                msc.Parameters.AddWithValue("@IngredientID", ingredient._id);
+                msc.Parameters.AddWithValue("@Amount", ingredient._amount);
+                msc.Parameters.AddWithValue("@Unit", ingredient._unit);
 
-                    await new SQLConnect().NonQueryMSCAsync(msc);
-                }
+                await new SQLConnect().NonQueryMSCAsync(msc);
+            }
         }
 
         private async Task<int> getIngredientFromName(string ingredientName)
@@ -456,7 +456,7 @@ namespace BBCollection.DBHandling
                 foreach (DataRow r in ds.Tables[0].Rows)
                 {
                     double price = 0;
-                    if(r[3] != DBNull.Value)
+                    if (r[3] != DBNull.Value)
                     {
                         price = Convert.ToDouble(r[4]);
                     }
@@ -574,7 +574,7 @@ namespace BBCollection.DBHandling
         {
             List<string> stores = ConverteChain(chain);
             MySqlCommand msc;
-            
+
 
             if (stores.Count == 0)
             {

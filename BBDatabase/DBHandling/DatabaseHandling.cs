@@ -213,7 +213,7 @@ namespace BBCollection.DBHandling
                 "FOREIGN KEY(fakta) REFERENCES products(id))";
 
             await new SQLConnect().NonQueryString(linkQuery);
-        } 
+        }
 
         #endregion
     }
