@@ -147,7 +147,7 @@
         return selectedProductCount == 0 ? "Delete" : selectedProductCount == 1 ?  $"Delete {selectedProductCount} item" : isAllSelected()  ? $"Delete all items" :  $"Delete {selectedProductCount} items";
     }
 
-        private string setMessageAddtoStorageBtn()
+    private string setMessageAddtoStorageBtn()
     {
         return selectedProductCount == 0 ? "Add to storage" : selectedProductCount == 1 ?  $"Add {selectedProductCount} item to storage" : isAllSelected()  ? $"Add all items to storage" :  $"Add {selectedProductCount} items to storage";
     }

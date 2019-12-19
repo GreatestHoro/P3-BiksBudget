@@ -50,11 +50,14 @@
                 <Field IsHorizontal="true">
                     <FieldBody ColumnSize="ColumnSize.Is10">
                         <Buttons Role="ButtonsRole.Addons">
-                            <Button Color="Color.Danger" Clicked="@(() => DeleteSelectedStoraeg())" IsDisabled="selectedProductCount == 0" IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed)"><Icon Name="@(FontAwesomeIcons.Trash)" /> Delete Products (@selectedProductCount)</Button>
-                            <Button Color="Color.Dark" Clicked="@(() => FindRecipies())" IsDisabled="selectedProductCount == 0" IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed)"><Icon Name="@(FontAwesomeIcons.Utensils)"></Icon> BiksFood (@selectedProductCount)</Button>
+                            <Button Color="Color.Danger" Clicked="@(() => DeleteSelectedStoraeg())" IsDisabled="selectedProductCount == 0" 
+                                    IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed)"><Icon Name="@(FontAwesomeIcons.Trash)" /> @setMessageDeleteBtn()</Button>                          
+                                <Button Color="Color.Dark" Clicked="@(() => FindRecipies())" IsDisabled="selectedProductCount == 0" 
+                                    IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed)"><Icon Name="@(FontAwesomeIcons.Utensils)"></Icon> @setMessageBiksFood()</Button>                           
                             <Button Color="Color.Success" Clicked="@(() => showQuickaddModal(ModalSize.Default, 50, true))"><Icon Name="@(FontAwesomeIcons.Search)"></Icon> Quickadd</Button>
                         </Buttons>
                     </FieldBody>
+                    <FieldHelp Style="font-size:70%"> Use <strong>BiksFood</strong> to find recipes that utilizes your allready owned products</FieldHelp>
                     <FieldBody ColumnSize="ColumnSize.Is2">
                     </FieldBody>
                 </Field>
@@ -147,12 +150,35 @@
         <Modal @ref="BiksFood">
             <ModalBackdrop />
             <ModalContent Size="@modalSize" IsCentered="@isCentered">
-                <ModalHeader>
-                    <ModalTitle>
-                        <Icon Name="@(FontAwesomeIcons.Utensils)" />
-                        BiksFood
-                    </ModalTitle>
-                    <CloseButton Clicked="@hideBiksfoodModal" />
+                <ModalHeader Class="text-center">
+                    <Field ColumnSize="ColumnSize.IsFull" JustifyContent="JustifyContent.Center">
+                        <CloseButton Float="Float.Right" Clicked="@hideBiksfoodModal" />
+                        <ModalTitle>
+                            <Icon Name="@(FontAwesomeIcons.Utensils)" />
+                            BiksFood
+                        </ModalTitle>
+                        <FieldBody ColumnSize="ColumnSize.IsFull">
+                            <Row>
+                                <Column>
+                                    <Label>You can sort results by</Label>
+                                </Column>
+                           </Row>
+                            <Row Class="text-center">
+                                <Column ColumnSize="ColumnSize.IsHalf">
+                                    <Field Float="Float.Right" JustifyContent="JustifyContent.Center">
+                                        <FieldLabel>Best matches </FieldLabel>
+                                        <CheckEdit IsInline="true" CheckedChanged="(() => SortPmatch())" RadioGroup="BiksFoodFilter" Checked="pmatch" />
+                                    </Field>
+                                </Column>
+                                <Column ColumnSize="ColumnSize.IsHalf">
+                                    <Field Float="Float.Left" JustifyContent="JustifyContent.Center">
+                                        <FieldLabel>Best utilization</FieldLabel>
+                                        <CheckEdit IsInline="true" CheckedChanged="(() => SortOverallMatch())" RadioGroup="BiksFoodFilter" Checked="OverallMatch" />
+                                    </Field>
+                                </Column>
+                            </Row>
+                        </FieldBody>
+                    </Field>
                 </ModalHeader>
                 <ModalBody MaxHeight="@maxHeight" Margin="Margin.Is1.FromTop.FromBottom">
                     <Row>
@@ -194,7 +220,7 @@
                             }
                             @if (_viewLoadMore && BiksFoodRecepiesFound)
                             {
-                                <Button IsBlock="true" Color="Color.Secondary" @onclick="() => LoadMoreRecepies()" IsDisabled="!(_viewLoadMore && BiksFoodRecepiesFound)"><Icon Name="@(FontAwesomeIcons.CaretDown)"/></Button>
+                                <Button IsBlock="true" Color="Color.Secondary" @onclick="() => LoadMoreRecepies()" IsDisabled="!(_viewLoadMore && BiksFoodRecepiesFound)"><Icon Name="@(FontAwesomeIcons.CaretDown)" /></Button>
                             }
                         }
                         else
@@ -503,9 +529,24 @@ else
     #endregion
 
     #region StorageMethods
+    private bool isAllSelected()
+    {
+        return user.storage.CountActiveList().Count() == user.storage.storageList.Count(); 
+    }
+
     private string searchResultAmountMsg()
     {
         return itemList.Count == 0 ? " " : itemList.Count == 1? $"{itemList.Count} Product found" : $"{itemList.Count} Products found" ;
+    }
+
+    private string setMessageDeleteBtn()
+    {
+        return selectedProductCount == 0 ? "Delete" : selectedProductCount == 1 ?  $"Delete {selectedProductCount} item" : isAllSelected()  ? $"Delete all items" :  $"Delete {selectedProductCount} items";
+    }
+
+    private string setMessageBiksFood()
+    {
+        return selectedProductCount == 0 ? "BiksFood" : selectedProductCount == 1 ?  $"Utilize {selectedProductCount} item to BiksFood" : isAllSelected()  ? $"Utilize all items to BiksFood" :  $"Utilize {selectedProductCount} items to BiksFood";
     }
 
     public bool StorageExists()
