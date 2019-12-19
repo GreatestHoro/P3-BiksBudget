@@ -164,19 +164,11 @@
                                 </Column>
                            </Row>
                             <Row Class="text-center">
-                                <Column ColumnSize="ColumnSize.IsHalf">
-                                    <Field Float="Float.Right" JustifyContent="JustifyContent.Center">
-                                        <FieldLabel>Best matches </FieldLabel>
-                                        @*<CheckEdit IsInline="true"  CheckedChanged="(() => SortPmatch())" RadioGroup="BiksFoodFilter" Checked="pmatch" />*@
-                                    <Button Clicked="(() => SortPmatch())">Best matches</Button>
-                                    </Field>
-                                </Column>
-                                <Column ColumnSize="ColumnSize.IsHalf">
-                                    <Field Float="Float.Left" JustifyContent="JustifyContent.Center">
-                                        <FieldLabel>Best utilization</FieldLabel>
-                                        @*<CheckEdit IsInline="true" CheckedChanged="(() => SortOverallMatch())" RadioGroup="BiksFoodFilter" Checked="OverallMatch" />*@
-                                    <Button Clicked="(() => SortOverallMatch())">Best utilization</Button>
-                                    </Field>
+                                <Column ColumnSize="ColumnSize.IsFull">
+                                    <Buttons>
+                                         <Button Color="Color.Secondary" Clicked="(() => SortPmatch())">Best matches</Button>
+                                         <Button Color="Color.Secondary" Clicked="(() => SortOverallMatch())">Best utilization</Button>
+                                    </Buttons>
                                 </Column>
                             </Row>
                         </FieldBody>
