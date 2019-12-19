@@ -35,21 +35,21 @@
                         </FieldBody>
                     </Field>
                     <Field IsHorizontal="true">
-                            <FieldLabel ColumnSize="ColumnSize.Is12" Class="text-left">Password</FieldLabel>
-                            <FieldBody ColumnSize="ColumnSize.Is12">
-                                <Validation Validator="@ValidatePassword">
-                                    <Tooltip IsMultiline="true" Text="Please use 6 or more characters.
+                        <FieldLabel ColumnSize="ColumnSize.Is12" Class="text-left">Password</FieldLabel>
+                        <FieldBody ColumnSize="ColumnSize.Is12">
+                            <Validation Validator="@ValidatePassword">
+                                <Tooltip IsMultiline="true" Text="Please use 6 or more characters.
                                                                       Please refrain from using a 'space'.
                                                                       Please refrain from using symbols (æ,ø,å is also considered a symbol)"
-                                             Placement="Placement.Top   ">
-                                        <TextEdit Role="TextRole.Password" Placeholder="Enter Password" @bind-Text="@password" @onkeyup="OnKeyPress">
-                                            <Feedback>
-                                                <ValidationError>@checkPassword.Item2</ValidationError>
-                                            </Feedback>
-                                        </TextEdit>
-                                    </Tooltip>
-                                </Validation>
-                            </FieldBody>
+                                         Placement="Placement.Top   ">
+                                    <TextEdit Role="TextRole.Password" Placeholder="Enter Password" @bind-Text="@password" @onkeyup="OnKeyPress">
+                                        <Feedback>
+                                            <ValidationError>@checkPassword.Item2</ValidationError>
+                                        </Feedback>
+                                    </TextEdit>
+                                </Tooltip>
+                            </Validation>
+                        </FieldBody>
                     </Field>
                     <Field IsHorizontal="true">
                         <FieldLabel ColumnSize="ColumnSize.Is12" Class="text-left">Re Password</FieldLabel>
@@ -70,7 +70,7 @@
                                 <CheckEdit>
                                     <ChildContent>
                                         Accept terms and conditions.
-                                            <Button Size="ButtonSize.Small" Clicked="@(()=>showTermsModal( ModalSize.Default, 30, true ))" Color="Color.Link">@readTerms</Button>
+                                        <Button Size="ButtonSize.Small" Clicked="@(()=>showTermsModal( ModalSize.Default, 30, true ))" Color="Color.Link">@readTerms</Button>
                                     </ChildContent>
                                     <Feedback>
                                         <ValidationError>You have to read accept Terms and Conditoins</ValidationError>
@@ -82,8 +82,11 @@
                     <Field IsHorizontal="true" JustifyContent="JustifyContent.End">
                         <FieldLabel ColumnSize="ColumnSize.IsFull"></FieldLabel>
                         <FieldBody ColumnSize="ColumnSize.IsFull">
-                            <Button  IsBlock="true"  Color="Color.Success" Clicked="@RegisterAccount" IsLoading="@isLoading"><i class="oi oi-person"></i> Register</Button>
+                            <Button IsBlock="true" Color="Color.Success" Clicked="@RegisterAccount" IsLoading="@isLoading"><i class="oi oi-person"></i> Register</Button>
                         </FieldBody>
+                    </Field>
+                    <Field IsHorizontal="true" JustifyContent="JustifyContent.End" Class="text-center">
+                        <Button IsBlock="true" Size="ButtonSize.Small" Color="Color.Link" Clicked="SendToLogin"> Have an account? Log in here!</Button>
                     </Field>
                 </Validations>
             </CardBody>
@@ -182,6 +185,11 @@
     private void hideModal()
     {
         termsAndConditions.Hide();
+    }
+
+    public void SendToLogin()
+    {
+        NavigationManager.NavigateTo("Login");
     }
 
     void ValidatePassword(ValidatorEventArgs e)

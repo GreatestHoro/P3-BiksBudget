@@ -32,8 +32,8 @@
                     }
                     else
                     {
-                        <FieldBody>
-                            <Text> Nothing is currently in your storage</Text>
+                        <FieldBody ColumnSize="ColumnSize.IsFull">
+                            <Alert IsShow="true" Color="Color.Danger"> Your storage is currently empty! <Button IsOutline="false" @onclick="GoToShoppinglist">Click here to go to your shopping list!</Button></Alert>
                         </FieldBody>
                     }
                 </Fields>
@@ -89,12 +89,12 @@
             <ModalContent Size="@modalSize" IsCentered="@isCentered">
                 <ModalHeader Class="text-center">
                     <Field ColumnSize="ColumnSize.IsFull" JustifyContent="JustifyContent.Center">
-                    <CloseButton Float="Float.Right" Clicked="@hideQuickaddModal" />
-                    <ModalTitle>
-                        <Icon Name="@(FontAwesomeIcons.Search)" />
-                        Quickadd Producs
-                    </ModalTitle>
-                    <Text Color="TextColor.Muted" Alignment="TextAlignment.Center">@searchResultAmountMsg()</Text>
+                        <CloseButton Float="Float.Right" Clicked="@hideQuickaddModal" />
+                        <ModalTitle>
+                            <Icon Name="@(FontAwesomeIcons.Search)" />
+                            Quickadd Producs
+                        </ModalTitle>
+                        <Text Color="TextColor.Muted" Alignment="TextAlignment.Center">@searchResultAmountMsg()</Text>
                     </Field>
                 </ModalHeader>
                 <ModalBody Margin="Margin.Is1.FromBottom.FromTop">
@@ -194,7 +194,7 @@
                             }
                             @if (_viewLoadMore && BiksFoodRecepiesFound)
                             {
-                                <Button IsBlock="true" Color="Color.Secondary" @onclick="() => LoadMoreRecepies()" IsDisabled="!(_viewLoadMore && BiksFoodRecepiesFound)"><Icon Name="@(FontAwesomeIcons.CaretDown)"/></Button>
+                                <Button IsBlock="true" Color="Color.Secondary" @onclick="() => LoadMoreRecepies()" IsDisabled="!(_viewLoadMore && BiksFoodRecepiesFound)"><Icon Name="@(FontAwesomeIcons.CaretDown)" /></Button>
                             }
                         }
                         else
@@ -338,9 +338,9 @@
 else
 {
     <Modal @ref="emailNullModal" Closing="OnModalClosing" Class="text-center">
-        <ModalBackdrop IsOpen="true"/>
+        <ModalBackdrop IsOpen="true" />
         <ModalContent Style="background-color:transparent" IsCentered="true" IsForm="true" Size="ModalSize.ExtraLarge">
-            <ModalHeader >
+            <ModalHeader>
                 <Alert Color="Color.Success" IsShow="true">
                     <strong> oops! you need to be logged in to have a storage </strong>
                 </Alert>
@@ -489,7 +489,7 @@ else
     /// prevent modal from closing
     /// </summary>
     /// <param name="e"></param>
-    private void OnModalClosing( CancelEventArgs e )
+    private void OnModalClosing(CancelEventArgs e)
     {
         // just set Cancel to true to prevent modal from closing
         e.Cancel = true;
@@ -505,12 +505,17 @@ else
     #region StorageMethods
     private string searchResultAmountMsg()
     {
-        return itemList.Count == 0 ? " " : itemList.Count == 1? $"{itemList.Count} Product found" : $"{itemList.Count} Products found" ;
+        return itemList.Count == 0 ? " " : itemList.Count == 1 ? $"{itemList.Count} Product found" : $"{itemList.Count} Products found";
     }
 
     public bool StorageExists()
     {
         return user.storage.storageList.Count > 0;
+    }
+
+    public void GoToShoppinglist()
+    {
+        nm.NavigateTo("shoppinglist");
     }
 
     private void showQuickaddModal(ModalSize modalSize, int? maxHeight = null, bool isCentered = false)
@@ -730,7 +735,7 @@ else
 
     private async Task ModalFix()
     {
-      await Task.Run(() => showBiksfoodModal(ModalSize.Default, 60, true));
+        await Task.Run(() => showBiksfoodModal(ModalSize.Default, 60, true));
     }
 
     private async Task FindRecipies()
@@ -1138,7 +1143,7 @@ else
 
         sUndoDelete.Show();
     }
-#endregion
+    #endregion
 
     private string printIngredientAmount(float amount, int scalar)
     {
