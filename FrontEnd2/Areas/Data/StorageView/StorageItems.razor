@@ -3,8 +3,10 @@
 @using BBCollection.DBHandling;
 @using Newtonsoft.Json;
 @using FrontEnd2.Data;
+@using System.ComponentModel;
 @using BBCollection.Queries;
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject NavigationManager nm
 @inject HttpClient Http
 
 @if (isLoading)
@@ -49,8 +51,8 @@
                     <FieldBody ColumnSize="ColumnSize.Is10">
                         <Buttons Role="ButtonsRole.Addons">
                             <Button Color="Color.Danger" Clicked="@(() => DeleteSelectedStoraeg())" IsDisabled="selectedProductCount == 0" IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed)"><Icon Name="@(FontAwesomeIcons.Trash)" /> Delete Products (@selectedProductCount)</Button>
-                            <Button Color="Color.Dark" Clicked="@(() => FindRecipies())" IsDisabled="selectedProductCount == 0" IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed)"><Icon Name="@(FontAwesomeIcons.IceCream)"></Icon> BiksFood (@selectedProductCount)</Button>
-                            <Button Color="Color.Info" Clicked="@(() => showQuickaddModal(ModalSize.Default, 50, true))"><Icon Name="@(FontAwesomeIcons.Search)"></Icon> Quickadd</Button>
+                            <Button Color="Color.Dark" Clicked="@(() => FindRecipies())" IsDisabled="selectedProductCount == 0" IsActive="@(user.shoppinglist.filter == UserShoppinglist.Filter.Completed)"><Icon Name="@(FontAwesomeIcons.Utensils)"></Icon> BiksFood (@selectedProductCount)</Button>
+                            <Button Color="Color.Success" Clicked="@(() => showQuickaddModal(ModalSize.Default, 50, true))"><Icon Name="@(FontAwesomeIcons.Search)"></Icon> Quickadd</Button>
                         </Buttons>
                     </FieldBody>
                     <FieldBody ColumnSize="ColumnSize.Is2">
@@ -85,14 +87,17 @@
         <Modal @ref="quickaddModal">
             <ModalBackdrop />
             <ModalContent Size="@modalSize" IsCentered="@isCentered">
-                <ModalHeader>
+                <ModalHeader Class="text-center">
+                    <Field ColumnSize="ColumnSize.IsFull" JustifyContent="JustifyContent.Center">
+                    <CloseButton Float="Float.Right" Clicked="@hideQuickaddModal" />
                     <ModalTitle>
                         <Icon Name="@(FontAwesomeIcons.Search)" />
                         Quickadd Producs
                     </ModalTitle>
-                    <CloseButton Clicked="@hideQuickaddModal" />
+                    <Text Color="TextColor.Muted" Alignment="TextAlignment.Center">@searchResultAmountMsg()</Text>
+                    </Field>
                 </ModalHeader>
-                <ModalBody>
+                <ModalBody Margin="Margin.Is1.FromBottom.FromTop">
                     <Autocomplete Data="@prodData"
                                   TextField="@((item) => item.textField)"
                                   ValueField="@((item) => item.textField)"
@@ -103,19 +108,20 @@
                                   MinLength="2"
                                   IsDisabled="FindingAutocorrectlist" />
                 </ModalBody>
-                <ModalBody MaxHeight="@maxHeight">
-                    <Row>
+                <ModalBody MaxHeight="@maxHeight" Margin="Margin.Is5.FromTop">
+                    <Row Margin="Margin.Is1.FromTop.FromBottom">
                         @if (itemList.Count != 0)
                         {
                             @foreach (Product p in itemList.GetRange(0, produToPrint))
                             {
                                 <Column ColumnSize="ColumnSize.Is12">
-                                    <Card Margin="Margin.Is1.FromBottom">
+                                    <Card Margin="Margin.Is1.FromBottom.FromTop">
                                         <CardBody>
                                             <CardTitle Size="4">@p._productName</CardTitle>
                                             <Field>
                                                 <FieldBody>
                                                     <ListGroup IsFlush="true">
+                                                        <ListGroupItem><CardText>@p._storeName </CardText></ListGroupItem>
                                                         <ListGroupItem><CardText>@p._amount</CardText></ListGroupItem>
                                                         <ListGroupItem><CardText>@p._price DKK</CardText></ListGroupItem>
                                                     </ListGroup>
@@ -143,12 +149,12 @@
             <ModalContent Size="@modalSize" IsCentered="@isCentered">
                 <ModalHeader>
                     <ModalTitle>
-                        <Icon Name="@(FontAwesomeIcons.IceCream)" />
+                        <Icon Name="@(FontAwesomeIcons.Utensils)" />
                         BiksFood
                     </ModalTitle>
                     <CloseButton Clicked="@hideBiksfoodModal" />
                 </ModalHeader>
-                <ModalBody MaxHeight="@maxHeight">
+                <ModalBody MaxHeight="@maxHeight" Margin="Margin.Is1.FromTop.FromBottom">
                     <Row>
                         @if (!BiksfoodsearchDone)
                         {
@@ -172,12 +178,12 @@
                                                     {
                                                         if (i < 4)
                                                         {
-                                                            <i class="oi oi-person"> </i>
+                                                            <Icon Name="@(FontAwesomeIcons.UserAlt)" />
                                                         }
                                                     }
                                                     @if (rep._recipie._PerPerson >= 4)
                                                     {
-                                                        <i class="oi oi-plus"> </i>
+                                                        <Icon Name="@(FontAwesomeIcons.UserPlus)" />
                                                     }
                                                 </FieldBody>
                                             </Field>
@@ -188,7 +194,7 @@
                             }
                             @if (_viewLoadMore && BiksFoodRecepiesFound)
                             {
-                                <Button Color="Color.Warning" @onclick="() => LoadMoreRecepies()" IsDisabled="!(_viewLoadMore && BiksFoodRecepiesFound)"><Icon Name="@(FontAwesomeIcons.HourglassHalf)"></Icon> Load more</Button>
+                                <Button IsBlock="true" Color="Color.Secondary" @onclick="() => LoadMoreRecepies()" IsDisabled="!(_viewLoadMore && BiksFoodRecepiesFound)"><Icon Name="@(FontAwesomeIcons.CaretDown)"/></Button>
                             }
                         }
                         else
@@ -329,6 +335,26 @@
         </Modal>
     </Accordion>
 }
+else
+{
+    <Modal @ref="emailNullModal" Closing="OnModalClosing" Class="text-center">
+        <ModalBackdrop IsOpen="true"/>
+        <ModalContent Style="background-color:transparent" IsCentered="true" IsForm="true" Size="ModalSize.ExtraLarge">
+            <ModalHeader >
+                <Alert Color="Color.Success" IsShow="true">
+                    <strong> oops! you need to be logged in to have a storage </strong>
+                </Alert> 
+            </ModalHeader>
+            <ModalBody>
+                <Buttons Orientation="Orientation.Horizontal">
+                    <Button Clicked="navigateToLogin" Color="Color.Success">Click here to log in! <Icon Name="@(FontAwesomeIcons.SignInAlt)" /></Button>
+                    <Button Clicked="navigateToRegister" Color="Color.Info"> Register an account  <Icon Name="@(FontAwesomeIcons.UserAlt)" /></Button>
+                    <Button Clicked="navigateToSL" Color="Color.Light">Continue without log in <Icon Name="@(FontAwesomeIcons.AccessibleIcon)" /></Button>
+                </Buttons>
+            </ModalBody>
+        </ModalContent>
+    </Modal>
+}
 
 
 @code {
@@ -341,6 +367,7 @@
     Snackbar sRegretChange;
     Snackbar sUndoDelete;
     private Modal quickaddModal;
+    private Modal emailNullModal;
     bool isCentered;
     ModalSize modalSize;
     int? maxHeight;
@@ -352,7 +379,6 @@
     string snacbarMessage;
     List<Product> SnackbarTempList = new List<Product>();
 
-    private Validations validations;
     ConnectionSettings connectionSettings = new ConnectionSettings();
     private Modal recipeRef;
     Modal BiksFood;
@@ -436,7 +462,51 @@
     private delegate bool compareWR(WeightedRecipies r1, WeightedRecipies r2);
     #endregion
 
+
+    #region navigate modal
+    /// <summary>
+    /// If not logged in, navigate to login 
+    /// </summary>
+    private void navigateToLogin()
+    {
+        nm.NavigateTo("Login");
+    }
+
+    /// <summary>
+    /// If not logged in, navigate to register 
+    /// </summary>
+    private void navigateToRegister()
+    {
+        nm.NavigateTo("Register");
+    }
+
+    private void navigateToSL()
+    {
+        nm.NavigateTo("Shoppinglist");
+    }
+
+    /// <summary>
+    /// prevent modal from closing
+    /// </summary>
+    /// <param name="e"></param>
+    private void OnModalClosing( CancelEventArgs e )
+    {
+        // just set Cancel to true to prevent modal from closing
+        e.Cancel = true;
+    }
+
+
+    private void ShowLoginModal()
+    {
+        emailNullModal.Show();
+    }
+    #endregion
+
     #region StorageMethods
+    private string searchResultAmountMsg()
+    {
+        return itemList.Count == 0 ? " " : itemList.Count == 1? $"{itemList.Count} Product found" : $"{itemList.Count} Products found" ;
+    }
 
     public bool StorageExists()
     {
@@ -536,7 +606,11 @@
                 await user.storage.Get();
                 intailizeAllProducts(user.storage.storageList);
             }
-            
+            else
+            {
+                ShowLoginModal();
+            }
+
             await InitializeAutocorrect();
 
             isLoading = false;

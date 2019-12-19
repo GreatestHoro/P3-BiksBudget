@@ -99,12 +99,12 @@
                                     {
                                         if (i < 4)
                                         {
-                                            <i class="oi oi-person"> </i>
+                                            <Icon Name="@(FontAwesomeIcons.UserAlt)" />
                                         }
                                     }
                                     @if (complexRecipe._PerPerson >= 4)
                                     {
-                                        <i class="oi oi-plus"> </i>
+                                             <Icon Name="@(FontAwesomeIcons.UserPlus)" />
                                     }
                                 </button>
                                 <p class="d-inline-block float-right"> @complexRecipe._complexRecipeComponent.RecipeCost kr.</p>
