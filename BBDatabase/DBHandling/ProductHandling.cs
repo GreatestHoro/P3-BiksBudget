@@ -281,9 +281,23 @@ namespace BBCollection.DBHandling
         public async Task AddAutocompleteToDB()
         {
             string[] toAdd = await AddRefCol();
+            double all = toAdd.Length;
+            double done = 0;
+            double percent = 0;
+            int ToPrint = 0;
 
+            Console.WriteLine("Autocomplete has begun...");
             foreach (string s in toAdd)
             {
+                done++;
+                percent = ( done / all ) * 100;
+
+                if (percent > ToPrint)
+                {
+                    Console.WriteLine($"Status: {ToPrint}% done ({done} out of {all}).");
+                    ToPrint += 10;
+                }
+
                 await ReferenceToAutcompleteToDB(s);
             }
         }
@@ -431,11 +445,6 @@ namespace BBCollection.DBHandling
         public bool bChar(string s, string sub)
         {
             int i = s.IndexOf(sub) - 1;
-
-            if (s.Contains("kaffebønne"))
-            {
-                Console.WriteLine("a");
-            }
 
             if (i > 0)
             {
