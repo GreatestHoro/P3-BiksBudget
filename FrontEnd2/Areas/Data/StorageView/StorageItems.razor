@@ -425,8 +425,8 @@ else
     string shopString;
     string replacementUlr = "https://cdn.discordapp.com/attachments/519096261408718908/649685312083197973/coopdicoop.jpg";
     List<List<string>> AllProductRefs;
+    #region Integers
     int ID;
-
     int recipePerPerson;
     int LoadingBarProggres;
     int selectedValue;
@@ -440,7 +440,8 @@ else
     int selectedProductCount = 0;
     int produToPrint = 0;
     int printAtOnce = 20;
-
+    #endregion
+    #region Bools
     bool found = true;
     bool viewTitle = false;
     bool viewIngredients = false;
@@ -467,19 +468,11 @@ else
 
     bool[] wordFilter;
     bool[] storeFilter;
+    #endregion
 
-    EmptyFridgeFuntionality emptyFridgeFuntionality = new EmptyFridgeFuntionality();
-
-    StoreFilterList storeFilters = new StoreFilterList();
-    WordFilterList wordFIlters = new WordFilterList();
-    UserData user;
-    HttpResponseMessage responseMessage = new HttpResponseMessage();
-    Product tempProduct = new Product();
-    Ingredient currentlySelectedIngredient;
+    #region Lists
     List<Ingredient> InshoppingList = new List<Ingredient>();
-    ProductSearchHandling search = new ProductSearchHandling();
     List<Product> itemList = new List<Product>();
-
     List<float> recipeAmount = new List<float>();
     List<Ingredient> ingredients = new List<Ingredient>();
     List<WeightedRecipies> recpies = new List<WeightedRecipies>();
@@ -488,18 +481,30 @@ else
     List<Product> products = new List<Product>();
     List<Product> ToShoppinglist = new List<Product>();
     List<string> storeNames = new List<string>() { "Bilka", "Fakta", "SuperBrugsen" };
-    Recipe selectedRecepie = new Recipe();
     List<Product> LastEmptyFridge = new List<Product>();
     List<string> ItemState = new List<string>() { "Full", "Almost Full", "Half Full", "Almost Empty" };
     ControllerFuncionality features = new ControllerFuncionality();
+    Recipe selectedRecepie = new Recipe();
+    #endregion
+    #region Dictionarys
     Dictionary<Ingredient, List<string>> ingrdientDict = new Dictionary<Ingredient, List<string>>();
     Dictionary<Product, bool> SelectedProducts = new Dictionary<Product, bool>();
     Dictionary<string, Product> productCompare = new Dictionary<string, Product>();
-    
+
     Dictionary<WeightedRecipies, List<string>> recipieWithStores = new Dictionary<WeightedRecipies, List<string>>();
     Dictionary<Ingredient, List<string>> IngredientWithStores = new Dictionary<Ingredient, List<string>>();
+    #endregion
+    #region Misc
+    EmptyFridgeFuntionality emptyFridgeFuntionality = new EmptyFridgeFuntionality();
+    ProductSearchHandling search = new ProductSearchHandling();
 
-    private delegate bool compareWR(WeightedRecipies r1, WeightedRecipies r2);
+    StoreFilterList storeFilters = new StoreFilterList();
+    WordFilterList wordFIlters = new WordFilterList();
+    UserData user;
+    HttpResponseMessage responseMessage = new HttpResponseMessage();
+    Product tempProduct = new Product();
+    Ingredient currentlySelectedIngredient;
+    #endregion
     #endregion
 
 
@@ -1092,7 +1097,7 @@ else
     {
         recpies = Allrecpies.OrderByDescending(x => x.pMatch).ToList().GetRange(0, NewAmount);
         List<WeightedRecipies> temp = recpies.Where(x=>!recipieWithStores.ContainsKey(x)).ToList();
-        if (temp.Any()) 
+        if (temp.Any())
         {
             await RecepiesToStores(temp);
         }
@@ -1104,7 +1109,7 @@ else
     {
         recpies = Allrecpies.OrderByDescending(x => x.matchingIngrdientsNum).ToList().GetRange(0, NewAmount);
         List<WeightedRecipies> temp = recpies.Where(x=>!recipieWithStores.ContainsKey(x)).ToList();
-        if (temp.Any()) 
+        if (temp.Any())
         {
             await RecepiesToStores(temp);
         }
