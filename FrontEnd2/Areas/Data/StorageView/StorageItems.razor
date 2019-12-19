@@ -313,7 +313,7 @@
                                             <TableRowCell Float="Float.Left">@(printIngredientAmount(ing._amount, scalar)) @ing._unit</TableRowCell>
                                             @if (ingrdientDict.ContainsKey(ing))
                                             {
-                                                <TableRowCell Float="Float.Left" Style="width:100%">
+                                                <TableRowCell Style="width:100%">
                                                     <Button Class="btn btn-block btn-success" @onclick="(() => retriveIngredient(ing))"><Icon Padding="Padding.Is1.FromTop" Float="Float.Left" Name="@(FontAwesomeIcons.CheckCircle)"></Icon> @ing._ingredientName</Button>
                                                 </TableRowCell>
                                             }
