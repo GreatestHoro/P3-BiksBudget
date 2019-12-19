@@ -16,7 +16,7 @@ https://dev.mysql.com/downloads/installer/
 
 - Click next and afterward execute.
 - This directs you to the 'Choosing Setup Type' Where you have to select 'Developer default'
-- The next two times and execute the installer.
+- Click next two times and execute the installer.
 - At Type and Networking, you click next.
 - When you get to Accounts and Roles, the password used on the application is 'BiksBudget123'
 - After this, you click next and execute the installer.
