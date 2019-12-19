@@ -578,15 +578,15 @@ namespace BBCollection.DBHandling
 
             if (stores.Count == 0)
             {
-                msc = new MySqlCommand(MultipleRecipeQuery(stores));
+                msc = new MySqlCommand(multiString(stores));
             }
             else if (stores.Count == 1)
             {
-                msc = new MySqlCommand(SingleRecipeQuery(stores[0]));
+                msc = new MySqlCommand(SingleQuery(stores[0]));
             }
             else
             {
-                msc = new MySqlCommand(MultipleRecipeQuery(stores));
+                msc = new MySqlCommand(multiString(stores));
             }
 
             msc.Parameters.AddWithValue("@RecipeName", "%" + recipeName + "%");
@@ -594,7 +594,7 @@ namespace BBCollection.DBHandling
             return await new SQLConnect().ElementCount(msc);
         }
 
-        public string returnSingleQuery(string store)
+        public string SingleQuery(string store)
         {
             string singleQuery =
                 "SELECT count(*) FROM recipes t1 " +
@@ -611,7 +611,7 @@ namespace BBCollection.DBHandling
         public string multiString(List<string> stores)
         {
             string mrQuery =
-                "SELECT t1.id, t1.recipeName, t1.recipeDesc, t1.amountPerson, sum(price) as min_price, count(*) FROM recipes t1 " +
+                "SELECT count(*) FROM recipes t1 " +
                 "inner join ingredientsinrecipe t2 on t1.id = t2.recipeID " +
                 "inner join ingredients t3 on t2.ingredientID = t3.id " +
                 "inner join( " +
@@ -620,8 +620,7 @@ namespace BBCollection.DBHandling
                 "from ingredient_store_link isl "
                 + GetJoins(stores) +
                 ") as t4 on t3.ingredientName = t4.ingredientName " +
-                "WHERE t1.recipeName like @RecipeName AND price IS NOT NULL " +
-                "group by t1.id order by min_price LIMIT @Limit OFFSET @Offset";
+                "WHERE t1.recipeName like @RecipeName AND price IS NOT NULL;";
 
             return mrQuery;
         }
