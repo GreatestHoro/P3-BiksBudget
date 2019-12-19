@@ -3,10 +3,7 @@
 @using BBCollection.BBObjects;
 @using BBCollection.DBConncetion;
 @using BBCollection.DBHandling;
-@using Newtonsoft.Json;
 @using  System.Text;
-@using FrontEnd2.Data;
-@using System.Diagnostics;
 @using FrontEnd2.Authentication;
 @inject HttpClient Http
 @inject NavigationManager NavigationManager
@@ -136,7 +133,7 @@
     </Modal>
 </Accordion>
 
-@code{
+@code {
     bool isLoading = false;
     bool goodPassword = false;
     bool goodRePassword = false;

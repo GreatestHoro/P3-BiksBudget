@@ -117,21 +117,6 @@ namespace BBCollection.DBHandling
             shoppinglist = FindDisabledList();
         }
 
-        public void DeleteList(List<Product> removeList)
-        {
-            foreach (Product p in removeList)
-            {
-                DeleteItem(p);
-            }
-
-        }
-
-        public void ClearItems()
-        {
-            shoppinglist.RemoveAll(x => x._completed);
-            filter = Filter.All;
-        }
-
         public void DeleteItem(Product p)
         {
             shoppinglist.Remove(shoppinglist.First(x => x._id == p._id));

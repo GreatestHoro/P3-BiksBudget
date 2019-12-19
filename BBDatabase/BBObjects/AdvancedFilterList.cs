@@ -24,9 +24,6 @@ namespace BBCollection.BBObjects
             lastOption = _lastOption;
         }
 
-        public AdvancedFilterList()
-        {
-
-        }
+        public AdvancedFilterList() { }
     }
 }

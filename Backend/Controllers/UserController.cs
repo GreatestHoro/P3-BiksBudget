@@ -35,7 +35,6 @@ namespace Backend.Controllers
             if (result)
             {
                 return BadRequest(ModelState);
-                //response = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
             }
 
             string username = user._userName;
@@ -44,8 +43,6 @@ namespace Backend.Controllers
             await dbConnect.User.Add(username, password);
 
             return Ok(ModelState);
-
-            //return response;
         }
     }
 }

@@ -3,16 +3,6 @@
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject NavigationManager NavigationManager
 
-@*@if (email != null)
-{
-    NavigationManager.NavigateTo("shoppinglist");
-}
-else
-{
-    
-    NavigationManager.NavigateTo("Login");
-}*@
-
 @code{
     string email;
 

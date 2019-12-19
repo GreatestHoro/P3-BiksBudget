@@ -28,10 +28,7 @@ namespace BBCollection.BBObjects
             wordArray = keyWords.GetWordArray();
         }
 
-        public Filters()
-        {
-
-        }
+        public Filters() { }
 
         public void UpdateFilters(bool[] _ToggleWordFilters, bool[] _ToggleStoreFILters)
         {
