@@ -10,7 +10,7 @@
 @inject IJSRuntime JsRuntime
 
 <div class="container-fluid">
-    <!-- #region Recipe search bar -->
+<!-- #region Recipe search bar -->
     <div class="row d-flex justify-content-center">
         <div class="col-sm-10 col-md-8 col-lg-7 col-xl-5" id="recipeSearchBox">
             <div class="form-check-inline center_div recipe-search-bar mb-2">
@@ -212,7 +212,7 @@
                                         <TableRowCell Float="Float.Left">@(printIngredientAmount(ing._amount, scalar)) @ing._unit</TableRowCell>
                                         @if (InshoppingList.Contains(ing) || allAdded)
                                         {
-                                            <TableRowCell Float="Float.Left" Style="width:100%">
+                                            <TableRowCell Style="width:100%">
                                                 <Button IsBlock="true" Color="Color.Success" IsOutline="true" @onclick="(() => retriveIngredient(ing))"><Icon Padding="Padding.Is1.FromTop" Float="Float.Left" Name="@(FontAwesomeIcons.ShoppingCart)"></Icon>@ing._ingredientName</Button>
                                             </TableRowCell>
                                         }

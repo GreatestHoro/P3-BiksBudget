@@ -114,7 +114,8 @@ namespace FrontEnd2.Data
             }
             catch (Exception e)
             {
-                throw new Exception(e.Message);
+                Console.WriteLine(e);
+                //throw new Exception(e.Message);
             }
 
             // Turn Salling Stores into UnifiedAPIStore
